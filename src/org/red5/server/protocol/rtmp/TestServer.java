@@ -21,12 +21,12 @@ public class TestServer {
 			if (args[0].startsWith("-p"))
 			{
 				String [] portArgs = args[0].split(" ");
-				log.debug("portArgs " + portArgs[0]);
-				if (portArgs[1] != null)
-				{
-					PORT= Integer.parseInt(portArgs[1]);
-					log.info("Using command line set port of " + PORT);
-				}
+				if (portArgs.length >1)
+					if (portArgs[1] != null)
+					{
+						PORT= Integer.parseInt(portArgs[1]);
+						log.info("Using command line set port of " + PORT);
+					}
 			}
 		}
 		
