@@ -1,3 +1,3 @@
 welcome to the RED5 Repository
 
-Hi!
+Hi! Anonymous SVN commits are fun!
