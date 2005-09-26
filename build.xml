@@ -17,6 +17,10 @@
 		<pathelement location="${lib.dir}/commons-logging.jar"/>
 		<pathelement location="${lib.dir}/log4j-1.2.9.jar"/>
 		<pathelement location="${lib.dir}/mina-0.7.4.jar"/>
+		<pathelement location="${lib.dir}/spring.jar"/>
+		<pathelement location="${lib.dir}/junit.jar"/>
+		<pathelement location="${lib.dir}/commons-beanutils.jar"/>
+		<pathelement location="${lib.dir}/commons-collections.jar"/>
 </path>
 
 
@@ -55,7 +59,7 @@
 
 
 <target name="server" depends="compile">
-	<java classname="org.red5.server.protocol.rtmp.TestServer" fork="true">
+	<java classname="org.red5.server.Server" fork="true">
 	<arg value="-p ${listenPort}"/>
 		<classpath>
 				<pathelement location="${classes.dir}"/>
