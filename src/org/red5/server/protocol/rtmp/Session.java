@@ -1,8 +1,12 @@
 package org.red5.server.protocol.rtmp;
 
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.io.IoSession;
+import org.red5.server.io.Deserializer;
+import org.red5.server.io.amf.Input;
 import org.red5.server.utils.HexDump;
 
 public class Session {
@@ -88,6 +92,9 @@ public class Session {
 			case Packet.TYPE_MISTERY:
 				onMisteryPacket(packet);
 				break;
+			default:
+				log.error("Unknown datatype: "+packet.dataType);
+				break;
 			}
 		
 		} catch (Exception ex){
@@ -100,12 +107,14 @@ public class Session {
 	}
 	
 	public void onFunctionCallPacket(Packet packet){
-		
-		// process the packet
-		// is it somthing internal, bandwidth, etc 
-		// or is it a function call
-		
-		System.out.println("Data PACKET!!!");
+		Deserializer deserializer = new Deserializer();
+		Input input = new Input(packet.getData());
+		String action = (String) deserializer.deserialize(input);
+		Number number = (Number) deserializer.deserialize(input);
+		Map params = (Map) deserializer.deserialize(input);
+		log.debug("Action:" + action);
+		log.debug("Number: "+number.toString());
+		log.debug("Params: "+params);
 	}
 	
 	public void onAudioPacket(Packet packet){
@@ -133,6 +142,8 @@ public class Session {
 	public void onMisteryPacket(Packet packet){
 	
 	}
+	
+	// TODO: ADD OTHER PACKET TYPE YANNIK SPOKE ABOUT
 	
 	public void writePacket(Packet packet){
 		handler.writePacket(this, packet);
