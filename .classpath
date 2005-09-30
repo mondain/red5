@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/commons-beanutils.jar"/>
 	<classpathentry kind="lib" path="lib/spring.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="lib" path="lib/jpda.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
