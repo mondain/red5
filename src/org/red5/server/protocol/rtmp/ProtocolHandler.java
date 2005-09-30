@@ -26,7 +26,9 @@ public class ProtocolHandler extends IoHandlerAdapter {
 	}
 
 	public void dataRead(IoSession ioSession, ByteBuffer in) {
-
+		
+		log.debug(">>>>>>>>>>>\n"+HexDump.formatHexDump(in.getHexDump()));
+		
 		Session session = (Session) ioSession.getAttachment();
 		if (session == null) {
 			session = new Session(ioSession, this);
@@ -49,10 +51,39 @@ public class ProtocolHandler extends IoHandlerAdapter {
 		case Session.STATE_CONNECTED:
 			while(in.remaining()>0){
 				log.debug("Remaining: "+in.remaining());
-				Packet packet = readPacket(session, in);
-				if(packet.full){
-					session.onPacket(packet);
+				
+				byte headerByte = in.get();
+				in.position(in.position()-1); // skip back 1 :)
+				byte kont = 0xC3 - 256;
+				
+				Channel channel;
+				Packet packet;
+				
+				if(headerByte == kont){
+					
+					log.debug("Continue");
+					channel = session.getLastReadChannel();
+					packet = channel.readPacket(in);
+					
+				} else {
+					
+					log.debug("New packet");
+					byte channelId = RTMPUtils.decodeChannelId(headerByte);
+					log.debug("Channel id: "+channelId);
+					
+					channel = session.getChannel(channelId);
+					
+					
+					
+					packet = channel.readPacket(in);
+					session.setLastReadChannel(channel);
+				
 				}
+				
+				if(packet.isSealed()){
+					session.onRecievePacket(packet);
+				}
+				
 			}
 			break;
 
@@ -95,86 +126,6 @@ public class ProtocolHandler extends IoHandlerAdapter {
 		//logBuffer("<< Server handshake", out);
 		session.getIoSession().write(out, null);
 
-	}
-
-	public Packet readPacket(Session session, ByteBuffer in) {
-		
-		log.debug("Read packet");
-		
-		byte header = in.get();
-		
-		Channel channel; 
-		
-		byte kont = 0xC3 - 256;
-		
-		log.debug("Header byte: "+HexDump.toHexString(header));
-		
-		if(header == kont){
-			
-			log.debug("Continue same channel");
-			channel = session.getLastChannel();
-			
-		} else {
-			
-			log.debug("New headers");
-			
-			byte headerSize = readHeaderSize(header);
-			byte channelId = readChannelId(header);
-			
-			log.debug("Channel Id: "+channelId);
-			
-			channel = session.getChannel(channelId);
-			if (headerSize < 3) // 3 bytes
-				channel.timer = readMediumInt(in);
-			if (headerSize <= 2) // 3 bytes
-				channel.size = readMediumInt(in);
-			if (headerSize <= 1) // 1 byte
-				channel.dataType = in.get();
-			if (headerSize == 0) // 4 bytes
-				in.get(channel.source);
-			
-			if(log.isDebugEnabled()){
-				log.debug("Header size: " + headerSize);
-				log.debug(channel);
-			}
-		
-		}
-		
-		Packet packet = channel.getPacket();
-		int maxChunkSize = (packet.dataType == Packet.TYPE_AUDIO) ? 64 : 128;
-		
-		log.debug("Put chunk max size: "+maxChunkSize);
-		packet.putChunk(in, maxChunkSize);
-		
-		// this basicaly resets the packet in the channel
-		if(packet.full) channel.clearPacket();
-		
-		return packet;
-	}
-
-	public int readMediumInt(ByteBuffer in) {
-		byte[] bytes = new byte[3];
-		in.get(bytes);
-		int val = 0;
-		val += bytes[0] * 256 * 256;
-		val += bytes[1] * 256;
-		val += bytes[2];
-		if (val < 0)
-			val += 256;
-		return val;
-	}
-
-	public byte readHeaderSize(byte header) {
-		return (byte) (header >> 2);
-	}
-
-	public byte readChannelId(byte header) {
-		return (byte) ((header << 2) >> 2);
-	}
-	
-	public void writePacket(Session session, Packet packet){
-		// write correct header
-		// write data in chunks (if needed)
 	}
 
 	public void logBuffer(String msg, ByteBuffer buf) {

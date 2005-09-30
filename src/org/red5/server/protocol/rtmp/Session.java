@@ -1,12 +1,16 @@
 package org.red5.server.protocol.rtmp;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.io.IoSession;
 import org.red5.server.io.Deserializer;
+import org.red5.server.io.Serializer;
 import org.red5.server.io.amf.Input;
+import org.red5.server.io.amf.Output;
 import org.red5.server.utils.HexDump;
 
 public class Session {
@@ -20,9 +24,12 @@ public class Session {
 	private byte state = STATE_UNKNOWN;
 	private IoSession io;
 	private ProtocolHandler handler;
+	
 	private int packetsRead = 0;
 	private int packetsWritten = 0;
-	private byte lastChannelId = -1;
+	
+	private Channel lastReadChannel = null;
+	private Channel lastWriteChannel = null;
 	
 	protected static Log log =
         LogFactory.getLog(Session.class.getName());
@@ -41,13 +48,28 @@ public class Session {
 
 	public Channel getChannel(byte channelId){
 		if(!isChannelUsed(channelId)) 
-			channels[channelId] = new Channel(channelId);
-		lastChannelId = channelId;
+			channels[channelId] = new Channel(this, channelId);
 		return channels[channelId];
 	}
 	
-	public Channel getLastChannel(){
-		return getChannel(lastChannelId);
+	public void closeChannel(byte channelId){
+		channels[channelId] = null;
+	}
+
+	public Channel getLastReadChannel() {
+		return lastReadChannel;
+	}
+
+	public void setLastReadChannel(Channel lastReadChannel) {
+		this.lastReadChannel = lastReadChannel;
+	}
+
+	public Channel getLastWriteChannel() {
+		return lastWriteChannel;
+	}
+
+	public void setLastWriteChannel(Channel lastWriteChannel) {
+		this.lastWriteChannel = lastWriteChannel;
 	}
 
 	public byte getState(){
@@ -62,7 +84,7 @@ public class Session {
 		state = STATE_CONNECTED;
 	}
 	
-	public void onPacket(Packet packet){
+	public void onRecievePacket(Packet packet){
 		
 		packetsRead++;
 		
@@ -70,7 +92,7 @@ public class Session {
 		
 		try { 
 		
-			switch(packet.dataType){
+			switch(packet.getDataType()){
 			case Packet.TYPE_FUNCTION_CALL:
 				onFunctionCallPacket(packet);
 				break;
@@ -93,7 +115,7 @@ public class Session {
 				onMisteryPacket(packet);
 				break;
 			default:
-				log.error("Unknown datatype: "+packet.dataType);
+				log.error("Unknown datatype: "+packet.getDataType());
 				break;
 			}
 		
@@ -102,7 +124,7 @@ public class Session {
 			// should we close connection here ?
 		} finally {
 			// destory the packet, releasing the internal buffer
-			packet.destory();
+			packet.release();
 		}
 	}
 	
@@ -115,6 +137,33 @@ public class Session {
 		log.debug("Action:" + action);
 		log.debug("Number: "+number.toString());
 		log.debug("Params: "+params);
+		
+		Channel channel = getChannel((byte)3); 
+		
+		Map status = new HashMap();
+		status.put("description","Connection succeeded.");
+		status.put("code","NetConnection.Connect.Success");
+		status.put("level","status");
+		
+		Serializer serializer = new Serializer();
+		ByteBuffer out = ByteBuffer.allocate(256);
+		out.setAutoExpand(true);
+		Output output = new Output(out);
+		serializer.serialize(output, "/result"); // seems right
+		serializer.serialize(output, number); // dont know what this number does, so im just sending it back
+		serializer.serialize(output, null);
+		serializer.serialize(output, status);
+		
+		out.flip();
+		log.debug(""+out.position());
+		
+		Packet response = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, 0);
+		
+		log.debug(response);
+		
+		channel.writePacket(response);
+		
+		//handler
 	}
 	
 	public void onAudioPacket(Packet packet){
@@ -146,7 +195,7 @@ public class Session {
 	// TODO: ADD OTHER PACKET TYPE YANNIK SPOKE ABOUT
 	
 	public void writePacket(Packet packet){
-		handler.writePacket(this, packet);
+		//handler.writePacket(this, packet);
 	}
 	
 	public void close(){
