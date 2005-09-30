@@ -11,7 +11,9 @@
 <property name="classes.dir" value="classes"/>
 <property name="debug.state" value="true"/>
 <property name="config.dir" value="conf"/>
-<property name="listenPort" value="7009"/>
+
+
+<!--  NOT CURRENTLY USED <property name="listenPort" value="7009"/>  !-->
 
 <path id="project.classpath">
 		<pathelement location="${lib.dir}/commons-logging.jar"/>
@@ -61,7 +63,7 @@
 
 <target name="server" depends="compile">
 	<java classname="org.red5.server.Server" fork="true">
-	<arg value="-p ${listenPort}"/>
+	<!-- NOT USED <arg value="-p ${listenPort}"/>-->
 		<classpath>
 				<pathelement location="${classes.dir}"/>
 				<path refid="project.classpath"/>
