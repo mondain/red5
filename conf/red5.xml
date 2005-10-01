@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Placeholder Config: loads a property file with config values -->
+	<bean id="placeholderConfig"
+      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	    <property name="location"><value>/conf/red5.properties</value></property>
+	</bean>
+	
+	<!-- Server: This is the core, call startup method to boot up -->
+	<bean id="server"
+      class="org.red5.server.Server"
+      init-method="startup"> 
+	    <property name="networkManager"><ref bean="networkManager" /></property>
+	    <property name="sessionRegistry"><ref bean="sessionRegistry" /></property>
+	    <property name="serviceContext"><ref bean="serviceContext" /></property>
+	</bean>
+	 
+	<!-- Network Manager, adds services to mina registry -->
+	<bean id="networkManager"
+		class="org.red5.server.net.NetworkManager">
+		<property name="serviceConfig">
+			<map> 
+				<entry key="rtmp"><map>
+					<entry key="port"><value>${rtmp.port}</value></entry>
+					<entry key="handler"><ref bean="rtmpHandler" /></entry>
+				</map></entry>
+				<!--
+				<entry key="remoting"><map>
+					<entry key="port"><value>${remoting.port}</value></entry>
+					<entry key="handler"><ref bean="remotingHandler" /></entry>
+				</map></entry>
+				-->
+			</map>
+		</property>
+	</bean> 
+	
+	<!-- RTMP Protcol Handler: handles the handshake, 
+	passes rtmp session and packet to session handler -->
+	<bean id="rtmpHandler"
+		class="org.red5.server.protocol.rtmp.NetworkHandler">
+		<property name="maxConnections"><value>${rtmp.max_connections}</value></property>
+		<property name="sessionHandler"><ref bean="rtmpSessionHandler" /></property>
+	</bean>
+
+	<!-- RTMP Session Hanlder: consumes packets and processes them -->
+	<bean id="rtmpSessionHandler"
+		class="org.red5.server.protocol.rtmp.SessionHandler">
+		<property name="sessionRegistry"><ref bean="sessionRegistry" /></property>
+		<property name="serializer"><ref bean="serializer" /></property>
+		<property name="deserializer"><ref bean="deserializer" /></property>
+		<property name="serviceInvoker"><ref bean="serviceInvoker" /></property>
+	</bean>
+
+	<!-- Service Invoker: invokes call object against child context -->
+	<bean id="serviceInvoker"
+		class="org.red5.server.service.ServiceInvoker">
+		<property name="serviceContext"><ref bean="serviceContext" /></property>
+	</bean>
+	
+	<!-- Session Registry: central location for client sessions -->
+	<bean id="sessionRegistry"
+		class="org.red5.server.SessionRegistry">
+	</bean>
+	
+	<!-- Serializer: serializer supporting general Output objects -->
+	<bean id="serializer"
+		class="org.red5.server.io.Serializer" />
+	
+	<!-- Deserializer: deserializer supporting general Input objects -->
+	<bean id="deserializer"
+		class="org.red5.server.io.Deserializer" />
+	
+	<!-- Service Context: context for exposed services, see service.xml --> 	
+	<bean id="serviceContext"
+		class="org.springframework.context.support.FileSystemXmlApplicationContext">
+        <constructor-arg><value>./conf/service.xml</value></constructor-arg>
+    </bean>
+	
+</beans>
