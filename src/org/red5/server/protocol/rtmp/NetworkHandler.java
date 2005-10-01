@@ -9,12 +9,16 @@ import org.apache.mina.io.IoSession;
 import org.apache.mina.io.socket.SocketSessionConfig;
 import org.red5.server.utils.HexDump;
 
-public class ProtocolHandler extends IoHandlerAdapter {
+public class NetworkHandler extends IoHandlerAdapter {
 
 	protected static Log log =
-        LogFactory.getLog(ProtocolHandler.class.getName());
-
-	public void sessionCreated(IoSession session) {
+        LogFactory.getLog(NetworkHandler.class.getName());
+	
+	// TODO: implement max connection code
+	protected int maxConnections = -1;
+	protected SessionHandler sessionHandler;
+	
+	public void sessionCreated(IoSession session){
 		SessionConfig cfg = session.getConfig();
 		if (cfg instanceof SocketSessionConfig) {
 			((SocketSessionConfig) cfg).setSessionReceiveBufferSize(2048);
@@ -27,7 +31,7 @@ public class ProtocolHandler extends IoHandlerAdapter {
 
 	public void dataRead(IoSession ioSession, ByteBuffer in) {
 		
-		log.debug(">>>>>>>>>>>\n"+HexDump.formatHexDump(in.getHexDump()));
+		log.debug(HexDump.formatHexDump(in.getHexDump()));
 		
 		Session session = (Session) ioSession.getAttachment();
 		if (session == null) {
@@ -81,7 +85,7 @@ public class ProtocolHandler extends IoHandlerAdapter {
 				}
 				
 				if(packet.isSealed()){
-					session.onRecievePacket(packet);
+					sessionHandler.onPacket(packet);
 				}
 				
 			}
@@ -135,5 +139,13 @@ public class ProtocolHandler extends IoHandlerAdapter {
 			log.debug(HexDump.formatHexDump(buf.getHexDump()));
 		}
 	}
+
+	public void setMaxConnections(int maxConnections) {
+		this.maxConnections = maxConnections;
+	}
+
+	public void setSessionHandler(SessionHandler sessionHandler) {
+		this.sessionHandler = sessionHandler;
+	}	
 
 }

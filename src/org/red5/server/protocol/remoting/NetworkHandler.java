@@ -5,11 +5,11 @@ import java.util.Map;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.server.protocol.http.BinaryRequestProtocolHandler;
 
-public class ProtocolHandler extends BinaryRequestProtocolHandler {
+public class NetworkHandler extends BinaryRequestProtocolHandler {
 
 	RemotingService remotingService;
 	
-	public ProtocolHandler(){
+	public NetworkHandler(){
 		super();
 		remotingService = new RemotingService();
 	}

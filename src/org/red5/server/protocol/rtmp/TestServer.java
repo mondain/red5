@@ -12,7 +12,7 @@ public class TestServer {
 	private static int PORT = 1935; // default port
 
 	protected static Log log =
-        LogFactory.getLog(ProtocolHandler.class.getName());
+        LogFactory.getLog(NetworkHandler.class.getName());
 	
 	public static void main(String[] args) throws Exception 
 	{
@@ -37,7 +37,7 @@ public class TestServer {
 		try
 		{
 			Service service = new Service("rtmp", TransportType.SOCKET, PORT);
-			registry.bind(service, new ProtocolHandler());
+			registry.bind(service, new NetworkHandler());
 			log.info("RED5 Listening on port " + PORT);
 		}
 		catch (Exception e)

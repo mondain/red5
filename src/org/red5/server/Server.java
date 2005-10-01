@@ -10,42 +10,81 @@ package org.red5.server;
  * @author Luke Hubbard (luke@red5.org)
  */
 
-import org.apache.mina.common.TransportType;
-import org.apache.mina.io.IoAcceptor;
-import org.apache.mina.registry.Service;
-import org.apache.mina.registry.ServiceRegistry;
-import org.apache.mina.registry.SimpleServiceRegistry;
-import org.red5.server.net.IoLoggingFilter;
-import org.red5.server.protocol.rtmp.ProtocolHandler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.red5.server.net.NetworkManager;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class Server {
-
+	
+	/*
 	private static final int RTMP_PORT = 1935;
 
 	private static final int HTTP_PORT = 8005;
+	*/
+	protected static Log log =
+        LogFactory.getLog(Server.class.getName());
+	
+	protected static String red5ConfigPath = "./conf/red5.xml";
 
-	public static void main(String[] args) throws Exception {
-		ServiceRegistry registry = new SimpleServiceRegistry();
-		// addLogger( registry );
-
-		// Bind
-		Service rtmpService = new Service("rtmp", TransportType.SOCKET,
-				RTMP_PORT);
-		registry.bind(rtmpService, new ProtocolHandler());
-
-		Service remotingService = new Service("remoting", TransportType.SOCKET,
-				HTTP_PORT);
-		registry.bind(remotingService,
-				new org.red5.server.protocol.remoting.ProtocolHandler());
-
-		System.out.println("Listening on rtmp port " + RTMP_PORT);
-		System.out.println("Listening on http port " + HTTP_PORT);
+	protected NetworkManager networkManager;
+	protected SessionRegistry sessionRegistry;
+	protected ApplicationContext serviceContext;
+	
+	public void startup(){
+		if(log.isInfoEnabled()){
+			log.info("Startup");
+			networkManager.up();
+		}
 	}
 
+	public static void main(String[] args) throws Exception {
+		
+		if(log.isInfoEnabled()){ 
+			log.info("RED5 Server (http://www.osflash.org/red5)");
+			log.info("Loading Spring Application Context: "+red5ConfigPath);
+		}
+		
+		FileSystemXmlApplicationContext appCtx = new FileSystemXmlApplicationContext(red5ConfigPath);
+
+	}
+
+	public NetworkManager getNetworkManager() {
+		return networkManager;
+	}
+
+
+
+	public void setNetworkManager(NetworkManager networkManager) {
+		this.networkManager = networkManager;
+	}
+
+
+
+	public ApplicationContext getServiceContext() {
+		return serviceContext;
+	}
+
+
+
+	public void setServiceContext(ApplicationContext serviceContext) {
+		this.serviceContext = serviceContext;
+	}
+
+	public SessionRegistry getSessionRegistry() {
+		return sessionRegistry;
+	}
+
+	public void setSessionRegistry(SessionRegistry sessionRegistry) {
+		this.sessionRegistry = sessionRegistry;
+	}
+	
+	/*
 	private static void addLogger(ServiceRegistry registry) {
 		IoAcceptor acceptor = registry.getIoAcceptor(TransportType.SOCKET);
 		acceptor.getFilterChain().addLast("logger", new IoLoggingFilter());
 		System.out.println("Logging ON");
 	}
-
+	*/
 }

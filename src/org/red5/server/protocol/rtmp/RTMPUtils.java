@@ -42,8 +42,16 @@ public class RTMPUtils {
 		return (byte) (((byte)(header << 2)) >>> 2) ;
 	}
 
+	/*
 	public static byte decodeHeaderSize(byte header) {
 		byte size = (byte) (header >> 6);
+		return size;
+	}
+	*/
+	
+	public static byte decodeHeaderSize(byte header) {
+		int headerInt = (header>=0) ? header : header+256;
+		byte size = (byte) (headerInt >> 6);
 		return size;
 	}
 

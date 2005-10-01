@@ -14,10 +14,10 @@ public class ServiceInvoker {
 
 	private static final Log log = LogFactory.getLog(RemotingService.class);
 	
-	protected ApplicationContext appCtx = null;
+	protected ApplicationContext serviceContext = null;
 	
-	public void setApplicationContext(ApplicationContext appCtx){
-		this.appCtx = appCtx;
+	public void setServiceContext(ApplicationContext serviceContext){
+		this.serviceContext = serviceContext;
 	}
 	
 	public void invoke(Call call) {
@@ -26,8 +26,8 @@ public class ServiceInvoker {
 		Object service = null;
 	
 		
-		if(appCtx.containsBean(serviceName)){
-			service = appCtx.getBean(serviceName);
+		if(serviceContext.containsBean(serviceName)){
+			service = serviceContext.getBean(serviceName);
 		} 
 		
 		if(service == null) {

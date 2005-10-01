@@ -23,7 +23,7 @@ public class Session {
 
 	private byte state = STATE_UNKNOWN;
 	private IoSession io;
-	private ProtocolHandler handler;
+	private NetworkHandler handler;
 	
 	private int packetsRead = 0;
 	private int packetsWritten = 0;
@@ -34,7 +34,7 @@ public class Session {
 	protected static Log log =
         LogFactory.getLog(Session.class.getName());
 
-	public Session(IoSession ioSession, ProtocolHandler protocolHandler){
+	public Session(IoSession ioSession, NetworkHandler protocolHandler){
 		state = STATE_CONNECT;
 		io = ioSession;
 		handler = protocolHandler;
@@ -84,113 +84,7 @@ public class Session {
 		state = STATE_CONNECTED;
 	}
 	
-	public void onRecievePacket(Packet packet){
-		
-		packetsRead++;
-		
-		log.debug(HexDump.formatHexDump(packet.getData().getHexDump()));
-		
-		try { 
-		
-			switch(packet.getDataType()){
-			case Packet.TYPE_FUNCTION_CALL:
-				onFunctionCallPacket(packet);
-				break;
-			case Packet.TYPE_VIDEO:
-				onVideoPacket(packet);
-				break;
-			case Packet.TYPE_AUDIO:
-				onAudioPacket(packet);
-				break;
-			case Packet.TYPE_CLIENT_BANDWIDTH:
-				onClientBandwidthPacket(packet);
-				break;
-			case Packet.TYPE_SERVER_BANDWIDTH:
-				onServerBandwidthPacket(packet);
-				break;
-			case Packet.TYPE_PING:
-				onPingPacket(packet);
-				break;
-			case Packet.TYPE_MISTERY:
-				onMisteryPacket(packet);
-				break;
-			default:
-				log.error("Unknown datatype: "+packet.getDataType());
-				break;
-			}
-		
-		} catch (Exception ex){
-			log.error("Error handling packet", ex);
-			// should we close connection here ?
-		} finally {
-			// destory the packet, releasing the internal buffer
-			packet.release();
-		}
-	}
 	
-	public void onFunctionCallPacket(Packet packet){
-		Deserializer deserializer = new Deserializer();
-		Input input = new Input(packet.getData());
-		String action = (String) deserializer.deserialize(input);
-		Number number = (Number) deserializer.deserialize(input);
-		Map params = (Map) deserializer.deserialize(input);
-		log.debug("Action:" + action);
-		log.debug("Number: "+number.toString());
-		log.debug("Params: "+params);
-		
-		Channel channel = getChannel((byte)3); 
-		
-		Map status = new HashMap();
-		status.put("description","Connection succeeded.");
-		status.put("code","NetConnection.Connect.Success");
-		status.put("level","status");
-		
-		Serializer serializer = new Serializer();
-		ByteBuffer out = ByteBuffer.allocate(256);
-		out.setAutoExpand(true);
-		Output output = new Output(out);
-		serializer.serialize(output, "/result"); // seems right
-		serializer.serialize(output, number); // dont know what this number does, so im just sending it back
-		serializer.serialize(output, null);
-		serializer.serialize(output, status);
-		
-		out.flip();
-		log.debug(""+out.position());
-		
-		Packet response = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, 0);
-		
-		log.debug(response);
-		
-		channel.writePacket(response);
-		
-		//handler
-	}
-	
-	public void onAudioPacket(Packet packet){
-		// what to do with audio
-		// write it to a file (see it its an mp3) ? 
-		// send it back ?
-	}
-	
-	public void onVideoPacket(Packet packet){
-		// what to do with video
-	}
-	
-	public void onClientBandwidthPacket(Packet packet){
-		
-	}
-	
-	public void onServerBandwidthPacket(Packet packet){
-		
-	}
-
-	public void onPingPacket(Packet packet){
-	
-	}
-
-	public void onMisteryPacket(Packet packet){
-	
-	}
 	
 	// TODO: ADD OTHER PACKET TYPE YANNIK SPOKE ABOUT
 	
