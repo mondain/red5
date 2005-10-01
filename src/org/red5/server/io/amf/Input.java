@@ -51,11 +51,12 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 				break;
 				
 			case AMF.TYPE_CLASS_OBJECT:
-			case AMF.TYPE_MIXED_ARRAY:
+			
 			case AMF.TYPE_OBJECT:
 				coreType = DataTypes.CORE_OBJECT;
 				break;
-				
+			
+			case AMF.TYPE_MIXED_ARRAY:
 			case AMF.TYPE_ARRAY:
 				coreType = DataTypes.CORE_ARRAY;
 				break;

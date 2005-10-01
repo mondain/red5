@@ -19,6 +19,8 @@ public class Packet {
 	
 	// somthing to do with shared object
 	public static final byte TYPE_SHARED_OBJECT = 0x13;
+	public static final byte TYPE_SHARED_OBJECT_CONNECT = 0x19;
+	
 		
 	protected static Log log =
         LogFactory.getLog(Packet.class.getName());
