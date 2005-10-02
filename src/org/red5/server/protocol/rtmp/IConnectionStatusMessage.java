@@ -45,7 +45,7 @@ public interface IConnectionStatusMessage {
 	// REJECTED
 	public static final String REJECTED_CODE = "NetConnection.Connect.Rejected";
 	public static final String REJECTED_LEVEL = "Error";
-	public static final String REJECTED_DESCTIPTION = "The client does not have permission to connect to the application, or the application expected different parameters from those that were passed.";
+	public static final String REJECTED_DESCRIPTION = "The client does not have permission to connect to the application, or the application expected different parameters from those that were passed.";
 	
 	// SUCCESS
 	public static final String SUCCESS_CODE = "NetConnection.Connect.Success";
