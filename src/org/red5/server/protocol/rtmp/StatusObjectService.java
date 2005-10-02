@@ -51,6 +51,18 @@ public class StatusObjectService {
 		
 	}
 	
+	public StatusObject getStatusObject(String statusCode){
+		return null;
+	}
+	
+	public StatusObject getStatusObject(String statusCode, String message){
+		return null;
+	}
+	
+	public StatusObject getStatusObject(String statusCode, Throwable ex){
+		return null;
+	}
+	
 	public StatusObject getStatusObject(String statusCode, String message, Throwable ex){
 		return null;
 	}
