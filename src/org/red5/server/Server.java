@@ -14,20 +14,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.red5.server.net.NetworkManager;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class Server {
 	
 	/*
 	private static final int RTMP_PORT = 1935;
-
 	private static final int HTTP_PORT = 8005;
 	*/
+	
 	protected static Log log =
         LogFactory.getLog(Server.class.getName());
 	
-	protected static String red5ConfigPath = "./conf/red5.xml";
-
 	protected NetworkManager networkManager;
 	protected SessionRegistry sessionRegistry;
 	protected ApplicationContext serviceContext;
@@ -39,16 +36,7 @@ public class Server {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-		
-		if(log.isInfoEnabled()){ 
-			log.info("RED5 Server (http://www.osflash.org/red5)");
-			log.info("Loading Spring Application Context: "+red5ConfigPath);
-		}
-		
-		FileSystemXmlApplicationContext appCtx = new FileSystemXmlApplicationContext(red5ConfigPath);
-
-	}
+	
 
 	public NetworkManager getNetworkManager() {
 		return networkManager;
