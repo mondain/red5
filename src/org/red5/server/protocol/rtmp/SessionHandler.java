@@ -175,11 +175,13 @@ public class SessionHandler {
 	private void onConnect(Packet packet, int num, Map params) {
 		// TODO Auto-generated method stub
 
-		
-		Map status = new HashMap();
+		ConnectionStatus cs = new ConnectionStatus();
+		Map status = cs.getStatus("success");
+		/*
 		status.put("description","Connection succeeded.");
 		status.put("code","NetConnection.Connect.Success");
 		status.put("level","status");
+		*/
 		
 		Serializer serializer = new Serializer();
 		ByteBuffer out = ByteBuffer.allocate(256);
