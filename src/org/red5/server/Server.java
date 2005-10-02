@@ -4,7 +4,7 @@ package org.red5.server;
  * RED5 Open Source Flash Server 
  * http://www.osflash.org/red5
  * 
- * Copyright © 2006 by respective authors. All rights reserved.
+ * Copyright ï¿½ 2006 by respective authors. All rights reserved.
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard (luke@red5.org)
@@ -21,7 +21,11 @@ public class Server {
 	private static final int RTMP_PORT = 1935;
 	private static final int HTTP_PORT = 8005;
 	*/
-	
+    
+	/*commit by kevin
+    why dont have main methods? 
+	 */
+    
 	protected static Log log =
         LogFactory.getLog(Server.class.getName());
 	
