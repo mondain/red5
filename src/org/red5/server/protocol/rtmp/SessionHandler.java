@@ -164,6 +164,8 @@ public class SessionHandler {
 	private void echoIt(Packet packet) {
 		// TODO Auto-generated method stub
 		
+		
+		
 		Packet response = new Packet(packet.getData(), 0, Packet.TYPE_FUNCTION_CALL, 0);
 		
 		packet.getSourceChannel().writePacket(response);
