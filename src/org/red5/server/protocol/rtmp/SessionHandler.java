@@ -176,7 +176,7 @@ public class SessionHandler {
 		// TODO Auto-generated method stub
 
 		ConnectionStatus cs = new ConnectionStatus();
-		Map status = cs.getStatus("success");
+		Map status = cs.getStatus("SUCCESS");
 		/*
 		status.put("description","Connection succeeded.");
 		status.put("code","NetConnection.Connect.Success");
