@@ -23,6 +23,7 @@ public class SessionHandler {
 	protected Deserializer deserializer;
 	protected SessionRegistry sessionRegistry;
 	protected ServiceInvoker serviceInvoker;
+	protected ConnectionStatus connectionStatus;
 	
 	public void handlePacket(Session session, Packet packet){
 		
@@ -42,6 +43,10 @@ public class SessionHandler {
 
 	public void setSessionRegistry(SessionRegistry sessionRegistry) {
 		this.sessionRegistry = sessionRegistry;
+	}
+	
+	public void setConnectionStatus(ConnectionStatus connectionStatus) {
+		this.connectionStatus = connectionStatus;
 	}
 	
 	public void onPacket(Packet packet){
@@ -175,14 +180,8 @@ public class SessionHandler {
 	private void onConnect(Packet packet, int num, Map params) {
 		// TODO Auto-generated method stub
 
-		ConnectionStatus cs = new ConnectionStatus();
-		Map status = cs.getStatus("SUCCESS");
-		/*
-		status.put("description","Connection succeeded.");
-		status.put("code","NetConnection.Connect.Success");
-		status.put("level","status");
-		*/
-		
+		Map status = connectionStatus.getStatus("SUCCESS");
+	
 		Serializer serializer = new Serializer();
 		ByteBuffer out = ByteBuffer.allocate(256);
 		out.setAutoExpand(true);
