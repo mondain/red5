@@ -14,6 +14,17 @@ import org.red5.server.io.amf.Output;
 import org.red5.server.service.ServiceInvoker;
 import org.red5.server.utils.HexDump;
 
+/*
+ * RED5 Open Source Flash Server 
+ * http://www.osflash.org/red5
+ * 
+ * Copyright � 2006 by respective authors. All rights reserved.
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard (luke@red5.org)
+ * @author Dominick Accattato (daccattato@gmail.com)
+ */
+
 public class SessionHandler {
 	
 	protected static Log log =
@@ -23,7 +34,7 @@ public class SessionHandler {
 	protected Deserializer deserializer;
 	protected SessionRegistry sessionRegistry;
 	protected ServiceInvoker serviceInvoker;
-	protected ConnectionStatus connectionStatus;
+	protected StatusService statusService;
 	
 	public void handlePacket(Session session, Packet packet){
 		
@@ -43,10 +54,6 @@ public class SessionHandler {
 
 	public void setSessionRegistry(SessionRegistry sessionRegistry) {
 		this.sessionRegistry = sessionRegistry;
-	}
-	
-	public void setConnectionStatus(ConnectionStatus connectionStatus) {
-		this.connectionStatus = connectionStatus;
 	}
 	
 	public void onPacket(Packet packet){
@@ -180,8 +187,6 @@ public class SessionHandler {
 	private void onConnect(Packet packet, int num, Map params) {
 		// TODO Auto-generated method stub
 
-		Map status = connectionStatus.getStatus("SUCCESS");
-	
 		Serializer serializer = new Serializer();
 		ByteBuffer out = ByteBuffer.allocate(256);
 		out.setAutoExpand(true);
@@ -189,7 +194,7 @@ public class SessionHandler {
 		serializer.serialize(output, "/result"); // seems right
 		serializer.serialize(output, new Integer(num)); // dont know what this number does, so im just sending it back
 		serializer.serialize(output, null);
-		serializer.serialize(output, status);
+		out.put(statusService.getStatus("SUCCESS"));
 		
 		out.flip();
 		log.debug(""+out.position());
@@ -225,6 +230,10 @@ public class SessionHandler {
 
 	public void onMisteryPacket(Packet packet){
 	
+	}
+
+	public void setStatusService(StatusService statusService) {
+		this.statusService = statusService;
 	}
 	
 }

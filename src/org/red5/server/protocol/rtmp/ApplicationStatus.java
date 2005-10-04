@@ -3,6 +3,16 @@ package org.red5.server.protocol.rtmp;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * RED5 Open Source Flash Server 
+ * http://www.osflash.org/red5
+ * 
+ * Copyright � 2006 by respective authors. All rights reserved.
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Dominick Accattato (daccattato@gmail.com)
+ */
+
 public class ApplicationStatus {
 	private static Map SCRIPT_ERROR;
 	private static Map SCRIPT_WARNING;

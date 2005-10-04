@@ -9,6 +9,7 @@ package org.red5.server.protocol.rtmp;
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (dominick@red5.org)
  */
+
 public interface IConnectionStatusMessage {
 
 	// CALL FAILED
