@@ -10,7 +10,7 @@ import java.util.Map;
  * Copyright � 2006 by respective authors. All rights reserved.
  * 
  * @author The Red5 Project (red5@osflash.org)
- * @author Dominick Accattato (dominick@red5.org)
+ * @author Dominick Accattato (daccattato@gmail.com)
  */
 public class ConnectionStatus {
 
