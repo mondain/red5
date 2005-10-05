@@ -26,6 +26,11 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 	}
 
 	public byte readDataType() {
+		
+		if(buf==null){
+			log.error("Why is buf null?");
+		}
+		
 		currentDataType = buf.get();
 		
 		byte coreType;

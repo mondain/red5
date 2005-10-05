@@ -12,7 +12,7 @@ import com.sun.tools.example.debug.bdi.MethodNotFoundException;
 
 public class ServiceInvoker {
 
-	private static final Log log = LogFactory.getLog(RemotingService.class);
+	private static final Log log = LogFactory.getLog(ServiceInvoker.class);
 	
 	protected ApplicationContext serviceContext = null;
 	
