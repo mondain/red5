@@ -106,7 +106,7 @@ public class Channel {
 			
 		case HEADER_CONTINUE:
 			log.debug("3: Continue, no change");
-			newPacket = false;
+			newPacket = (lastReadPacket != null && lastReadPacket.isSealed());
 			break;
 			
 		default:
@@ -118,7 +118,8 @@ public class Channel {
 		packet = (newPacket) ? 
 				new Packet(this,timer,size,dataType,source) :
 				lastReadPacket;
-		
+
+				
 		if(all){
 			while(packet.readChunkFrom(in));
 		} else {
