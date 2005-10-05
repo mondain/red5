@@ -59,18 +59,42 @@
 	
 	<!-- Serializer: serializer supporting general Output objects -->
 	<bean id="serializer" class="org.red5.server.io.Serializer" />
-	
+
 	<!-- Deserializer: deserializer supporting general Input objects -->
 	<bean id="deserializer" class="org.red5.server.io.Deserializer" />
-	
+
 	<!-- Service Context: context for exposed services, see service.xml --> 	
 	<bean id="serviceContext" class="org.springframework.context.support.FileSystemXmlApplicationContext">
         <constructor-arg><value>./conf/service.xml</value></constructor-arg>
     </bean>
     
-    <!-- Connection Status: returns connection related Status objects --> 	
-	<bean id="statusService" class="org.red5.server.protocol.rtmp.status.StatusService" init-method="cache">
-		<property name="serializer"><ref bean="serializer" /></property>
+
+    <!-- Start of Status Messages -->
+     <!-- Status Service: caches status objects and returns a ByteBuffer --> 
+    <bean id="statusService"
+    	class="org.red5.server.protocol.rtmp.status.StatusService"
+    	init-method="cache" singleton="true">
+    	<property name="serializer">
+    		<ref bean="serializer" />
+    	</property>
+    	<property name="connectionStatus">
+    		<ref bean="connectionStatus" />
+    	</property>
+    	<property name="applicationStatus">
+    		<ref bean="applicationStatus" />
+    	</property>
     </bean>
+    
+    <!-- Application Status: returns application related Status objects --> 	
+	 
+	<bean id="applicationStatus"
+		class="org.red5.server.protocol.rtmp.status.ApplicationStatus">
+    </bean>
+    
+    <bean id="connectionStatus"
+		class="org.red5.server.protocol.rtmp.status.ConnectionStatus">
+    </bean>
+   
+    <!-- End of Status Messages -->	
 	
 </beans>
