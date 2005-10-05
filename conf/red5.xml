@@ -51,7 +51,7 @@
 		<property name="serializer"><ref bean="serializer" /></property>
 		<property name="deserializer"><ref bean="deserializer" /></property>
 		<property name="serviceInvoker"><ref bean="serviceInvoker" /></property>
-		<property name="connectionStatus"><ref bean="connectionStatus" /></property>
+		<property name="statusService"><ref bean="statusService" /></property>
 	</bean>
 
 	<!-- Service Invoker: invokes call object against child context -->
@@ -80,8 +80,10 @@
     </bean>
     
     <!-- Connection Status: returns connection related Status objects --> 	
-	<bean id="connectionStatus"
-		class="org.red5.server.protocol.rtmp.ConnectionStatus">
+	<bean id="statusService"
+		class="org.red5.server.protocol.rtmp.status.StatusService"
+		init-method="cache">
+		<property name="serializer"><ref bean="serializer" /></property>
     </bean>
 	
 </beans>
