@@ -1,4 +1,4 @@
-package org.red5.server.protocol.rtmp;
+package org.red5.server.protocol.rtmp.status;
 
 import java.util.HashMap;
 import java.util.Map;

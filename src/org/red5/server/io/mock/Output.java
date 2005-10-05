@@ -38,11 +38,20 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 	public void markEndObject(){
 		list.add(new Byte(Mock.TYPE_END_OF_OBJECT));
 	}
+	
+	public void markEndList(){
+		list.add(new Byte(Mock.TYPE_END_OF_LIST));
+	}
 
 	// DONE
 	public void markPropertySeparator() {
 		log.info("PROPERTY SEPARATOR");
 		list.add(new Byte(Mock.TYPE_PROPERTY_SEPARATOR));
+	}
+	
+	public void markItemSeparator() {
+		log.info("ITEM SEPARATOR");
+		list.add(new Byte(Mock.TYPE_ITEM_SEPARATOR));
 	}
 
 	public boolean supportsDataType(byte type) {
@@ -79,6 +88,10 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 	public void writePropertyName(String name) {
 		list.add(name);
 	}
+	
+	public void writeItemIndex(int index) {
+		list.add(new Integer(index));
+	}
 
 	public void writeReference(Object obj) {
 		list.add(new Byte(DataTypes.OPT_REFERENCE));
@@ -88,6 +101,11 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 	public void writeStartArray(int length) {
 		list.add(new Byte(DataTypes.CORE_ARRAY));
 		list.add(new Integer(length));
+	}
+	
+	public void writeStartList(int highestIndex) {
+		list.add(new Byte(DataTypes.CORE_LIST));
+		list.add(new Integer(highestIndex));
 	}
 
 	public void writeStartObject(String className) {

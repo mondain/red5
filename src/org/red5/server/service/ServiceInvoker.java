@@ -21,8 +21,14 @@ public class ServiceInvoker {
 	}
 	
 	public void invoke(Call call) {
-			
+		
+		
+		
 		String serviceName = call.getServiceName();
+		
+		log.debug("Service name " + serviceName);
+		log.debug("Service method " + call.getServiceMethodName());
+		
 		Object service = null;
 	
 		
@@ -42,8 +48,8 @@ public class ServiceInvoker {
 		boolean foundMethod = false;
 		Exception exception = null; 
 		
+		// First lets try the params we have
 		try{
-			
 			methodInvoker.setArguments(call.getArguments());
 			methodInvoker.prepare();
 		
@@ -52,7 +58,7 @@ public class ServiceInvoker {
 		} 
 		
 		if(!foundMethod){
-			// look for a method which takes an array
+			// look for a method which takes an array as the only param
 			methodInvoker.setArguments(new Object[]{call.getArguments()});
 			try{
 				methodInvoker.prepare();
@@ -88,13 +94,9 @@ public class ServiceInvoker {
 				call.setException(exception);
 				call.setStatus(Call.STATUS_GENERAL_EXCEPTION);
 			}
-
 			
 		}
 	
 	}
-	
-	
 
-	
 }

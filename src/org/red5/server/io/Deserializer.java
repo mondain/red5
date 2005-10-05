@@ -1,7 +1,9 @@
 package org.red5.server.io;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -45,6 +47,9 @@ public class Deserializer {
 			case DataTypes.CORE_ARRAY:
 				result = readArray(in);
 				break;
+			case DataTypes.CORE_LIST:
+				result = readList(in);
+				break;
 			case DataTypes.CORE_XML:
 				result = readXML(in);
 				break;
@@ -77,6 +82,32 @@ public class Deserializer {
 		}
 		in.skipEndArray();
  		return array;
+	}
+	
+	protected List readList(Input in){
+		log.debug("read list");
+		
+		int highestIndex = in.readStartList();
+		
+		log.debug("Read start list: "+highestIndex);
+		
+		List list = new ArrayList(highestIndex);
+		for(int i=0; i<highestIndex; i++){
+			list.add(i, null); // fill with null
+		}
+			
+		in.storeReference(list);
+		while(in.hasMoreItems()){
+			int index = in.readItemIndex();
+			log.debug("index: "+index);
+			Object item = deserialize(in);
+			log.debug("item: "+item);
+			list.set(index, item);
+			if(in.hasMoreItems()) 
+				in.skipItemSeparator();
+		}
+		in.skipEndList();
+		return list;
 	}
 	
 	protected Object readXML(Input in){

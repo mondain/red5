@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +16,8 @@ import org.apache.commons.logging.LogFactory;
 import org.red5.server.utils.XMLUtils;
 import org.springframework.beans.BeanUtils;
 import org.w3c.dom.Document;
+
+import com.sun.rsasign.o;
 
 public class Serializer {
 
@@ -62,21 +65,43 @@ public class Serializer {
 	// Complex
 	public boolean writeComplex(Output out, Object complex){
 		log.debug("writeComplex");
-		if(writeArrayType(out,complex)) return true;
+		if(writeListType(out,complex)) return true;
+		else if(writeArrayType(out,complex)) return true;
 		else if(writeXMLType(out,complex)) return true;
 		else if(writeCustomType(out, complex)) return true;
 		else if(writeObjectType(out,complex)) return true;
 		else return false;
 	}
 	
+//	 Arrays, Collections, etc
+	protected boolean writeListType(Output out, Object listType){
+		log.debug("writeListType");
+		if(listType instanceof List) {
+			writeList(out, (List) listType);
+		} else return false;
+		return true;
+	}
+	
+	protected void writeList(Output out, List list){
+		int size = list.size();
+		out.writeStartList(size);
+		for(int i=0; i<size; i++){
+			Object item = list.get(i);
+			if(item!=null){
+				out.writeItemIndex(i);
+				serialize(out, item);
+				out.markItemSeparator();
+			}
+		}
+		out.markEndList();
+	}
+	
 	// Arrays, Collections, etc
 	protected boolean writeArrayType(Output out, Object arrType){
 		log.debug("writeArrayType");
 		if(arrType instanceof Collection) {
-			
 			writeCollection(out, (Collection) arrType);
 		} else if(arrType instanceof Iterator) {
-			
 			writeIterator(out, (Iterator) arrType);
 		// Need a replacement here. Perhaps copy from spring BeanUtils to util class
 		} else if(BeanUtils.isPrimitiveArray(arrType.getClass())) {
