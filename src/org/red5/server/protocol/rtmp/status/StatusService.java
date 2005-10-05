@@ -1,4 +1,4 @@
-package org.red5.server.protocol.rtmp;
+package org.red5.server.protocol.rtmp.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,7 +19,7 @@ import org.red5.server.io.amf.Output;
 public class StatusService {
 	
 	protected static Log log =
-        LogFactory.getLog(Server.class.getName());
+        LogFactory.getLog(StatusService.class.getName());
 	
 	protected Serializer serializer;
 	protected ConnectionStatus connectionStatus;
@@ -41,6 +41,9 @@ public class StatusService {
 	public StatusService() {
 		//TODO nada
 		//cache();
+		// NOTE: No need to set via injection
+		connectionStatus = new ConnectionStatus();
+		applicationStatus = new ApplicationStatus();
 	}
 	
 	public void cache() {
@@ -68,6 +71,7 @@ public class StatusService {
 		log.info("serializer: " + serializer);
 		serializer.serialize(output, connectionStatus.getStatus("SUCCESS"));
 		success.flip();
+		success.acquire(); // dont want it reused, need to add to others
 		
 		callFailed = ByteBuffer.allocate(256);
 		callFailed.setAutoExpand(true);

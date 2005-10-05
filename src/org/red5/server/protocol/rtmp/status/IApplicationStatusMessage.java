@@ -1,4 +1,4 @@
-package org.red5.server.protocol.rtmp;
+package org.red5.server.protocol.rtmp.status;
 
 /*
  * RED5 Open Source Flash Server 

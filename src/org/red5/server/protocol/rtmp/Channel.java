@@ -3,12 +3,18 @@ package org.red5.server.protocol.rtmp;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
+import org.red5.server.utils.BufferLogUtils;
 import org.red5.server.utils.HexDump;
 
 public class Channel {
 
 	protected static Log log =
         LogFactory.getLog(Channel.class.getName());
+	
+	public static final byte HEADER_NEW = 0x00;
+	public static final byte HEADER_SAME_SOURCE = 0x01;
+	public static final byte HEADER_TIMER_CHANGE = 0x02;
+	public static final byte HEADER_CONTINUE = 0x03;
 	
 	private byte id;
 
@@ -56,10 +62,13 @@ public class Channel {
 	
 	protected Packet readPacket(ByteBuffer in, boolean all){
 		
+		log.debug("Position: "+in.position());
+		
 		byte headerByte = in.get();
 		byte headerSize = (byte) RTMPUtils.decodeHeaderSize(headerByte);
 		
 		// This is likely to be wrong
+		/* and it was :)
 		byte kont = 0xC3 - 256;
 		
 		if(headerByte == kont && !lastReadPacket.isSealed()){
@@ -67,40 +76,48 @@ public class Channel {
 			lastReadPacket.readChunkFrom(in);
 			return lastReadPacket;
 		}
+		*/
 		
 		Packet packet = null;
 		
-		log.debug(">> Header size: "+headerSize);
+		boolean newPacket = true;
 
 		switch(headerSize){
-		case 0:
-			log.debug("Full headers");
+		
+		case HEADER_NEW:
+			log.debug("0: Full headers");
 			timer = RTMPUtils.readMediumInt(in);
 			size = RTMPUtils.readMediumInt(in);
 			dataType = in.get();
 			source = in.getInt();
 			break;
 			
-		case 1:
-			log.debug("Source the same");
+		case HEADER_SAME_SOURCE:
+			log.debug("1: Same source as last time");
 			timer = RTMPUtils.readMediumInt(in);
 			size = RTMPUtils.readMediumInt(in);
 			dataType = in.get();
 			break;
 			
-		case 2:
-			log.debug("Only timer change");
+		case HEADER_TIMER_CHANGE:
+			log.debug("2: Only the timer changed");
 			timer = RTMPUtils.readMediumInt(in);
 			break;
 			
-		case 3:
-			log.debug("Same as last");
+		case HEADER_CONTINUE:
+			log.debug("3: Continue, no change");
+			newPacket = false;
+			break;
+			
+		default:
+			log.error("Unexpected header size: "+headerSize);
 			break;
 		
 		}
 		
-		
-		packet = new Packet(this,timer,size,dataType,source);
+		packet = (newPacket) ? 
+				new Packet(this,timer,size,dataType,source) :
+				lastReadPacket;
 		
 		if(all){
 			while(packet.readChunkFrom(in));
@@ -126,14 +143,16 @@ public class Channel {
 		
 		// write header size
 		// write channel id
-		byte headerSize = 0x00;
-		headers.put(RTMPUtils.encodeHeaderByte(headerSize, id));
+		
+		byte headerByte = RTMPUtils.encodeHeaderByte(HEADER_NEW, id);
+		
+		headers.put(headerByte);
 		
 		// write timer
 		RTMPUtils.writeMediumInt(headers, packet.getTimer());
-	
+		
+		log.debug("Packet size: "+packet.getSize());
 		// write size
-		log.debug("Size: "+packet.getSize());
 		RTMPUtils.writeMediumInt(headers, packet.getSize());
 		
 		// write datatype
@@ -144,6 +163,7 @@ public class Channel {
 		
 		// write all the chunks.. oh.. chunky!
 		ByteBuffer out = ByteBuffer.allocate(2048);
+		out.setAutoExpand(true);
 		
 		session.setLastWriteChannel(this);
 		//session.getIoSession().write(headers,null);
@@ -154,16 +174,13 @@ public class Channel {
 		log.debug("Num chunks: "+numChunks);
 		if(numChunks > 1){
 			log.debug("Writing "+numChunks+" chunks");
-			ByteBuffer chunk = packet.getChunk(0);
-			ByteBuffer kont = ByteBuffer.wrap(new byte[]{0xC3 - 256});
-			session.getIoSession().write(chunk,null);
-			for(int i=1; i<numChunks && (chunk = packet.getChunk(i)) != null; i++){
-				// write the continuation byte
-				//session.getIoSession().write(kont,null);
-				out.put(kont);
-				// and the chunk
-				//session.getIoSession().write(chunk,null);
+			ByteBuffer chunk; // = packet.getChunk(0);
+			//session.getIoSession().write(chunk,null);
+			for(int i=0; i<=numChunks && (chunk = packet.getChunk(i)) != null; i++){
+				log.debug("Continue writing");
+				if(i>0) out.put(RTMPUtils.encodeHeaderByte(HEADER_CONTINUE, id));
 				out.put(chunk);
+				
 			}
 		} else if (numChunks == 1){
 			// no need to chunk it, as its only one piece
@@ -172,13 +189,23 @@ public class Channel {
 			body.acquire(); // we dont want it released
 			//session.getIoSession().write(body,null);
 			out.put(body);
+			
+			
+			
+			
 		} else {
 			log.debug("No chunks to write.");
 		}
 		
 		out.flip();
+		log.debug("Position: "+out.position());
+		log.debug("Limit: "+out.limit());
 		
-		log.debug(HexDump.formatHexDump(out.getHexDump()));
+		if(log.isDebugEnabled()){
+			log.debug(" ====== WRITE DATA ===== ");
+			BufferLogUtils.debug(log,"Write raw response",out);
+		}
+		
 		session.getIoSession().write(out,null);
 		
 		// this will destroy the packet if there are no more refs
@@ -186,6 +213,6 @@ public class Channel {
 		
 	}
 	
-	
+
 	
 }

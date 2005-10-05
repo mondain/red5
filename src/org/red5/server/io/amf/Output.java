@@ -35,6 +35,11 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 	public void markEndArray() {
 		// SKIP
 	}
+	
+	// DONE
+	public void markEndList() {
+		markEndObject();
+	}
 
 	public void markEndObject(){
 		// TODO: marker bytes ?
@@ -85,6 +90,7 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 	}
 
 	public void writePropertyName(String name) {
+		log.debug("Put property: "+name);
 		putString(buf,name);
 	}
 
@@ -92,6 +98,19 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 		log.debug("Write reference");
 		buf.put(AMF.TYPE_REFERENCE);
 		buf.putShort(getReferenceId(obj));
+	}
+	
+	public void writeStartList(int length) {
+		buf.put(AMF.TYPE_MIXED_ARRAY);
+		buf.putInt(length);
+	}
+	
+	public void markItemSeparator() {
+		// nothing
+	}
+
+	public void writeItemIndex(int index) {
+		writePropertyName(Integer.toString(index));
 	}
 
 	public void writeStartArray(int length) {
@@ -105,6 +124,7 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 			buf.put(AMF.TYPE_CLASS_OBJECT);
 			putString(buf,className);
 		}
+		log.debug("Start object: "+className);
 		
 	}
 

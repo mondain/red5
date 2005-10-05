@@ -18,6 +18,11 @@ public interface Output {
 	void markElementSeparator();
 	void markEndArray();
 	
+	void writeStartList(int highestIndex);
+	void writeItemIndex(int index);
+	void markItemSeparator();
+	void markEndList();
+	
 	void writeStartObject(String classname);
 	void writePropertyName(String name);
 	void markPropertySeparator();

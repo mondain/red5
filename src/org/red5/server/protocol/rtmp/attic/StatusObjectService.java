@@ -1,4 +1,4 @@
-package org.red5.server.protocol.rtmp;
+ package org.red5.server.protocol.rtmp.attic;
 
 import java.util.Map;
 
@@ -46,8 +46,6 @@ public class StatusObjectService {
 	protected Map statusObjects;
 	
 	public void loadStatusObjects(){
-		
-		
 		
 	}
 	

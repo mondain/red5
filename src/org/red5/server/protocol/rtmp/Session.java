@@ -21,6 +21,11 @@ public class Session {
 	public static final byte STATE_CONNECTED = 2;
 	public static final byte STATE_DISCONNECTED = 3;
 
+	public static final String PARAM_SWFURL = "swfUrl";
+	public static final String PARAM_APP = "app";
+	public static final String PARAM_FLASHVER = "flashVer";
+	public static final String PARAM_TCURL = "tcUrl";
+	
 	private byte state = STATE_UNKNOWN;
 	private IoSession io;
 	private NetworkHandler handler;
@@ -30,6 +35,9 @@ public class Session {
 	
 	private Channel lastReadChannel = null;
 	private Channel lastWriteChannel = null;
+	
+	private Map params = null;	
+	private String appName = null;
 	
 	protected static Log log =
         LogFactory.getLog(Session.class.getName());
@@ -99,6 +107,27 @@ public class Session {
 	
 	public IoSession getIoSession(){
 		return io;
+	}
+	
+	public String getParameter(String name){
+		if(params == null) return null;
+		if(name == null) return null;
+		return (String) params.get(name);
+	}
+
+	public boolean hasParameter(String name){
+		return ( params!=null && params.containsKey(name) );
+	}
+	
+	public void setParams(Map params) {
+		this.params = params;
+		if(params != null && params.containsKey(PARAM_APP)){
+			appName = (String) params.get(PARAM_APP);
+		}
+	}
+	
+	public String getAppName(){
+		return appName;
 	}
 	
 }

@@ -7,7 +7,7 @@ import org.apache.mina.common.SessionConfig;
 import org.apache.mina.io.IoHandlerAdapter;
 import org.apache.mina.io.IoSession;
 import org.apache.mina.io.socket.SocketSessionConfig;
-import org.red5.server.utils.HexDump;
+import org.red5.server.utils.BufferLogUtils;
 
 public class NetworkHandler extends IoHandlerAdapter {
 
@@ -19,6 +19,10 @@ public class NetworkHandler extends IoHandlerAdapter {
 	protected SessionHandler sessionHandler;
 	
 	public void sessionCreated(IoSession session){
+		
+		if(log.isDebugEnabled())
+			log.debug("New connection: "+session.getRemoteAddress().toString());
+		
 		SessionConfig cfg = session.getConfig();
 		if (cfg instanceof SocketSessionConfig) {
 			((SocketSessionConfig) cfg).setSessionReceiveBufferSize(2048);
@@ -31,8 +35,11 @@ public class NetworkHandler extends IoHandlerAdapter {
 
 	public void dataRead(IoSession ioSession, ByteBuffer in) {
 		
-		log.debug(HexDump.formatHexDump(in.getHexDump()));
-		
+		if(log.isDebugEnabled()){
+			log.debug(" ====== READ DATA ===== ");
+			BufferLogUtils.debug(log,"Raw packet",in);
+		}
+			
 		Session session = (Session) ioSession.getAttachment();
 		if (session == null) {
 			session = new Session(ioSession, this);
@@ -42,57 +49,61 @@ public class NetworkHandler extends IoHandlerAdapter {
 		switch (session.getState()) {
 
 		case Session.STATE_CONNECT:
+			
+			if(log.isDebugEnabled())
+				log.debug("New connection, handshake packet");
+			
 			handshake(session, in);
 			session.handshake();
 			break;
 
 		case Session.STATE_HANDSHAKE:
+			
+			if(log.isDebugEnabled())
+				log.debug("Handshake response, first packet");
+			
 			// skip the first 1536 as thdese are the as server handshake
 			in.skip(1536);
 			session.connected();
 			// fall through..
 
 		case Session.STATE_CONNECTED:
+			
+			if(log.isDebugEnabled())
+				log.debug("Normal packet");
+			
 			while(in.remaining()>0){
-				log.debug("Remaining: "+in.remaining());
+				
+				if(log.isDebugEnabled())
+					log.debug("Read data - bytes remaining: "+in.remaining());
 				
 				byte headerByte = in.get();
 				in.position(in.position()-1); // skip back 1 :)
-				byte kont = 0xC3 - 256;
 				
 				Channel channel;
 				Packet packet;
 				
-				if(headerByte == kont){
-					
-					log.debug("Continue");
-					channel = session.getLastReadChannel();
-					packet = channel.readPacket(in);
-					
-				} else {
-					
-					log.debug("New packet");
-					byte channelId = RTMPUtils.decodeChannelId(headerByte);
-					log.debug("Channel id: "+channelId);
-					
-					channel = session.getChannel(channelId);
-					
-					
-					
-					packet = channel.readPacket(in);
-					session.setLastReadChannel(channel);
+				byte channelId = RTMPUtils.decodeChannelId(headerByte);
 				
-				}
+				channel = session.getChannel(channelId);
+				packet = channel.readPacket(in);
+				session.setLastReadChannel(channel);
 				
 				if(packet.isSealed()){
+					
+					if(log.isDebugEnabled())
+						log.debug("Packet on channel #"+channelId);
+					
 					sessionHandler.onPacket(packet);
+				} else {
+					log.debug("Not finished");
 				}
 				
 			}
 			break;
 
 		}
-
+		
 	}
 
 	public void handshake(Session session, ByteBuffer in) {
@@ -127,18 +138,17 @@ public class NetworkHandler extends IoHandlerAdapter {
 
 		// flip the buffer, log it, and send to client
 		out.flip();
-		//logBuffer("<< Server handshake", out);
+		
+		if(log.isDebugEnabled()){
+			log.debug(" ====== WRITE DATA ===== ");
+			BufferLogUtils.debug(log,"Handshake packet",out);
+		}
+		
 		session.getIoSession().write(out, null);
 
 	}
 
-	public void logBuffer(String msg, ByteBuffer buf) {
-		if(log.isDebugEnabled()){
-			log.debug(msg);
-			log.debug("Size: " + buf.remaining());
-			log.debug(HexDump.formatHexDump(buf.getHexDump()));
-		}
-	}
+
 
 	public void setMaxConnections(int maxConnections) {
 		this.maxConnections = maxConnections;

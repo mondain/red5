@@ -7,7 +7,7 @@ public class DataTypes {
 	
 	public final static byte CORE_SKIP = 0x00; // padding
 	
-	public final static byte CORE_NULL = 0x01; 
+	public final static byte CORE_NULL = 0x01; // no undefined type
 	public final static byte CORE_BOOLEAN = 0x02;
 	public final static byte CORE_NUMBER = 0x03;
 	public final static byte CORE_STRING = 0x04; 
@@ -15,8 +15,9 @@ public class DataTypes {
 	
 	// Basic stuctures
 	public final static byte CORE_ARRAY = 0x06; 
-	public final static byte CORE_XML = 0x07; 
-	public final static byte CORE_OBJECT = 0x08;
+	public final static byte CORE_LIST = 0x07;
+	public final static byte CORE_XML = 0x08; 
+	public final static byte CORE_OBJECT = 0x09;
 	
 	// Reference type, this is optional for codecs to support
 	public final static byte OPT_REFERENCE = 0x10;
@@ -42,6 +43,7 @@ public class DataTypes {
 			case CORE_STRING: return "String";
 			case CORE_DATE: return "Date";
 			case CORE_ARRAY: return "Array";
+			case CORE_LIST: return "List";
 			case CORE_XML: return "XML";
 			case CORE_OBJECT: return "Object";
 			case OPT_REFERENCE: return "Reference";

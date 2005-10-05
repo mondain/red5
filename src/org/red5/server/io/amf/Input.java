@@ -51,12 +51,14 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 				break;
 				
 			case AMF.TYPE_CLASS_OBJECT:
-			
 			case AMF.TYPE_OBJECT:
 				coreType = DataTypes.CORE_OBJECT;
 				break;
 			
 			case AMF.TYPE_MIXED_ARRAY:
+				coreType = DataTypes.CORE_LIST;
+				break;
+				
 			case AMF.TYPE_ARRAY:
 				coreType = DataTypes.CORE_ARRAY;
 				break;
@@ -179,8 +181,28 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		// SKIP
 	}
 	
-	// Object
+//	 Object
+	public int readStartList() {
+		return buf.getInt();
+	}
 
+	public boolean hasMoreItems() {
+		return hasMoreProperties();
+	}
+
+	public int readItemIndex() {
+		return Integer.parseInt(getString(buf));
+	}
+
+	public void skipItemSeparator(){
+		// SKIP
+	}
+
+	public void skipEndList(){
+		skipEndObject();
+	}
+	
+	// Object
 	public String readStartObject() {
 		if(currentDataType == AMF.TYPE_CLASS_OBJECT)
 			return getString(buf);

@@ -115,15 +115,17 @@ public abstract class AbstractIOTest extends TestCase {
 		listIn.add(new Date());
 		serializer.serialize(out,listIn);
 		dumpOutput();
-		Object[] objArrOut = (Object[]) deserializer.deserialize(in);
-		Assert.assertNotNull(objArrOut);
-		Assert.assertEquals(listIn.size(), objArrOut.length);
-		for(int i=0; i<objArrOut.length; i++){
-			Assert.assertEquals(objArrOut[i], listIn.get(i));
+		List listOut = (List) deserializer.deserialize(in);
+		Assert.assertNotNull(listOut);
+		Assert.assertEquals(listIn.size(), listOut.size());
+		for(int i=0; i<listIn.size(); i++){
+			Assert.assertEquals(listOut.get(i), listIn.get(i));
 		}
 		resetOutput();
 	}
 
+	
+	
 	public void testJavaBean(){
 		log.debug("Testing list");
 		TestJavaBean beanIn = new TestJavaBean();

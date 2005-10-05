@@ -18,6 +18,12 @@ public interface Input {
 	void skipElementSeparator();
 	void skipEndArray();
 	
+	int readStartList();
+	int readItemIndex();
+	void skipItemSeparator();
+	boolean hasMoreItems();
+	void skipEndList();
+	
 	String readStartObject();
 	String readPropertyName();
 	void skipPropertySeparator();

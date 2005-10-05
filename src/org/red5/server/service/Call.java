@@ -20,7 +20,7 @@ public class Call {
     
     public Call(String name, String method, Object[] args){
     		serviceName = name;
-    		serviceMethodName = name;
+    		serviceMethodName = method;
     		arguments = args;
     		status = STATUS_PENDING;
     }

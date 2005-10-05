@@ -67,6 +67,29 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		// SKIP
 	}
 	
+	public boolean hasMoreItems() {
+		Object next = list.get(idx);
+		if (! (next instanceof Byte)) return true;
+		Byte b = (Byte) next;
+		return (b.byteValue() != Mock.TYPE_END_OF_LIST);
+	}
+
+	public int readItemIndex() {
+		return ((Integer) getNext()).intValue();
+	}
+
+	public int readStartList() {
+		return ((Integer) getNext()).intValue();
+	}
+
+	public void skipEndList() {
+		getNext();
+	}
+
+	public void skipItemSeparator() {
+		getNext();
+	}
+	
 	// Object
 
 	public String readStartObject() {
@@ -108,5 +131,8 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		return getReference(num.shortValue());
 	}
 
+
+	
+	
 	
 }

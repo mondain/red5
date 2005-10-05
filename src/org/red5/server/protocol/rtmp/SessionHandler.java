@@ -11,8 +11,8 @@ import org.red5.server.io.Deserializer;
 import org.red5.server.io.Serializer;
 import org.red5.server.io.amf.Input;
 import org.red5.server.io.amf.Output;
+import org.red5.server.protocol.rtmp.status.StatusService;
 import org.red5.server.service.ServiceInvoker;
-import org.red5.server.utils.HexDump;
 
 /*
  * RED5 Open Source Flash Server 
@@ -58,7 +58,7 @@ public class SessionHandler {
 	
 	public void onPacket(Packet packet){
 		
-		log.debug(HexDump.formatHexDump(packet.getData().getHexDump()));
+		//if(log)
 		
 		try { 
 		
@@ -122,8 +122,6 @@ public class SessionHandler {
 	private void onSharedObjectConnectPacket(Packet packet) {
 		
 	}
-//06 00 40 08 00 00 00 00 00 00 05 06
-//06 00 40 00 00 00 00 00 00 00 05 06
 	
 	private void onSharedObjectPacket(Packet packet) {
 		Input input = new Input(packet.getData());
@@ -137,32 +135,70 @@ public class SessionHandler {
 	
 	public void onFunctionCallPacket(Packet packet){
 		
-		
+		Channel channel = packet.getSourceChannel();
+		Session session = channel.getSession();
 		
 		Input input = new Input(packet.getData());
 		String action = (String) deserializer.deserialize(input);
 		
-		
-		
 		Number number = (Number) deserializer.deserialize(input);
-		Map params = (Map) deserializer.deserialize(input);
+		Object param = deserializer.deserialize(input);
+		if(param==null && packet.getData().remaining() > 0){
+			param = deserializer.deserialize(input);
+		}
 		
-		log.debug("Remaining: "+packet.getData().remaining());
+		//log.debug("Remaining: "+packet.getData().remaining());
 		
 		log.debug("Action:" + action);
 		log.debug("Number: "+number.toString());
-		log.debug("Params: "+params);
+		log.debug("Param: "+param);
 		
 		if(action!=null && action.equals("connect")){
-			onConnect(packet,number.intValue(),params);
+			log.debug("Call connect action");
+			session.setParams((Map) param);
+			onConnect(packet,number.intValue(), (Map) param);
 		}
 		
 		else if(action!=null && action.equals("createStream")){
 			onCreateStream(packet, number.intValue());
 		}
 		
+		else if(action!=null && action.equals("_error")){
+			log.error("We have an error status from client");
+			log.debug(param);
+			// what should we do now
+		}
+		
 		else {
 			log.debug("Unknown action: "+action);
+			
+			Object[] args = (param.getClass().isArray()) ? (Object[]) param : new Object[]{param};
+			RTMPCall call = new RTMPCall(session.getAppName(), action, args);
+			
+			serviceInvoker.invoke(call);
+			
+			log.debug(call);
+
+				
+			Serializer serializer = new Serializer();
+			ByteBuffer out = ByteBuffer.allocate(256);
+			out.setAutoExpand(true);
+			Output output = new Output(out);
+			serializer.serialize(output, "_result"); // seems right
+			serializer.serialize(output, number); // dont know what this number does, so im just sending it back
+			serializer.serialize(output, null);
+			serializer.serialize(output, param);
+			
+			out.flip();
+			log.debug(""+out.position());
+			
+			Packet response = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, packet.getSource());
+			
+			
+			log.debug(response);
+			
+			packet.getSourceChannel().writePacket(response);
+			
 			//packet.getData().position(0);
 			//echoIt(packet);
 		}
@@ -173,20 +209,11 @@ public class SessionHandler {
 		//handler
 	}
 	
-	private void echoIt(Packet packet) {
-		// TODO Auto-generated method stub
-		
-		
-		
-		Packet response = new Packet(packet.getData(), 0, Packet.TYPE_FUNCTION_CALL, 0);
-		
-		packet.getSourceChannel().writePacket(response);
-	}
-
-	
 	private void onConnect(Packet packet, int num, Map params) {
 		// TODO Auto-generated method stub
 
+		//packet.
+				
 		Serializer serializer = new Serializer();
 		ByteBuffer out = ByteBuffer.allocate(256);
 		out.setAutoExpand(true);
@@ -195,6 +222,10 @@ public class SessionHandler {
 		serializer.serialize(output, new Integer(num)); // dont know what this number does, so im just sending it back
 		serializer.serialize(output, null);
 		out.put(statusService.getStatus("SUCCESS"));
+		
+		// HACK: status service should do this before returning buffer
+		// Or another option would be have the status service return byte[]
+		statusService.getStatus("SUCCESS").position(0);
 		
 		out.flip();
 		log.debug(""+out.position());
@@ -206,6 +237,8 @@ public class SessionHandler {
 		packet.getSourceChannel().writePacket(response);
 	}
 
+	
+	
 	public void onAudioPacket(Packet packet){
 		// what to do with audio
 		// write it to a file (see it its an mp3) ? 
