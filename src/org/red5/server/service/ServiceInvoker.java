@@ -26,8 +26,8 @@ public class ServiceInvoker {
 		
 		String serviceName = call.getServiceName();
 		
-		log.debug("Service name " + serviceName);
-		log.debug("Service method " + call.getServiceMethodName());
+		//log.debug("Service name " + serviceName);
+		//log.debug("Service method " + call.getServiceMethodName());
 		
 		Object service = null;
 	
@@ -39,6 +39,9 @@ public class ServiceInvoker {
 		if(service == null) {
 			call.setException(new ServiceNotFoundException(serviceName));
 			call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
+			log.warn("Service not found: "+serviceName);
+		} else {
+			log.debug("Service found: "+serviceName);
 		}
 		
 		ArgumentConvertingMethodInvoker methodInvoker = new ArgumentConvertingMethodInvoker();

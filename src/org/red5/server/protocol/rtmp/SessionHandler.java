@@ -1,6 +1,6 @@
 package org.red5.server.protocol.rtmp;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -18,7 +18,7 @@ import org.red5.server.service.ServiceInvoker;
  * RED5 Open Source Flash Server 
  * http://www.osflash.org/red5
  * 
- * Copyright � 2006 by respective authors. All rights reserved.
+ * Copyright (c) 2006 by respective authors. All rights reserved.
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard (luke@red5.org)
@@ -140,24 +140,36 @@ public class SessionHandler {
 		Session session = channel.getSession();
 		
 		Input input = new Input(packet.getData());
+		
 		String action = (String) deserializer.deserialize(input);
-		
 		Number number = (Number) deserializer.deserialize(input);
-		Object param = deserializer.deserialize(input);
-		if(param==null && packet.getData().remaining() > 0){
-			param = deserializer.deserialize(input);
-		}
-		
-		//log.debug("Remaining: "+packet.getData().remaining());
+		Object headers = deserializer.deserialize(input);
 		
 		log.debug("Action:" + action);
 		log.debug("Number: "+number.toString());
-		log.debug("Param: "+param);
+		log.debug("Headers: "+headers);
+		
+		Object[] params = null;
+
+		if(packet.getData().hasRemaining()){
+			log.debug("Multiple params");
+			ArrayList paramList = new ArrayList();
+			while(packet.getData().hasRemaining()){
+				paramList.add(deserializer.deserialize(input));
+			}		
+			log.debug("Num params: "+paramList.size()); 
+			params = paramList.toArray();
+			for(int i=0; i<params.length; i++){
+				log.debug(" > "+i+": "+params[i]);
+			}
+			
+		} 
+		
 		
 		if(action!=null && action.equals("connect")){
 			log.debug("Call connect action");
-			session.setParams((Map) param);
-			onConnect(packet,number.intValue(), (Map) param);
+			session.setParams((Map) headers);
+			onConnect(packet,number.intValue(), (Map) headers);
 		}
 		
 		else if(action!=null && action.equals("createStream")){
@@ -166,19 +178,18 @@ public class SessionHandler {
 		
 		else if(action!=null && action.equals("_error")){
 			log.error("We have an error status from client");
-			log.debug(param);
 			// what should we do now
 		}
 		
 		else {
 			log.debug("Unknown action: "+action);
 			
-			Object[] args = (param.getClass().isArray()) ? (Object[]) param : new Object[]{param};
-			RTMPCall call = new RTMPCall(session.getAppName(), action, args);
+			RTMPCall call = new RTMPCall(session.getAppName(), action, params);
+			log.debug("RTMPCall "+call);
 			
 			serviceInvoker.invoke(call);
 			
-			log.debug(call);
+			
 
 				
 			Serializer serializer = new Serializer();
@@ -186,28 +197,29 @@ public class SessionHandler {
 			out.setAutoExpand(true);
 			Output output = new Output(out);
 			serializer.serialize(output, "_result"); // seems right
-			serializer.serialize(output, number); // dont know what this number does, so im just sending it back
+			// dont know what this number does, so im just sending it back
+			serializer.serialize(output, number); 
 			serializer.serialize(output, null);
-			serializer.serialize(output, param);
 			
+			if(params != null){
+				if(params.length > 1){
+					serializer.serialize(output, params);
+				}
+				else {
+					serializer.serialize(output, params[0]);
+				}
+			}
+	
 			out.flip();
-			log.debug(""+out.position());
-			
+		
 			Packet response = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, packet.getSource());
-			
-			
+						
 			log.debug(response);
 			
 			packet.getSourceChannel().writePacket(response);
-			
-			//packet.getData().position(0);
-			//echoIt(packet);
+
 		}
-		
-		//Channel channel = getChannel((byte)3); 
-		
-		
-		//handler
+
 	}
 	
 	private void onConnect(Packet packet, int num, Map params) {
@@ -237,8 +249,6 @@ public class SessionHandler {
 		
 		packet.getSourceChannel().writePacket(response);
 	}
-
-	
 	
 	public void onAudioPacket(Packet packet){
 		// what to do with audio
