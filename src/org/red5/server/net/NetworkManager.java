@@ -6,17 +6,32 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.TransportType;
+import org.apache.mina.examples.echoserver.ssl.BogusSSLContextFactory;
+import org.apache.mina.io.IoAcceptor;
 import org.apache.mina.io.IoHandlerAdapter;
+import org.apache.mina.io.filter.SSLFilter;
 import org.apache.mina.protocol.ProtocolProvider;
 import org.apache.mina.registry.Service;
 import org.apache.mina.registry.ServiceRegistry;
 import org.apache.mina.registry.SimpleServiceRegistry;
+
+/*
+ * RED5 Open Source Flash Server 
+ * http://www.osflash.org/red5
+ * 
+ * Copyright � 2006 by respective authors. All rights reserved.
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard (luke@red5.org)
+ * @author Dominick Accattato (daccattato@gmail.com)
+ */
 
 public class NetworkManager {
 
 	public static final byte STATUS_NETWORK_UP = 0x00;
 	public static final byte STATUS_NETWORK_DOWN = 0x01;
 	public static final byte STATUS_NETWORK_ERROR = 0x02;
+	private static final boolean USE_SSL = false;
 	
 	protected static Log log =
         LogFactory.getLog(NetworkManager.class.getName());
@@ -39,6 +54,17 @@ public class NetworkManager {
 			log.warn("Network is already up, taking no action, call down() first or restart()");
 			return;
 		}
+		
+		// does application use secure socket layer
+		if(USE_SSL) {
+			try {
+				addSSLSupport( registry );
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		log.info("Bringing up network services");
 		try{
 			// Loop over the serviceConfig
@@ -94,6 +120,23 @@ public class NetworkManager {
 		if(networkStatus != STATUS_NETWORK_UP){
 			up();
 		}
+	}
+	
+	private static void addSSLSupport( ServiceRegistry registry )
+	  throws Exception
+	{
+		SSLFilter sslFilter =
+	    new SSLFilter( BogusSSLContextFactory.getInstance( true ) );
+	    IoAcceptor acceptor = registry.getIoAcceptor( TransportType.SOCKET );
+	    acceptor.getFilterChain().addLast( "sslFilter", sslFilter );
+	    System.out.println( "SSL ON" );
+	}
+	      
+	private static void addLogger( ServiceRegistry registry )
+	{
+		IoAcceptor acceptor = registry.getIoAcceptor( TransportType.SOCKET );
+	    acceptor.getFilterChain().addLast( "logger", new IoLoggingFilter() );
+	    System.out.println( "Logging ON" );
 	}
 	
 }
