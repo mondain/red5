@@ -72,5 +72,13 @@ public class Call {
 		this.result = result;
 	}
  
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("Service: "+serviceName+" Method: "+serviceMethodName);
+		if(arguments!=null) sb.append(" Num Params: "+arguments.length);
+		else sb.append(" No params");
+		return sb.toString();
+	}
+	
 	
 }

@@ -17,9 +17,9 @@ public class BaseOutput {
 	}
 	
 	public boolean hasReference(Object obj){
-		System.out.println("obj"+obj);
-		System.out.println("simpletest"+obj.hashCode());
-		System.out.println("has reference?"+refMap.containsKey(obj));
+		//System.out.println("obj"+obj);
+		//System.out.println("simpletest"+obj.hashCode());
+		//System.out.println("has reference?"+refMap.containsKey(obj));
 		return refMap.containsKey(obj);
 	}
 	
