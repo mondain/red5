@@ -11,7 +11,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * Copyright © 2006 by respective authors. All rights reserved.
  * 
  * @author The Red5 Project (red5@osflash.org)
- * @author Dominick Accattato (Dominick@red5.org)
+ * @author Dominick Accattato (Dominick@gmail.com)
  */
 
 public class Standalone {
