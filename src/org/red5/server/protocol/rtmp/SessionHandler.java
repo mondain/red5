@@ -120,7 +120,8 @@ public class SessionHandler {
 	}
 	
 	private void onSharedObjectConnectPacket(Packet packet) {
-		
+		log.error("Shared Object");
+		log.error("Need to know what flashcom response is.");
 	}
 	
 	private void onSharedObjectPacket(Packet packet) {
