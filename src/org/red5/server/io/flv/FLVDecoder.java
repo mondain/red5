@@ -86,7 +86,16 @@ public class FLVDecoder {
 		header.setDATA_OFFSET(mappedFile.getInt());
 		
 		// Print FLVHeader
-		System.out.println("HEADER:\n---------\n" + header.toString());
+		System.out.println("HEADER: (pos)" + mappedFile.position() + "\n---------\n" + header.toString());
+		
+		// Decode FLVBody
+		
+		
+		System.out.println("BODY: (pos)" + mappedFile.position() + "\n---------\t");
+		FLVBody body = new FLVBody(mappedFile);
+		body.getTags();
+		
+		
 	
 	}
 
