@@ -1,29 +1,42 @@
 package org.red5.server.io.flv;
 
-import java.nio.MappedByteBuffer;
-
 /*
- * RED5 Open Source Flash Server 
- * http://www.osflash.org/red5
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
  * Copyright © 2006 by respective authors. All rights reserved.
  * 
+ * This library is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software 
+ * Foundation; either version 2.1 of the License, or (at your option) any later 
+ * version. 
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along 
+ * with this library; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (daccattato@gmail.com)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
+
+import java.nio.ByteBuffer;
 
 public class FLVTag {
 	
-	private byte tagType = (byte)0x00; //audio=8, video=9
+	private byte tagType = 0x00; //audio=8, video=9
 	private byte[] dataSize;
 	private byte[] timeStamp;
 	private int reserved = 0x00;
 	private byte[] data; // audio or video data
-	private MappedByteBuffer mappedFile;
+	private ByteBuffer buf;
 
-	public FLVTag(MappedByteBuffer mappedFile) {
+	public FLVTag(ByteBuffer buf) {
 		// TODO Auto-generated constructor stub
-		this.mappedFile = mappedFile;
+		this.buf = buf;
 	}
 
 	public byte[] getData() {
