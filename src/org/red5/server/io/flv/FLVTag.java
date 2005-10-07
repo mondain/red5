@@ -1,5 +1,7 @@
 package org.red5.server.io.flv;
 
+import java.nio.MappedByteBuffer;
+
 /*
  * RED5 Open Source Flash Server 
  * http://www.osflash.org/red5
@@ -12,17 +14,24 @@ package org.red5.server.io.flv;
 
 public class FLVTag {
 	
-	private byte tagType; //audio=8, video=9
+	private byte tagType = (byte)0x00; //audio=8, video=9
 	private byte[] dataSize;
 	private byte[] timeStamp;
-	private int reserved;
+	private int reserved = 0x00;
 	private byte[] data; // audio or video data
+	private MappedByteBuffer mappedFile;
+
+	public FLVTag(MappedByteBuffer mappedFile) {
+		// TODO Auto-generated constructor stub
+		this.mappedFile = mappedFile;
+	}
 
 	public byte[] getData() {
 		return data;
 	}
 
 	public void setData(byte[] data) {
+		
 		this.data = data;
 	}
 
@@ -31,7 +40,7 @@ public class FLVTag {
 	}
 
 	public void setDataSize(byte[] dataSize) {
-		this.dataSize = dataSize;
+		this.dataSize = (byte[]) dataSize;
 	}
 
 	public int getReserved() {
@@ -58,6 +67,24 @@ public class FLVTag {
 		this.timeStamp = timeStamp;
 	}
 
+	public String toString() {
+		String ret = "";
+		//ret += "SIGNATURE: \t" + getSIGNATURE() + "\n";
+		//ret += "previousTagSize: \t\t" + 
+		ret += "tagType: \t\t" + this.getTagType() +  "\n";  
+		ret += "dataSize: \t\t" +  (unsignedByteToInt(dataSize[0]) + unsignedByteToInt(dataSize[1]) + unsignedByteToInt(dataSize[2])) + "\n";
+		ret += "timeStamp: \t" + (unsignedByteToInt(timeStamp[0]) + unsignedByteToInt(timeStamp[1]) + unsignedByteToInt(timeStamp[2])) + "\n";
+		ret += "reserved: \t" + reserved + "\n";
+		ret += "data: \t\t" + data.length + "\n";
+		//byte b = 0x01;
+		
+		return ret;
+	}
+	
+	public static int unsignedByteToInt(byte b) {
+	    return (int) b & 0xFF;
+	}
+	
 	/**
 	 * @param args
 	 */
