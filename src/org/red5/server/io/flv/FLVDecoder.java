@@ -1,20 +1,32 @@
 package org.red5.server.io.flv;
 
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ * 
+ * Copyright © 2006 by respective authors. All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software 
+ * Foundation; either version 2.1 of the License, or (at your option) any later 
+ * version. 
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along 
+ * with this library; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Dominick Accattato (daccattato@gmail.com)
+ */
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-
-/*
- * RED5 Open Source Flash Server 
- * http://www.osflash.org/red5
- * 
- * Copyright © 2006 by respective authors. All rights reserved.
- * 
- * @author The Red5 Project (red5@osflash.org)
- * @author Dominick Accattato (daccattato@gmail.com)
- */
 
 public class FLVDecoder {
 
@@ -74,16 +86,16 @@ public class FLVDecoder {
 		FLVHeader header = new FLVHeader();
 		
 		// SIGNATURE	
-		header.setSIGNATURE(readSignatureBytes());
+		header.setSignature(readSignatureBytes());
 		
 		// VERSION
-		header.setVERSION((byte) mappedFile.get());
+		header.setVersion((byte) mappedFile.get());
 		
 		// TYPE FLAGS
-		header.setTYPE_FLAGS((byte) mappedFile.get());
+		header.setTypeFlags((byte) mappedFile.get());
 		
 		// DATA OFFSET
-		header.setDATA_OFFSET(mappedFile.getInt());
+		header.setDataOffset(mappedFile.getInt());
 		
 		// Print FLVHeader
 		System.out.println("HEADER: (pos)" + mappedFile.position() + "\n---------\n" + header.toString());

@@ -1,5 +1,27 @@
 package org.red5.server.protocol.rtmp;
 
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ * 
+ * Copyright © 2006 by respective authors. All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software 
+ * Foundation; either version 2.1 of the License, or (at your option) any later 
+ * version. 
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along 
+ * with this library; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ */
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -188,9 +210,6 @@ public class SessionHandler {
 			log.debug("RTMPCall "+call);
 			
 			serviceInvoker.invoke(call);
-			
-			
-
 				
 			Serializer serializer = new Serializer();
 			ByteBuffer out = ByteBuffer.allocate(256);
@@ -200,6 +219,18 @@ public class SessionHandler {
 			// dont know what this number does, so im just sending it back
 			serializer.serialize(output, number); 
 			serializer.serialize(output, null);
+			
+			/* 
+			 * Looks like mina is single threaded, 
+			 * we should separate the service invocation into new thread
+			 * 
+			try{
+				log.debug("Sleeping for 5 seconds...");
+				Thread.sleep((long) 1000*5);
+			} catch(Exception ex){
+				log.error(ex);
+			}
+			*/
 			
 			if(params != null){
 				if(params.length > 1){
