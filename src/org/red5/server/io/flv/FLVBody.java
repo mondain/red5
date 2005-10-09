@@ -24,6 +24,9 @@ package org.red5.server.io.flv;
 
 import java.nio.MappedByteBuffer;
 
+import org.apache.mina.common.ByteBuffer;
+import org.red5.server.protocol.remoting.RemotingService;
+
 public class FLVBody {
 	private int previousTagSize = 0;
 	private FLVTag tag;
@@ -49,15 +52,23 @@ public class FLVBody {
 	public void getTags() {
 		// TODO Auto-generated method stub
 		int packetSize = 0;
-		//while(mappedFile.hasRemaining()) {
+		while(mappedFile.hasRemaining()) {
 			
 			packetSize++;
 		
-			System.out.println("packet #: " + packetSize);
+			//System.out.println("packet #: " + packetSize);
 		
 			// PREVIOUS_TAG_SIZE
 			this.setPreviousTagSize(mappedFile.getInt());
-			System.out.println("previous tag: " + this.getPreviousTagSize());
+			System.out.println("PreviousTagSize: " + this.getPreviousTagSize());
+			
+			// guard against additional reads
+			if(!mappedFile.hasRemaining()) {
+				System.out.println("FLV has reached end of stream");
+				break;
+			}
+			
+			System.out.println("FLVTAG " + packetSize);
 			// Create FLVTag
 		
 			FLVTag tag = new FLVTag(mappedFile);
@@ -79,29 +90,44 @@ public class FLVBody {
 			// RESERVED
 			tag.setReserved(mappedFile.getInt());
 			
-			byte[] tmp = tag.getDataSize();
+			int tmp = tag.getDataSize();
 			
 			//System.out.println("ah: " + unsignedByteToInt(tmp[2]));
 			tag.setData(this.readData(tmp));
 			
 			//System.out.println("test: " + tag.getDataSize()[0] +tag.getDataSize()[1] + tag.getDataSize()[2] );
 			//byte[] n = this.readData(tag.getDataSize());
-			System.out.println("\nFLVTag: \n------------\n" + tag + "\n");
+			System.out.println("------------\n" + tag + "\n");
 			
+			//onTag(tag);
 			// DATA
 			
-		//}
+		}
 		
 	}
-	private byte[] readData(byte[] dataSize) {
+	private void onTag(FLVTag tag2) {
+		// TODO Auto-generated method stub
+		if(tag2.getTagType() == 0x12) {
+			System.out.println("---MetaData---");
+			byte[] bb = tag2.getData();
+			ByteBuffer bb1 = ByteBuffer.allocate(tag2.getDataSize());
+			bb1.put(bb);
+			RemotingService rs = new RemotingService();
+			rs.handleRequest(bb1);
+			System.out.println("\n\n");
+		}
+	}
+	private byte[] readData(int dataSize) {
+		/*
 		int tmp = unsignedByteToInt(dataSize[0]);
 		tmp += unsignedByteToInt(dataSize[1]);
 		tmp += unsignedByteToInt(dataSize[2]);
+		*/
 		//int tmp = dataSize[0] + dataSize[1] + dataSize[2];
 		
 		//System.out.println("data[0]: " + data[0]);
-		byte b[] = new byte[tmp];
-		for(int i=0; i<tmp; i++) {
+		byte b[] = new byte[dataSize];
+		for(int i=0; i<dataSize; i++) {
 			b[i] = mappedFile.get();
 		}
 		
