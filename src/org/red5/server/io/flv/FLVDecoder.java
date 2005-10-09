@@ -25,6 +25,7 @@ package org.red5.server.io.flv;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -69,6 +70,7 @@ public class FLVDecoder {
 			fis = new FileInputStream(fileName);
 			channel = fis.getChannel();
 			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+			mappedFile.order(ByteOrder.BIG_ENDIAN);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

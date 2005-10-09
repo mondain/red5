@@ -28,7 +28,7 @@ import java.nio.ByteBuffer;
 public class FLVTag {
 	
 	private byte tagType = 0x00; //audio=8, video=9
-	private byte[] dataSize;
+	private int dataSize;
 	private byte[] timeStamp;
 	private int reserved = 0x00;
 	private byte[] data; // audio or video data
@@ -48,12 +48,40 @@ public class FLVTag {
 		this.data = data;
 	}
 
-	public byte[] getDataSize() {
+	public int getDataSize() {
 		return dataSize;
 	}
 
 	public void setDataSize(byte[] dataSize) {
-		this.dataSize = (byte[]) dataSize;
+		int n = 0;
+	//	System.out.println("dataSize[0]: " + dataSize[1]);
+		//System.out.println("dataSize[0]: " + (unsignedByteToInt(dataSize[1]) << 16));
+		
+		//System.out.println("((dataSize[0]) << 16): " + unsignedByteToInt(dataSize[2]));
+		int tmpD0 = unsignedByteToInt(dataSize[0]);
+		int tmpD1 = unsignedByteToInt(dataSize[1]);
+		int tmpD2 = unsignedByteToInt(dataSize[2]);
+		
+		/*
+		System.out.println("tmpD0 : "  + tmpD0);
+		System.out.println("tmpD1 : "  + tmpD1);
+		System.out.println("tmpD2 : "  + tmpD2);
+		*/
+		
+		int tmpD0Shift = tmpD0 << 16;
+		int tmpD1Shift = tmpD1 << 8;
+		int tmpD2Shift = tmpD2;
+		
+		int ret = tmpD0Shift + tmpD1Shift + tmpD2Shift;
+		
+		/*
+		System.out.println("tmpD0Shift : "  + tmpD0Shift);
+		System.out.println("tmpD1Shift : "  + tmpD1Shift);
+		System.out.println("tmpD2Shift : "  + tmpD2Shift);
+		System.out.println("test : "  + (tmpD0 << 8));		
+		*/
+			
+		this.dataSize = ret;
 	}
 
 	public int getReserved() {
@@ -85,10 +113,10 @@ public class FLVTag {
 		//ret += "SIGNATURE: \t" + getSIGNATURE() + "\n";
 		//ret += "previousTagSize: \t\t" + 
 		ret += "tagType: \t\t" + this.getTagType() +  "\n";  
-		ret += "dataSize: \t\t" +  (unsignedByteToInt(dataSize[0]) + unsignedByteToInt(dataSize[1]) + unsignedByteToInt(dataSize[2])) + "\n";
-		ret += "timeStamp: \t" + (unsignedByteToInt(timeStamp[0]) + unsignedByteToInt(timeStamp[1]) + unsignedByteToInt(timeStamp[2])) + "\n";
-		ret += "reserved: \t" + reserved + "\n";
-		ret += "data: \t\t" + data.length + "\n";
+		ret += "dataSize: \t\t" + dataSize + "\n";
+		ret += "timeStamp: \t\t" + (unsignedByteToInt(timeStamp[0]) + unsignedByteToInt(timeStamp[1]) + unsignedByteToInt(timeStamp[2])) + "\n";
+		ret += "reserved: \t\t" + reserved + "\n";
+		ret += "data: \t\t\t" + data.length + "\n";
 		//byte b = 0x01;
 		
 		return ret;
