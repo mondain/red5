@@ -39,7 +39,6 @@ import org.red5.server.utils.XMLUtils;
 import org.springframework.beans.BeanUtils;
 import org.w3c.dom.Document;
 
-import com.sun.rsasign.o;
 
 public class Serializer {
 
