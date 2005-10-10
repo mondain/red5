@@ -55,6 +55,10 @@ public class Packet {
 	private boolean isSealed = false;
 	private Channel sourceChannel = null;
 	private int refCount = 1;
+	private int numChunks = 0;
+	private int chunksRead = 0;
+	private boolean finishedReadChunk = true;
+	private int chunkRemaining = 0;
 	
 	public Packet(Channel sourceChannel, int timer, int size, byte dataType, int source){
 		this.sourceChannel = sourceChannel;
@@ -64,6 +68,8 @@ public class Packet {
 		this.source = source;
 		this.data = ByteBuffer.allocate(this.size);
 		this.isSealed = false;
+		this.numChunks = (int) Math.ceil((this.size / (float) getMaxChunkSize()));
+		this.chunksRead = 0;
 	}
 	
 	public Packet(ByteBuffer data, int timer, byte dataType, int source){
@@ -74,12 +80,12 @@ public class Packet {
 		this.source = source;
 		this.data = data;
 		this.isSealed = true;
-		//log.debug(this);
+		this.numChunks = (int) Math.ceil((this.size / (float) getMaxChunkSize()));
+		this.chunksRead = this.numChunks;
 	}
 	
 	public int getNumberOfChunks(){
-		float numChunk = (this.size / (float) getMaxChunkSize());
-		return (int) Math.ceil(numChunk);
+		return numChunks;
 	}
 	
 	public int getMaxChunkSize(){
@@ -88,14 +94,25 @@ public class Packet {
 	
 	public boolean readChunkFrom(ByteBuffer in){
 		
-		if(isSealed) return false;
+		if(isSealed) {
+			log.error("Calling readChunkFrom on packet which is sealed, returning false");
+			return false;
+		}
+			
+		int chunkSize = (finishedReadChunk) ? getMaxChunkSize() : chunkRemaining;
 		
-		int chunkSize = getMaxChunkSize();
-		
-		int readAmount = ( (size - data.position()) >chunkSize) 
+		int readAmount = ( (size - data.position()) > chunkSize) 
 			? chunkSize : size - data.position();
+
+		if(finishedReadChunk){
+			// start a new chunk
+			chunkRemaining = readAmount;
+		}
 		
-		if(readAmount > in.remaining()) readAmount = in.remaining();
+		boolean fullRead = (readAmount <= in.remaining());		
+		if(!fullRead) readAmount = in.remaining();
+		chunkRemaining -= readAmount;
+		finishedReadChunk = fullRead;
 		
 		log.debug("Copy bytes: "+readAmount);
 		
@@ -108,12 +125,19 @@ public class Packet {
 		log.debug("Size: "+size);
 		
 		if(data.position() == size){
-			log.debug("End of read");
+			log.debug("Finished all chunks, end of read");
 			data.flip();
 			data.mark();
 			isSealed = true;
-			return false;
-		} else return true;
+		}
+		
+		log.debug("Finished read chunk: "+finishedReadChunk);
+		
+		if(finishedReadChunk){
+			chunksRead++;
+		}
+		
+		return finishedReadChunk;
 	}
 	
 	public ByteBuffer getChunk(int num){

@@ -22,18 +22,12 @@ package org.red5.server.protocol.rtmp;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.io.IoSession;
-import org.red5.server.io.Deserializer;
-import org.red5.server.io.Serializer;
-import org.red5.server.io.amf.Input;
-import org.red5.server.io.amf.Output;
-import org.red5.server.utils.HexDump;
+import org.red5.server.context.AppContext;
 
 public class Session {
 	
@@ -60,6 +54,9 @@ public class Session {
 	
 	private Map params = null;	
 	private String appName = null;
+	private AppContext appContext;
+	private String serviceName = null;
+	private Object service = null;
 	
 	protected static Log log =
         LogFactory.getLog(Session.class.getName());
@@ -69,7 +66,7 @@ public class Session {
 		io = ioSession;
 		handler = protocolHandler;
 	}
-	
+
 	private Channel[] channels = new Channel[64];
 	
 	public boolean isChannelUsed(byte channelId){
@@ -143,13 +140,42 @@ public class Session {
 	
 	public void setParams(Map params) {
 		this.params = params;
-		if(params != null && params.containsKey(PARAM_APP)){
-			appName = (String) params.get(PARAM_APP);
-		}
 	}
 	
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
+
 	public String getAppName(){
 		return appName;
 	}
+
+	public AppContext getAppContext() {
+		return appContext;
+	}
+
+	public void setAppContext(AppContext appContext) {
+		this.appContext = appContext;
+	}
+
+	public Object getService() {
+		return service;
+	}
+
+	public void setService(Object service) {
+		this.service = service;
+	}
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+	
+	
+	
+	
 	
 }

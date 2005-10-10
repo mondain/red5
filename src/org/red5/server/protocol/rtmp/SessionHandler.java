@@ -29,6 +29,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.server.SessionRegistry;
+import org.red5.server.context.AppContext;
+import org.red5.server.context.GlobalContext;
+import org.red5.server.context.HostContext;
 import org.red5.server.io.Deserializer;
 import org.red5.server.io.Serializer;
 import org.red5.server.io.amf.Input;
@@ -55,7 +58,7 @@ public class SessionHandler {
 	protected Serializer serializer;
 	protected Deserializer deserializer;
 	protected SessionRegistry sessionRegistry;
-	protected ServiceInvoker serviceInvoker;
+	protected GlobalContext globalContext;
 	protected StatusService statusService;
 	
 	public void handlePacket(Session session, Packet packet){
@@ -70,8 +73,8 @@ public class SessionHandler {
 		this.serializer = serializer;
 	}
 
-	public void setServiceInvoker(ServiceInvoker serviceInvoker) {
-		this.serviceInvoker = serviceInvoker;
+	public void setGlobalContext(GlobalContext globalContext) {
+		this.globalContext = globalContext;
 	}
 
 	public void setSessionRegistry(SessionRegistry sessionRegistry) {
@@ -82,6 +85,8 @@ public class SessionHandler {
 		
 		//if(log)
 		
+		//packet.getSourceChannel().getSession().getIoSession().write()
+ 		
 		try { 
 		
 			switch(packet.getDataType()){
@@ -206,10 +211,11 @@ public class SessionHandler {
 		else {
 			log.debug("Unknown action: "+action);
 			
-			RTMPCall call = new RTMPCall(session.getAppName(), action, params);
+			RTMPCall call = new RTMPCall(session.getServiceName(), action, params);
 			log.debug("RTMPCall "+call);
 			
-			serviceInvoker.invoke(call);
+			ServiceInvoker invoker = session.getAppContext().getServiceInvoker();
+			invoker.invoke(call, session.getAppContext());
 				
 			Serializer serializer = new Serializer();
 			ByteBuffer out = ByteBuffer.allocate(256);
@@ -217,6 +223,7 @@ public class SessionHandler {
 			Output output = new Output(out);
 			serializer.serialize(output, "_result"); // seems right
 			// dont know what this number does, so im just sending it back
+			log.debug("Result: "+ call.getResult());
 			serializer.serialize(output, number); 
 			serializer.serialize(output, null);
 			
@@ -232,14 +239,7 @@ public class SessionHandler {
 			}
 			*/
 			
-			if(params != null){
-				if(params.length > 1){
-					serializer.serialize(output, params);
-				}
-				else {
-					serializer.serialize(output, params[0]);
-				}
-			}
+			serializer.serialize(output, call.getResult());
 	
 			out.flip();
 		
@@ -255,9 +255,36 @@ public class SessionHandler {
 	
 	private void onConnect(Packet packet, int num, Map params) {
 		// TODO Auto-generated method stub
-
+		
+		Session session = packet.getSourceChannel().getSession();
+		
 		//packet.
-				
+		String appName = (String) params.get("app");
+		String serviceName = null;
+		if(appName.indexOf("/")!=-1){
+			serviceName = appName.substring(appName.indexOf("/")+1,appName.length());
+			log.debug("Service Name: "+serviceName);
+			appName = appName.substring(0, appName.indexOf("/"));
+		}
+		String tcUrl = (String) params.get("tcUrl");
+		String hostname = tcUrl.split("/")[2];
+		log.debug("hostname: "+hostname);
+		
+		HostContext host = (globalContext.hasHostContext(hostname)) ?
+				globalContext.getHostContext(hostname) : globalContext.getDefaultHost();
+		
+		AppContext app = host.getAppContext(appName);
+		session.setAppName(appName);
+		session.setAppContext(app);
+		
+		if(serviceName!=null){
+			Object service = app.getBean(serviceName);
+			session.setServiceName(serviceName);
+			session.setService(service);
+		}
+		
+		log.debug(app.getServiceInvoker());
+		
 		Serializer serializer = new Serializer();
 		ByteBuffer out = ByteBuffer.allocate(256);
 		out.setAutoExpand(true);

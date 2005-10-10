@@ -39,6 +39,7 @@ public class NetworkHandler extends IoHandlerAdapter {
 	// TODO: implement max connection code
 	protected int maxConnections = -1;
 	protected SessionHandler sessionHandler;
+	protected boolean stressMode = false;
 	
 	public void sessionCreated(IoSession session){
 		
@@ -55,6 +56,8 @@ public class NetworkHandler extends IoHandlerAdapter {
 		session.close();
 	}
 
+	
+	
 	public void dataRead(IoSession ioSession, ByteBuffer in) {
 		
 		if(log.isDebugEnabled()){
@@ -94,36 +97,63 @@ public class NetworkHandler extends IoHandlerAdapter {
 			if(log.isDebugEnabled())
 				log.debug("Normal packet");
 			
-			while(in.remaining()>0){
-				
-				if(log.isDebugEnabled())
-					log.debug("Read data - bytes remaining: "+in.remaining());
-				
-				byte headerByte = in.get();
-				in.position(in.position()-1); // skip back 1 :)
-				
-				Channel channel;
-				Packet packet;
-				
-				byte channelId = RTMPUtils.decodeChannelId(headerByte);
-				
-				channel = session.getChannel(channelId);
-				packet = channel.readPacket(in);
-				session.setLastReadChannel(channel);
-				
-				if(packet.isSealed()){
-					
-					if(log.isDebugEnabled())
-						log.debug("Packet on channel #"+channelId);
-					
-					sessionHandler.onPacket(packet);
-				} else {
-					log.debug("Not finished");
+			if(stressMode){
+				int limit = in.limit();
+				int remaining = in.remaining();
+				while(in.position() < limit){
+					log.debug("stressRead");
+					in.limit(in.position()+1);
+					processRead(session,in);
+					//if(session.getLastReadChannel().isFinishedReadHeaders())
+					//	break;
 				}
-				
+				//log.debug("Read body");
+				//in.limit(limit);
+				//processRead(session,in);
 			}
+			
+			else {
+				while(in.remaining()>0){
+					processRead(session, in);
+				}
+			}
+			
 			break;
 
+		}
+		
+	}
+	
+	public void processRead(Session session, ByteBuffer in){
+		
+		if(log.isDebugEnabled())
+			log.debug("Read data - bytes remaining: "+in.remaining());
+		
+		
+		// need flag to say last read channel not finished ?
+		// if so we just use that channel
+		
+		Channel channel = session.getLastReadChannel();
+		Packet packet;
+		
+		if(channel == null || channel.isFinishedRead()){
+			byte headerByte = in.get();
+			in.position(in.position()-1); // skip back 1 :)
+			byte channelId = RTMPUtils.decodeChannelId(headerByte);
+			channel = session.getChannel(channelId);
+		}
+		
+		packet = channel.readPacket(in);
+		session.setLastReadChannel(channel);
+		
+		if(packet !=null && packet.isSealed()){
+			
+			if(log.isDebugEnabled())
+				log.debug("Packet on channel #"+channel.getId());
+			
+			sessionHandler.onPacket(packet);
+		} else {
+			log.debug("Not finished");
 		}
 		
 	}
@@ -178,6 +208,12 @@ public class NetworkHandler extends IoHandlerAdapter {
 
 	public void setSessionHandler(SessionHandler sessionHandler) {
 		this.sessionHandler = sessionHandler;
+	}
+
+	public void setStressMode(boolean stressMode) {
+		this.stressMode = stressMode;
 	}	
+	
+	
 
 }
