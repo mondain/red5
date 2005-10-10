@@ -44,7 +44,7 @@
 		<property name="sessionRegistry"><ref bean="sessionRegistry" /></property>
 		<property name="serializer"><ref bean="serializer" /></property>
 		<property name="deserializer"><ref bean="deserializer" /></property>
-		<property name="serviceInvoker"><ref bean="serviceInvoker" /></property>
+		<property name="globalContext"><ref bean="globalContext" /></property>
 		<property name="statusService"><ref bean="statusService" /></property>
 	</bean>
 
@@ -66,6 +66,12 @@
 	<!-- Service Context: context for exposed services, see service.xml --> 	
 	<bean id="serviceContext" class="org.springframework.context.support.FileSystemXmlApplicationContext">
         <constructor-arg><value>./conf/service.xml</value></constructor-arg>
+    </bean>
+    
+    	<!-- Service Context: context for exposed services, see service.xml --> 	
+	<bean id="globalContext" class="org.red5.server.context.GlobalContext"
+		init-method="initialize">
+        <constructor-arg><value>./conf/global.xml</value></constructor-arg>
     </bean>
     
 
