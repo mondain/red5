@@ -80,5 +80,12 @@ public class EchoService implements IEchoService {
 		return xml;
 	}
 
+	public Object[] echoMultiParam(Map team, List words, String str){
+		Object[] result = new Object[3];
+		result[0] = team;
+		result[1] = words;
+		result[2] = str;
+		return result;
+	}
 	
 }

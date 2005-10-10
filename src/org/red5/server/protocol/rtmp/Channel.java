@@ -49,7 +49,17 @@ public class Channel {
 	private byte dataType = 0;
 	private int source = 0;
 	
+	private ByteBuffer headerBuf = ByteBuffer.allocate(12);
+	private ByteBuffer chunkBuf = ByteBuffer.allocate(128);
+	private byte headerSize = 0;
+	private static byte[] headerLengths = new byte[]{12,8,4,1};
+	
+	private boolean finishedReadHeaders = true;
+	private boolean finishedReadBody = true;
+	private boolean finishedReadChunk = true;
+	
 	public Channel(Session session, byte channelId){
+		log.debug("New channel: "+id);
 		this.session = session;
 		this.id = channelId;
 	}
@@ -58,6 +68,15 @@ public class Channel {
 		return id;
 	}
 	
+	public boolean isFinishedRead() {
+		return (finishedReadHeaders && finishedReadBody && finishedReadChunk);
+	}
+
+	
+	public boolean isFinishedReadHeaders() {
+		return finishedReadHeaders;
+	}
+
 	public Packet getLastReadPacket() {
 		return lastReadPacket;
 	}
@@ -78,52 +97,105 @@ public class Channel {
 		return session;
 	}
 
-	public Packet readPacket(ByteBuffer in){
-		return readPacket(in, false);
+	protected int getHeaderLength(byte headerSize){
+		switch(headerSize){
+		case HEADER_NEW:
+			return 12;
+		case HEADER_SAME_SOURCE:
+			return 8;
+		case HEADER_TIMER_CHANGE:
+			return 4;
+		case HEADER_CONTINUE:
+			return 1;
+		default:
+			return -1;
+		}
 	}
 	
-	protected Packet readPacket(ByteBuffer in, boolean all){
+	
+	
+	protected Packet readPacket(ByteBuffer in){
+		
 		
 		log.debug("Position: "+in.position());
 		
-		byte headerByte = in.get();
-		byte headerSize = (byte) RTMPUtils.decodeHeaderSize(headerByte);
-		
-		// This is likely to be wrong
-		/* and it was :)
-		byte kont = 0xC3 - 256;
-		
-		if(headerByte == kont && !lastReadPacket.isSealed()){
-			log.debug("Continue last packet");
-			lastReadPacket.readChunkFrom(in);
+		// if the chunk did not finish attempt to finish this time
+		if(!finishedReadChunk){
+			log.debug("Not finished chunk, continue");
+			finishedReadChunk = lastReadPacket.readChunkFrom(in);
 			return lastReadPacket;
+		} else {
+			log.debug("Chunk read ok last time");
 		}
-		*/
+		
+		
+		ByteBuffer header = null;
+		
+		if(finishedReadHeaders){
+			
+			headerSize = (byte) RTMPUtils.decodeHeaderSize(in.get());
+			int headerLength = getHeaderLength(headerSize);
+			
+			boolean bufferHeaders = (headerLength > in.remaining());
+			
+			if(bufferHeaders){
+				log.debug("Buffering packet header");
+				headerBuf.position(0);
+				headerBuf.limit(headerLength);
+				in.position(in.position()-1);
+				headerBuf.put(in);
+				finishedReadHeaders = false;
+				return null;
+			} else {
+				header = in;
+			}
+					
+		} else {
+		
+			boolean continueBuffer = (headerBuf.remaining() > in.remaining()); 
+			if(continueBuffer){
+				log.debug("Continuing packet header");
+				headerBuf.put(in);
+				return null;
+			} else {
+				log.debug("Finished buffering header");
+				int limit = in.limit();
+				in.limit(in.position()+headerBuf.remaining());
+				headerBuf.put(in);
+				in.limit(limit);
+				headerBuf.flip();
+				header = headerBuf;
+				header.get();
+				log.debug(HexDump.formatHexDump(header.getHexDump()));
+			}
+			
+		}
+		
+		finishedReadHeaders = true;
 		
 		Packet packet = null;
-		
 		boolean newPacket = true;
-
+		
 		switch(headerSize){
 		
 		case HEADER_NEW:
 			log.debug("0: Full headers");
-			timer = RTMPUtils.readMediumInt(in);
-			size = RTMPUtils.readMediumInt(in);
-			dataType = in.get();
-			source = in.getInt();
+			timer = RTMPUtils.readMediumInt(header);
+			size = RTMPUtils.readMediumInt(header);
+			dataType = header.get();
+			source = header.getInt();
 			break;
 			
 		case HEADER_SAME_SOURCE:
 			log.debug("1: Same source as last time");
-			timer = RTMPUtils.readMediumInt(in);
-			size = RTMPUtils.readMediumInt(in);
-			dataType = in.get();
+			timer = RTMPUtils.readMediumInt(header);
+			size = RTMPUtils.readMediumInt(header);
+			dataType = header.get();
 			break;
 			
 		case HEADER_TIMER_CHANGE:
 			log.debug("2: Only the timer changed");
-			timer = RTMPUtils.readMediumInt(in);
+			timer = RTMPUtils.readMediumInt(header);
 			break;
 			
 		case HEADER_CONTINUE:
@@ -141,16 +213,17 @@ public class Channel {
 				new Packet(this,timer,size,dataType,source) :
 				lastReadPacket;
 
-				
-		if(all){
-			while(packet.readChunkFrom(in));
-		} else {
-			packet.readChunkFrom(in);
+		if(packet.getSize()>0){
+			finishedReadBody = false;
 		}
+				
+		finishedReadChunk = packet.readChunkFrom(in);
+		
+		if(packet.isSealed()) finishedReadBody = true;
 		
 		lastReadPacket = packet;
 		session.setLastReadChannel(this);
-		
+
 		return packet;
 	}
 	
