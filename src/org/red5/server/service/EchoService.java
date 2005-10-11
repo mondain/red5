@@ -37,7 +37,7 @@ import org.w3c.dom.Document;
  */
 public class EchoService implements IEchoService {
 
-	private Log log = LogFactory.getLog(Standalone.class.getName());
+	private Log log = LogFactory.getLog(EchoService.class.getName());
 	
 	public void startUp() {
 		log.info("The Echo Service has started...");
