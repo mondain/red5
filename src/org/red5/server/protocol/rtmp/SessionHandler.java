@@ -61,7 +61,7 @@ public class SessionHandler {
 	protected GlobalContext globalContext;
 	protected StatusService statusService;
 	
-	public void handlePacket(Session session, Packet packet){
+	public void handlePacket(Connection session, Packet packet){
 		
 	}
 
@@ -155,12 +155,16 @@ public class SessionHandler {
 	public void onCreateStream(Packet packet, int streamId){
 		log.debug("Create stream: "+2);
 		log.error("Need to know what flashcom response is.");
+		
+		// Read the data used during the connect (ie the session)
+		
+		
 	}
 	
 	public void onFunctionCallPacket(Packet packet){
 		
 		Channel channel = packet.getSourceChannel();
-		Session session = channel.getSession();
+		Connection session = channel.getConnection();
 		
 		Input input = new Input(packet.getData());
 		
@@ -257,7 +261,7 @@ public class SessionHandler {
 		
 		// TODO Clean this mess of a method up :)
 		
-		Session session = packet.getSourceChannel().getSession();
+		Connection connection = packet.getSourceChannel().getConnection();
 		
 		//packet.
 		String appName = (String) params.get("app");
@@ -275,13 +279,13 @@ public class SessionHandler {
 				globalContext.getHostContext(hostname) : globalContext.getDefaultHost();
 		
 		AppContext app = host.getAppContext(appName);
-		session.setAppName(appName);
-		session.setAppContext(app);
+		connection.setAppName(appName);
+		connection.setAppContext(app);
 		
 		if(serviceName!=null){
 			Object service = app.getBean(serviceName);
-			session.setServiceName(serviceName);
-			session.setService(service);
+			connection.setServiceName(serviceName);
+			connection.setService(service);
 		}
 		
 		log.debug(app.getServiceInvoker());
