@@ -82,10 +82,6 @@ public class SessionHandler {
 	}
 	
 	public void onPacket(Packet packet){
-		
-		//if(log)
-		
-		//packet.getSourceChannel().getSession().getIoSession().write()
  		
 		try { 
 		
@@ -169,11 +165,11 @@ public class SessionHandler {
 		Input input = new Input(packet.getData());
 		
 		String action = (String) deserializer.deserialize(input);
-		Number number = (Number) deserializer.deserialize(input);
+		int packetId = ((Number) deserializer.deserialize(input)).intValue();
 		Object headers = deserializer.deserialize(input);
 		
 		log.debug("Action:" + action);
-		log.debug("Number: "+number.toString());
+		log.debug("Number: "+packetId);
 		log.debug("Headers: "+headers);
 		
 		Object[] params = null;
@@ -192,15 +188,17 @@ public class SessionHandler {
 			
 		} 
 		
+		// How best to support these internal actions ? 
+		// How about a hashmap of methods mapping to services in spring ?
 		
 		if(action!=null && action.equals("connect")){
 			log.debug("Call connect action");
 			session.setParams((Map) headers);
-			onConnect(packet,number.intValue(), (Map) headers);
+			onConnect(packet,packetId, (Map) headers);
 		}
 		
 		else if(action!=null && action.equals("createStream")){
-			onCreateStream(packet, number.intValue());
+			onCreateStream(packet,packetId);
 		}
 		
 		else if(action!=null && action.equals("_error")){
@@ -208,53 +206,56 @@ public class SessionHandler {
 			// what should we do now
 		}
 		
+		// Otherwise create a call object and sent it to the service object.
+		
 		else {
-			log.debug("Unknown action: "+action);
 			
-			RTMPCall call = new RTMPCall(session.getServiceName(), action, params);
-			log.debug("RTMPCall "+call);
+			RTMPCall call = new RTMPCall(session.getServiceName(), action, params, packetId, packet.getSource(), packet.getSourceChannel());
 			
+			// TODO: add worker threads here after 0.2
 			ServiceInvoker invoker = session.getAppContext().getServiceInvoker();
 			invoker.invoke(call, session.getAppContext());
-				
-			Serializer serializer = new Serializer();
-			ByteBuffer out = ByteBuffer.allocate(256);
-			out.setAutoExpand(true);
-			Output output = new Output(out);
-			serializer.serialize(output, "_result"); // seems right
-			// dont know what this number does, so im just sending it back
-			log.debug("Result: "+ call.getResult());
-			serializer.serialize(output, number); 
-			serializer.serialize(output, null);
+			writeResponse(call);
 			
-			/* 
-			 * Looks like mina is single threaded, 
-			 * we should separate the service invocation into new thread
-			 * 
-			try{
-				log.debug("Sleeping for 5 seconds...");
-				Thread.sleep((long) 1000*5);
-			} catch(Exception ex){
-				log.error(ex);
-			}
-			*/
-			
-			serializer.serialize(output, call.getResult());
-	
-			out.flip();
-		
-			Packet response = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, packet.getSource());
-						
-			log.debug(response);
-			
-			packet.getSourceChannel().writePacket(response);
-
 		}
+		
+	}
+	
+	private void writeResponse(RTMPCall call){
+		
+		if(call.isSuccess()){
+			log.debug("Result: "+ call.getResult());
+		} else {
+			log.debug("Error: ", call.getException());
+		}
+			
+		Serializer serializer = new Serializer();
+		ByteBuffer out = ByteBuffer.allocate(256);
+		out.setAutoExpand(true);
+		Output output = new Output(out);
+		serializer.serialize(output, (call.isSuccess()) ? "_result" : "_status" ); 
+		serializer.serialize(output, new Integer(call.getPacketId())); 
+		serializer.serialize(output, null);	
+		if(call.isSuccess()){
+			serializer.serialize(output, call.getResult());
+		} else {
+			// TODO: Send correct status here 
+			serializer.serialize(output, call.getException().getMessage());
+		}
+
+		out.flip();
+	
+		Packet response = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, call.getPacketSource());
+					
+		log.debug(response);
+		
+		call.getChannel().writePacket(response);
 
 	}
 	
 	private void onConnect(Packet packet, int num, Map params) {
-		// TODO Auto-generated method stub
+		
+		// TODO Clean this mess of a method up :)
 		
 		Session session = packet.getSourceChannel().getSession();
 		
@@ -290,12 +291,12 @@ public class SessionHandler {
 		out.setAutoExpand(true);
 		Output output = new Output(out);
 		serializer.serialize(output, "/result"); // seems right
-		serializer.serialize(output, new Integer(num)); // dont know what this number does, so im just sending it back
+		// dont know what this number does, so im just sending it back
+		serializer.serialize(output, new Integer(num)); 
 		serializer.serialize(output, null);
 		out.put(statusService.getStatus("SUCCESS"));
 		
-		// HACK: status service should do this before returning buffer
-		// Or another option would be have the status service return byte[]
+		// TODO: status service should return static byte[]
 		statusService.getStatus("SUCCESS").position(0);
 		
 		out.flip();

@@ -11,7 +11,6 @@
 	<bean id="server" class="org.red5.server.Server" init-method="startup"> 
 	    <property name="networkManager"><ref bean="networkManager" /></property>
 	    <property name="sessionRegistry"><ref bean="sessionRegistry" /></property>
-	    <property name="serviceContext"><ref bean="serviceContext" /></property>
 	</bean>
 	 
 	<!-- Network Manager, adds services to mina registry -->
@@ -47,11 +46,6 @@
 		<property name="globalContext"><ref bean="globalContext" /></property>
 		<property name="statusService"><ref bean="statusService" /></property>
 	</bean>
-
-	<!-- Service Invoker: invokes call object against child context -->
-	<bean id="serviceInvoker" class="org.red5.server.service.ServiceInvoker">
-		<property name="serviceContext"><ref bean="serviceContext" /></property>
-	</bean>
 	
 	<!-- Session Registry: central location for client sessions -->
 	<bean id="sessionRegistry" class="org.red5.server.SessionRegistry">
@@ -62,18 +56,12 @@
 
 	<!-- Deserializer: deserializer supporting general Input objects -->
 	<bean id="deserializer" class="org.red5.server.io.Deserializer" />
-
-	<!-- Service Context: context for exposed services, see service.xml --> 	
-	<bean id="serviceContext" class="org.springframework.context.support.FileSystemXmlApplicationContext">
-        <constructor-arg><value>./conf/service.xml</value></constructor-arg>
-    </bean>
     
     	<!-- Service Context: context for exposed services, see service.xml --> 	
 	<bean id="globalContext" class="org.red5.server.context.GlobalContext"
 		init-method="initialize">
         <constructor-arg><value>./conf/global.xml</value></constructor-arg>
     </bean>
-    
 
     <!-- Start of Status Messages -->
      <!-- Status Service: caches status objects and returns a ByteBuffer --> 

@@ -160,28 +160,6 @@ public class Packet {
 		return chunk;
 	}
 	
-	/*
-	public boolean writeChunkTo(ByteBuffer out){
-		
-		int chunkSize = getMaxChunkSize();
-		
-		int writeAmount = ( (size - data.position()) >chunkSize) 
-			? chunkSize : size - data.position();
-				
-		int limit = data.limit();
-		data.limit( data.position() + writeAmount );
-		out.put(data);
-		data.limit( limit );
-		
-		log.debug("Packet pos: "+data.position());
-		
-		if(data.position() == size){
-			data.reset();
-			return false; 
-		} else return true;
-	}
-	*/
-	
 	public ByteBuffer getData(){
 		return data;
 	}
@@ -232,5 +210,28 @@ public class Packet {
 		sb.append(HexDump.formatHexDump(data.getHexDump()));
 		return sb.toString();
 	}
+	
+	
+	/*
+	public boolean writeChunkTo(ByteBuffer out){
+		
+		int chunkSize = getMaxChunkSize();
+		
+		int writeAmount = ( (size - data.position()) >chunkSize) 
+			? chunkSize : size - data.position();
+				
+		int limit = data.limit();
+		data.limit( data.position() + writeAmount );
+		out.put(data);
+		data.limit( limit );
+		
+		log.debug("Packet pos: "+data.position());
+		
+		if(data.position() == size){
+			data.reset();
+			return false; 
+		} else return true;
+	}
+	*/
 	
 }

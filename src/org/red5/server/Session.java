@@ -24,7 +24,6 @@ package org.red5.server;
 
 public class Session {
 
-	// Start up spring
-	// Register mina handlers
+	// TODO this will be the clients global session within red5
 
 }

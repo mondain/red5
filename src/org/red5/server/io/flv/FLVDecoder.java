@@ -41,6 +41,7 @@ public class FLVDecoder {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		if(args.length < 1) {
+			args = new String[1];
 			args[0] = "flvs/nvnlogo1.flv";
 			//usage();
 			//return;

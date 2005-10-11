@@ -39,6 +39,8 @@ public class NetworkHandler extends IoHandlerAdapter {
 	// TODO: implement max connection code
 	protected int maxConnections = -1;
 	protected SessionHandler sessionHandler;
+	
+	// TODO: add stressMode to handshake also
 	protected boolean stressMode = false;
 	
 	public void sessionCreated(IoSession session){
@@ -56,8 +58,11 @@ public class NetworkHandler extends IoHandlerAdapter {
 		session.close();
 	}
 
-	
-	
+	public void dataWritten(IoSession ioSession, Object event) throws Exception {
+		// TODO callback to the streaming code for the next packet if event != null and of correct type
+		super.dataWritten(ioSession, event);
+	}
+
 	public void dataRead(IoSession ioSession, ByteBuffer in) {
 		
 		if(log.isDebugEnabled()){
@@ -99,17 +104,11 @@ public class NetworkHandler extends IoHandlerAdapter {
 			
 			if(stressMode){
 				int limit = in.limit();
-				int remaining = in.remaining();
 				while(in.position() < limit){
 					log.debug("stressRead");
 					in.limit(in.position()+1);
 					processRead(session,in);
-					//if(session.getLastReadChannel().isFinishedReadHeaders())
-					//	break;
 				}
-				//log.debug("Read body");
-				//in.limit(limit);
-				//processRead(session,in);
 			}
 			
 			else {
@@ -199,8 +198,6 @@ public class NetworkHandler extends IoHandlerAdapter {
 		session.getIoSession().write(out, null);
 
 	}
-
-
 
 	public void setMaxConnections(int maxConnections) {
 		this.maxConnections = maxConnections;

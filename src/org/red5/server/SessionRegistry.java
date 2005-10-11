@@ -30,4 +30,6 @@ public class SessionRegistry {
 	protected static Log log =
         LogFactory.getLog(SessionRegistry.class.getName());
 
+	// TODO service for lookup of client sessions
+	
 }

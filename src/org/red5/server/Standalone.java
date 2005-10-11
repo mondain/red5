@@ -49,6 +49,7 @@ public class Standalone {
 		}
 		
 		FileSystemXmlApplicationContext appCtx = new FileSystemXmlApplicationContext(red5ConfigPath);
+		log.debug("Startup date: "+appCtx.getStartupDate());
 
 	}
 

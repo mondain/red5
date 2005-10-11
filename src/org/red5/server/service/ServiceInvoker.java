@@ -27,7 +27,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
@@ -50,15 +49,12 @@ public class ServiceInvoker  {
 	
 	public void invoke(Call call, ApplicationContext serviceContext) {
 		
-		
-		
 		String serviceName = call.getServiceName();
 		String methodName = call.getServiceMethodName();
 		log.debug("Service name " + serviceName);
 		log.debug("Service method " + methodName);
 		
 		Object service = null;
-	
 		
 		if(serviceContext.containsBean(serviceName)){
 			service = serviceContext.getBean(serviceName);
@@ -69,37 +65,54 @@ public class ServiceInvoker  {
 			call.setException(new ServiceNotFoundException(serviceName));
 			call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
 			log.warn("Service not found: "+serviceName);
+			return; // EXIT
 		} else {
 			log.debug("Service found: "+serviceName);
 		}
 		
 		
 		Object[] args = call.getArguments();
-		Class[] typeArray = new Class[args.length];
-		for(int i=0; i<typeArray.length; i++) {
-			typeArray[i] = (args[i]==null) ? null : args[i].getClass();
-		}
-		
 		
 		List methods = ConversionUtils.findMethodsByNameAndNumParams(service,methodName, args.length);
 	
 		log.debug("Found "+methods.size()+" methods");
 		
-		Method method = (Method) methods.get(0);
-		
-		Object[] params=ConversionUtils.convertParams(args,method.getParameterTypes());
-		
-		//Method method = MethodUtils.getAccessibleMethod(service.getClass(), methodName, typeArray);
-		if(method == null){
-			log.debug("Count not find method :(");
+		if(methods.size()==0){
+			log.debug("Method not found");
+			call.setStatus(Call.STATUS_METHOD_NOT_FOUND);
+			call.setException(new MethodNotFoundException(methodName));
+			return; // EXIT
+		} else if(methods.size() > 1){
+			log.debug("Multiple methods found with same name and parameter count.");
+			log.debug("Parameter conversion will be attempted in order.");
 		}
 		
+		boolean foundMethod = false;
+		Method method = null;
+		Object[] params = null;
+		for(int i=0; i<methods.size(); i++){
+			try {
+				method = (Method) methods.get(i);
+				params=ConversionUtils.convertParams(args,method.getParameterTypes());
+				foundMethod = true;
+				break;
+			} catch (Exception ex){
+				log.debug("Parameter conversion failed", ex);
+			}
+		}
+		
+		if(!foundMethod){
+			log.debug("Method not found, parameter conversion failed");
+			call.setStatus(Call.STATUS_METHOD_NOT_FOUND);
+			call.setException(new MethodNotFoundException(methodName));
+			return; // EXIT
+		}
 		
 		Object result = null;
 		
 		try {
+			log.debug("Invoking method: "+method.toString());
 			result = method.invoke(service, params);
-			//result = MethodUtils.invokeMethod(service, call.getServiceMethodName(), args);
 			call.setResult(result);
 			call.setStatus( result==null ? Call.STATUS_SUCCESS_NULL : Call.STATUS_SUCCESS_RESULT );
 		} catch (IllegalAccessException accessEx){

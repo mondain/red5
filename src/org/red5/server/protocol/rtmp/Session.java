@@ -31,6 +31,8 @@ import org.red5.server.context.AppContext;
 
 public class Session {
 	
+	// TODO revisit this class after 0.2 release, should it be called Connection? 
+	
 	public static final byte STATE_UNKNOWN = -1;
 	public static final byte STATE_CONNECT = 0;
 	public static final byte STATE_HANDSHAKE = 1;
@@ -111,9 +113,7 @@ public class Session {
 		state = STATE_CONNECTED;
 	}
 	
-	
-	
-	// TODO: ADD OTHER PACKET TYPE YANNIK SPOKE ABOUT
+	// TODO: ADD OTHER PACKET TYPE YANNICK SPOKE ABOUT
 	
 	public void writePacket(Packet packet){
 		//handler.writePacket(this, packet);
@@ -173,9 +173,5 @@ public class Session {
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
 	}
-	
-	
-	
-	
 	
 }
