@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mina.io.IoSession;
 import org.red5.server.context.AppContext;
 
-public class Session {
+public class Connection {
 	
 	// TODO revisit this class after 0.2 release, should it be called Connection? 
 	
@@ -61,9 +61,9 @@ public class Session {
 	private Object service = null;
 	
 	protected static Log log =
-        LogFactory.getLog(Session.class.getName());
+        LogFactory.getLog(Connection.class.getName());
 
-	public Session(IoSession ioSession, NetworkHandler protocolHandler){
+	public Connection(IoSession ioSession, NetworkHandler protocolHandler){
 		state = STATE_CONNECT;
 		io = ioSession;
 		handler = protocolHandler;

@@ -42,7 +42,7 @@ public class Channel {
 
 	private Packet lastWritePacket = null;
 	private Packet lastReadPacket = null;
-	private Session session = null;
+	private Connection connection = null;
 
 	private int timer = 0;
 	private int size = 0;
@@ -56,9 +56,9 @@ public class Channel {
 	private boolean finishedReadBody = true;
 	private boolean finishedReadChunk = true;
 	
-	public Channel(Session session, byte channelId){
+	public Channel(Connection session, byte channelId){
 		log.debug("New channel: "+id);
-		this.session = session;
+		this.connection = session;
 		this.id = channelId;
 	}
 	
@@ -91,8 +91,8 @@ public class Channel {
 		this.lastWritePacket = lastWritePacket;
 	}
 
-	public Session getSession() {
-		return session;
+	public Connection getConnection() {
+		return connection;
 	}
 
 	protected int getHeaderLength(byte headerSize){
@@ -220,12 +220,16 @@ public class Channel {
 		if(packet.isSealed()) finishedReadBody = true;
 		
 		lastReadPacket = packet;
-		session.setLastReadChannel(this);
+		connection.setLastReadChannel(this);
 
 		return packet;
 	}
 	
 	public void writePacket(Packet packet){
+		writePacket(packet, null);
+	}
+	
+	public void writePacket(Packet packet, Object stream){
 		
 		ByteBuffer headers = ByteBuffer.allocate(9);
 		
@@ -259,7 +263,7 @@ public class Channel {
 		ByteBuffer out = ByteBuffer.allocate(2048);
 		out.setAutoExpand(true);
 		
-		session.setLastWriteChannel(this);
+		connection.setLastWriteChannel(this);
 		//session.getIoSession().write(headers,null);
 		headers.flip();
 		out.put(headers);
@@ -300,7 +304,7 @@ public class Channel {
 			BufferLogUtils.debug(log,"Write raw response",out);
 		}
 		
-		session.getIoSession().write(out,null);
+		connection.getIoSession().write(out,stream);
 		
 		// this will destroy the packet if there are no more refs
 		packet.release();

@@ -59,8 +59,12 @@ public class NetworkHandler extends IoHandlerAdapter {
 	}
 
 	public void dataWritten(IoSession ioSession, Object event) throws Exception {
-		// TODO callback to the streaming code for the next packet if event != null and of correct type
-		super.dataWritten(ioSession, event);
+		if(event!=null && event instanceof Stream){
+			Stream stream = (Stream) event;
+			if(stream.hasMorePackets()){
+				stream.writeNextPacket();
+			}
+		}
 	}
 
 	public void dataRead(IoSession ioSession, ByteBuffer in) {
@@ -70,34 +74,34 @@ public class NetworkHandler extends IoHandlerAdapter {
 			BufferLogUtils.debug(log,"Raw packet",in);
 		}
 			
-		Session session = (Session) ioSession.getAttachment();
-		if (session == null) {
-			session = new Session(ioSession, this);
-			ioSession.setAttachment(session);
+		Connection connection = (Connection) ioSession.getAttachment();
+		if (connection == null) {
+			connection = new Connection(ioSession, this);
+			ioSession.setAttachment(connection);
 		}
 
-		switch (session.getState()) {
+		switch (connection.getState()) {
 
-		case Session.STATE_CONNECT:
+		case Connection.STATE_CONNECT:
 			
 			if(log.isDebugEnabled())
 				log.debug("New connection, handshake packet");
 			
-			handshake(session, in);
-			session.handshake();
+			handshake(connection, in);
+			connection.handshake();
 			break;
 
-		case Session.STATE_HANDSHAKE:
+		case Connection.STATE_HANDSHAKE:
 			
 			if(log.isDebugEnabled())
 				log.debug("Handshake response, first packet");
 			
 			// skip the first 1536 as thdese are the as server handshake
 			in.skip(1536);
-			session.connected();
+			connection.connected();
 			// fall through..
 
-		case Session.STATE_CONNECTED:
+		case Connection.STATE_CONNECTED:
 			
 			if(log.isDebugEnabled())
 				log.debug("Normal packet");
@@ -107,13 +111,13 @@ public class NetworkHandler extends IoHandlerAdapter {
 				while(in.position() < limit){
 					log.debug("stressRead");
 					in.limit(in.position()+1);
-					processRead(session,in);
+					processRead(connection,in);
 				}
 			}
 			
 			else {
 				while(in.remaining()>0){
-					processRead(session, in);
+					processRead(connection, in);
 				}
 			}
 			
@@ -123,7 +127,7 @@ public class NetworkHandler extends IoHandlerAdapter {
 		
 	}
 	
-	public void processRead(Session session, ByteBuffer in){
+	public void processRead(Connection session, ByteBuffer in){
 		
 		if(log.isDebugEnabled())
 			log.debug("Read data - bytes remaining: "+in.remaining());
@@ -157,7 +161,7 @@ public class NetworkHandler extends IoHandlerAdapter {
 		
 	}
 
-	public void handshake(Session session, ByteBuffer in) {
+	public void handshake(Connection session, ByteBuffer in) {
 		// read the header byte
 		byte header = in.get();
 
