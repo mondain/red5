@@ -157,7 +157,7 @@ public class SessionHandler {
 		log.error("Need to know what flashcom response is.");
 		
 		// Read the data used during the connect (ie the session)
-		
+		//Stream stream = new Stream()
 		
 	}
 	

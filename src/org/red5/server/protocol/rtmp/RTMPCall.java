@@ -41,7 +41,7 @@ public class RTMPCall extends Call {
 		return channel;
 	}
 
-	public int getPacketId() {
+	public int getPacketId(){
 		return packetId;
 	}
 
