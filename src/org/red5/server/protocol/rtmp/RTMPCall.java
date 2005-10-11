@@ -26,9 +26,27 @@ import org.red5.server.service.Call;
 
 public class RTMPCall extends Call {
 
+	protected int packetId = -1;
+	protected int packetSource = -1;
+	protected Channel channel;
 
-	public RTMPCall(String serviceName, String serviceMethod, Object[] args){
+	public RTMPCall(String serviceName, String serviceMethod, Object[] args, int packetId, int packetSource, Channel channel){
 		super(serviceName, serviceMethod, args);
+		this.packetId = packetId;
+		this.packetSource = packetSource;
+		this.channel = channel;
+	}
+
+	public Channel getChannel() {
+		return channel;
+	}
+
+	public int getPacketId() {
+		return packetId;
+	}
+
+	public int getPacketSource() {
+		return packetSource;
 	}
 	
 }

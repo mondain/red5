@@ -50,9 +50,7 @@ public class Channel {
 	private int source = 0;
 	
 	private ByteBuffer headerBuf = ByteBuffer.allocate(12);
-	private ByteBuffer chunkBuf = ByteBuffer.allocate(128);
 	private byte headerSize = 0;
-	private static byte[] headerLengths = new byte[]{12,8,4,1};
 	
 	private boolean finishedReadHeaders = true;
 	private boolean finishedReadBody = true;
