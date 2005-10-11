@@ -34,7 +34,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ServiceInvokerTest extends TestCase {
 
-	// TODO: Add more tests, can you take over chris ?
+	// TODO: Add more tests!
+	// we dont have to test all the echo methods, more test the call object works as expected
+	// the correct types of status are returned (method not found) etc. 
+	// Also, we need to add tests which show the way the parameter conversion works.
+	// So have a few methods with the same name, and try with diff params, making sure right one gets called.
 	
 	protected static Log log =
         LogFactory.getLog(ServiceInvokerTest.class.getName());
@@ -60,6 +64,24 @@ public class ServiceInvokerTest extends TestCase {
 		invoker.invoke(call, appCtx);
 		Assert.assertEquals(call.isSuccess(), true);
 		Assert.assertEquals(call.getResult(), params[0]);
+	}
+	
+	public void testExceptionStatus(){
+		Object[] params = new Object[]{"Woot this is cool"};
+		Call call = new Call("doesntExist","echoString", params);
+		ServiceInvoker invoker = (ServiceInvoker) appCtx.getBean(ServiceInvoker.SERVICE_NAME);
+		invoker.invoke(call, appCtx);
+		Assert.assertEquals(call.isSuccess(), false);
+		Assert.assertEquals(call.getStatus(), Call.STATUS_SERVICE_NOT_FOUND);
+		call = new Call("echoService","doesntExist", params);
+		invoker.invoke(call, appCtx);
+		Assert.assertEquals(call.isSuccess(), false);
+		Assert.assertEquals(call.getStatus(), Call.STATUS_METHOD_NOT_FOUND);
+		params = new Object[]{"too","many","params"};
+		call = new Call("echoService","echoString", params);
+		invoker.invoke(call, appCtx);
+		Assert.assertEquals(call.isSuccess(), false);
+		Assert.assertEquals(call.getStatus(), Call.STATUS_METHOD_NOT_FOUND);
 	}
 	
 	protected void tearDown() throws Exception {
