@@ -134,4 +134,10 @@ public class FLVTag {
 
 	}
 
+	public boolean hasRemaining() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+
 }

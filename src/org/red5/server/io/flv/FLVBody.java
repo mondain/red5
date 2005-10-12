@@ -31,24 +31,30 @@ public class FLVBody {
 	private int previousTagSize = 0;
 	private FLVTag tag;
 	private MappedByteBuffer mappedFile;
+	int packetSize = 0;
 	
 	
 	public FLVBody(MappedByteBuffer mappedFile) {
 		// TODO Auto-generated constructor stub
 		this.mappedFile = mappedFile;
 	}
+	
 	public int getPreviousTagSize() {
 		return previousTagSize;
 	}
+	
 	public void setPreviousTagSize(int previousTagSize) {
 		this.previousTagSize = previousTagSize;
 	}
+	
 	public FLVTag getTag() {
 		return tag;
 	}
+	
 	public void setTag(FLVTag tag) {
 		this.tag = tag;
 	}
+	
 	public void getTags() {
 		// TODO Auto-generated method stub
 		int packetSize = 0;
@@ -155,5 +161,58 @@ public class FLVBody {
 	
 	public static int unsignedByteToInt(byte b) {
 	    return (int) b & 0xFF;
+	}
+	
+	public FLVTag getNextTag() {
+				
+		// PREVIOUS_TAG_SIZE
+		this.setPreviousTagSize(mappedFile.getInt());
+		System.out.println("PreviousTagSize: " + this.getPreviousTagSize());
+				
+		// guard against additional reads
+		if(!mappedFile.hasRemaining()) {
+			System.out.println("FLV has reached end of stream");
+			return null;
+		}		
+		
+		packetSize++;
+		
+		System.out.println("FLVTAG " + packetSize);
+		// Create FLVTag
+	
+		FLVTag tag = new FLVTag(mappedFile);
+	
+		
+		// TAG TYPE
+		//System.out.println("ho: " + unsignedByteToInt(mappedFile.get()));
+		
+		tag.setTagType((byte) mappedFile.get());
+		
+		//System.out.println("test: " + mappedFile.get());
+		// DATA SIZE
+		
+		tag.setDataSize(this.readDataSize());
+		
+		// TIME STAMP
+		tag.setTimeStamp(this.readTimeStamp());
+		
+		// RESERVED
+		tag.setReserved(mappedFile.getInt());
+		
+		int tmp = tag.getDataSize();
+		
+		//System.out.println("ah: " + unsignedByteToInt(tmp[2]));
+		tag.setData(this.readData(tmp));
+		
+		//System.out.println("test: " + tag.getDataSize()[0] +tag.getDataSize()[1] + tag.getDataSize()[2] );
+		//byte[] n = this.readData(tag.getDataSize());
+		System.out.println("------------\n" + tag + "\n");
+		
+		return tag;
+		
+	}
+
+	public boolean hasRemaining() {
+		return mappedFile.hasRemaining();
 	}
 }

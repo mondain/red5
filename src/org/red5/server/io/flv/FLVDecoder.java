@@ -140,4 +140,32 @@ public class FLVDecoder {
 		this.fis = fis;
 	}
 
+	public FLVHeader decodeHeader() {
+		// Instantiate FLVHeader
+		FLVHeader header = new FLVHeader();
+		
+		// SIGNATURE	
+		header.setSignature(readSignatureBytes());
+		
+		// VERSION
+		header.setVersion((byte) mappedFile.get());
+		
+		// TYPE FLAGS
+		header.setTypeFlags((byte) mappedFile.get());
+		
+		// DATA OFFSET
+		header.setDataOffset(mappedFile.getInt());
+		
+		// Print FLVHeader
+		System.out.println("HEADER: (pos)" + mappedFile.position() + "\n---------\n" + header.toString());
+		
+		return header;
+	}
+
+	public FLVBody decodeBody() {
+//		 Instantiate FLVBody
+		FLVBody body = new FLVBody(mappedFile);
+		return body;
+	}
+
 }
