@@ -1,4 +1,6 @@
-package org.red5.server.protocol.rtmp.attic;
+package org.red5.server.protocol.rtmp.status2;
+
+import java.io.Serializable;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -22,18 +24,26 @@ package org.red5.server.protocol.rtmp.attic;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
-public class StatusObject {
+public class StatusObject implements Serializable {
 
+	private static final long serialVersionUID = 8817297676191096283L;
+	
 	public static final String ERROR = "error";
 	public static final String STATUS = "status";
 	public static final String WARNING = "warning";
 	
 	protected String code;
 	protected String level;
-	protected String description;
+	protected String description = "";
+	
+	public StatusObject(){
+		
+	}
 	
 	public StatusObject(String code, String level, String description){
-		
+		this.code = code;
+		this.level = level;
+		this.description = description;
 	}
 	
 	public String getCode() {
@@ -48,7 +58,7 @@ public class StatusObject {
 		return description;
 	}
 	
-	public void setDescription(String description) {
+	public void setDesciption(String description) {
 		this.description = description;
 	}
 	

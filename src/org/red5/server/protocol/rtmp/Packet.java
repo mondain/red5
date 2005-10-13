@@ -30,6 +30,7 @@ import org.red5.server.utils.HexDump;
 public class Packet {
 
 	public static final byte TYPE_FUNCTION_CALL = 0x14;
+	public static final byte TYPE_FUNCTION_CALL_NOREPLY = 0x12;
 	
 	public static final byte TYPE_VIDEO = 0x09;
 	public static final byte TYPE_AUDIO = 0x08;

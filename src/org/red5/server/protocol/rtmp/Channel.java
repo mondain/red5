@@ -25,6 +25,9 @@ package org.red5.server.protocol.rtmp;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
+import org.red5.server.io.Serializer;
+import org.red5.server.io.amf.Output;
+import org.red5.server.protocol.rtmp.status2.StatusObjectService;
 import org.red5.server.utils.BufferLogUtils;
 import org.red5.server.utils.HexDump;
 
@@ -55,6 +58,8 @@ public class Channel {
 	private boolean finishedReadHeaders = true;
 	private boolean finishedReadBody = true;
 	private boolean finishedReadChunk = true;
+	
+	private StatusObjectService statusObjectService;
 	
 	public Channel(Connection session, byte channelId){
 		log.debug("New channel: "+id);
@@ -311,6 +316,6 @@ public class Channel {
 		
 	}
 	
-
+	
 	
 }
