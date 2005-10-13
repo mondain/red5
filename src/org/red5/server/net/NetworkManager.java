@@ -29,10 +29,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.TransportType;
-import org.apache.mina.examples.echoserver.ssl.BogusSSLContextFactory;
 import org.apache.mina.io.IoAcceptor;
 import org.apache.mina.io.IoHandlerAdapter;
-import org.apache.mina.io.filter.SSLFilter;
 import org.apache.mina.protocol.ProtocolProvider;
 import org.apache.mina.registry.Service;
 import org.apache.mina.registry.ServiceRegistry;
@@ -138,11 +136,13 @@ public class NetworkManager {
 	private static void addSSLSupport( ServiceRegistry registry )
 	  throws Exception
 	{
+		/* disabled for now as it was needing the ssl classes to compile
 		SSLFilter sslFilter =
 	    new SSLFilter( BogusSSLContextFactory.getInstance( true ) );
 	    IoAcceptor acceptor = registry.getIoAcceptor( TransportType.SOCKET );
 	    acceptor.getFilterChain().addLast( "sslFilter", sslFilter );
 	    System.out.println( "SSL ON" );
+	    */
 	}
 	
 	/*
