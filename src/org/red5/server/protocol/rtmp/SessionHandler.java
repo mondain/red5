@@ -36,7 +36,8 @@ import org.red5.server.io.Deserializer;
 import org.red5.server.io.Serializer;
 import org.red5.server.io.amf.Input;
 import org.red5.server.io.amf.Output;
-import org.red5.server.protocol.rtmp.status.StatusService;
+import org.red5.server.protocol.rtmp.status2.RuntimeStatusObject;
+import org.red5.server.protocol.rtmp.status2.StatusObjectService;
 import org.red5.server.service.ServiceInvoker;
 
 /*
@@ -59,7 +60,7 @@ public class SessionHandler {
 	protected Deserializer deserializer;
 	protected SessionRegistry sessionRegistry;
 	protected GlobalContext globalContext;
-	protected StatusService statusService;
+	protected StatusObjectService statusObjectService;
 	
 	public void handlePacket(Connection session, Packet packet){
 		
@@ -144,7 +145,9 @@ public class SessionHandler {
 	
 	private void onSharedObjectConnectPacket(Packet packet) {
 		log.error("Shared Object");
-		log.error("Need to know what flashcom response is.");
+		log.error("Need to know what flashcom response is."); 
+		
+		
 	}
 	
 	private void onSharedObjectPacket(Packet packet) {
@@ -152,14 +155,60 @@ public class SessionHandler {
 		String sharedObjectName = Input.getString(packet.getData());
 	}
 
-	public void onCreateStream(Packet packet, int streamId){
+	Stream hackStream = null;
+	
+	public void onCreateStream(Packet packet, int streamId, Object[] params){
 		log.debug("Create stream: "+2);
 		log.error("Need to know what flashcom response is.");
+		Connection conn = packet.getSourceChannel().getConnection();
+		// Hard coded the stream channels at the moment 
+		Stream stream = new Stream(
+				conn.getChannel((byte)0x05), 
+				conn.getChannel((byte)0x04), 
+				conn.getChannel((byte)0x06),
+				packet.getSource(),
+				this);
 		
+		hackStream = stream;
+		
+		Serializer serializer = new Serializer();
+		ByteBuffer out = ByteBuffer.allocate(256);
+		out.setAutoExpand(true);
+		Output output = new Output(out);
+		serializer.serialize(output, "_result"); 
+		serializer.serialize(output, new Integer(streamId)); 
+		serializer.serialize(output, null);
+		serializer.serialize(output, new Integer(1)); // pick a number at random	
+		out.flip();
+		Packet response = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, packet.getSource());
+					
+		log.debug(response);
+		
+		packet.getSourceChannel().writePacket(response);
+		
+		//stream.play("flvs/spark_no_audio.flv");
 		// Read the data used during the connect (ie the session)
 		//Stream stream = new Stream()
 		
 	}
+	
+	public void onPlay(Packet packet, int streamId, Object[] params){
+		
+		// total hack :)
+		Stream stream = hackStream;
+		log.debug((String) params[0]);
+		
+		stream.play("flvs/nvnlogo1.flv"); 
+		
+		//stream.play("flvs/spark_no_audio.flv");
+		// Read the data used during the connect (ie the session)
+		//Stream stream = new Stream()
+		
+	}
+	
+	// play
+	// deleteStream
+	// cancelStream
 	
 	public void onFunctionCallPacket(Packet packet){
 		
@@ -202,7 +251,11 @@ public class SessionHandler {
 		}
 		
 		else if(action!=null && action.equals("createStream")){
-			onCreateStream(packet,packetId);
+			onCreateStream(packet,packetId, params);
+		}
+		
+		else if(action!=null && action.equals("play")){
+			onPlay(packet,packetId, params);
 		}
 		
 		else if(action!=null && action.equals("_error")){
@@ -298,10 +351,8 @@ public class SessionHandler {
 		// dont know what this number does, so im just sending it back
 		serializer.serialize(output, new Integer(num)); 
 		serializer.serialize(output, null);
-		out.put(statusService.getStatus("SUCCESS"));
 		
-		// TODO: status service should return static byte[]
-		statusService.getStatus("SUCCESS").position(0);
+		out.put(statusObjectService.getCachedStatusObjectAsByteArray(statusObjectService.NC_CONNECT_SUCCESS));
 		
 		out.flip();
 		log.debug(""+out.position());
@@ -321,26 +372,114 @@ public class SessionHandler {
 	
 	public void onVideoPacket(Packet packet){
 		// what to do with video
+		// get the channel from the packet
+		// get the stream from the channel
 	}
 	
 	public void onClientBandwidthPacket(Packet packet){
-		
+		// need to understand the format of this packet
 	}
 	
 	public void onServerBandwidthPacket(Packet packet){
-		
+		// need to understand the format of this packlet
 	}
 
 	public void onPingPacket(Packet packet){
+		
+		ByteBuffer out = ByteBuffer.allocate(256);
+		out.setAutoExpand(true);
 	
+		
+		ByteBuffer in = packet.getData();
+		
+		short firstShort = in.getShort();
+		int firstInt = in.getInt();
+		
+		firstShort++;
+		
+		out.putShort(firstShort);
+		out.putInt(firstInt);
+		
+		out.flip();
+		
+		Packet ping = new Packet(out, 0, Packet.TYPE_PING, packet.getSource());
+		log.debug(ping);
+		packet.getSourceChannel().writePacket(ping);
+		
+		ByteBuffer out2 = ByteBuffer.allocate(256);
+		out2.setAutoExpand(true);
+	
+		out2.putShort((short) 0);
+		out2.putInt(1);
+		
+		out2.flip();
+		
+		Packet ping2 = new Packet(out2, 0, Packet.TYPE_PING, packet.getSource());
+		log.debug(ping2);
+		packet.getSourceChannel().writePacket(ping2);
+		
 	}
 
 	public void onMisteryPacket(Packet packet){
-	
+		// looking forward to this one
 	}
 
-	public void setStatusService(StatusService statusService) {
-		this.statusService = statusService;
+	public void setStatusObjectService(StatusObjectService statusObjectService) {
+		this.statusObjectService = statusObjectService;
 	}
+	
+	protected int statusPacketID = 16777216;
+	
+	public void sendRuntimeStatus(Channel channel, String statusCode, String details, int clientId){
+		
+		Object obj = statusObjectService.getStatusObject(statusCode);
+		if(obj == null || !(obj instanceof RuntimeStatusObject)){
+			log.error(statusCode + " is not a runtime status object, not writing status");
+			return;
+		}
+		
+		log.debug("Sending runtime status: "+statusCode);
+		
+		RuntimeStatusObject statusObject = (RuntimeStatusObject) obj;
+	
+		Serializer serializer = new Serializer();
+		ByteBuffer out = ByteBuffer.allocate(256);
+		out.setAutoExpand(true);
+		Output output = new Output(out);
+		serializer.serialize(output, "onStatus"); 
+		serializer.serialize(output, new Integer(1)); 
+		serializer.serialize(output, null);	
+		
+		statusObject.setDetails(details);
+		statusObject.setClientid(clientId);
+		
+		statusObjectService.serializeStatusObject(out, statusObject);
+		
+		out.flip();
+	
+		Packet status = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, statusPacketID);
+		log.debug(status);
+		
+		channel.writePacket(status);
+	}
+	
+	public void sendStatus(Channel channel, String statusCode){
+		log.debug("Sending status: "+statusCode);
+		Serializer serializer = new Serializer();
+		ByteBuffer out = ByteBuffer.allocate(256);
+		out.setAutoExpand(true);
+		Output output = new Output(out);
+		serializer.serialize(output, "onStatus"); 
+		serializer.serialize(output, new Integer(1)); 
+		serializer.serialize(output, null);	
+		out.put(statusObjectService.getCachedStatusObjectAsByteArray(statusCode));
+		out.flip();
+	
+		Packet status = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, statusPacketID);
+		log.debug(status);
+		
+		channel.writePacket(status);
+	}
+	
 	
 }

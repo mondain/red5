@@ -205,8 +205,10 @@ public class Serializer {
 		out.writeStartObject(null);
 		Set set = map.entrySet();
 		Iterator it = set.iterator();
+		boolean isBeanMap = (map instanceof BeanMap);
 		while(it.hasNext()){
 			Map.Entry entry = (Map.Entry) it.next();
+			if(isBeanMap && ((String)entry.getKey()).equals("class")) continue;
 			out.writePropertyName(entry.getKey().toString());
 			serialize(out,entry.getValue());
 			if(it.hasNext()) out.markPropertySeparator();

@@ -44,7 +44,7 @@
 		<property name="serializer"><ref bean="serializer" /></property>
 		<property name="deserializer"><ref bean="deserializer" /></property>
 		<property name="globalContext"><ref bean="globalContext" /></property>
-		<property name="statusService"><ref bean="statusService" /></property>
+		<property name="statusObjectService"><ref bean="statusObjectService" /></property>
 	</bean>
 	
 	<!-- Session Registry: central location for client sessions -->
@@ -63,8 +63,19 @@
         <constructor-arg><value>./conf/global.xml</value></constructor-arg>
     </bean>
 
-    <!-- Start of Status Messages -->
-     <!-- Status Service: caches status objects and returns a ByteBuffer --> 
+
+    <bean id="statusObjectService"
+		class="org.red5.server.protocol.rtmp.status2.StatusObjectService" 
+		init-method="initialize">
+		<property name="serializer">
+    			<ref bean="serializer" />
+    		</property>
+    </bean>
+    
+	
+	<!-- Start of Status Messages -->
+    <!-- Status Service: caches status objects and returns a ByteBuffer --> 
+    <!--
     <bean id="statusService"
     	class="org.red5.server.protocol.rtmp.status.StatusService"
     	init-method="cache" singleton="true">
@@ -78,9 +89,9 @@
     		<ref bean="applicationStatus" />
     	</property>
     </bean>
-    
+    -->
     <!-- Application Status: returns application related Status objects --> 	
-	 
+	<!--
 	<bean id="applicationStatus"
 		class="org.red5.server.protocol.rtmp.status.ApplicationStatus">
     </bean>
@@ -88,7 +99,7 @@
     <bean id="connectionStatus"
 		class="org.red5.server.protocol.rtmp.status.ConnectionStatus">
     </bean>
-   
-    <!-- End of Status Messages -->	
+    -->
+	<!-- End of Status Messages -->	
 	
 </beans>

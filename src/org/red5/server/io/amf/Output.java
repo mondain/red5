@@ -101,7 +101,7 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 
 	// DONE
 	public void writeNull() {
-		System.err.println("Write null");
+		//System.err.println("Write null");
 		buf.put(AMF.TYPE_NULL);
 	}
 
