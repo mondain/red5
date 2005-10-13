@@ -481,5 +481,22 @@ public class SessionHandler {
 		channel.writePacket(status);
 	}
 	
+	public void sendNotify(Channel channel, String statusCode){
+		log.debug("Sending status: "+statusCode);
+		Serializer serializer = new Serializer();
+		ByteBuffer out = ByteBuffer.allocate(256);
+		out.setAutoExpand(true);
+		Output output = new Output(out);
+		serializer.serialize(output, "onStatus"); 
+		serializer.serialize(output, new Integer(1)); 
+		serializer.serialize(output, null);	
+		out.put(statusObjectService.getCachedStatusObjectAsByteArray(statusCode));
+		out.flip();
+	
+		Packet status = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL_NOREPLY, statusPacketID);
+		log.debug(status);
+		
+		channel.writePacket(status);
+	}
 	
 }

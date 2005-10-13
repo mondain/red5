@@ -53,6 +53,9 @@ public class Stream {
 	}
 	
 	public void play(String flvPath){
+		
+		
+		
 		this.flvPath = flvPath;
 		System.out.println("flvPath" + flvPath);
 		// read the flv header here
@@ -75,10 +78,24 @@ public class Stream {
 		String details = "0_320_high";
 		
 		sessionHandler.sendRuntimeStatus(videoChannel, StatusObjectService.NS_PLAY_RESET, details, clientid);
+		
+		
+		
 		sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
 		
 		// This is wrong its not a function 14, its a notify 12
-		sessionHandler.sendStatus(videoChannel, StatusObjectService.NS_DATA_START);
+		sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
+		
+		try {
+			for(int i=1; i<60; i++){
+				sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
+				//.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
+				Thread.sleep(1000);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		// send onMetaData down data channel
 		
