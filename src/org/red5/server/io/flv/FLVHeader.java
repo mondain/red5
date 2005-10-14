@@ -54,7 +54,7 @@ public class FLVHeader {
 	public String toString() {
 		String ret = "";
 		//ret += "SIGNATURE: \t" + getSIGNATURE() + "\n";
-		ret += "SIGNATURE: \t\t" + new String(signature) + "\n";  
+		//ret += "SIGNATURE: \t\t" + new String(signature) + "\n";  
 		ret += "VERSION: \t\t" + ((byte) getVersion()) + "\n";
 		ret += "TYPE FLAGS VIDEO: \t" + getFlagVideo() + "\n";
 		ret += "TYPE FLAGS AUDIO: \t" + getFlagAudio() + "\n";
@@ -78,8 +78,8 @@ public class FLVHeader {
 	}
 
 	public void setTypeFlags(byte typeFlags) {
-		flagVideo = (((typeFlags << 7) >> 7) > 0x00)? true : false;
-		flagAudio = (((typeFlags << 5) >> 7) > 0x00)? true : false;
+		flagVideo = (((typeFlags << 7) >> 7) > 0x00) ? true : false;
+		flagAudio = (((typeFlags << 5) >> 7) > 0x00) ? true : false;
 	}
 	
 	public byte getFlagReserved01() {

@@ -132,12 +132,13 @@ public class SessionHandler {
 			// should we close connection here ?
 		} finally {
 			
+			/*
 			log.debug("Check for remaining");
 			Input input = new Input(packet.getData());
 			while(packet.getData().remaining()>0){
 				log.debug("Deserialize:" + deserializer.deserialize(input));
 			}
-			
+			*/
 			// destory the packet, releasing the internal buffer
 			packet.release();
 		}
@@ -198,8 +199,8 @@ public class SessionHandler {
 		Stream stream = hackStream;
 		log.debug((String) params[0]);
 		
-		stream.play("flvs/nvnlogo1.flv"); 
-		
+		//stream.play("flvs/nvnlogo1.flv"); 
+		stream.play("flvs/spark_no_audio.flv"); 
 		//stream.play("flvs/spark_no_audio.flv");
 		// Read the data used during the connect (ie the session)
 		//Stream stream = new Stream()

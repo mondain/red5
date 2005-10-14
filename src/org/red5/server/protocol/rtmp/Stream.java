@@ -3,10 +3,9 @@ package org.red5.server.protocol.rtmp;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
-import org.red5.server.io.flv.FLVBody;
-import org.red5.server.io.flv.FLVDecoder;
 import org.red5.server.io.flv.FLVHeader;
-import org.red5.server.io.flv.FLVTag;
+import org.red5.server.io.flv2.FLVReader;
+import org.red5.server.io.flv2.FLVTag;
 import org.red5.server.protocol.rtmp.status2.StatusObjectService;
 
 public class Stream {
@@ -28,10 +27,7 @@ public class Stream {
 	protected int currentTag = 0;
 	protected int numTags = 0;
 	
-	private FLVDecoder decoder = null;
-	private FLVHeader header = null;
-	private FLVBody body = null;
-	private FLVTag tag = null;
+	private FLVReader flvReader = null;
 	
 	// Int used to count upto x number of packets, then the stream will close
 	// This is used to stop things going for ever when we learn how to control bandwidth
@@ -62,11 +58,17 @@ public class Stream {
 		// get a hold on the mapped body
 		
 		// Grab FLVDecoder
-		decoder = new FLVDecoder(this.flvPath);
-		// Grab FLVHeader
-		header = decoder.decodeHeader();
-		// Grab FLVBody
-		body = decoder.decodeBody();
+		try {
+		
+		flvReader = new FLVReader(this.flvPath);
+		
+		} catch(Exception ex){
+			log.error(ex);
+			return;
+		}
+		
+		
+		
 		log.debug("Stream setup: "+flvPath);
 		//writeHeader(header);
 
@@ -85,23 +87,14 @@ public class Stream {
 		
 		// This is wrong its not a function 14, its a notify 12
 		sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
+	
 		
-		try {
-			for(int i=1; i<60; i++){
-				sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
-				//.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
-				Thread.sleep(1000);
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		// send onMetaData down data channel
 		
 		// start sending video packets down video channel, not doing this yet
 		
-		//writeNextPacket();
+		writeNextPacket();
 	}
 	
 	public void seek(int pos){
@@ -119,7 +112,7 @@ public class Stream {
 			return false;
 		}
 		//return (currentTag < numTags);
-		return body.hasRemaining();
+		return flvReader.hasMoreTags();
 	}
 	
 	public void writeHeader(FLVHeader header2) {
@@ -148,52 +141,37 @@ public class Stream {
 		
 	}
 	
-	public void writeNextPacket(){
-		videoChannel.writePacket(getNextPacket(), this);
-	}
+	protected int statusPacketID = 16777216;
 	
-	public Packet getNextPacket(){
+	public void writeNextPacket(){
 		// Still need to figure out how to create packet
 		Packet packet = null;
 		try {
 			log.debug("Send next packet");
-			//currentTag++;
-			// get the next chunk as nio read only buffer
-			// create a new packet with correct source etc
 			
-			// After getting body, we can start calling body.getNextTag();
-			// Grab FLVTag
-			// a FLVBody consists of a int representing the previousSize and
-			// a FLVTag
-			int previousTagSize = body.getPreviousTagSize();
-			tag = body.getNextTag();
-			log.debug("Next tag?");
-			byte tagType = (byte) tag.getTagType();
-			int dataSize = tag.getDataSize();
-			byte[] timeStamp = (byte[]) tag.getTimeStamp();
-			int reserved = tag.getReserved();
-			byte[] data = (byte[]) tag.getData();
+			FLVTag tag = flvReader.getNextTag();
 			
-			ByteBuffer buf = ByteBuffer.allocate(256);
-			buf.setAutoExpand(true);
-			buf.putInt(previousTagSize);
-			buf.put(tagType);
-			buf.putInt(dataSize);
-			buf.put(timeStamp);
-			buf.putInt(reserved);
-			buf.put(data);
-			
-			buf.flip();
-			
-			int timer = 1;
-			
-			log.debug("Creating packet");
-			packet = new Packet(buf, timer, tagType, source);
+			if(tag.getDataType() == FLVTag.TYPE_METADATA){
+				log.debug("Metadata, skipping for now");
+				packet = new Packet(tag.getBody(), tag.getTimestamp(), Packet.TYPE_FUNCTION_CALL_NOREPLY, source);
+				dataChannel.writePacket(packet, this);
+			}
+			else {	
+				packet = new Packet(tag.getBody(), tag.getTimestamp(), tag.getDataType(), statusPacketID);
+				
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				videoChannel.writePacket(packet, this);
+			}
 		} catch (RuntimeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return packet;
 	}
 
 }

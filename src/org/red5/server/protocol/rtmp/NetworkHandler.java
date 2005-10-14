@@ -25,6 +25,7 @@ package org.red5.server.protocol.rtmp;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
+import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.SessionConfig;
 import org.apache.mina.io.IoHandlerAdapter;
 import org.apache.mina.io.IoSession;
@@ -49,6 +50,8 @@ public class NetworkHandler extends IoHandlerAdapter {
 			log.debug("New connection: "+session.getRemoteAddress().toString());
 		
 		SessionConfig cfg = session.getConfig();
+		//cfg.setIdleTime(IdleStatus.BOTH_IDLE, 30000);
+		//cfg.setWriteTimeout(60000);
 		if (cfg instanceof SocketSessionConfig) {
 			((SocketSessionConfig) cfg).setSessionReceiveBufferSize(2048);
 		}
@@ -67,62 +70,67 @@ public class NetworkHandler extends IoHandlerAdapter {
 		}
 	}
 
-	public void dataRead(IoSession ioSession, ByteBuffer in) {
+	public void dataRead(IoSession ioSession, ByteBuffer in){
 		
-		if(log.isDebugEnabled()){
-			log.debug(" ====== READ DATA ===== ");
-			BufferLogUtils.debug(log,"Raw packet",in);
-		}
-			
-		Connection connection = (Connection) ioSession.getAttachment();
-		if (connection == null) {
-			connection = new Connection(ioSession, this);
-			ioSession.setAttachment(connection);
-		}
-
-		switch (connection.getState()) {
-
-		case Connection.STATE_CONNECT:
-			
-			if(log.isDebugEnabled())
-				log.debug("New connection, handshake packet");
-			
-			handshake(connection, in);
-			connection.handshake();
-			break;
-
-		case Connection.STATE_HANDSHAKE:
-			
-			if(log.isDebugEnabled())
-				log.debug("Handshake response, first packet");
-			
-			// skip the first 1536 as thdese are the as server handshake
-			in.skip(1536);
-			connection.connected();
-			// fall through..
-
-		case Connection.STATE_CONNECTED:
-			
-			if(log.isDebugEnabled())
-				log.debug("Normal packet");
-			
-			if(stressMode){
-				int limit = in.limit();
-				while(in.position() < limit){
-					log.debug("stressRead");
-					in.limit(in.position()+1);
-					processRead(connection,in);
-				}
+		try {
+			if(log.isDebugEnabled()){
+				log.debug(" ====== READ DATA ===== ");
+				BufferLogUtils.debug(log,"Raw packet",in);
 			}
-			
-			else {
-				while(in.remaining()>0){
-					processRead(connection, in);
-				}
+				
+			Connection connection = (Connection) ioSession.getAttachment();
+			if (connection == null) {
+				connection = new Connection(ioSession, this);
+				ioSession.setAttachment(connection);
 			}
-			
-			break;
 
+			switch (connection.getState()) {
+
+			case Connection.STATE_CONNECT:
+				
+				if(log.isDebugEnabled())
+					log.debug("New connection, handshake packet");
+				
+				handshake(connection, in);
+				connection.handshake();
+				break;
+
+			case Connection.STATE_HANDSHAKE:
+				
+				if(log.isDebugEnabled())
+					log.debug("Handshake response, first packet");
+				
+				// skip the first 1536 as thdese are the as server handshake
+				in.skip(1536);
+				connection.connected();
+				// fall through..
+
+			case Connection.STATE_CONNECTED:
+				
+				if(log.isDebugEnabled())
+					log.debug("Normal packet");
+				
+				if(stressMode){
+					int limit = in.limit();
+					while(in.position() < limit){
+						log.debug("stressRead");
+						in.limit(in.position()+1);
+						processRead(connection,in);
+					}
+				}
+				
+				else {
+					while(in.remaining()>0){
+						processRead(connection, in);
+					}
+				}
+				
+				break;
+
+			}
+		} catch (RuntimeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
@@ -200,6 +208,7 @@ public class NetworkHandler extends IoHandlerAdapter {
 		}
 		
 		session.getIoSession().write(out, null);
+	
 
 	}
 
@@ -213,6 +222,24 @@ public class NetworkHandler extends IoHandlerAdapter {
 
 	public void setStressMode(boolean stressMode) {
 		this.stressMode = stressMode;
+	}
+
+	public void sessionClosed(IoSession session) throws Exception {
+		// TODO Auto-generated method stub
+		super.sessionClosed(session);
+		log.debug("Session closed");
+	}
+
+	public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
+		// TODO Auto-generated method stub
+		super.sessionIdle(session, status);
+		log.debug("Session Idle");
+	}
+
+	public void sessionOpened(IoSession session) throws Exception {
+		// TODO Auto-generated method stub
+		super.sessionOpened(session);
+		log.debug("Session Opened");
 	}	
 	
 	

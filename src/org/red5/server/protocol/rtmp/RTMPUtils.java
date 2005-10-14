@@ -34,6 +34,17 @@ public class RTMPUtils {
 		out.put(bytes);
 	}
 	
+	public static int readUnsignedMediumInt(ByteBuffer in) {
+		byte[] bytes = new byte[3];
+		in.get(bytes);
+		int val = 0;
+		val += (bytes[0] & 0xFF) * 256 * 256;
+		val += (bytes[1] & 0xFF) * 256;
+		val += (bytes[2] & 0xFF);
+		return val;
+	}
+	
+	
 	public static int readMediumInt(ByteBuffer in) {
 		byte[] bytes = new byte[3];
 		in.get(bytes);
