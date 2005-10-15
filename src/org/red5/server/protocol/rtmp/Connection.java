@@ -26,12 +26,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.io.IoSession;
 import org.red5.server.context.AppContext;
 
-public class Connection {
+public class Connection { 
 	
-	// TODO revisit this class after 0.2 release, should it be called Connection? 
+	public static final int HANDSHAKE_SIZE = 1536;
 	
 	public static final byte STATE_UNKNOWN = -1;
 	public static final byte STATE_CONNECT = 0;
@@ -45,15 +46,21 @@ public class Connection {
 	public static final String PARAM_TCURL = "tcUrl";
 	
 	private byte state = STATE_UNKNOWN;
+	private ByteBuffer handshakeBuffer;
+	private int handshakeRemaining = HANDSHAKE_SIZE;
+	
 	private IoSession io;
 	private NetworkHandler handler;
 	
 	private int packetsRead = 0;
 	private int packetsWritten = 0;
 	
+	private int clientBytesRead = 0;
+	
 	private Channel lastReadChannel = null;
 	private Channel lastWriteChannel = null;
 	
+	// Application variables
 	private Map params = null;	
 	private String appName = null;
 	private AppContext appContext;
@@ -67,9 +74,21 @@ public class Connection {
 		state = STATE_CONNECT;
 		io = ioSession;
 		handler = protocolHandler;
+		handshakeBuffer = ByteBuffer.allocate(HANDSHAKE_SIZE+1);
 	}
-
+	
 	private Channel[] channels = new Channel[64];
+	
+	public int getNextAvailableChannelId(){
+		int result = -1;
+		for(byte i=3; i<channels.length; i++){
+			if(!isChannelUsed(i)){
+				result = i;
+				break;
+			}
+		}
+		return result;
+	}
 	
 	public boolean isChannelUsed(byte channelId){
 		return (channels[channelId] != null);
@@ -105,6 +124,18 @@ public class Connection {
 		return state;
 	}
 	
+	public ByteBuffer getHandshakeBuffer() {
+		return handshakeBuffer;
+	}
+
+	public int getHandshakeRemaining() {
+		return handshakeRemaining;
+	}
+
+	public void setHandshakeRemaining(int handshakeResponseRead) {
+		this.handshakeRemaining = handshakeResponseRead;
+	}
+
 	public void handshake(){
 		state = STATE_HANDSHAKE;
 	}
@@ -112,13 +143,7 @@ public class Connection {
 	public void connected(){
 		state = STATE_CONNECTED;
 	}
-	
-	// TODO: ADD OTHER PACKET TYPE YANNICK SPOKE ABOUT
-	
-	public void writePacket(Packet packet){
-		//handler.writePacket(this, packet);
-	}
-	
+		
 	public void close(){
 		log.debug("Closing connection");
 		io.close();
@@ -128,6 +153,18 @@ public class Connection {
 		return io;
 	}
 	
+	
+	
+	// -------------------------------------------
+	
+	public int getClientBytesRead() {
+		return clientBytesRead;
+	}
+
+	public void setClientBytesRead(int clientBytesRead) {
+		this.clientBytesRead = clientBytesRead;
+	}
+
 	public String getParameter(String name){
 		if(params == null) return null;
 		if(name == null) return null;

@@ -39,10 +39,23 @@ public class NetworkHandler extends IoHandlerAdapter {
 	
 	// TODO: implement max connection code
 	protected int maxConnections = -1;
+	
 	protected SessionHandler sessionHandler;
 	
-	// TODO: add stressMode to handshake also
 	protected boolean stressMode = false;
+	
+	protected byte[] serverHandshake;
+	
+	public NetworkHandler(){
+		fillServerHandshake();
+	}
+	
+	private void fillServerHandshake(){
+		serverHandshake = new byte[1536];
+		for (int i = 0; i < serverHandshake.length; i++)
+			serverHandshake[i] = 0x00;
+	}
+	
 	
 	public void sessionCreated(IoSession session){
 		
@@ -50,8 +63,7 @@ public class NetworkHandler extends IoHandlerAdapter {
 			log.debug("New connection: "+session.getRemoteAddress().toString());
 		
 		SessionConfig cfg = session.getConfig();
-		//cfg.setIdleTime(IdleStatus.BOTH_IDLE, 30000);
-		//cfg.setWriteTimeout(60000);
+
 		if (cfg instanceof SocketSessionConfig) {
 			((SocketSessionConfig) cfg).setSessionReceiveBufferSize(2048);
 		}
@@ -91,8 +103,19 @@ public class NetworkHandler extends IoHandlerAdapter {
 				if(log.isDebugEnabled())
 					log.debug("New connection, handshake packet");
 				
-				handshake(connection, in);
-				connection.handshake();
+				ByteBuffer buf = connection.getHandshakeBuffer();
+				buf.put(in);
+				
+				log.debug("Handskake buffer position: "+buf.position());
+				
+				if(buf.position()==Connection.HANDSHAKE_SIZE+1){
+					log.debug("Handshake buffer full, proceeding");
+					buf.flip();
+					handshake(connection, buf);
+					buf.release();
+					connection.handshake();
+				}
+				
 				break;
 
 			case Connection.STATE_HANDSHAKE:
@@ -101,9 +124,18 @@ public class NetworkHandler extends IoHandlerAdapter {
 					log.debug("Handshake response, first packet");
 				
 				// skip the first 1536 as thdese are the as server handshake
-				in.skip(1536);
-				connection.connected();
-				// fall through..
+				
+				int hsRemaining = connection.getHandshakeRemaining();
+				int remaining = in.remaining();
+				if(remaining < hsRemaining){
+					connection.setHandshakeRemaining(hsRemaining-remaining);
+					in.skip(remaining);
+					break;
+				} else {
+					in.skip(hsRemaining);
+					connection.connected();
+					// fall through..
+				}
 
 			case Connection.STATE_CONNECTED:
 				
@@ -185,13 +217,6 @@ public class NetworkHandler extends IoHandlerAdapter {
 
 		// header byte
 		out.put((byte) 0x03);
-
-		// initially I used the actual bytes from micks dump
-		// but I soon discovered it doesnt matter what these bytes are
-		// so lets create the response filling it with 0x00
-		byte[] serverHandshake = new byte[1536];
-		for (int i = 0; i < serverHandshake.length; i++)
-			serverHandshake[i] = 0x00;
 
 		// write server handshake to the buffer
 		out.put(serverHandshake);

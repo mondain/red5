@@ -18,9 +18,9 @@ public class Stream {
 	public static final byte STATE_PAUSED = 0x03;
 	public static final byte STATE_END = 0x04;
 	
-	protected Channel dataChannel;
-	protected Channel audioChannel;
-	protected Channel videoChannel; 
+	protected Channel dataChannel = null;
+	protected Channel audioChannel = null;
+	protected Channel videoChannel = null; 
 	protected int source = -1;
 	
 	protected String flvPath;
@@ -36,15 +36,14 @@ public class Stream {
 	protected int killPoint = 100;
 	
 	protected SessionHandler sessionHandler;
-
+	protected Connection conn;
+	
 	protected byte status = STATE_STOPPED;
 	
-	public Stream(Channel data, Channel video, Channel audio, int source, SessionHandler sessionHandler){
-		this.dataChannel = data;
-		this.audioChannel = audio;
-		this.videoChannel = video;
+	public Stream(Connection conn, int source, SessionHandler sessionHandler){
 		this.source = source;
 		this.sessionHandler = sessionHandler;
+		this.conn = conn;
 		log.debug("Created stream");
 	}
 	
@@ -60,8 +59,27 @@ public class Stream {
 		// Grab FLVDecoder
 		try {
 		
-		flvReader = new FLVReader(this.flvPath);
-		
+			flvReader = new FLVReader(this.flvPath);
+			
+			dataChannel = conn.getChannel((byte)conn.getNextAvailableChannelId());
+			log.debug("data channel: "+dataChannel.getId());
+			
+			if(flvReader.getHeader().getFlagVideo()){
+				videoChannel = conn.getChannel((byte)conn.getNextAvailableChannelId());
+				log.debug("video channel: "+videoChannel.getId());
+			}
+			
+			if(flvReader.getHeader().getFlagAudio()){
+				audioChannel = conn.getChannel((byte)conn.getNextAvailableChannelId());
+				log.debug("audio channel: "+audioChannel.getId());
+			}
+			
+			
+			
+			
+			//conn.close();
+			
+			
 		} catch(Exception ex){
 			log.error(ex);
 			return;
@@ -95,6 +113,7 @@ public class Stream {
 		// start sending video packets down video channel, not doing this yet
 		
 		writeNextPacket();
+		//writeNextPacket();
 	}
 	
 	public void seek(int pos){
@@ -115,33 +134,10 @@ public class Stream {
 		return flvReader.hasMoreTags();
 	}
 	
-	public void writeHeader(FLVHeader header2) {
-		log.debug("Send header");
-		ByteBuffer buf = ByteBuffer.allocate(256);
-		buf.put(header2.getSignature());
-		buf.put(header2.getVersion());
-		
-		byte type = (byte) 0x00;
-		if(header2.getFlagAudio()) {
-			type |= (byte) (0x01 << 2);
-		}
-		
-		if(header2.getFlagVideo()) {
-			type |= (byte) 0x01;
-		}
-		
-		buf.put(type);
-		buf.putInt(header2.getDataOffset());
-		
-		int timer = 3;
-		byte tagType = Packet.TYPE_VIDEO;
-		// Still need to figure out how to create packet
-		Packet packet = new Packet(buf, timer, tagType, 3);
-		videoChannel.writePacket(packet, this);
-		
-	}
-	
 	protected int statusPacketID = 16777216;
+	
+	protected boolean continueTag = false;
+	protected FLVTag lastTag = null;
 	
 	public void writeNextPacket(){
 		// Still need to figure out how to create packet
@@ -149,25 +145,69 @@ public class Stream {
 		try {
 			log.debug("Send next packet");
 			
-			FLVTag tag = flvReader.getNextTag();
+			FLVTag tag = null;
 			
-			if(tag.getDataType() == FLVTag.TYPE_METADATA){
-				log.debug("Metadata, skipping for now");
+			if(continueTag){
+				tag = lastTag;
+			} else {
+				tag = flvReader.getNextTag();
+			}
+			
+			lastTag = tag;
+			
+			byte dataType = tag.getDataType();
+			
+			if(dataType == FLVTag.TYPE_METADATA){
 				packet = new Packet(tag.getBody(), tag.getTimestamp(), Packet.TYPE_FUNCTION_CALL_NOREPLY, source);
 				dataChannel.writePacket(packet, this);
 			}
-			else {	
+			else if(dataType == FLVTag.TYPE_VIDEO){
+				
+				/* doesnt work
+				ByteBuffer buff = null;
+				ByteBuffer body = tag.getBody(); 
+				
+				if(body.remaining() > 1024){
+					log.debug("Chunking");
+					continueTag = true;
+					buff = ByteBuffer.allocate(1024);
+					int limit = body.limit();
+					body.limit(body.position()+1024);
+					buff.put(body);
+					body.limit(limit);
+					buff.flip();
+				} else {
+					log.debug("Last write");
+					continueTag = false;
+					buff = body;
+				}
+				*/
+				
+				log.info("ts: "+tag.getTimestamp());
+				
+				//packet = new Packet(buff, tag.getTimestamp(), tag.getDataType(), statusPacketID);
+				
+				packet = new Packet(tag.getBody(), tag.getTimestamp(), tag.getDataType(), statusPacketID);
+				
+				
+				videoChannel.writePacket(packet, this);
+			}
+			
+			else if(dataType == FLVTag.TYPE_AUDIO){
 				packet = new Packet(tag.getBody(), tag.getTimestamp(), tag.getDataType(), statusPacketID);
 				
 				try {
-					Thread.sleep(20);
+					Thread.sleep(10);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
-				videoChannel.writePacket(packet, this);
+				audioChannel.writePacket(packet, this);
+			} else {
+				log.error("Unexpected datatype: "+dataType);
 			}
+			
 		} catch (RuntimeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

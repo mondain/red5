@@ -39,6 +39,7 @@ import org.red5.server.io.amf.Output;
 import org.red5.server.protocol.rtmp.status2.RuntimeStatusObject;
 import org.red5.server.protocol.rtmp.status2.StatusObjectService;
 import org.red5.server.service.ServiceInvoker;
+import org.red5.server.utils.HexDump;
 
 /*
  * RED5 Open Source Flash Server 
@@ -111,9 +112,9 @@ public class SessionHandler {
 				log.info("Ping");
 				onPingPacket(packet);
 				break;
-			case Packet.TYPE_MISTERY:
-				log.info("Mistery");
-				onMisteryPacket(packet);
+			case Packet.TYPE_CLIENT_BYTES_READ:
+				log.info("Client bytes read");
+				onClientBytesReadPacket(packet);
 				break;
 			case Packet.TYPE_SHARED_OBJECT:
 				log.info("Shared Object");
@@ -164,12 +165,14 @@ public class SessionHandler {
 		Connection conn = packet.getSourceChannel().getConnection();
 		// Hard coded the stream channels at the moment 
 		Stream stream = new Stream(
-				conn.getChannel((byte)0x05), 
-				conn.getChannel((byte)0x04), 
-				conn.getChannel((byte)0x06),
+				packet.getSourceChannel().getConnection(),
 				packet.getSource(),
 				this);
-		
+		/*
+		conn.getChannel((byte)0x05), 
+		conn.getChannel((byte)0x04), 
+		conn.getChannel((byte)0x06),
+		*/
 		hackStream = stream;
 		
 		Serializer serializer = new Serializer();
@@ -200,7 +203,7 @@ public class SessionHandler {
 		log.debug((String) params[0]);
 		
 		//stream.play("flvs/nvnlogo1.flv"); 
-		stream.play("flvs/spark_no_audio.flv"); 
+		stream.play("flvs/on2_no _audio.flv"); 
 		//stream.play("flvs/spark_no_audio.flv");
 		// Read the data used during the connect (ie the session)
 		//Stream stream = new Stream()
@@ -222,7 +225,7 @@ public class SessionHandler {
 		int packetId = ((Number) deserializer.deserialize(input)).intValue();
 		Object headers = deserializer.deserialize(input);
 		
-		log.debug("Action:" + action);
+		log.info("Action:" + action);
 		log.debug("Number: "+packetId);
 		log.debug("Headers: "+headers);
 		
@@ -421,8 +424,12 @@ public class SessionHandler {
 		
 	}
 
-	public void onMisteryPacket(Packet packet){
-		// looking forward to this one
+	public void onClientBytesReadPacket(Packet packet){
+		
+		int bytesRead = packet.getData().getInt();
+		log.info("Client bytes read: "+bytesRead);
+		packet.getSourceChannel().getConnection().setClientBytesRead(bytesRead);
+		
 	}
 
 	public void setStatusObjectService(StatusObjectService statusObjectService) {
