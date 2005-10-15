@@ -38,7 +38,7 @@ public class Packet {
 	public static final byte TYPE_CLIENT_BANDWIDTH = 0x06;
 	public static final byte TYPE_SERVER_BANDWIDTH = 0x05;
 	public static final byte TYPE_PING = 0x04;
-	public static final byte TYPE_MISTERY = 0x03;
+	public static final byte TYPE_CLIENT_BYTES_READ = 0x03;
 	
 	// somthing to do with shared object
 	public static final byte TYPE_SHARED_OBJECT = 0x13;

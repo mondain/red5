@@ -6,7 +6,7 @@ public class FLVTag {
 	
 	public static final byte TYPE_VIDEO = 0x09;
 	public static final byte TYPE_AUDIO = 0x08;
-	public static final byte TYPE_METADATA = 0x18;
+	public static final byte TYPE_METADATA = 0x12;
 
 	protected byte dataType;
 	protected int timestamp;
