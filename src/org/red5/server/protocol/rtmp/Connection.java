@@ -22,6 +22,7 @@ package org.red5.server.protocol.rtmp;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -66,6 +67,9 @@ public class Connection {
 	private AppContext appContext;
 	private String serviceName = null;
 	private Object service = null;
+	
+	// List of streams
+	private ArrayList streams;
 	
 	protected static Log log =
         LogFactory.getLog(Connection.class.getName());

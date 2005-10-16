@@ -29,12 +29,6 @@ public class Stream {
 	
 	private FLVReader flvReader = null;
 	
-	// Int used to count upto x number of packets, then the stream will close
-	// This is used to stop things going for ever when we learn how to control bandwidth
-	protected int killCounter = 0;
-	// When the killCounter reaches this point we cut out.. 
-	protected int killPoint = 100;
-	
 	protected SessionHandler sessionHandler;
 	protected Connection conn;
 	
@@ -126,11 +120,6 @@ public class Stream {
 	}
 	
 	public boolean hasMorePackets(){		
-		if(killCounter >= killPoint) {
-			log.debug("Kill point reached, not more packets should be written");
-			return false;
-		}
-		//return (currentTag < numTags);
 		return flvReader.hasMoreTags();
 	}
 	
@@ -143,7 +132,9 @@ public class Stream {
 		// Still need to figure out how to create packet
 		Packet packet = null;
 		try {
-			log.debug("Send next packet");
+			
+			if(log.isDebugEnabled())
+				log.debug("Send next packet");
 			
 			FLVTag tag = null;
 			
@@ -183,7 +174,7 @@ public class Stream {
 				}
 				*/
 				
-				log.info("ts: "+tag.getTimestamp());
+				// log.info("ts: "+tag.getTimestamp());
 				
 				//packet = new Packet(buff, tag.getTimestamp(), tag.getDataType(), statusPacketID);
 				

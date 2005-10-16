@@ -62,7 +62,8 @@ public class Channel {
 	private StatusObjectService statusObjectService;
 	
 	public Channel(Connection session, byte channelId){
-		log.debug("New channel: "+id);
+		if(log.isDebugEnabled())
+			log.debug("New channel: "+id);
 		this.connection = session;
 		this.id = channelId;
 	}
@@ -124,11 +125,11 @@ public class Channel {
 		
 		// if the chunk did not finish attempt to finish this time
 		if(!finishedReadChunk){
-			log.debug("Not finished chunk, continue");
+			//log.debug("Not finished chunk, continue");
 			finishedReadChunk = lastReadPacket.readChunkFrom(in);
 			return lastReadPacket;
 		} else {
-			log.debug("Chunk read ok last time");
+			//log.debug("Chunk read ok last time");
 		}
 		
 		
@@ -142,7 +143,7 @@ public class Channel {
 			boolean bufferHeaders = (headerLength > in.remaining());
 			
 			if(bufferHeaders){
-				log.debug("Buffering packet header");
+				//log.debug("Buffering packet header");
 				headerBuf.position(0);
 				headerBuf.limit(headerLength);
 				in.position(in.position()-1);
@@ -157,11 +158,11 @@ public class Channel {
 		
 			boolean continueBuffer = (headerBuf.remaining() > in.remaining()); 
 			if(continueBuffer){
-				log.debug("Continuing packet header");
+				//log.debug("Continuing packet header");
 				headerBuf.put(in);
 				return null;
 			} else {
-				log.debug("Finished buffering header");
+				//log.debug("Finished buffering header");
 				int limit = in.limit();
 				in.limit(in.position()+headerBuf.remaining());
 				headerBuf.put(in);
@@ -182,7 +183,8 @@ public class Channel {
 		switch(headerSize){
 		
 		case HEADER_NEW:
-			log.debug("0: Full headers");
+			if(log.isDebugEnabled())
+				log.debug("0: Full headers");
 			timer = RTMPUtils.readMediumInt(header);
 			size = RTMPUtils.readMediumInt(header);
 			dataType = header.get();
@@ -190,19 +192,22 @@ public class Channel {
 			break;
 			
 		case HEADER_SAME_SOURCE:
-			log.debug("1: Same source as last time");
+			if(log.isDebugEnabled())
+				log.debug("1: Same source as last time");
 			timer = RTMPUtils.readMediumInt(header);
 			size = RTMPUtils.readMediumInt(header);
 			dataType = header.get();
 			break;
 			
 		case HEADER_TIMER_CHANGE:
-			log.debug("2: Only the timer changed");
+			if(log.isDebugEnabled())
+				log.debug("2: Only the timer changed");
 			timer = RTMPUtils.readMediumInt(header);
 			break;
 			
 		case HEADER_CONTINUE:
-			log.debug("3: Continue, no change");
+			if(log.isDebugEnabled())
+				log.debug("3: Continue, no change");
 			newPacket = (lastReadPacket != null && lastReadPacket.isSealed());
 			break;
 			
@@ -254,7 +259,8 @@ public class Channel {
 		// write timer
 		RTMPUtils.writeMediumInt(headers, packet.getTimer());
 		
-		log.debug("Packet size: "+packet.getSize());
+		if(log.isDebugEnabled())
+			log.debug("Packet size: "+packet.getSize());
 		// write size
 		RTMPUtils.writeMediumInt(headers, packet.getSize());
 		
@@ -274,35 +280,36 @@ public class Channel {
 		out.put(headers);
 		
 		int numChunks = packet.getNumberOfChunks();
-		log.debug("Num chunks: "+numChunks);
+		
+		if(log.isDebugEnabled())
+			log.debug("Num chunks: "+numChunks);
 		if(numChunks > 1){
-			log.debug("Writing "+numChunks+" chunks");
+			if(log.isDebugEnabled())
+				log.debug("Writing "+numChunks+" chunks");
 			ByteBuffer chunk; // = packet.getChunk(0);
 			//session.getIoSession().write(chunk,null);
 			for(int i=0; i<=numChunks && (chunk = packet.getChunk(i)) != null; i++){
-				log.debug("Continue writing");
+				//log.debug("Continue writing");
 				if(i>0) out.put(RTMPUtils.encodeHeaderByte(HEADER_CONTINUE, id));
 				out.put(chunk);
 				
 			}
 		} else if (numChunks == 1){
 			// no need to chunk it, as its only one piece
-			log.debug("Writing a single chunk");
+			// log.debug("Writing a single chunk");
 			ByteBuffer body = packet.getData();
 			body.acquire(); // we dont want it released
 			//session.getIoSession().write(body,null);
 			out.put(body);
-			
-			
-			
-			
 		} else {
-			log.debug("No chunks to write.");
+			if(log.isDebugEnabled())
+				log.debug("No chunks to write.");
 		}
 		
 		out.flip();
-		log.debug("Position: "+out.position());
-		log.debug("Limit: "+out.limit());
+		
+		//log.debug("Position: "+out.position());
+		//log.debug("Limit: "+out.limit());
 		
 		if(log.isDebugEnabled()){
 			log.debug(" ====== WRITE DATA ===== ");
