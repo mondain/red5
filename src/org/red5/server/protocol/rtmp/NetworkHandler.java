@@ -106,10 +106,10 @@ public class NetworkHandler extends IoHandlerAdapter {
 				ByteBuffer buf = connection.getHandshakeBuffer();
 				buf.put(in);
 				
-				log.debug("Handskake buffer position: "+buf.position());
+				//log.debug("Handskake buffer position: "+buf.position());
 				
 				if(buf.position()==Connection.HANDSHAKE_SIZE+1){
-					log.debug("Handshake buffer full, proceeding");
+					//log.debug("Handshake buffer full, proceeding");
 					buf.flip();
 					handshake(connection, buf);
 					buf.release();
@@ -196,7 +196,8 @@ public class NetworkHandler extends IoHandlerAdapter {
 			
 			sessionHandler.onPacket(packet);
 		} else {
-			log.debug("Not finished");
+			if(log.isDebugEnabled())
+				log.debug("Not finished");
 		}
 		
 	}

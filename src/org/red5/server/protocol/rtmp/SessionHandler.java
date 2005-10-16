@@ -89,39 +89,48 @@ public class SessionHandler {
 		
 			switch(packet.getDataType()){
 			case Packet.TYPE_FUNCTION_CALL:
-				log.info("Function Call");
+				if(log.isInfoEnabled())
+					log.info("Function Call");
 				onFunctionCallPacket(packet);
 				break;
 			case Packet.TYPE_VIDEO:
-				log.info("Video");
+				if(log.isInfoEnabled())
+					log.info("Video");
 				onVideoPacket(packet);
 				break;
 			case Packet.TYPE_AUDIO:
-				log.info("Audio");
+				if(log.isInfoEnabled())
+					log.info("Audio");
 				onAudioPacket(packet);
 				break;
 			case Packet.TYPE_CLIENT_BANDWIDTH:
-				log.info("Client Bandwidth");
+				if(log.isInfoEnabled())
+					log.info("Client Bandwidth");
 				onClientBandwidthPacket(packet);
 				break;
 			case Packet.TYPE_SERVER_BANDWIDTH:
-				log.info("Server Bandwidth");
+				if(log.isInfoEnabled())
+					log.info("Server Bandwidth");
 				onServerBandwidthPacket(packet);
 				break;
 			case Packet.TYPE_PING:
-				log.info("Ping");
+				if(log.isInfoEnabled())
+					log.info("Ping");
 				onPingPacket(packet);
 				break;
 			case Packet.TYPE_CLIENT_BYTES_READ:
-				log.info("Client bytes read");
+				if(log.isInfoEnabled())
+					log.info("Client bytes read");
 				onClientBytesReadPacket(packet);
 				break;
 			case Packet.TYPE_SHARED_OBJECT:
-				log.info("Shared Object");
+				if(log.isInfoEnabled())
+					log.info("Shared Object");
 				onSharedObjectPacket(packet);
 				break;
 			case Packet.TYPE_SHARED_OBJECT_CONNECT:
-				log.info("Shared Object Connect");
+				if(log.isInfoEnabled())
+					log.info("Shared Object Connect");
 				onSharedObjectConnectPacket(packet);
 			default:
 				log.error("Unknown datatype: "+packet.getDataType());
@@ -203,7 +212,8 @@ public class SessionHandler {
 		log.debug((String) params[0]);
 		
 		//stream.play("flvs/nvnlogo1.flv"); 
-		stream.play("flvs/on2_no _audio.flv"); 
+		//stream.play("flvs/on2_no _audio.flv"); 
+		stream.play("flvs/TrenchRunRed5.flv");
 		//stream.play("flvs/spark_no_audio.flv");
 		// Read the data used during the connect (ie the session)
 		//Stream stream = new Stream()
@@ -225,31 +235,35 @@ public class SessionHandler {
 		int packetId = ((Number) deserializer.deserialize(input)).intValue();
 		Object headers = deserializer.deserialize(input);
 		
-		log.info("Action:" + action);
-		log.debug("Number: "+packetId);
-		log.debug("Headers: "+headers);
+		if(log.isInfoEnabled())
+			log.info("Action:" + action);
+		
+		if(log.isDebugEnabled()){
+			log.debug("Number: "+packetId);
+			log.debug("Headers: "+headers);
+		}
 		
 		Object[] params = null;
 
 		if(packet.getData().hasRemaining()){
-			log.debug("Multiple params");
+			// log.debug("Multiple params");
 			ArrayList paramList = new ArrayList();
 			while(packet.getData().hasRemaining()){
 				paramList.add(deserializer.deserialize(input));
 			}		
-			log.debug("Num params: "+paramList.size()); 
 			params = paramList.toArray();
-			for(int i=0; i<params.length; i++){
-				log.debug(" > "+i+": "+params[i]);
+			if(log.isDebugEnabled()){
+				log.debug("Num params: "+paramList.size()); 
+				for(int i=0; i<params.length; i++){
+					log.debug(" > "+i+": "+params[i]);
+				}
 			}
-			
 		} 
 		
 		// How best to support these internal actions ? 
 		// How about a hashmap of methods mapping to services in spring ?
 		
 		if(action!=null && action.equals("connect")){
-			log.debug("Call connect action");
 			session.setParams((Map) headers);
 			onConnect(packet,packetId, (Map) headers);
 		}
@@ -260,6 +274,18 @@ public class SessionHandler {
 		
 		else if(action!=null && action.equals("play")){
 			onPlay(packet,packetId, params);
+		}
+		
+		else if(action!=null && action.equals("pause")){
+			log.debug("TODO: pause");
+		}
+		
+		else if(action!=null && action.equals("closeStream")){
+			log.debug("TODO: Close stream");
+		}
+		
+		else if(action!=null && action.equals("deleteStream")){
+			log.debug("TODO: Delete stream");
 		}
 		
 		else if(action!=null && action.equals("_error")){
@@ -284,10 +310,13 @@ public class SessionHandler {
 	
 	private void writeResponse(RTMPCall call){
 		
+		
 		if(call.isSuccess()){
-			log.debug("Result: "+ call.getResult());
+			if(log.isDebugEnabled())
+				log.debug("Result: "+ call.getResult());
 		} else {
-			log.debug("Error: ", call.getException());
+			if(log.isDebugEnabled())
+				log.debug("Error: ", call.getException());
 		}
 			
 		Serializer serializer = new Serializer();
@@ -325,12 +354,15 @@ public class SessionHandler {
 		String serviceName = null;
 		if(appName.indexOf("/")!=-1){
 			serviceName = appName.substring(appName.indexOf("/")+1,appName.length());
-			log.debug("Service Name: "+serviceName);
+			if(log.isDebugEnabled())
+				log.debug("Service Name: "+serviceName);
 			appName = appName.substring(0, appName.indexOf("/"));
 		}
 		String tcUrl = (String) params.get("tcUrl");
 		String hostname = tcUrl.split("/")[2];
-		log.debug("hostname: "+hostname);
+		
+		if(log.isDebugEnabled())
+			log.debug("Hostname: "+hostname);
 		
 		HostContext host = (globalContext.hasHostContext(hostname)) ?
 				globalContext.getHostContext(hostname) : globalContext.getDefaultHost();
@@ -359,7 +391,8 @@ public class SessionHandler {
 		out.put(statusObjectService.getCachedStatusObjectAsByteArray(statusObjectService.NC_CONNECT_SUCCESS));
 		
 		out.flip();
-		log.debug(""+out.position());
+		
+		//log.debug(""+out.position());
 		
 		Packet response = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, 0);
 		
@@ -425,11 +458,10 @@ public class SessionHandler {
 	}
 
 	public void onClientBytesReadPacket(Packet packet){
-		
 		int bytesRead = packet.getData().getInt();
-		log.info("Client bytes read: "+bytesRead);
+		if(log.isDebugEnabled())
+			log.info("Client bytes read: "+bytesRead);
 		packet.getSourceChannel().getConnection().setClientBytesRead(bytesRead);
-		
 	}
 
 	public void setStatusObjectService(StatusObjectService statusObjectService) {
@@ -446,7 +478,8 @@ public class SessionHandler {
 			return;
 		}
 		
-		log.debug("Sending runtime status: "+statusCode);
+		if(log.isDebugEnabled())
+			log.debug("Sending runtime status: "+statusCode);
 		
 		RuntimeStatusObject statusObject = (RuntimeStatusObject) obj;
 	
@@ -472,7 +505,10 @@ public class SessionHandler {
 	}
 	
 	public void sendStatus(Channel channel, String statusCode){
-		log.debug("Sending status: "+statusCode);
+		
+		if(log.isDebugEnabled())
+			log.debug("Sending status: "+statusCode);
+		
 		Serializer serializer = new Serializer();
 		ByteBuffer out = ByteBuffer.allocate(256);
 		out.setAutoExpand(true);
@@ -490,7 +526,10 @@ public class SessionHandler {
 	}
 	
 	public void sendNotify(Channel channel, String statusCode){
-		log.debug("Sending status: "+statusCode);
+		
+		if(log.isDebugEnabled())
+			log.debug("Sending status: "+statusCode);
+		
 		Serializer serializer = new Serializer();
 		ByteBuffer out = ByteBuffer.allocate(256);
 		out.setAutoExpand(true);

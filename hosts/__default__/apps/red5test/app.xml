@@ -4,4 +4,9 @@
 	
 	<bean id="echoService" class="org.red5.server.service.EchoService" init-method="startUp"/>
 
+	<bean id="scriptBeanFactory" class="org.red5.server.script.ScriptBeanFactory" singleton="true" init-method="startup">
+		<property name="path"><value>/hosts/__default__/apps/red5test/services/</value></property>
+	</bean>
+	
+
 </beans>

@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/mina-0.7.4.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.9.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections.jar"/>
@@ -10,5 +9,12 @@
 	<classpathentry kind="lib" path="lib/spring.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="lib" path="lib/jpda.jar"/>
+	<classpathentry kind="lib" path="conf"/>
+	<classpathentry kind="lib" path="lib/mina-0.7.4.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_2.jar"/>
+	<classpathentry kind="lib" path="lib/xbean.jar"/>
+	<classpathentry kind="lib" path="lib/xbean_xpath.jar"/>
+	<classpathentry kind="lib" path="lib/js.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
