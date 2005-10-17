@@ -46,7 +46,9 @@ public class Deserializer {
 		while(type == DataTypes.CORE_SKIP) 
 			type = in.readDataType();
 		
-		log.debug("Datatype: "+DataTypes.toStringValue(type));
+		if(log.isDebugEnabled()) {
+			log.debug("Datatype: "+DataTypes.toStringValue(type));
+		}
 		
 		Object result = null;
 		
@@ -94,7 +96,9 @@ public class Deserializer {
 	}
 	
 	protected Object readArray(Input in){
-		log.debug("Read array");
+		if(log.isDebugEnabled()) {
+			log.debug("Read array");
+		}
 		final int arraySize = in.readStartArray();
 		Object[] array = new Object[arraySize];
 		in.storeReference(array);
@@ -107,11 +111,15 @@ public class Deserializer {
 	}
 	
 	protected List readList(Input in){
-		log.debug("read list");
+		if(log.isDebugEnabled()) {
+			log.debug("read list");
+		}
 		
 		int highestIndex = in.readStartList();
 		
-		log.debug("Read start list: "+highestIndex);
+		if(log.isDebugEnabled()) {
+			log.debug("Read start list: "+highestIndex);
+		}
 		
 		List list = new ArrayList(highestIndex);
 		for(int i=0; i<highestIndex; i++){
@@ -121,9 +129,13 @@ public class Deserializer {
 		in.storeReference(list);
 		while(in.hasMoreItems()){
 			int index = in.readItemIndex();
-			log.debug("index: "+index);
+			if(log.isDebugEnabled()) {
+				log.debug("index: "+index);
+			}
 			Object item = deserialize(in);
-			log.debug("item: "+item);
+			if(log.isDebugEnabled()) {
+				log.debug("item: "+item);
+			}
 			list.set(index, item);
 			if(in.hasMoreItems()) 
 				in.skipItemSeparator();
@@ -145,10 +157,14 @@ public class Deserializer {
 	}
 	
 	protected Object readObject(Input in){
-		log.debug("read object");
+		if(log.isDebugEnabled()) {
+			log.debug("read object");
+		}
 		final String className = in.readStartObject();
 		if(className != null){
-			log.debug("read class object");
+			if(log.isDebugEnabled()) {
+				log.debug("read class object");
+			}
 			Object instance = newInstance(className);
 			if(instance!=null) {
 				return readBean(in, instance);
@@ -158,19 +174,27 @@ public class Deserializer {
 	}
 	
 	protected Object readBean(Input in, Object bean){
-		log.debug("read bean");
+		if(log.isDebugEnabled()) {
+			log.debug("read bean");
+		}
 		in.storeReference(bean);
 		while(in.hasMoreProperties()){
 			String name = in.readPropertyName();
-			log.debug("property: "+name);
+			if(log.isDebugEnabled()) {
+				log.debug("property: "+name);
+			}
 			Object property = deserialize(in);
-			log.debug("val: "+property);
+			if(log.isDebugEnabled()) {
+				log.debug("val: "+property);
+			}
 			//log.debug("val: "+property.getClass().getName());
 			try {
 				if(property != null){
 					BeanUtils.setProperty(bean, name, property);
 				} else {
-					log.debug("Skipping null property: "+name);
+					if(log.isDebugEnabled()) {
+						log.debug("Skipping null property: "+name);
+					}
 				}
 			} catch(Exception ex){
 				log.error("Error mapping property: "+name);
@@ -183,14 +207,20 @@ public class Deserializer {
 	}
 	
 	protected Map readMap(Input in){
-		log.debug("read map");
+		if(log.isDebugEnabled()) {
+			log.debug("read map");
+		}
 		Map map = new HashMap();
 		in.storeReference(map);
 		while(in.hasMoreProperties()){
 			String name = in.readPropertyName();
-			log.debug("property: "+name);
+			if(log.isDebugEnabled()) {
+				log.debug("property: "+name);
+			}
 			Object property = deserialize(in);
-			log.debug("val: "+property);
+			if(log.isDebugEnabled()) {
+				log.debug("val: "+property);
+			}
 			//log.debug("val: "+property.getClass().getName());
 			map.put(name,property);
 			if(in.hasMoreProperties()) 

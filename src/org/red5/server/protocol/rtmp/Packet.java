@@ -115,24 +115,29 @@ public class Packet {
 		chunkRemaining -= readAmount;
 		finishedReadChunk = fullRead;
 		
-		log.debug("Copy bytes: "+readAmount);
+		if(log.isDebugEnabled()) 
+			log.debug("Copy bytes: "+readAmount);
 		
 		int limit = in.limit();
 		in.limit( in.position() + readAmount );
 		data.put(in);
 		in.limit( limit );
 		
-		log.debug("Packet pos: "+data.position());
-		log.debug("Size: "+size);
+		if(log.isDebugEnabled()) {
+			log.debug("Packet pos: "+data.position());
+			log.debug("Size: "+size);
+		}
 		
 		if(data.position() == size){
-			log.debug("Finished all chunks, end of read");
+			if(log.isDebugEnabled()) 
+				log.debug("Finished all chunks, end of read");
 			data.flip();
 			data.mark();
 			isSealed = true;
 		}
 		
-		log.debug("Finished read chunk: "+finishedReadChunk);
+		if(log.isDebugEnabled()) 
+			log.debug("Finished read chunk: "+finishedReadChunk);
 		
 		if(finishedReadChunk){
 			chunksRead++;

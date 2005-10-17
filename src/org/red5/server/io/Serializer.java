@@ -48,23 +48,33 @@ public class Serializer {
 	// Any
 	public void serialize(Output out, Object any) {
 		// TODO Auto-generated method stub
-		log.debug("serialize");
+		if(log.isDebugEnabled()) {
+			log.debug("serialize");
+		}
 		if(writeBasic(out,any)){
-			log.debug("write basic");
+			if(log.isDebugEnabled()) {
+				log.debug("write basic");
+			}
 			return;
 		}
 		
 		// Extension point
 		if(out.hasReference(any)){
-			log.debug("write ref");
+			if(log.isDebugEnabled()) {
+				log.debug("write ref");
+			}
 			out.writeReference(any);
 			return;
 		}
 
-		log.debug("Store reference: "+any);
+		if(log.isDebugEnabled()) {
+			log.debug("Store reference: "+any);
+		}
 		out.storeReference(any);
 		if(!writeComplex(out,any))
-			log.debug("Unable to serialize: "+any);
+			if(log.isDebugEnabled()) {
+				log.debug("Unable to serialize: "+any);
+			}
 	}
 		
 	// Basic
@@ -85,7 +95,9 @@ public class Serializer {
 	
 	// Complex
 	public boolean writeComplex(Output out, Object complex){
-		log.debug("writeComplex");
+		if(log.isDebugEnabled()) {
+			log.debug("writeComplex");
+		}
 		if(writeListType(out,complex)) return true;
 		else if(writeArrayType(out,complex)) return true;
 		else if(writeXMLType(out,complex)) return true;
@@ -96,7 +108,9 @@ public class Serializer {
 	
 //	 Arrays, Collections, etc
 	protected boolean writeListType(Output out, Object listType){
-		log.debug("writeListType");
+		if(log.isDebugEnabled()) {
+			log.debug("writeListType");
+		}
 		if(listType instanceof List) {
 			writeList(out, (List) listType);
 		} else return false;
@@ -119,7 +133,9 @@ public class Serializer {
 	
 	// Arrays, Collections, etc
 	protected boolean writeArrayType(Output out, Object arrType){
-		log.debug("writeArrayType");
+		if(log.isDebugEnabled()) {
+			log.debug("writeArrayType");
+		}
 		if(arrType instanceof Collection) {
 			writeCollection(out, (Collection) arrType);
 		} else if(arrType instanceof Iterator) {
@@ -134,7 +150,9 @@ public class Serializer {
 	}
 	
 	protected void writeCollection(Output out, Collection col){
-		log.debug("writeCollection");
+		if(log.isDebugEnabled()) {
+			log.debug("writeCollection");
+		}
 		out.writeStartArray(col.size());
 		Iterator it = col.iterator();
 		boolean isFirst = true;
@@ -148,7 +166,9 @@ public class Serializer {
 	
 	protected void writePrimitiveArray(Output out, Object array){
 		//out.writeS
-		log.debug("write primitive array");
+		if(log.isDebugEnabled()) {
+			log.debug("write primitive array");
+		}
 		out.writeStartArray(Array.getLength(array));
 		Iterator it = IteratorUtils.arrayIterator(array);
 		while(it.hasNext()){
@@ -160,7 +180,9 @@ public class Serializer {
 	
 	protected void writeObjectArray(Output out, Object[] array){
 		//out.writeS
-		log.debug("write object array");
+		if(log.isDebugEnabled()) {
+			log.debug("write object array");
+		}
 		out.writeStartArray(array.length);
 
 		for (int i = 0; i < array.length; i++) {
@@ -173,15 +195,19 @@ public class Serializer {
 	}
 	
 	protected void writeIterator(Output out,Iterator it){
-		log.debug("writeIterator");
+		if(log.isDebugEnabled()) {
+			log.debug("writeIterator");
+		}
 		LinkedList list = new LinkedList();
 		while(it.hasNext()) list.addLast(it.next());
 		writeCollection(out, list);
 	}
 	
 	// XML
-	protected boolean writeXMLType(Output out, Object xml){		
-		log.debug("writeXMLType");
+	protected boolean writeXMLType(Output out, Object xml){
+		if(log.isDebugEnabled()) {
+			log.debug("writeXMLType");
+		}
 		if(xml instanceof Document) 
 			writeDocument(out, (Document) xml);
 		else return false;
@@ -201,7 +227,9 @@ public class Serializer {
 	}
 	
 	public void writeMap(Output out, Map map){
-		log.debug("writeMap");
+		if(log.isDebugEnabled()) {
+			log.debug("writeMap");
+		}
 		out.writeStartObject(null);
 		Set set = map.entrySet();
 		Iterator it = set.iterator();
@@ -217,7 +245,9 @@ public class Serializer {
 	}
 	
 	public void writeBean(Output out, Object bean){
-		log.debug("writeBean");
+		if(log.isDebugEnabled()) {
+			log.debug("writeBean");
+		}
 		out.writeStartObject(bean.getClass().getName());
 		BeanMap beanMap = new BeanMap(bean);
 		Set set = beanMap.entrySet();

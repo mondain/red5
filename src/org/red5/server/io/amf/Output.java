@@ -65,7 +65,9 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 
 	public void markEndObject(){
 		// TODO: marker bytes ?
-		log.debug("Mark End Object");
+		if(log.isDebugEnabled()) {
+			log.debug("Mark End Object");
+		}
 		final byte pad = 0x00;
 		buf.put(pad);
 		buf.put(pad);
@@ -112,12 +114,16 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 	}
 
 	public void writePropertyName(String name) {
-		log.debug("Put property: "+name);
+		if(log.isDebugEnabled()) {
+			log.debug("Put property: "+name);
+		}
 		putString(buf,name);
 	}
 
 	public void writeReference(Object obj) {
-		log.debug("Write reference");
+		if(log.isDebugEnabled()) {
+			log.debug("Write reference");
+		}
 		buf.put(AMF.TYPE_REFERENCE);
 		buf.putShort(getReferenceId(obj));
 	}
@@ -146,7 +152,10 @@ public class Output extends BaseOutput implements org.red5.server.io.Output {
 			buf.put(AMF.TYPE_CLASS_OBJECT);
 			putString(buf,className);
 		}
-		log.debug("Start object: "+className);
+		
+		if(log.isDebugEnabled()) {
+			log.debug("Start object: "+className);
+		}
 		
 	}
 

@@ -120,8 +120,8 @@ public class Channel {
 	
 	protected Packet readPacket(ByteBuffer in){
 		
-		
-		log.debug("Position: "+in.position());
+		if(log.isDebugEnabled()) 
+			log.debug("Position: "+in.position());
 		
 		// if the chunk did not finish attempt to finish this time
 		if(!finishedReadChunk){
@@ -170,7 +170,8 @@ public class Channel {
 				headerBuf.flip();
 				header = headerBuf;
 				header.get();
-				log.debug(HexDump.formatHexDump(header.getHexDump()));
+				if(log.isDebugEnabled()) 
+					log.debug(HexDump.formatHexDump(header.getHexDump()));
 			}
 			
 		}
@@ -270,8 +271,13 @@ public class Channel {
 		// write source
 		headers.putInt(packet.getSource());
 		
+		ByteBuffer out = null;
 		// write all the chunks.. oh.. chunky!
-		ByteBuffer out = ByteBuffer.allocate(2048);
+		//if(packet.getDataType() == Packet.TYPE_VIDEO) {
+			out = ByteBuffer.allocate(2048);
+		//} else {
+			//out = ByteBuffer.allocate(1024);
+		//}
 		out.setAutoExpand(true);
 		
 		connection.setLastWriteChannel(this);

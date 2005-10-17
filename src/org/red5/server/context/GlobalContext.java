@@ -29,20 +29,26 @@ public class GlobalContext
 	}
 
 	public void initialize(){
-		log.debug("Initialize global context");
+		if(log.isDebugEnabled()) {
+			log.debug("Initialize global context");
+		}
 		loadHosts();
 	}
 	
 	protected void loadHosts(){
 		// this.getResources()
-		log.debug("Loading hosts");
+		if(log.isDebugEnabled()) {
+			log.debug("Loading hosts");
+		}
 		try {
 			Resource[] hosts = getResources(hostsPath + "/*");
 			if(hosts!=null){
 				for(int i=0; i<hosts.length; i++){
 					Resource host = hosts[i];
 					String hostname = host.getFile().getName();
-					log.debug("hostname: "+hostname);
+					if(log.isDebugEnabled()) {
+						log.debug("hostname: "+hostname);
+					}
 					if(!hostname.startsWith(".")){
 						addHost(hostname);
 					}
@@ -55,7 +61,9 @@ public class GlobalContext
 	}
 	
 	protected void addHost(String hostname){
-		log.debug("Add host: "+hostname);
+		if(log.isDebugEnabled()) {
+			log.debug("Add host: "+hostname);
+		}
 		String hostPath = hostsPath + "/"+ hostname;
 		HostContext hostContext = new HostContext(this, hostname, hostPath);
 		this.getBeanFactory().registerSingleton(hostname,hostContext);
