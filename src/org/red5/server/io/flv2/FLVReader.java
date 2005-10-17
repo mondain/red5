@@ -35,11 +35,7 @@ public class FLVReader {
 	
 	public FLVReader(String fileName) throws FileNotFoundException, IOException {
 		this.fileName = fileName;
-		
-		if(log.isDebugEnabled ()) {
-			log.debug("Reading: "+fileName);
-		}
-		
+		log.debug("Reading: "+fileName);
 		fis = new FileInputStream(fileName);
 		channel = fis.getChannel();
 		mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
@@ -47,9 +43,7 @@ public class FLVReader {
 		in = ByteBuffer.wrap(mappedFile);
 		limit = in.limit();
 		decodeHeader();
-		if(log.isDebugEnabled()) {
-			log.debug(header);
-		}
+		log.debug(header);
 		
 		/*
 		int counter = 0;
@@ -83,34 +77,26 @@ public class FLVReader {
 		int counter = 0;
 		
 		while(in.remaining() > 0){
-			
-			if(log.isDebugEnabled()) {
-				log.debug("PREV TAG SIZE: "+ in.getInt());
-			}
+		
+			log.debug("PREV TAG SIZE: "+ in.getInt());
 			counter++;
 			
 			if(counter > 5) break;
 			
 			if(in.remaining() == 0) break;
 			
-			if(log.isDebugEnabled()) {
-				log.debug("TAG TYPE: " + in.get());
-			}
+			log.debug("TAG TYPE: " + in.get());
 			
 			int dataSize = RTMPUtils.readUnsignedMediumInt(in);
 		
-			if(log.isDebugEnabled()) {
-				log.debug("DATA SIZE: "+dataSize);
-				log.debug("TIMESTAMP: "+RTMPUtils.readUnsignedMediumInt(in));
-				log.debug("RESERVED: "+ in.getInt());
-			}
+			log.debug("DATA SIZE: "+dataSize);
+			log.debug("TIMESTAMP: "+RTMPUtils.readUnsignedMediumInt(in));
+			log.debug("RESERVED: "+ in.getInt());
 			
 			int limit = in.limit();
 			
 			in.limit(in.position()+dataSize);
-			if(log.isDebugEnabled()) {
-				log.debug(HexDump.formatHexDump(in.getHexDump()));
-			}
+			log.debug(HexDump.formatHexDump(in.getHexDump()));
 			in.limit(limit);
 			
 			
@@ -133,18 +119,14 @@ public class FLVReader {
 	
 	public FLVTag getNextTag(){
 		
-		// skip the prev tag size..
-		if(log.isDebugEnabled()) {
-			log.debug("PREV TAG SIZE: "+ in.getInt());
-		}
+		// skip the prev tag size.. 
+		log.debug("PREV TAG SIZE: "+ in.getInt());
 		
 		byte dataType = in.get();
 		int bodySize = RTMPUtils.readUnsignedMediumInt(in);
 		int timestamp = RTMPUtils.readUnsignedMediumInt(in);
 		
-		if(log.isDebugEnabled()) {
-			log.debug("RESERVED: "+ in.getInt());
-		}
+		log.debug("RESERVED: "+ in.getInt());
 		
 		ByteBuffer body = ByteBuffer.allocate(bodySize);
 		in.limit(in.position()+bodySize);
