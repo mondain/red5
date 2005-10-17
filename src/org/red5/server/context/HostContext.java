@@ -37,14 +37,18 @@ public class HostContext
 	
 	protected void loadApps(){
 		// this.getResources()
-		log.debug("Loading apps");
+		if(log.isDebugEnabled()) {
+			log.debug("Loading apps");
+		}
 		try {
 			Resource[] apps = getResources(hostPath +"/"+ APP_DIR + "/*");
 			if(apps!=null){
 				for(int i=0; i<apps.length; i++){
 					Resource app = apps[i];
 					String appName = app.getFile().getName();
-					log.debug("appName: "+appName);
+					if(log.isDebugEnabled()) {
+						log.debug("appName: "+appName);
+					}
 					if(!appName.startsWith(".")){
 						addApp(appName);
 					}

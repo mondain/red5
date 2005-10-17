@@ -167,7 +167,9 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		short len = buf.getShort();
 		int limit = buf.limit();
 		final java.nio.ByteBuffer strBuf = buf.buf();
-		log.debug("len: "+len);
+		if(log.isDebugEnabled()) {
+			log.debug("len: "+len);
+		}
 		strBuf.limit(strBuf.position() + len);
 		final String string = AMF.CHARSET.decode(strBuf).toString();
 		buf.limit(limit); // Reset the limit
@@ -243,7 +245,9 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		byte type = buf.get();
 		
 		boolean isEndOfObject = (pad0==pad && pad1==pad && type == AMF.TYPE_END_OF_OBJECT);
-		log.debug("End of object: ? "+isEndOfObject);
+		if(log.isDebugEnabled()) {
+			log.debug("End of object: ? "+isEndOfObject);
+		}
 		buf.position(buf.position()-3);
 		return !isEndOfObject;
 	}

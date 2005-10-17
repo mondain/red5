@@ -145,7 +145,8 @@ public class NetworkHandler extends IoHandlerAdapter {
 				if(stressMode){
 					int limit = in.limit();
 					while(in.position() < limit){
-						log.debug("stressRead");
+						if(log.isDebugEnabled()) 
+							log.debug("stressRead");	
 						in.limit(in.position()+1);
 						processRead(connection,in);
 					}
@@ -253,19 +254,22 @@ public class NetworkHandler extends IoHandlerAdapter {
 	public void sessionClosed(IoSession session) throws Exception {
 		// TODO Auto-generated method stub
 		super.sessionClosed(session);
-		log.debug("Session closed");
+		if(log.isDebugEnabled()) 
+			log.debug("Session closed");
 	}
 
 	public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
 		// TODO Auto-generated method stub
 		super.sessionIdle(session, status);
-		log.debug("Session Idle");
+		if(log.isDebugEnabled()) 
+			log.debug("Session Idle");
 	}
 
 	public void sessionOpened(IoSession session) throws Exception {
 		// TODO Auto-generated method stub
 		super.sessionOpened(session);
-		log.debug("Session Opened");
+		if(log.isDebugEnabled()) 
+			log.debug("Session Opened");
 	}	
 	
 	

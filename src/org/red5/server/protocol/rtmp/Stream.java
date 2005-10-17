@@ -38,7 +38,8 @@ public class Stream {
 		this.source = source;
 		this.sessionHandler = sessionHandler;
 		this.conn = conn;
-		log.debug("Created stream");
+		if(log.isDebugEnabled()) 
+			log.debug("Created stream");
 	}
 	
 	public void play(String flvPath){
@@ -56,16 +57,19 @@ public class Stream {
 			flvReader = new FLVReader(this.flvPath);
 			
 			dataChannel = conn.getChannel((byte)conn.getNextAvailableChannelId());
-			log.debug("data channel: "+dataChannel.getId());
+			if(log.isDebugEnabled()) 
+				log.debug("data channel: "+dataChannel.getId());
 			
 			if(flvReader.getHeader().getFlagVideo()){
 				videoChannel = conn.getChannel((byte)conn.getNextAvailableChannelId());
-				log.debug("video channel: "+videoChannel.getId());
+				if(log.isDebugEnabled()) 
+					log.debug("video channel: "+videoChannel.getId());
 			}
 			
 			if(flvReader.getHeader().getFlagAudio()){
 				audioChannel = conn.getChannel((byte)conn.getNextAvailableChannelId());
-				log.debug("audio channel: "+audioChannel.getId());
+				if(log.isDebugEnabled()) 
+					log.debug("audio channel: "+audioChannel.getId());
 			}
 			
 			
@@ -80,8 +84,8 @@ public class Stream {
 		}
 		
 		
-		
-		log.debug("Stream setup: "+flvPath);
+		if(log.isDebugEnabled()) 
+			log.debug("Stream setup: "+flvPath);
 		//writeHeader(header);
 
 		status = STATE_PLAYING;
