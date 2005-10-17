@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="lib/xbean.jar"/>
 	<classpathentry kind="lib" path="lib/xbean_xpath.jar"/>
 	<classpathentry kind="lib" path="lib/js.jar"/>
+	<classpathentry kind="lib" path="lib/spring-scripting-support.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

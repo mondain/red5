@@ -372,9 +372,9 @@ public class SessionHandler {
 		connection.setAppContext(app);
 		
 		if(serviceName!=null){
-			Object service = app.getBean(serviceName);
+			//Object service = app.getBean(serviceName);
 			connection.setServiceName(serviceName);
-			connection.setService(service);
+			//connection.setService(service);
 		}
 		
 		log.debug(app.getServiceInvoker());

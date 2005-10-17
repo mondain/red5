@@ -201,6 +201,7 @@ public class Stream {
 				audioChannel.writePacket(packet, this);
 			} else {
 				log.error("Unexpected datatype: "+dataType);
+				writeNextPacket();
 			}
 			
 		} catch (RuntimeException e) {

@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.red5.server.script.ScriptBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 public class ServiceInvoker  {
@@ -38,7 +39,12 @@ public class ServiceInvoker  {
 	public static final String SERVICE_NAME = "serviceInvoker";
 	
 	protected ApplicationContext serviceContext = null;
+	protected ScriptBeanFactory scriptBeanFactory = null;
 	
+	public void setScriptBeanFactory(ScriptBeanFactory scriptBeanFactory) {
+		this.scriptBeanFactory = scriptBeanFactory;
+	}
+
 	public void setServiceContext(ApplicationContext serviceContext){
 		this.serviceContext = serviceContext;
 	}
@@ -60,7 +66,15 @@ public class ServiceInvoker  {
 			service = serviceContext.getBean(serviceName);
 		} 
 		
+		if(service == null && serviceContext.containsBean("scriptBeanFactory")){
+			scriptBeanFactory = (ScriptBeanFactory) serviceContext.getBean("scriptBeanFactory");
+		}
 		
+		if(service == null && scriptBeanFactory !=null) {
+			// lets see if its a script.
+			service = scriptBeanFactory.getBean(serviceName);
+		}
+
 		if(service == null) {
 			call.setException(new ServiceNotFoundException(serviceName));
 			call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
