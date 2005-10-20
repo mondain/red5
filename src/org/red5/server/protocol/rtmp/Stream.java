@@ -109,8 +109,8 @@ public class Stream {
 		// send onMetaData down data channel
 		
 		// start sending video packets down video channel, not doing this yet
-		
-		writeNextPacket();
+		for(int i=0; i<10 && hasMorePackets(); i++)
+			writeNextPacket();
 		//writeNextPacket();
 	}
 	

@@ -166,7 +166,7 @@ public class SessionHandler {
 		String sharedObjectName = Input.getString(packet.getData());
 	}
 
-	Stream hackStream = null;
+	//Stream hackStream = null;
 	
 	public void onCreateStream(Packet packet, int streamId, Object[] params){
 		log.debug("Create stream: "+2);
@@ -182,7 +182,9 @@ public class SessionHandler {
 		conn.getChannel((byte)0x04), 
 		conn.getChannel((byte)0x06),
 		*/
-		hackStream = stream;
+		
+		conn.setStream(stream);
+		//hackStream = stream;
 		
 		Serializer serializer = new Serializer();
 		ByteBuffer out = ByteBuffer.allocate(256);
@@ -208,12 +210,13 @@ public class SessionHandler {
 	public void onPlay(Packet packet, int streamId, Object[] params){
 		
 		// total hack :)
-		Stream stream = hackStream;
-		log.debug((String) params[0]);
-		
+		Stream stream = packet.getSourceChannel().getConnection().getStream();
+		String filename = (String) params[0];
+		log.info("Play flv: "+filename);
 		//stream.play("flvs/nvnlogo1.flv"); 
 		//stream.play("flvs/on2_no _audio.flv"); 
-		stream.play("flvs/TrenchRunRed5.flv");
+		//stream.play("flvs/TrenchRunRed5.flv");
+		stream.play("flvs/"+filename);
 		//stream.play("flvs/spark_no_audio.flv");
 		// Read the data used during the connect (ie the session)
 		//Stream stream = new Stream()
@@ -243,7 +246,7 @@ public class SessionHandler {
 			log.debug("Headers: "+headers);
 		}
 		
-		Object[] params = null;
+		Object[] params = new Object[]{};
 
 		if(packet.getData().hasRemaining()){
 			// log.debug("Multiple params");

@@ -86,8 +86,8 @@ public class ServiceInvoker  {
 		
 		
 		Object[] args = call.getArguments();
-		
-		List methods = ConversionUtils.findMethodsByNameAndNumParams(service,methodName, args.length);
+		int numParams = (args==null) ? 0 : args.length;
+		List methods = ConversionUtils.findMethodsByNameAndNumParams(service,methodName, numParams);
 	
 		log.debug("Found "+methods.size()+" methods");
 		

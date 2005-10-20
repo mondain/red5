@@ -24,6 +24,6 @@ import java.util.Map;
 
 public interface IDemoService {
 
-	public abstract Map getListOfAvailableFLVs();
+	public Map getListOfAvailableFLVs();
 
 }
