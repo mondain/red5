@@ -78,6 +78,8 @@ public class NetworkHandler extends IoHandlerAdapter {
 			Stream stream = (Stream) event;
 			if(stream.hasMorePackets()){
 				stream.writeNextPacket();
+			} else {
+				log.info("End of stream");
 			}
 		}
 	}

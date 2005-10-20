@@ -32,7 +32,7 @@ public class Stream {
 	protected SessionHandler sessionHandler;
 	protected Connection conn;
 	
-	protected byte status = STATE_STOPPED;
+	protected byte state = STATE_STOPPED;
 	
 	public Stream(Connection conn, int source, SessionHandler sessionHandler){
 		this.source = source;
@@ -43,14 +43,14 @@ public class Stream {
 	}
 	
 	public void play(String flvPath){
-		
-		
+		if(state==STATE_PAUSED) resume();
+		else start(flvPath);
+	} 
+	
+	protected void start(String flvPath){
 		
 		this.flvPath = flvPath;
-		System.out.println("flvPath" + flvPath);
-		// read the flv header here
-		// get a hold on the mapped body
-		
+
 		// Grab FLVDecoder
 		try {
 		
@@ -71,13 +71,7 @@ public class Stream {
 				if(log.isDebugEnabled()) 
 					log.debug("audio channel: "+audioChannel.getId());
 			}
-			
-			
-			
-			
-			//conn.close();
-			
-			
+						
 		} catch(Exception ex){
 			log.error(ex);
 			return;
@@ -86,45 +80,74 @@ public class Stream {
 		
 		if(log.isDebugEnabled()) 
 			log.debug("Stream setup: "+flvPath);
-		//writeHeader(header);
-
-		status = STATE_PLAYING;
+		
+		state = STATE_PLAYING;
 		
 		int clientid = 1; // random
 		
 		// This is what john sends, so im sending it back
-		String details = "0_320_high";
+		String details = "testing"; //flvPath;
 		
 		sessionHandler.sendRuntimeStatus(videoChannel, StatusObjectService.NS_PLAY_RESET, details, clientid);
-		
-		
-		
+
 		sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
 		
-		// This is wrong its not a function 14, its a notify 12
 		sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
-	
-		
-		
-		// send onMetaData down data channel
-		
+				
 		// start sending video packets down video channel, not doing this yet
-		for(int i=0; i<10 && hasMorePackets(); i++)
+		//for(int i=0; i<10 && hasMorePackets(); i++)
 			writeNextPacket();
 		//writeNextPacket();
 	}
 	
-	public void seek(int pos){
-		status = STATE_PLAYING;
-		//TODO add seek support
+	protected void resume(){
+		sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
+		
+		// start sending video packets down video channel, not doing this yet
+		//for(int i=0; i<10 && hasMorePackets(); i++)
+			writeNextPacket();
+	}
+	
+	
+	public void pause(){
+		if(state==STATE_PLAYING){
+			state = STATE_PAUSED;
+		}
+	}
+
+	public void stop(){
+		state = STATE_STOPPED;
 	}
 	
 	public void end(){
-		status = STATE_END;
+		state = STATE_END;
+		if(audioChannel!=null) {
+			dataChannel.close();
+			dataChannel = null;
+		}
+		if(audioChannel!=null) {
+			audioChannel.close();
+			audioChannel = null;
+		}
+		if(videoChannel!=null) {
+			videoChannel.close();
+			videoChannel = null;
+		}
+	}
+	
+	public byte getState(){
+		return state;
 	}
 	
 	public boolean hasMorePackets(){		
-		return flvReader.hasMoreTags();
+		if(flvReader==null) return false;
+		if(state!=STATE_PLAYING) return false;
+		if(!flvReader.hasMoreTags()){
+			end();
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	protected int statusPacketID = 16777216;
@@ -157,47 +180,11 @@ public class Stream {
 				dataChannel.writePacket(packet, this);
 			}
 			else if(dataType == FLVTag.TYPE_VIDEO){
-				
-				/* doesnt work
-				ByteBuffer buff = null;
-				ByteBuffer body = tag.getBody(); 
-				
-				if(body.remaining() > 1024){
-					log.debug("Chunking");
-					continueTag = true;
-					buff = ByteBuffer.allocate(1024);
-					int limit = body.limit();
-					body.limit(body.position()+1024);
-					buff.put(body);
-					body.limit(limit);
-					buff.flip();
-				} else {
-					log.debug("Last write");
-					continueTag = false;
-					buff = body;
-				}
-				*/
-				
-				// log.info("ts: "+tag.getTimestamp());
-				
-				//packet = new Packet(buff, tag.getTimestamp(), tag.getDataType(), statusPacketID);
-				
 				packet = new Packet(tag.getBody(), tag.getTimestamp(), tag.getDataType(), statusPacketID);
-				
-				
 				videoChannel.writePacket(packet, this);
 			}
-			
 			else if(dataType == FLVTag.TYPE_AUDIO){
-				packet = new Packet(tag.getBody(), tag.getTimestamp(), tag.getDataType(), statusPacketID);
-				
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
+				packet = new Packet(tag.getBody(), tag.getTimestamp(), tag.getDataType(), statusPacketID);				
 				audioChannel.writePacket(packet, this);
 			} else {
 				log.error("Unexpected datatype: "+dataType);

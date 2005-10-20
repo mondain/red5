@@ -97,7 +97,7 @@
 			<include name="red5.sh" />
 		</fileset>
 		<fileset dir="tests">
-			<include name="fcs_tests.swf" />
+			<include name="ofla_demo.swf" />
 		</fileset>
 	</copy>
 </target>

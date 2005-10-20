@@ -222,6 +222,9 @@ public class Connection {
 		this.stream = stream;
 	}
 	
-	
+	public void releaseChannel(Channel channel){
+		channels[channel.getId()] = null;
+		channel = null;
+	}
 	
 }
