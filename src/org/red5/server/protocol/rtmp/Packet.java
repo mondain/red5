@@ -90,7 +90,7 @@ public class Packet {
 	}
 	
 	public int getMaxChunkSize(){
-		return (dataType == TYPE_AUDIO) ? 64 : 128;
+		return (dataType == TYPE_AUDIO) ? 128 : 128;
 	}
 	
 	public boolean readChunkFrom(ByteBuffer in){

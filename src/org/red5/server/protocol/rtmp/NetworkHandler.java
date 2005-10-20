@@ -166,6 +166,8 @@ public class NetworkHandler extends IoHandlerAdapter {
 			e.printStackTrace();
 		}
 		
+		log.info("Finished Read");
+		
 	}
 	
 	public void processRead(Connection session, ByteBuffer in){

@@ -24,16 +24,15 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.Resource;
 
 /**
@@ -45,19 +44,23 @@ import org.springframework.core.io.Resource;
  * 
  */
 
-public class DemoService extends FileSystemXmlApplicationContext implements  ApplicationContextAware, IDemoService {
+
+public class DemoService implements IDemoService, ApplicationContextAware {
+
 	protected static Log log = LogFactory.getLog(DemoService.class.getName());
 	
-	public DemoService(String context) throws BeansException {
-		super(context);
-	}
+	protected ApplicationContext appCtx = null;
 	
+	public DemoService(){
+		
+	}
+
 	public void startUp() {
 		log.debug("starting the deom service...");
 	}
 
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
-		this.setParent(context);
+		appCtx = context;
 	}
 	
 	/**
@@ -68,7 +71,7 @@ public class DemoService extends FileSystemXmlApplicationContext implements  App
 		Map fileInfo;
 		try {
 			log.debug("getting the FLV files");
-			Resource[] flvs = getResources("flvs/*.flv");
+			Resource[] flvs = appCtx.getResources("flvs/*.flv");
 			if(flvs!=null){
 				for(int i=0; i<flvs.length; i++){
 					Resource flv = flvs[i];
