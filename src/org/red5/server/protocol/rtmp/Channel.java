@@ -329,6 +329,9 @@ public class Channel {
 		
 	}
 	
+	public void close(){
+		connection.releaseChannel(this);
+	}
 	
 	
 }

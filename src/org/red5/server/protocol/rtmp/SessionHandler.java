@@ -158,34 +158,26 @@ public class SessionHandler {
 		log.error("Shared Object");
 		log.error("Need to know what flashcom response is."); 
 		
-		
 	}
 	
 	private void onSharedObjectPacket(Packet packet) {
 		Input input = new Input(packet.getData());
 		String sharedObjectName = Input.getString(packet.getData());
 	}
-
-	//Stream hackStream = null;
 	
 	public void onCreateStream(Packet packet, int streamId, Object[] params){
-		log.debug("Create stream: "+2);
-		log.error("Need to know what flashcom response is.");
+		if(log.isDebugEnabled())
+			log.debug("Create stream: "+streamId);
+		
 		Connection conn = packet.getSourceChannel().getConnection();
-		// Hard coded the stream channels at the moment 
+
 		Stream stream = new Stream(
 				packet.getSourceChannel().getConnection(),
 				packet.getSource(),
 				this);
-		/*
-		conn.getChannel((byte)0x05), 
-		conn.getChannel((byte)0x04), 
-		conn.getChannel((byte)0x06),
-		*/
-		
+
 		conn.setStream(stream);
-		//hackStream = stream;
-		
+
 		Serializer serializer = new Serializer();
 		ByteBuffer out = ByteBuffer.allocate(256);
 		out.setAutoExpand(true);
@@ -196,31 +188,24 @@ public class SessionHandler {
 		serializer.serialize(output, new Integer(1)); // pick a number at random	
 		out.flip();
 		Packet response = new Packet(out, 0, Packet.TYPE_FUNCTION_CALL, packet.getSource());
-					
-		log.debug(response);
-		
 		packet.getSourceChannel().writePacket(response);
-		
-		//stream.play("flvs/spark_no_audio.flv");
-		// Read the data used during the connect (ie the session)
-		//Stream stream = new Stream()
-		
 	}
 	
 	public void onPlay(Packet packet, int streamId, Object[] params){
-		
-		// total hack :)
 		Stream stream = packet.getSourceChannel().getConnection().getStream();
+		
+		if(stream==null){
+			onCreateStream(packet, streamId, params);
+			stream = packet.getSourceChannel().getConnection().getStream();
+		}
+		
+		if(stream.getState()!=stream.STATE_STOPPED){
+			stream.end();
+		}
+		
 		String filename = (String) params[0];
 		log.info("Play flv: "+filename);
-		//stream.play("flvs/nvnlogo1.flv"); 
-		//stream.play("flvs/on2_no _audio.flv"); 
-		//stream.play("flvs/TrenchRunRed5.flv");
-		stream.play("flvs/"+filename);
-		//stream.play("flvs/spark_no_audio.flv");
-		// Read the data used during the connect (ie the session)
-		//Stream stream = new Stream()
-		
+		stream.play("flvs/"+filename);		
 	}
 	
 	// play
@@ -230,7 +215,7 @@ public class SessionHandler {
 	public void onFunctionCallPacket(Packet packet){
 		
 		Channel channel = packet.getSourceChannel();
-		Connection session = channel.getConnection();
+		Connection conn = channel.getConnection();
 		
 		Input input = new Input(packet.getData());
 		
@@ -267,7 +252,7 @@ public class SessionHandler {
 		// How about a hashmap of methods mapping to services in spring ?
 		
 		if(action!=null && action.equals("connect")){
-			session.setParams((Map) headers);
+			conn.setParams((Map) headers);
 			onConnect(packet,packetId, (Map) headers);
 		}
 		
@@ -280,15 +265,24 @@ public class SessionHandler {
 		}
 		
 		else if(action!=null && action.equals("pause")){
-			log.debug("TODO: pause");
+			log.info("Pause");
+			if(conn.getStream()!=null){
+				conn.getStream().pause();
+			}
 		}
 		
 		else if(action!=null && action.equals("closeStream")){
-			log.debug("TODO: Close stream");
+			log.info("Close Stream");
+			if(conn.getStream()!=null){
+				conn.getStream().end();
+			}
 		}
 		
 		else if(action!=null && action.equals("deleteStream")){
-			log.debug("TODO: Delete stream");
+			log.info("DeleteStream");
+			if(conn.getStream()!=null){
+				conn.setStream(null);
+			}
 		}
 		
 		else if(action!=null && action.equals("_error")){
@@ -300,11 +294,11 @@ public class SessionHandler {
 		
 		else {
 			
-			RTMPCall call = new RTMPCall(session.getServiceName(), action, params, packetId, packet.getSource(), packet.getSourceChannel());
+			RTMPCall call = new RTMPCall(conn.getServiceName(), action, params, packetId, packet.getSource(), packet.getSourceChannel());
 			
 			// TODO: add worker threads here after 0.2
-			ServiceInvoker invoker = session.getAppContext().getServiceInvoker();
-			invoker.invoke(call, session.getAppContext());
+			ServiceInvoker invoker = conn.getAppContext().getServiceInvoker();
+			invoker.invoke(call, conn.getAppContext());
 			writeResponse(call);
 			
 		}
