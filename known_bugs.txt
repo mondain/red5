@@ -1,0 +1,9 @@
+We will sort out a bug tracker soon, but for now we are just using a text file :)
+
+1. If you switch between videos quickly it gets messed and video appears distorted.
+2. Only one video at any one time per connection. 
+3. On metadata sometimes does not come through, esp when first video is played.
+4. After the client has been idle for a long(ish) period, when you go to play again it sends an odd packet to the server, we dont know what this packet is yet.
+5. After running the server for a long time and viewing lots of videos with the client the server seemed to stop sending video data and in the logs it shows end of stream just after play.
+
+If you find a bug that is not listed above and is not releated to an unfinished feature please send it to the mailing list.

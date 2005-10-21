@@ -84,7 +84,7 @@ public class Connection {
 	
 	public int getNextAvailableChannelId(){
 		int result = -1;
-		for(byte i=3; i<channels.length; i++){
+		for(byte i=4; i<channels.length; i++){
 			if(!isChannelUsed(i)){
 				result = i;
 				break;

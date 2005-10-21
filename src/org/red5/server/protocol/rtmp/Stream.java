@@ -59,6 +59,7 @@ public class Stream {
 			dataChannel = conn.getChannel((byte)conn.getNextAvailableChannelId());
 			if(log.isDebugEnabled()) 
 				log.debug("data channel: "+dataChannel.getId());
+		
 			
 			if(flvReader.getHeader().getFlagVideo()){
 				videoChannel = conn.getChannel((byte)conn.getNextAvailableChannelId());
@@ -86,26 +87,23 @@ public class Stream {
 		int clientid = 1; // random
 		
 		// This is what john sends, so im sending it back
-		String details = "testing"; //flvPath;
+		String details = flvPath; //flvPath;
 		
 		sessionHandler.sendRuntimeStatus(videoChannel, StatusObjectService.NS_PLAY_RESET, details, clientid);
 
 		sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
 		
 		sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
-				
-		// start sending video packets down video channel, not doing this yet
-		//for(int i=0; i<10 && hasMorePackets(); i++)
-			writeNextPacket();
-		//writeNextPacket();
+		
+		// It seems we were sending too much data in a single write
+		// So send an empty packet, this will callback and buy us enough time ;)
+		conn.getIoSession().write(ByteBuffer.allocate(0).flip(),this);
 	}
 	
 	protected void resume(){
 		sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
 		
-		// start sending video packets down video channel, not doing this yet
-		//for(int i=0; i<10 && hasMorePackets(); i++)
-			writeNextPacket();
+		conn.getIoSession().write(ByteBuffer.allocate(0).flip(),this);	
 	}
 	
 	
@@ -156,7 +154,6 @@ public class Stream {
 	protected FLVTag lastTag = null;
 	
 	public void writeNextPacket(){
-		// Still need to figure out how to create packet
 		Packet packet = null;
 		try {
 			
@@ -176,7 +173,6 @@ public class Stream {
 			byte dataType = tag.getDataType();
 			
 			if(dataType == FLVTag.TYPE_METADATA){
-				System.out.println("in");
 				packet = new Packet(tag.getBody(), tag.getTimestamp(), Packet.TYPE_FUNCTION_CALL_NOREPLY, source);
 				dataChannel.writePacket(packet, this);
 			}
