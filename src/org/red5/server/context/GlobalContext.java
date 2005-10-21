@@ -5,14 +5,11 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.Resource;
 
 public class GlobalContext 
-	extends FileSystemXmlApplicationContext
-	implements ApplicationContextAware {
+	extends GenericRed5Context {
 	
 	public static final String DEFAULT_HOST = "__default__";
 	public String hostsPath = "hosts";
@@ -20,14 +17,15 @@ public class GlobalContext
 	protected static Log log =
         LogFactory.getLog(GlobalContext.class.getName());
 	
-	public GlobalContext(String configPath) throws BeansException {
-		super(configPath);
+	public GlobalContext(String configFilePath) throws BeansException {
+		super(null,"./",configFilePath);
 	}
-
-	public void setApplicationContext(ApplicationContext parent) throws BeansException {
-		this.setParent(parent);
+	
+	public GlobalContext(String configFilePath, String hostsPath) throws BeansException {
+		super(null,"./",configFilePath);
+		this.hostsPath = hostsPath;
 	}
-
+	
 	public void initialize(){
 		if(log.isDebugEnabled()) {
 			log.debug("Initialize global context");
@@ -64,7 +62,7 @@ public class GlobalContext
 		if(log.isDebugEnabled()) {
 			log.debug("Add host: "+hostname);
 		}
-		String hostPath = hostsPath + "/"+ hostname;
+		String hostPath = this.getBaseDir() + hostsPath + "/"+ hostname;
 		HostContext hostContext = new HostContext(this, hostname, hostPath);
 		this.getBeanFactory().registerSingleton(hostname,hostContext);
 	}

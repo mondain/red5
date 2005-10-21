@@ -1,1 +1,1 @@
-java -jar red5.jar
+$JAVA_HOME/bin/java -jar red5.jar

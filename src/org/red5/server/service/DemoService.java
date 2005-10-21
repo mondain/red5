@@ -71,7 +71,7 @@ public class DemoService implements IDemoService, ApplicationContextAware {
 		Map fileInfo;
 		try {
 			log.debug("getting the FLV files");
-			Resource[] flvs = appCtx.getResources("flvs/*.flv");
+			Resource[] flvs = appCtx.getResources("../../../../flvs/*.flv");
 			if(flvs!=null){
 				for(int i=0; i<flvs.length; i++){
 					Resource flv = flvs[i];

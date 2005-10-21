@@ -87,7 +87,8 @@
 	</copy>
 	<copy todir="${dist.dir}/flvs">
 		<fileset dir="flvs">
-			<include name="spark_with_audio.flv" />
+			<include name="on2_flash8_w_audio.flv" />
+			<include name="spark_flash7_no_audio.flv" />
 		</fileset>
 	</copy>
 	<copy todir="${dist.dir}">

@@ -6,13 +6,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.Resource;
 
 public class HostContext 
-	extends FileSystemXmlApplicationContext
-	implements ApplicationContextAware {
+	extends GenericRed5Context {
 	
 	public static final String HOST_CONFIG = "host.xml";
 	public static final String APP_DIR = "apps";
@@ -24,15 +21,11 @@ public class HostContext
         LogFactory.getLog(HostContext.class.getName());
 	
 	public HostContext(GlobalContext global, String hostname, String hostPath) throws BeansException {
-		super(new String[]{hostPath + "/" + HOST_CONFIG}, global);
+		super(global, hostPath, hostPath + "/" + HOST_CONFIG );
 		this.global = global;
 		this.hostname = hostname;
 		this.hostPath = hostPath;
 		loadApps();
-	}
-
-	public void setApplicationContext(ApplicationContext parent) throws BeansException {
-		this.setParent(parent);
 	}
 	
 	protected void loadApps(){
@@ -41,7 +34,7 @@ public class HostContext
 			log.debug("Loading apps");
 		}
 		try {
-			Resource[] apps = getResources(hostPath +"/"+ APP_DIR + "/*");
+			Resource[] apps = getResources(APP_DIR + "/*");
 			if(apps!=null){
 				for(int i=0; i<apps.length; i++){
 					Resource app = apps[i];
@@ -61,7 +54,7 @@ public class HostContext
 	}
 	
 	protected void addApp(String appName){
-		String appPath = hostPath +"/"+ APP_DIR +"/"+appName;
+		String appPath = this.getBaseDir() + APP_DIR +"/"+appName;
 		AppContext appContext = new AppContext(this, appName,  appPath);
 		this.getBeanFactory().registerSingleton(appName, appContext);
 	}
