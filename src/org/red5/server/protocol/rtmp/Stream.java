@@ -121,7 +121,7 @@ public class Stream {
 	
 	public void end(){
 		state = STATE_END;
-		if(audioChannel!=null) {
+		if(dataChannel!=null) {
 			dataChannel.close();
 			dataChannel = null;
 		}
@@ -176,6 +176,7 @@ public class Stream {
 			byte dataType = tag.getDataType();
 			
 			if(dataType == FLVTag.TYPE_METADATA){
+				System.out.println("in");
 				packet = new Packet(tag.getBody(), tag.getTimestamp(), Packet.TYPE_FUNCTION_CALL_NOREPLY, source);
 				dataChannel.writePacket(packet, this);
 			}
