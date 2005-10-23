@@ -22,6 +22,7 @@ package org.red5.server.protocol.rtmp;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ import org.red5.server.protocol.rtmp.status2.RuntimeStatusObject;
 import org.red5.server.protocol.rtmp.status2.StatusObjectService;
 import org.red5.server.service.ServiceInvoker;
 import org.red5.server.utils.HexDump;
+import org.springframework.core.io.Resource;
 
 /*
  * RED5 Open Source Flash Server 
@@ -199,13 +201,29 @@ public class SessionHandler {
 			stream = packet.getSourceChannel().getConnection().getStream();
 		}
 		
-		if(stream.getState()!=stream.STATE_STOPPED){
+		if(stream.getState()!= Stream.STATE_STOPPED){
 			stream.end();
 		}
 		
 		String filename = (String) params[0];
 		log.info("Play flv: "+filename);
-		stream.play("flvs/"+filename);		
+		//stream.play("flvs/"+filename);
+		stream.play(filename);
+		
+		
+		/*HostContext host = (globalContext.hasHostContext(hostname)) ?
+				globalContext.getHostContext(hostname) : globalContext.getDefaultHost();
+				*/
+		Connection connection = packet.getSourceChannel().getConnection();
+		AppContext app = connection.getAppContext();
+		 try {
+			Resource[] flvs = app.getResources("../../../../flvs/*.flv");
+			System.out.println("flvs.length: " + flvs.length);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	// play
