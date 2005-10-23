@@ -1,12 +1,17 @@
 package org.red5.server.protocol.rtmp;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
+import org.red5.server.context.AppContext;
 import org.red5.server.io.flv.FLVHeader;
 import org.red5.server.io.flv2.FLVReader;
 import org.red5.server.io.flv2.FLVTag;
 import org.red5.server.protocol.rtmp.status2.StatusObjectService;
+import org.springframework.core.io.Resource;
 
 public class Stream {
 	
@@ -23,7 +28,7 @@ public class Stream {
 	protected Channel videoChannel = null; 
 	protected int source = -1;
 	
-	protected String flvPath;
+	protected File flvPath;
 	protected int currentTag = 0;
 	protected int numTags = 0;
 	
@@ -49,8 +54,16 @@ public class Stream {
 	
 	protected void start(String flvPath){
 		
-		this.flvPath = flvPath;
-
+		AppContext appCtx = conn.getAppContext();
+		Resource[] resource = null;
+		try {
+			resource = appCtx.getResources("streams/" + flvPath);
+			this.flvPath = resource[0].getFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		// Grab FLVDecoder
 		try {
 		

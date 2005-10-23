@@ -1,5 +1,6 @@
 package org.red5.server.io.flv2;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,6 +32,24 @@ public class FLVReader {
 	
 	public static void main(String[] args) throws Exception{
 		FLVReader reader = new FLVReader("flvs/nvnlogo1.flv");
+	}
+	
+	public FLVReader(File fileName) throws IOException {
+		//this.fileName = fileName;
+		//log.debug("Reading: "+fileName);
+		try {
+			fis = new FileInputStream(fileName);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		channel = fis.getChannel();
+		mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+		mappedFile.order(ByteOrder.BIG_ENDIAN);
+		in = ByteBuffer.wrap(mappedFile);
+		limit = in.limit();
+		decodeHeader();
+		log.debug(header);
 	}
 	
 	public FLVReader(String fileName) throws FileNotFoundException, IOException {
