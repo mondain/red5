@@ -1,11 +1,18 @@
 package org.red5.server.compat.fcs;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 
 public class JSFile implements IFile {
 	
 	File file = null;
+	
+	FileInputStream fis = null;
+	FileOutputStream fos = null;
 	private boolean canAppend = false;
 	private boolean canRead = false;
 	private boolean canReplace = false;
@@ -24,27 +31,54 @@ public class JSFile implements IFile {
 	public JSFile(String name) {
 		
 		file = new File(name);
-	
+		try {
+			fis = new FileInputStream(file);
+			//fos = new FileOutputStream(outfile);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// TODO
 	}
 	
 	public boolean close() {
 		// TODO Auto-generated method stub
+		if(fis != null) {
+			try {
+				fis.close();
+				fis = null;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		}
 		return false;
 	}
 
 	public boolean copyTo(String name) {
 		// TODO Auto-generated method stub
+		if(fis != null) {
+			//TODO add copyTo Code
+		}
 		return false;
 	}
 
 	public boolean eof() {
 		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	public boolean flush() {
 		// TODO Auto-generated method stub
+		if(fos != null) {
+			try {
+				fos.flush();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return false;
 	}
 
@@ -54,13 +88,27 @@ public class JSFile implements IFile {
 	}
 
 	public boolean mkdir(String newDir) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		File tmpDir = new File(newDir);
+		boolean ret = false;
+		
+		if(!file.exists()) {
+			try {
+				ret = tmpDir.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return ret;
 	}
 
 	public boolean open(String type, String mode) {
 		// TODO Auto-generated method stub
-		return false;
+		File f = new File(type, mode);
+		
+		return f.exists();
+		
 	}
 
 	public String read(int numChars) {
@@ -89,8 +137,14 @@ public class JSFile implements IFile {
 	}
 
 	public boolean renameTo(String name) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		File tmpFile = new File(name);
+		boolean ret = false;
+		
+		if(!tmpFile.exists()) {
+			ret = file.renameTo(tmpFile);
+		}
+		return ret;
 	}
 
 	public int seek(int numBytes) {
@@ -143,6 +197,11 @@ public class JSFile implements IFile {
 	}
 
 	public boolean isCanWrite() {
+		
+		if(!file.exists()) {
+			return false;
+		}
+		
 		return canWrite;
 	}
 
