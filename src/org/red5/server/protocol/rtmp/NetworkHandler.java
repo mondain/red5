@@ -22,6 +22,8 @@ package org.red5.server.protocol.rtmp;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
+import java.net.SocketException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
@@ -64,8 +66,15 @@ public class NetworkHandler extends IoHandlerAdapter {
 		
 		SessionConfig cfg = session.getConfig();
 
-		if (cfg instanceof SocketSessionConfig) {
-			((SocketSessionConfig) cfg).setSessionReceiveBufferSize(2048);
+		try {
+			if (cfg instanceof SocketSessionConfig) {
+				SocketSessionConfig sessionConfig = (SocketSessionConfig) cfg;
+				sessionConfig.setSessionReceiveBufferSize(2048);
+				//sessionConfig.setSendBufferSize(1460);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -74,6 +83,7 @@ public class NetworkHandler extends IoHandlerAdapter {
 	}
 
 	public void dataWritten(IoSession ioSession, Object event) throws Exception {
+		//log.info("Data written");
 		if(event!=null && event instanceof Stream){
 			Stream stream = (Stream) event;
 			if(stream.hasMorePackets()){

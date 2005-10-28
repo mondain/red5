@@ -111,6 +111,11 @@ public class Stream {
 		// It seems we were sending too much data in a single write
 		// So send an empty packet, this will callback and buy us enough time ;)
 		conn.getIoSession().write(ByteBuffer.allocate(0).flip(),this);
+		
+		//while(hasMorePackets()){
+		//	writeNextPacket();
+		//}
+		
 	}
 	
 	protected void resume(){
@@ -169,6 +174,13 @@ public class Stream {
 	public void writeNextPacket(){
 		Packet packet = null;
 		try {
+			
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			if(log.isDebugEnabled())
 				log.debug("Send next packet");
