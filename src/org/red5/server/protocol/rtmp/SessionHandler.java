@@ -159,7 +159,6 @@ public class SessionHandler {
 	private void onSharedObjectConnectPacket(Packet packet) {
 		log.error("Shared Object");
 		log.error("Need to know what flashcom response is."); 
-		
 	}
 	
 	private void onSharedObjectPacket(Packet packet) {
@@ -474,7 +473,7 @@ public class SessionHandler {
 
 	public void onClientBytesReadPacket(Packet packet){
 		int bytesRead = packet.getData().getInt();
-		if(log.isDebugEnabled())
+		if(log.isInfoEnabled())
 			log.info("Client bytes read: "+bytesRead);
 		packet.getSourceChannel().getConnection().setClientBytesRead(bytesRead);
 	}
