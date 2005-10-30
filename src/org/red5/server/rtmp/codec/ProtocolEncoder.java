@@ -6,13 +6,18 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.protocol.ProtocolEncoderOutput;
 import org.apache.mina.protocol.ProtocolSession;
 import org.apache.mina.protocol.ProtocolViolationException;
-import org.red5.server.io.BufferUtils;
 import org.red5.server.io.Serializer;
 import org.red5.server.protocol.rtmp.RTMPUtils;
 import org.red5.server.rtmp.Connection;
+import org.red5.server.rtmp.message.AudioData;
 import org.red5.server.rtmp.message.Constants;
+import org.red5.server.rtmp.message.Invoke;
+import org.red5.server.rtmp.message.Notify;
 import org.red5.server.rtmp.message.Packet;
 import org.red5.server.rtmp.message.PacketHeader;
+import org.red5.server.rtmp.message.Ping;
+import org.red5.server.rtmp.message.StreamBytesRead;
+import org.red5.server.rtmp.message.VideoData;
 import org.red5.server.utils.BufferLogUtils;
 
 public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder, Constants {
@@ -132,8 +137,51 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		return buf;
 	}
 	
-	public ByteBuffer encodePacket(Packet packet){
+	public ByteBuffer encodePacket(Packet packet, PacketHeader header){
+		switch(header.getDataType()){
+		case TYPE_INVOKE:
+			return encodeInvoke((Invoke) packet,header);
+		case TYPE_NOTIFY:
+			return encodeNotify((Notify) packet,header);
+		case TYPE_PING:
+			return encodePing((Ping) packet,header);
+		case TYPE_STREAM_BYTES_READ:
+			return encodeStreamBytesRead((StreamBytesRead) packet,header);
+		case TYPE_AUDIO_DATA:
+			return encodeAudioData((AudioData) packet,header);
+		case TYPE_VIDEO_DATA:
+			return encodeVideoData((VideoData) packet,header);
+		}
 		return null;
 	}
+	
+	public ByteBuffer encodeInvoke(Invoke invoke, PacketHeader header){
+		return null;
+	}
+	
+	public ByteBuffer encodeNotify(Notify notify, PacketHeader header){
+		return null;
+	}
+	
+	public ByteBuffer encodePing(Ping ping, PacketHeader header){
+		return null;
+	}
+	
+	public ByteBuffer encodeStreamBytesRead(StreamBytesRead streamBytesRead, PacketHeader header){
+		return null;
+	}
+	
+	public ByteBuffer encodeAudioData(AudioData audioData, PacketHeader header){
+		return null;
+	}
+	
+	public ByteBuffer encodeVideoData(VideoData videoData, PacketHeader header){
+		return null;
+	}
+	
+	public ByteBuffer enchunkData(ByteBuffer in, int chunkSize){
+		return null;
+	}
+		
 	
 }

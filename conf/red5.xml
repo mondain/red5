@@ -21,6 +21,10 @@
 					<entry key="port"><value>${rtmp.port}</value></entry>
 					<entry key="handler"><ref bean="rtmpHandler" /></entry>
 				</map></entry>
+				<entry key="rtmp2"><map>
+					<entry key="port"><value>${rtmp2.port}</value></entry>
+					<entry key="handler"><ref bean="rtmpProtocolProvider" /></entry>
+				</map></entry>
 				<!--
 				<entry key="remoting"><map>
 					<entry key="port"><value>${remoting.port}</value></entry>
@@ -71,7 +75,26 @@
     			<ref bean="serializer" />
     		</property>
     </bean>
-    
+
+    <bean id="rtmpProtocolProvider"
+		class="org.red5.server.rtmp.RTMPProtocolProvider" />
+	
+	<bean id="rtmpProtocolEncoder"
+		class="org.red5.server.rtmp.codec.ProtocolEncoder">
+		<property name="serializer">
+    			<ref bean="serializer" />
+    		</property>
+	</bean>
+	
+	<bean id="rtmpProtocolDecoder"
+		class="org.red5.server.rtmp.codec.ProtocolDecoder">
+		<property name="deserializer">
+    			<ref bean="deserializer" />
+    		</property>
+	</bean>
+		
+	<bean id="rtmpSessionHandler2"
+		class="org.red5.server.rtmp.RTMPSessionHandler" />
 	
 	<!-- Start of Status Messages -->
     <!-- Status Service: caches status objects and returns a ByteBuffer --> 

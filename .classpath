@@ -16,7 +16,7 @@
 	<classpathentry kind="lib" path="lib/xbean_xpath.jar"/>
 	<classpathentry kind="lib" path="lib/js.jar"/>
 	<classpathentry kind="lib" path="lib/spring-scripting-support.jar"/>
-	<classpathentry kind="lib" path="lib/mina-0.8.0.jar"/>
+	<classpathentry sourcepath="src_mina" kind="lib" path="lib/mina-0.8.0.jar"/>
 	<classpathentry kind="src" path="src_mina"/>
 	<classpathentry kind="lib" path="lib/slf4j-log4j12.jar"/>
 	<classpathentry kind="output" path="bin"/>
