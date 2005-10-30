@@ -23,8 +23,9 @@ package org.red5.server.protocol.rtmp;
  */
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.server.rtmp.message.Constants;
 
-public class RTMPUtils {
+public class RTMPUtils implements Constants {
 
 	public static void writeMediumInt(ByteBuffer out, int value) {
 		byte[] bytes = new byte[3];
@@ -69,6 +70,21 @@ public class RTMPUtils {
 		int headerInt = (header>=0) ? header : header+256;
 		byte size = (byte) (headerInt >> 6);
 		return size;
+	}
+	
+	public static int getHeaderLength(byte headerSize){
+		switch(headerSize){
+		case HEADER_NEW:
+			return 12;
+		case HEADER_SAME_SOURCE:
+			return 8;
+		case HEADER_TIMER_CHANGE:
+			return 4;
+		case HEADER_CONTINUE:
+			return 1;
+		default:
+			return -1;
+		}
 	}
 	
 }
