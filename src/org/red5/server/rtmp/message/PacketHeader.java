@@ -48,4 +48,16 @@ public class PacketHeader {
 		this.timer = timer;
 	}
 
+	public boolean equals(Object other) {
+		if(!(other instanceof PacketHeader)) return false;
+		final PacketHeader header = (PacketHeader) other;
+		return (header.getChannelId() == channelId 
+			&& header.getDataType() == dataType
+			&& header.getSize() == size
+			&& header.getTimer() == timer
+			&& header.getSource() == source);
+	}
+	
+	
+
 }

@@ -11,10 +11,17 @@ import org.red5.server.io.Deserializer;
 import org.red5.server.protocol.rtmp.RTMPUtils;
 import org.red5.server.rtmp.Channel;
 import org.red5.server.rtmp.Connection;
+import org.red5.server.rtmp.message.AudioData;
 import org.red5.server.rtmp.message.Constants;
 import org.red5.server.rtmp.message.HandshakeConnect;
 import org.red5.server.rtmp.message.HandshakeOK;
+import org.red5.server.rtmp.message.Invoke;
+import org.red5.server.rtmp.message.Notify;
+import org.red5.server.rtmp.message.Packet;
 import org.red5.server.rtmp.message.PacketHeader;
+import org.red5.server.rtmp.message.Ping;
+import org.red5.server.rtmp.message.StreamBytesRead;
+import org.red5.server.rtmp.message.VideoData;
 
 public class ProtocolDecoder extends CumulativeProtocolDecoder implements Constants {
 
@@ -70,9 +77,11 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 				final byte headerSize = (byte) RTMPUtils.decodeHeaderSize(headerByte);
 				int headerLength = RTMPUtils.getHeaderLength(headerSize);
 				
+				in.position(in.position()-1);
+				
 				if(headerLength > in.remaining()) return false;
 				
-				final PacketHeader header = decodeHeader(in,headerByte,channel.getLastReadHeader());
+				final PacketHeader header = decodeHeader(in,channel.getLastReadHeader());
 				
 				if(header==null) 
 					throw new ProtocolViolationException("Header is null, check for error");
@@ -89,8 +98,9 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 		return true;
 	}
 	
-	public PacketHeader decodeHeader(ByteBuffer in, byte headerByte, PacketHeader lastHeader){
+	public PacketHeader decodeHeader(ByteBuffer in, PacketHeader lastHeader){
 		
+		final byte headerByte = in.get();
 		final byte channelId = RTMPUtils.decodeChannelId(headerByte);
 		final byte headerSize = (byte) RTMPUtils.decodeHeaderSize(headerByte);
 		PacketHeader header = new PacketHeader();
@@ -137,8 +147,49 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 		return header;
 	}
 	
-	private Object decodePacket(ByteBuffer in, PacketHeader header) {
-		// TODO Auto-generated method stub
+	public Packet decodePacket(ByteBuffer in, PacketHeader header) {
+		switch(header.getDataType()){
+		case TYPE_INVOKE:
+			return decodeInvoke(in,header);
+		case TYPE_NOTIFY:
+			return decodeNotify(in,header);
+		case TYPE_PING:
+			return decodePing(in,header);
+		case TYPE_STREAM_BYTES_READ:
+			return decodeStreamBytesRead(in,header);
+		case TYPE_AUDIO_DATA:
+			return decodeAudioData(in,header);
+		case TYPE_VIDEO_DATA:
+			return decodeVideoData(in,header);
+		}
+		return null;
+	}
+	
+	public Invoke decodeInvoke(ByteBuffer in, PacketHeader header){
+		return null;
+	}
+	
+	public Notify decodeNotify(ByteBuffer in, PacketHeader header){
+		return null;
+	}
+	
+	public Ping decodePing(ByteBuffer in, PacketHeader header){
+		return null;
+	}
+	
+	public StreamBytesRead decodeStreamBytesRead(ByteBuffer in, PacketHeader header){
+		return null;
+	}
+	
+	public AudioData decodeAudioData(ByteBuffer in, PacketHeader header){
+		return null;
+	}
+	
+	public VideoData decodeVideoData(ByteBuffer in, PacketHeader header){
+		return null;
+	}
+	
+	public ByteBuffer dechunkData(ByteBuffer in, int chunkSize){
 		return null;
 	}
 	
