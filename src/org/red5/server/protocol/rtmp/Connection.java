@@ -127,6 +127,10 @@ public class Connection {
 		return state;
 	}
 	
+	public void setState(byte state){
+		this.state = state;
+	}
+	
 	public ByteBuffer getHandshakeBuffer() {
 		return handshakeBuffer;
 	}
