@@ -1,6 +1,7 @@
 package org.red5.server.rtmp.message;
 
-public class PacketHeader {
+
+public class PacketHeader implements Constants {
 
 	private byte channelId = 0;
 	private int timer = 0;
@@ -58,6 +59,28 @@ public class PacketHeader {
 			&& header.getSource() == source);
 	}
 	
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("ChannelId: ").append(channelId).append(", ");
+		sb.append("Timer: ").append(timer).append(", ");
+		sb.append("Size: ").append(size).append(", ");
+		sb.append("DateType: ").append(dataType).append(", ");
+		sb.append("Source: ").append(source);
+		return sb.toString();
+	}
 	
+	public Object clone(){
+		final PacketHeader header = new PacketHeader();
+		header.setChannelId(channelId);
+		header.setTimer(timer);
+		header.setSize(size);
+		header.setDataType(dataType);
+		header.setSource(source);
+		return header;
+	}
+	
+	public int getChunkSize(){
+		return (dataType>=TYPE_HANDSHAKE) ? HANDSHAKE_SIZE : CHUNK_SIZE;
+	}
 
 }

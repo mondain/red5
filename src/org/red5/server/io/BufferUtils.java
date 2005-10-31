@@ -38,7 +38,7 @@ public class BufferUtils {
 	
 	public static int put(ByteBuffer out, ByteBuffer in, int numBytesMax){
 		final int limit = in.limit();
-		final int numBytesRead = (numBytesMax > in.remaining()) ? numBytesMax : in.remaining();
+		final int numBytesRead = (numBytesMax > in.remaining()) ? in.remaining() : numBytesMax;
 		in.limit(in.position()+numBytesRead);
 		out.put(in);
 		in.limit(limit);

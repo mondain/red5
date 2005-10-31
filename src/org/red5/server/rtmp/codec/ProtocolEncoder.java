@@ -6,14 +6,18 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.protocol.ProtocolEncoderOutput;
 import org.apache.mina.protocol.ProtocolSession;
 import org.apache.mina.protocol.ProtocolViolationException;
+import org.red5.server.io.BufferUtils;
 import org.red5.server.io.Serializer;
+import org.red5.server.io.amf.Output;
 import org.red5.server.protocol.rtmp.RTMPUtils;
+import org.red5.server.rtmp.Channel;
 import org.red5.server.rtmp.Connection;
 import org.red5.server.rtmp.message.AudioData;
 import org.red5.server.rtmp.message.Constants;
 import org.red5.server.rtmp.message.Invoke;
+import org.red5.server.rtmp.message.Message;
 import org.red5.server.rtmp.message.Notify;
-import org.red5.server.rtmp.message.Packet;
+import org.red5.server.rtmp.message.OutPacket;
 import org.red5.server.rtmp.message.PacketHeader;
 import org.red5.server.rtmp.message.Ping;
 import org.red5.server.rtmp.message.StreamBytesRead;
@@ -30,87 +34,59 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	public void encode(ProtocolSession session, Object message, ProtocolEncoderOutput out) 
 		throws ProtocolViolationException {
 		
-		final Connection conn = (Connection) session.getAttachment();
-		final Packet packet = (Packet) message;
-		final PacketHeader header = packet.getDestination();
-		final ByteBuffer data = packet.getData();
+		log.debug("Encode");
 		
-		ByteBuffer headers = ByteBuffer.allocate(9);
-		byte headerByte = RTMPUtils.encodeHeaderByte(HEADER_NEW, header.getChannelId());
-		headers.put(headerByte);
-		
-		// write timer
-		RTMPUtils.writeMediumInt(headers, header.getTimer());
-		
-		// write size
-		RTMPUtils.writeMediumInt(headers, header.getSize());
-		
-		// write datatype
-		headers.put(header.getDataType());
-		
-		// write source
-		headers.putInt(header.getSource());
-	
-		
-		ByteBuffer buf = null;
-		// write all the chunks.. oh.. chunky!
-		//if(packet.getDataType() == Packet.TYPE_VIDEO) {
-			buf = ByteBuffer.allocate(2048);
-		//} else {
-			//out = ByteBuffer.allocate(1024);
-		//}
-		buf.setAutoExpand(true);
-		
-		//conn.setLastWriteChannel(this);
-		//session.getIoSession().write(headers,null);
-		headers.flip();
-		
-		buf.put(headers);
-		
-		int numChunks =  (int) Math.ceil((header.getSize() / (float) 128));
-		
-		if(log.isDebugEnabled())
-			log.debug("Num chunks: "+numChunks);
-		if(numChunks > 1){
-			if(log.isDebugEnabled())
-				log.debug("Writing "+numChunks+" chunks");
-			//ByteBuffer chunk; // = packet.getChunk(0);
-			/*
-			BufferUtils.put(buff, packet.getData() , chunkSize);
+		try {
+			final Connection conn = (Connection) session.getAttachment();
+			final OutPacket packet = (OutPacket) message;
+			final PacketHeader header = packet.getDestination();
+			final Channel channel = conn.getChannel(header.getChannelId());	
 			
-			//session.getIoSession().write(chunk,null);
-			for(int i=0; i<=numChunks && (chunk = packet.getChunk(i)) != null; i++){
-				//log.debug("Continue writing");
-				if(i>0) buf.put(RTMPUtils.encodeHeaderByte(HEADER_CONTINUE, header.getChannelId()));
-				buf.put(chunk);
+			if(conn.getState() == Connection.STATE_HANDSHAKE){
+				log.debug("Sending handshake");
+				out.write(packet.getMessage().getData());
+				return;
 			}
-			*/
-		} else if (numChunks == 1){
-			// no need to chunk it, as its only one piece
-			// log.debug("Writing a single chunk");
-			ByteBuffer body = packet.getData();
-			body.acquire(); // we dont want it released
-			//session.getIoSession().write(body,null);
-			buf.put(body);
-		} else {
-			if(log.isDebugEnabled())
-				log.debug("No chunks to write.");
+				
+			final ByteBuffer data = encodeMessage(packet.getMessage());
+			header.setSize(data.limit());
+			ByteBuffer headers = encodeHeader(header,channel.getLastWriteHeader());
+
+			ByteBuffer buf = null;
+			buf = ByteBuffer.allocate(2048); // FIX ME
+			buf.setAutoExpand(true);
+
+			headers.flip();	
+			buf.put(headers);
+	
+			int numChunks =  (int) Math.ceil((header.getSize() / (float) header.getChunkSize()));
+			
+			for(int i=0; i<numChunks; i++){
+				int readAmount = (data.remaining()>header.getChunkSize()) 
+					? header.getChunkSize() : data.remaining();
+				log.debug("putting chunk");
+				BufferUtils.put(buf,data,readAmount);
+				if(data.remaining()>0){
+					log.debug("header byte");
+					buf.put(RTMPUtils.encodeHeaderByte(HEADER_CONTINUE, header.getChannelId()));
+				}
+			}
+			
+			buf.flip();
+			
+			if(log.isDebugEnabled()){
+				log.debug(" ====== WRITE DATA ===== ");
+				BufferLogUtils.debug(log,"Write raw response",buf);
+			}
+			
+			out.write(buf);
+			
+			// this will destroy the packet if there are no more refs
+			packet.getMessage().release();
+		} catch (RuntimeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		buf.flip();
-		
-		//log.debug("Position: "+out.position());
-		//log.debug("Limit: "+out.limit());
-		
-		if(log.isDebugEnabled()){
-			log.debug(" ====== WRITE DATA ===== ");
-			BufferLogUtils.debug(log,"Write raw response",buf);
-		}
-		
-		out.write(buf);
-		
-		// this will destroy the packet if there are no more refs
-		packet.release();
 		
 	}
 
@@ -119,8 +95,11 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	}
 
 	public ByteBuffer encodeHeader(PacketHeader header, PacketHeader lastHeader){
+		
 		ByteBuffer buf = ByteBuffer.allocate(9);
+		
 		byte headerByte = RTMPUtils.encodeHeaderByte(HEADER_NEW, header.getChannelId());
+		
 		buf.put(headerByte);
 		
 		// write timer
@@ -137,50 +116,71 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		return buf;
 	}
 	
-	public ByteBuffer encodePacket(Packet packet, PacketHeader header){
-		switch(header.getDataType()){
-		case TYPE_INVOKE:
-			return encodeInvoke((Invoke) packet,header);
-		case TYPE_NOTIFY:
-			return encodeNotify((Notify) packet,header);
-		case TYPE_PING:
-			return encodePing((Ping) packet,header);
-		case TYPE_STREAM_BYTES_READ:
-			return encodeStreamBytesRead((StreamBytesRead) packet,header);
-		case TYPE_AUDIO_DATA:
-			return encodeAudioData((AudioData) packet,header);
-		case TYPE_VIDEO_DATA:
-			return encodeVideoData((VideoData) packet,header);
+	public ByteBuffer encodeMessage(Message message){
+		if(message.isSealed()){
+			return message.getData();
 		}
-		return null;
+		switch(message.getDataType()){
+		case TYPE_INVOKE:
+			encodeInvoke((Invoke) message);
+			break;
+		case TYPE_NOTIFY:
+			encodeNotify((Notify) message);
+			break;
+		case TYPE_PING:
+			encodePing((Ping) message);
+			break;
+		case TYPE_STREAM_BYTES_READ:
+			encodeStreamBytesRead((StreamBytesRead) message);
+			break;
+		case TYPE_AUDIO_DATA:
+			encodeAudioData((AudioData) message);
+			break;
+		case TYPE_VIDEO_DATA:
+			encodeVideoData((VideoData) message);
+			break;
+		}
+		message.getData().flip();
+		message.setSealed(true);
+		return message.getData();
 	}
 	
-	public ByteBuffer encodeInvoke(Invoke invoke, PacketHeader header){
-		return null;
+	public void encodeInvoke(Invoke invoke){
+		log.debug("Encode invoke");
+		Output output = new Output(invoke.getData());
+		serializer.serialize(output, "/result"); // seems right
+		// dont know what this number does, so im just sending it back
+		serializer.serialize(output, new Integer(invoke.getInvokeId())); 
+		serializer.serialize(output, null);
+		Object[] param = invoke.getCall().getArguments();
+		for(int i=0; i<param.length; i++){
+			serializer.serialize(output, param[i]);
+		}
+		//invoke.getData().flip();
 	}
 	
-	public ByteBuffer encodeNotify(Notify notify, PacketHeader header){
-		return null;
+	public void encodeNotify(Notify notify){
+
 	}
 	
-	public ByteBuffer encodePing(Ping ping, PacketHeader header){
-		return null;
+	public void encodePing(Ping ping){
+
 	}
 	
-	public ByteBuffer encodeStreamBytesRead(StreamBytesRead streamBytesRead, PacketHeader header){
-		return null;
+	public void encodeStreamBytesRead(StreamBytesRead streamBytesRead){
+
 	}
 	
-	public ByteBuffer encodeAudioData(AudioData audioData, PacketHeader header){
-		return null;
+	public void encodeAudioData(AudioData audioData){
+
 	}
 	
-	public ByteBuffer encodeVideoData(VideoData videoData, PacketHeader header){
-		return null;
+	public void encodeVideoData(VideoData videoData){
+
 	}
 	
-	public ByteBuffer enchunkData(ByteBuffer in, int chunkSize){
-		return null;
+	public void enchunkData(ByteBuffer in, int chunkSize){
+
 	}
 		
 	
