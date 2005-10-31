@@ -1,13 +1,13 @@
 package org.red5.server.rtmp.message;
 
-public class StreamBytesRead extends Packet {
+public class StreamBytesRead extends Message {
 	
 	private static final int INITIAL_CAPACITY = 4;
 	
 	private int bytesRead = 0;
 
 	public StreamBytesRead(){
-		super(INITIAL_CAPACITY);
+		super(TYPE_STREAM_BYTES_READ, INITIAL_CAPACITY);
 	}
 	
 	public int getBytesRead(){

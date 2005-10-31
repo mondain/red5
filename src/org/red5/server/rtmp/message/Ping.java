@@ -1,6 +1,6 @@
 package org.red5.server.rtmp.message;
 
-public class Ping extends Packet {
+public class Ping extends Message {
 	
 	private static final int INITIAL_CAPACITY = 6;
 	
@@ -8,7 +8,7 @@ public class Ping extends Packet {
 	private int value2 = 0;
 	
 	public Ping(){
-		super(INITIAL_CAPACITY);
+		super(TYPE_PING, INITIAL_CAPACITY);
 	}
 
 	public short getValue1() {

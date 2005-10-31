@@ -3,14 +3,13 @@ package org.red5.server.rtmp;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.protocol.ProtocolSession;
-import org.red5.server.rtmp.message.Packet;
+import org.red5.server.rtmp.message.OutPacket;
 
 public class Connection {
 
 	protected static Log log =
         LogFactory.getLog(Connection.class.getName());
 	
-	public static final byte STATE_UNKNOWN = -1;
 	public static final byte STATE_CONNECT = 0;
 	public static final byte STATE_HANDSHAKE = 1;
 	public static final byte STATE_CONNECTED = 2;
@@ -18,10 +17,14 @@ public class Connection {
 	
 	private ProtocolSession protocolSession;
 	private Context context;
-	private byte state = STATE_UNKNOWN;
+	private byte state = STATE_CONNECT;
 	private Channel[] channels = new Channel[64];
 	private Channel lastReadChannel = null;
 	private Channel lastWriteChannel = null;
+	
+	public Connection(ProtocolSession protocolSession){
+		this.protocolSession = protocolSession;
+	}
 	
 	public Context getContext() {
 		return context;
@@ -33,10 +36,6 @@ public class Connection {
 	
 	public ProtocolSession getProtocolSession() {
 		return protocolSession;
-	}
-	
-	public void setProtocolSession(ProtocolSession protocolSession) {
-		this.protocolSession = protocolSession;
 	}
 	
 	public byte getState() {
@@ -63,12 +62,9 @@ public class Connection {
 	}
 
 	public Channel getChannel(byte channelId){
-		return null;
-		/*
 		if(!isChannelUsed(channelId)) 
 			channels[channelId] = new Channel(this, channelId);
 		return channels[channelId];
-		*/
 	}
 	
 	public void closeChannel(byte channelId){
@@ -92,7 +88,7 @@ public class Connection {
 		this.lastWriteChannel = lastWriteChannel;
 	}
 	
-	public void write(Packet packet){
+	public void write(OutPacket packet){
 		protocolSession.write(packet);
 	}
 	

@@ -77,7 +77,11 @@
     </bean>
 
     <bean id="rtmpProtocolProvider"
-		class="org.red5.server.rtmp.RTMPProtocolProvider" />
+		class="org.red5.server.rtmp.RTMPProtocolProvider">
+		<property name="handler">
+    			<ref bean="rtmpSessionHandler2" />
+    		</property>
+    	</bean>
 	
 	<bean id="rtmpProtocolEncoder"
 		class="org.red5.server.rtmp.codec.ProtocolEncoder">
@@ -94,7 +98,9 @@
 	</bean>
 		
 	<bean id="rtmpSessionHandler2"
-		class="org.red5.server.rtmp.RTMPSessionHandler" />
+		class="org.red5.server.rtmp.RTMPSessionHandler">
+		<property name="statusObjectService"><ref bean="statusObjectService" /></property>
+	</bean>
 	
 	<!-- Start of Status Messages -->
     <!-- Status Service: caches status objects and returns a ByteBuffer --> 
