@@ -37,7 +37,7 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 	
 	public void exceptionCaught(ProtocolSession session, Throwable cause) throws Exception {
 		// TODO Auto-generated method stub
-		
+		log.error("Exception caught", cause);
 	}
 
 	public void messageReceived(ProtocolSession session, Object in) throws Exception {
@@ -84,25 +84,26 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 
 	public void messageSent(ProtocolSession session, Object message) throws Exception {
 		// TODO Auto-generated method stub
-		
+		log.debug("Message sent");
 	}
 
 	public void sessionClosed(ProtocolSession session) throws Exception {
 		// TODO Auto-generated method stub
-		
+		log.debug("Session closed");
 	}
 
 	public void sessionCreated(ProtocolSession session) throws Exception {
+		log.debug("Session created");
 		session.setAttachment(new Connection(session));
 	}
 
 	public void sessionIdle(ProtocolSession session, IdleStatus status) throws Exception {
 		// TODO Auto-generated method stub
-		
+		log.debug("Session idle");
 	}
 
 	public void sessionOpened(ProtocolSession session) throws Exception {
-		
+		log.debug("Session opened");
 	}
 
 	// ------------------------------------------------------------------------------
@@ -120,12 +121,18 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 	
 	public void onInvoke(Connection conn, Channel channel, PacketHeader source, Invoke invoke){
 		
+		log.debug("Invoke");
+		
 		final Call call = invoke.getCall();
 		
 		//final ServiceInvoker serviceInvoker = conn.getContext().getServiceInvoker();
 		if(call.getServiceName()==null){
 			// internal call, so lookup the service name
+			// if not found, then return an error
+			
 			log.debug("Internal: "+call.getServiceMethodName());
+			
+			
 			
 			if(call.getServiceMethodName().equals("connect")){
 				StatusObject status = statusObjectService.getStatusObject(StatusObjectService.NC_CONNECT_SUCCESS);

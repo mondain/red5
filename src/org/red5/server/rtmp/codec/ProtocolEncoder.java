@@ -61,6 +61,8 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	
 			int numChunks =  (int) Math.ceil((header.getSize() / (float) header.getChunkSize()));
 			
+			
+			// TODO: threadsafe way of doing this reusing the data here, im thinking a lock
 			for(int i=0; i<numChunks; i++){
 				int readAmount = (data.remaining()>header.getChunkSize()) 
 					? header.getChunkSize() : data.remaining();
