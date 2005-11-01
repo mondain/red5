@@ -4,8 +4,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.protocol.ProtocolSession;
 import org.red5.server.rtmp.message.OutPacket;
+import org.red5.server.context.Client;
 
-public class Connection {
+public class Connection extends Client {
 
 	protected static Log log =
         LogFactory.getLog(Connection.class.getName());
