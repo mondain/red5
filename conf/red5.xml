@@ -96,10 +96,14 @@
     			<ref bean="deserializer" />
     		</property>
 	</bean>
+	
+	<bean id="serviceInvoker" class="org.red5.server.service.ServiceInvoker" />
 		
 	<bean id="rtmpSessionHandler2"
 		class="org.red5.server.rtmp.RTMPSessionHandler">
 		<property name="statusObjectService"><ref bean="statusObjectService" /></property>
+		<property name="serviceInvoker"><ref bean="serviceInvoker" /></property>
+		<property name="globalContext"><ref bean="globalContext" /></property>
 	</bean>
 	
 	<!-- Start of Status Messages -->

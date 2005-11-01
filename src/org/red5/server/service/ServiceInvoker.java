@@ -25,6 +25,7 @@ package org.red5.server.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -92,10 +93,23 @@ public class ServiceInvoker  {
 		log.debug("Found "+methods.size()+" methods");
 		
 		if(methods.size()==0){
-			log.debug("Method not found");
-			call.setStatus(Call.STATUS_METHOD_NOT_FOUND);
-			call.setException(new MethodNotFoundException(methodName));
-			return; // EXIT
+			// Ok, then lets try this as a list
+			methods = ConversionUtils.findMethodsByNameAndNumParams(service,methodName, 1);
+			if(methods.size() > 0){
+				log.debug("Trying as a list");
+				ArrayList argsList = new ArrayList();
+				if(args!=null){
+					for(int i=0; i<args.length; i++){
+						argsList.add(args[0]);
+					}
+				}
+				args = new Object[]{argsList};
+			} else {
+				log.debug("Method not found");
+				call.setStatus(Call.STATUS_METHOD_NOT_FOUND);
+				call.setException(new MethodNotFoundException(methodName));
+				return; // EXIT
+			}
 		} else if(methods.size() > 1){
 			log.debug("Multiple methods found with same name and parameter count.");
 			log.debug("Parameter conversion will be attempted in order.");

@@ -1,10 +1,13 @@
 package org.red5.server.rtmp;
 
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.protocol.ProtocolSession;
-import org.red5.server.rtmp.message.OutPacket;
+import org.red5.server.context.AppContext;
 import org.red5.server.context.Client;
+import org.red5.server.rtmp.message.OutPacket;
 
 public class Connection extends Client {
 
@@ -17,22 +20,23 @@ public class Connection extends Client {
 	public static final byte STATE_DISCONNECTED = 3;
 	
 	private ProtocolSession protocolSession;
-	private Context context;
+	//private Context context;
 	private byte state = STATE_CONNECT;
 	private Channel[] channels = new Channel[64];
 	private Channel lastReadChannel = null;
 	private Channel lastWriteChannel = null;
+	private AppContext appCtx = null;
 	
 	public Connection(ProtocolSession protocolSession){
 		this.protocolSession = protocolSession;
 	}
 	
-	public Context getContext() {
-		return context;
+	public AppContext getAppContext() {
+		return appCtx;
 	}
 	
-	public void setContext(Context context) {
-		this.context = context;
+	public void setAppContext(AppContext appCtx) {
+		this.appCtx = appCtx;
 	}
 	
 	public ProtocolSession getProtocolSession() {
@@ -91,6 +95,10 @@ public class Connection extends Client {
 	
 	public void write(OutPacket packet){
 		protocolSession.write(packet);
+	}
+	
+	public void setParameters(Map params){
+		this.params = params;
 	}
 	
 }

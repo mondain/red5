@@ -10,6 +10,7 @@ public class AppContext
 	extends GenericRed5Context {
 	
 	public static final String APP_CONFIG = "app.xml";
+	public static final String APP_SERVICE_NAME = "appService";
 	
 	protected String appPath;
 	protected String appName;
@@ -22,6 +23,11 @@ public class AppContext
 		super(host, appPath, appPath + "/" + APP_CONFIG ); 
 		this.appName = appName;
 		this.appPath = appPath;
+		if(!this.containsBean(APP_SERVICE_NAME)){
+			BaseApplication app = new BaseApplication();
+			this.getBeanFactory().registerSingleton(APP_SERVICE_NAME, app);
+			app.initialize();
+		}
 	}
 	
 	public ServiceInvoker getServiceInvoker(){
