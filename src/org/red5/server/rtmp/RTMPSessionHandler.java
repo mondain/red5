@@ -5,7 +5,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.protocol.ProtocolHandler;
 import org.apache.mina.protocol.ProtocolSession;
-import org.red5.server.protocol.rtmp.status2.StatusObject;
+import org.red5.server.context.AppContext;
+import org.red5.server.context.GlobalContext;
+import org.red5.server.context.HostContext;
+import org.red5.server.context.Scope;
 import org.red5.server.protocol.rtmp.status2.StatusObjectService;
 import org.red5.server.rtmp.message.AudioData;
 import org.red5.server.rtmp.message.Constants;
@@ -20,6 +23,7 @@ import org.red5.server.rtmp.message.Ping;
 import org.red5.server.rtmp.message.StreamBytesRead;
 import org.red5.server.rtmp.message.VideoData;
 import org.red5.server.service.Call;
+import org.red5.server.service.ServiceInvoker;
 import org.red5.server.stream.Stream;
 
 public class RTMPSessionHandler implements ProtocolHandler, Constants{
@@ -28,13 +32,23 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
         LogFactory.getLog(RTMPSessionHandler.class.getName());
 	
 	public StatusObjectService statusObjectService = null;
+	public GlobalContext globalContext = null;
+	public ServiceInvoker serviceInvoker = null;
 
 	public void setStatusObjectService(StatusObjectService statusObjectService) {
 		this.statusObjectService = statusObjectService;
 	}
-
-	//	 ------------------------------------------------------------------------------
 	
+	public void setGlobalContext(GlobalContext globalContext) {
+		this.globalContext = globalContext;
+	}
+	
+	public void setServiceInvoker(ServiceInvoker serviceInvoker) {
+		this.serviceInvoker = serviceInvoker;
+	}
+	
+	//	 ------------------------------------------------------------------------------
+
 	public void exceptionCaught(ProtocolSession session, Throwable cause) throws Exception {
 		// TODO Auto-generated method stub
 		log.error("Exception caught", cause);
@@ -123,27 +137,47 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		
 		log.debug("Invoke");
 		
+		if(invoke.getConnectionParams()!=null){
+			log.debug("Setting connection params: "+invoke.getConnectionParams());
+			conn.setParameters(invoke.getConnectionParams());
+		}
+		
+		if(conn.getAppContext()==null){
+			
+			final String app = conn.getParameter("app");
+			final String hostname = conn.getParameter("tcUrl").split("/")[2];
+			
+			if(log.isDebugEnabled()){
+				log.debug("Hostname: "+hostname);
+				log.debug("App: "+app);
+			}
+				
+			final HostContext host = (globalContext.hasHostContext(hostname)) ?
+					globalContext.getHostContext(hostname) : globalContext.getDefaultHost();
+			
+			if(!host.hasAppContext(app)){
+				log.warn("Application not found");
+				return; // todo close connection etc, send status etc
+			}
+					
+			conn.setAppContext(host.getAppContext(app));
+		}
+		
+		Scope.setClient(conn);
+		Scope.setStatusObjectService(statusObjectService);
+		
 		final Call call = invoke.getCall();
 		
-		//final ServiceInvoker serviceInvoker = conn.getContext().getServiceInvoker();
 		if(call.getServiceName()==null){
-			// internal call, so lookup the service name
-			// if not found, then return an error
-			
-			log.debug("Internal: "+call.getServiceMethodName());
-			
-			
-			
-			if(call.getServiceMethodName().equals("connect")){
-				StatusObject status = statusObjectService.getStatusObject(StatusObjectService.NC_CONNECT_SUCCESS);
-				Call result = new Call(null,"_result",new Object[]{status});
-				Invoke reply = new Invoke();
-				reply.setInvokeId(invoke.getInvokeId());
-				reply.setCall(call);
-				channel.write(reply);
-			}
-			
+			call.setServiceName(AppContext.APP_SERVICE_NAME);
 		} 
+		
+		serviceInvoker.invoke(call, conn.getAppContext());
+		Invoke reply = new Invoke();
+		reply.setCall(call);
+		reply.setInvokeId(invoke.getInvokeId());
+		channel.write(reply);
+		
 	}
 	
 	public void onNotify(Connection conn, Channel channel, PacketHeader source, Notify notify){

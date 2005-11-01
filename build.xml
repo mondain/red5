@@ -96,6 +96,8 @@
 			<include name="red5.jar" />
 			<include name="red5.bat" />
 			<include name="red5.sh" />
+			<include name="DEMO_README.txt" />
+			<include name="known_bugs.txt" />
 		</fileset>
 		<fileset dir="tests">
 			<include name="ofla_demo.swf" />

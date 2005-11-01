@@ -1,6 +1,7 @@
 package org.red5.server.rtmp.codec;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -266,10 +267,11 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 		if(invoke.getData().hasRemaining()){
 			ArrayList paramList = new ArrayList();
 			
-			// Often the first param is null, for connect its not
-			// So if its null just ignore it and move on
-			Object firstParam = deserializer.deserialize(input);
-			if(firstParam!=null) paramList.add(firstParam);
+			// Before the actual parameters we sometimes (connect) get a map
+			// of parameters, this is usually null, but if set should be passed
+			// to the connection object. 
+			final Map connParams = (Map) deserializer.deserialize(input);
+			invoke.setConnectionParams(connParams);
 			
 			while(invoke.getData().hasRemaining()){
 				paramList.add(deserializer.deserialize(input));

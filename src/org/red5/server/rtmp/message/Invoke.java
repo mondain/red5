@@ -1,5 +1,7 @@
 package org.red5.server.rtmp.message;
 
+import java.util.Map;
+
 import org.red5.server.service.Call;
 
 public class Invoke extends Message {
@@ -8,6 +10,7 @@ public class Invoke extends Message {
 	
 	private Call call;
 	private int invokeId = 0;
+	private Map connectionParams = null;
 	
 	public Invoke(){
 		super(TYPE_INVOKE,INITIAL_CAPACITY);
@@ -31,6 +34,14 @@ public class Invoke extends Message {
 
 	protected void doRelease() {
 		call = null;
+	}
+
+	public Map getConnectionParams() {
+		return connectionParams;
+	}
+
+	public void setConnectionParams(Map connectionParams) {
+		this.connectionParams = connectionParams;
 	}
 	
 }

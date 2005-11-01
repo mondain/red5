@@ -150,14 +150,11 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	public void encodeInvoke(Invoke invoke){
 		log.debug("Encode invoke");
 		Output output = new Output(invoke.getData());
-		serializer.serialize(output, "/result"); // seems right
+		serializer.serialize(output, "_result"); // seems right
 		// dont know what this number does, so im just sending it back
 		serializer.serialize(output, new Integer(invoke.getInvokeId())); 
 		serializer.serialize(output, null);
-		Object[] param = invoke.getCall().getArguments();
-		for(int i=0; i<param.length; i++){
-			serializer.serialize(output, param[i]);
-		}
+		serializer.serialize(output, invoke.getCall().getResult());
 		//invoke.getData().flip();
 	}
 	
