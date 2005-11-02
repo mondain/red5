@@ -155,7 +155,8 @@ public class Stream {
 		return state;
 	}
 	
-	public boolean hasMorePackets(){		
+	public boolean hasMorePackets(){
+		//if(1<2) return false;
 		if(flvReader==null) return false;
 		if(state!=STATE_PLAYING) return false;
 		if(!flvReader.hasMoreTags()){

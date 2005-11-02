@@ -6,7 +6,6 @@ import org.red5.server.rtmp.message.InPacket;
 import org.red5.server.rtmp.message.Message;
 import org.red5.server.rtmp.message.OutPacket;
 import org.red5.server.rtmp.message.PacketHeader;
-import org.red5.server.stream.Stream;
 
 public class Channel {
 
@@ -15,7 +14,7 @@ public class Channel {
 	
 	private Connection connection = null;
 	private byte id = 0;
-	private Stream stream;
+	//private Stream stream;
 	private PacketHeader lastReadHeader = null;
 	private PacketHeader lastWriteHeader = null;
 	private InPacket inPacket = null;
@@ -26,9 +25,15 @@ public class Channel {
 		id = channelId;
 	}
 	
+	public byte getId(){
+		return id;
+	}
+	
+	/*
 	public Stream getStream() {
 		return stream;
 	}
+	*/
 
 	public InPacket getInPacket() {
 		return inPacket;

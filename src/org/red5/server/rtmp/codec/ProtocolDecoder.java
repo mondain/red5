@@ -137,6 +137,7 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 						conn.setState(Connection.STATE_HANDSHAKE);
 					} 
 				}
+				log.debug(packet);
 				out.write(packet);
 				channel.setInPacket(null);
 			} 

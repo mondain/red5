@@ -1,11 +1,13 @@
 package org.red5.server.context;
 
 import org.red5.server.protocol.rtmp.status2.StatusObjectService;
+import org.red5.server.stream.Stream;
 
 public class Scope {
 
 	private static ThreadLocal clientLocal = new ThreadLocal();
 	private static ThreadLocal statusObjectServiceLocal = new ThreadLocal();
+	private static ThreadLocal streamLocal = new ThreadLocal();
 	
 	public static Client getClient(){
 		return (Client) clientLocal.get();
@@ -22,4 +24,13 @@ public class Scope {
 	public static void setStatusObjectService(StatusObjectService sos) {
 		statusObjectServiceLocal.set(sos);
 	}
+	
+	public static void setStream(Stream stream){
+		streamLocal.set(stream);
+	}
+	
+	public static Stream getStream(){
+		return (Stream) streamLocal.get();
+	}
+	
 }

@@ -200,7 +200,7 @@ public class SessionHandler {
 			stream = packet.getSourceChannel().getConnection().getStream();
 		}
 		
-		if(stream.getState()!= Stream.STATE_STOPPED){
+		if(stream.getState()!=Stream.STATE_STOPPED){
 			stream.end();
 		}
 		
