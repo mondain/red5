@@ -11,6 +11,7 @@ public class Invoke extends Message {
 	private Call call;
 	private int invokeId = 0;
 	private Map connectionParams = null;
+	private boolean andReturn = true;
 	
 	public Invoke(){
 		super(TYPE_INVOKE,INITIAL_CAPACITY);
@@ -42,6 +43,18 @@ public class Invoke extends Message {
 
 	public void setConnectionParams(Map connectionParams) {
 		this.connectionParams = connectionParams;
+	}
+
+	public boolean isAndReturn() {
+		return andReturn;
+	}
+
+	public void setAndReturn(boolean andReturn) {
+		this.andReturn = andReturn;
+	}
+	
+	public byte getDataType(){
+		return (andReturn) ? TYPE_INVOKE : TYPE_NOTIFY;
 	}
 	
 }

@@ -8,6 +8,7 @@ import org.apache.mina.protocol.ProtocolSession;
 import org.red5.server.context.AppContext;
 import org.red5.server.context.Client;
 import org.red5.server.rtmp.message.OutPacket;
+import org.red5.server.stream.Stream;
 
 public class Connection extends Client {
 
@@ -23,6 +24,7 @@ public class Connection extends Client {
 	//private Context context;
 	private byte state = STATE_CONNECT;
 	private Channel[] channels = new Channel[64];
+	private Stream[] streams = new Stream[12];
 	private Channel lastReadChannel = null;
 	private Channel lastWriteChannel = null;
 	private AppContext appCtx = null;
@@ -99,6 +101,26 @@ public class Connection extends Client {
 	
 	public void setParameters(Map params){
 		this.params = params;
+	}
+	
+	public Stream getStreamByChannelId(byte channelId){
+		if(channelId < 4) return null;
+		int streamId = (int) Math.floor((channelId-3)/5);
+		log.debug("Stream: "+streamId);
+		if(streams[streamId]==null) 
+			streams[streamId] = createStream(streamId);
+		return streams[streamId];
+	}
+	
+	protected Stream createStream(int streamId){
+		byte channelId = (byte) (streamId + 4);
+		final Channel video = getChannel(channelId++);
+		final Channel audio = getChannel(channelId++);
+		final Channel data = getChannel(channelId++);
+		final Channel unknown = getChannel(channelId++);
+		final Channel ctrl = getChannel(channelId++);
+		final Stream stream = new Stream(video,audio,data,unknown,ctrl);
+		return stream;
 	}
 	
 }

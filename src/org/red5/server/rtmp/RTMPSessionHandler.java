@@ -65,6 +65,10 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 			final PacketHeader source = packet.getSource();
 			final Channel channel = conn.getChannel(packet.getSource().getChannelId());
 			
+			Scope.setClient(conn);
+			Scope.setStream(conn.getStreamByChannelId(channel.getId()));
+			Scope.setStatusObjectService(statusObjectService);
+			
 			log.debug("Channel: "+channel);
 			
 			switch(message.getDataType()){
@@ -72,10 +76,8 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 				onHandshake(conn, channel, source, (Handshake) message);
 				break;
 			case TYPE_INVOKE:
+			case TYPE_NOTIFY: // just like invoke, but does not return
 				onInvoke(conn, channel, source, (Invoke) message);
-				break;
-			case TYPE_NOTIFY:
-				onNotify(conn, channel, source, (Notify) message);
 				break;
 			case TYPE_PING:
 				onPing(conn, channel, source, (Ping) message);
@@ -102,7 +104,9 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 	}
 
 	public void sessionClosed(ProtocolSession session) throws Exception {
-		// TODO Auto-generated method stub
+		final Connection conn = (Connection) session.getAttachment();
+		conn.setState(Connection.STATE_DISCONNECTED);
+		invokeCall(conn, new Call("disconnect"));
 		log.debug("Session closed");
 	}
 
@@ -122,6 +126,40 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 
 	// ------------------------------------------------------------------------------
 	
+	public AppContext lookupAppContext(Connection conn){
+		
+		final String app = conn.getParameter("app");
+		final String hostname = conn.getParameter("tcUrl").split("/")[2];
+		
+		if(log.isDebugEnabled()){
+			log.debug("Hostname: "+hostname);
+			log.debug("App: "+app);
+		}
+			
+		final HostContext host = (globalContext.hasHostContext(hostname)) ?
+				globalContext.getHostContext(hostname) : globalContext.getDefaultHost();
+		
+		if(!host.hasAppContext(app)){
+			log.warn("Application not found");
+			return null; // todo close connection etc, send status etc
+		}
+		
+		return host.getAppContext(app);
+		
+	}
+	
+	public void invokeCall(Connection conn, Call call){
+		
+		if(call.getServiceName()==null){
+			call.setServiceName(AppContext.APP_SERVICE_NAME);
+		} 
+		
+		serviceInvoker.invoke(call, conn.getAppContext());
+		
+	}
+	
+	// ------------------------------------------------------------------------------
+	
 	public void onHandshake(Connection conn, Channel channel, PacketHeader source, Handshake handshake){
 		log.debug("Handshake Connect");
 		log.debug("Channel: "+channel);
@@ -132,7 +170,7 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		channel.write(reply);
 	}
 	
-	
+
 	public void onInvoke(Connection conn, Channel channel, PacketHeader source, Invoke invoke){
 		
 		log.debug("Invoke");
@@ -140,67 +178,43 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		if(invoke.getConnectionParams()!=null){
 			log.debug("Setting connection params: "+invoke.getConnectionParams());
 			conn.setParameters(invoke.getConnectionParams());
+			log.debug("Setting application context");
+			conn.setAppContext(lookupAppContext(conn));
 		}
-		
-		if(conn.getAppContext()==null){
-			
-			final String app = conn.getParameter("app");
-			final String hostname = conn.getParameter("tcUrl").split("/")[2];
-			
-			if(log.isDebugEnabled()){
-				log.debug("Hostname: "+hostname);
-				log.debug("App: "+app);
-			}
-				
-			final HostContext host = (globalContext.hasHostContext(hostname)) ?
-					globalContext.getHostContext(hostname) : globalContext.getDefaultHost();
-			
-			if(!host.hasAppContext(app)){
-				log.warn("Application not found");
-				return; // todo close connection etc, send status etc
-			}
-					
-			conn.setAppContext(host.getAppContext(app));
-		}
-		
-		Scope.setClient(conn);
-		Scope.setStatusObjectService(statusObjectService);
 		
 		final Call call = invoke.getCall();
 		
-		if(call.getServiceName()==null){
-			call.setServiceName(AppContext.APP_SERVICE_NAME);
-		} 
+		invokeCall(conn,call);
 		
-		serviceInvoker.invoke(call, conn.getAppContext());
-		Invoke reply = new Invoke();
-		reply.setCall(call);
-		reply.setInvokeId(invoke.getInvokeId());
-		channel.write(reply);
+		if(invoke.isAndReturn()){
 		
-	}
-	
-	public void onNotify(Connection conn, Channel channel, PacketHeader source, Notify notify){
+			Invoke reply = new Invoke();
+			reply.setCall(call);
+			reply.setInvokeId(invoke.getInvokeId());
+			channel.write(reply);
+		
+		}
 		
 	}
 	
 	public void onPing(Connection conn, Channel channel, PacketHeader source, Ping ping){
 		// respond to the ping
+		log.debug("Ping!!!");
 	}
 	
 	public void onStreamBytesRead(Connection conn, Channel channel, PacketHeader source, StreamBytesRead streamBytesRead){
 		// get the stream, pass the event to the stream
-		final Stream stream = channel.getStream();
+		
 	}
 	
 	public void onAudioData(Connection conn, Channel channel, PacketHeader source, AudioData audioData){
 		// get the stream, pass the event to the stream
-		final Stream stream = channel.getStream();
+		
 	}
 	
 	public void onVideoData(Connection conns, Channel channel, PacketHeader source, VideoData videoData){
 		// get the stream, pass the event to the stream
-		final Stream stream = channel.getStream();
+		
 	}
 	
 	//	 ---------------------------------------------------------------------------

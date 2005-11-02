@@ -33,18 +33,26 @@ public class Call {
 	public static final byte STATUS_INVOCATION_EXCEPTION = 0x07;
 	public static final byte STATUS_GENERAL_EXCEPTION = 0x08;
 	
-    protected String serviceName;
-    protected String serviceMethodName;
-    protected Object[] arguments;
+    protected String serviceName = null;
+    protected String serviceMethodName = null;
+    protected Object[] arguments = null;
     protected Object result = null;
     protected byte status = STATUS_PENDING;
     protected Exception exception = null;
+    
+    public Call(String method){
+		serviceMethodName = method;
+    }
+    
+    public Call(String method, Object[] args){
+		serviceMethodName = method;
+		arguments = args;
+    }
     
     public Call(String name, String method, Object[] args){
     		serviceName = name;
     		serviceMethodName = method;
     		arguments = args;
-    		status = STATUS_PENDING;
     }
     
     public boolean isSuccess(){
