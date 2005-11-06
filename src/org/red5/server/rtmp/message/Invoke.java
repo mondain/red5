@@ -57,4 +57,10 @@ public class Invoke extends Message {
 		return (andReturn) ? TYPE_INVOKE : TYPE_NOTIFY;
 	}
 	
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("Invoke: ").append(call);
+		return sb.toString();
+	}
+	
 }

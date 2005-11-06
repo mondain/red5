@@ -8,6 +8,8 @@ import org.apache.mina.protocol.ProtocolSession;
 import org.red5.server.context.AppContext;
 import org.red5.server.context.Client;
 import org.red5.server.rtmp.message.OutPacket;
+import org.red5.server.stream.DownStreamSink;
+import org.red5.server.stream.IStreamSink;
 import org.red5.server.stream.Stream;
 
 public class Connection extends Client {
@@ -114,12 +116,14 @@ public class Connection extends Client {
 	
 	protected Stream createStream(int streamId){
 		byte channelId = (byte) (streamId + 4);
+		Stream stream = new Stream();
 		final Channel video = getChannel(channelId++);
 		final Channel audio = getChannel(channelId++);
 		final Channel data = getChannel(channelId++);
 		final Channel unknown = getChannel(channelId++);
 		final Channel ctrl = getChannel(channelId++);
-		final Stream stream = new Stream(video,audio,data,unknown,ctrl);
+		final IStreamSink down = new DownStreamSink(video,audio,data);
+		stream.setDownstream(down);
 		return stream;
 	}
 	

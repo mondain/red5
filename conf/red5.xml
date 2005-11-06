@@ -25,6 +25,10 @@
 					<entry key="port"><value>${rtmp2.port}</value></entry>
 					<entry key="handler"><ref bean="rtmpProtocolProvider" /></entry>
 				</map></entry>
+				<entry key="rtmpProxy"><map>
+					<entry key="port"><value>1937</value></entry>
+					<entry key="handler"><ref bean="proxyHandler" /></entry>
+				</map></entry>
 				<!--
 				<entry key="remoting"><map>
 					<entry key="port"><value>${remoting.port}</value></entry>
@@ -34,6 +38,14 @@
 			</map>
 		</property>
 	</bean> 
+	
+	<bean id="proxyHandler" class="org.red5.server.proxy.DebugProxyHandler"
+		init-method="initialize">
+		<property name="forwardHost"><value>192.168.0.41</value></property>
+		<property name="forwardPort"><value>1935</value></property>
+		<property name="forwardTimeOut"><value>10000</value></property>
+		<property name="decoder"><ref bean="rtmpProtocolDecoder" /></property>
+	</bean>
 	
 	<!-- RTMP Protcol Handler: handles the handshake, 
 	passes rtmp session and packet to session handler -->

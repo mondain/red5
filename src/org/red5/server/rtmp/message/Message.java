@@ -8,6 +8,7 @@ public class Message implements Constants {
 	private int refCount = 0;
 	private ByteBuffer data;
 	private boolean sealed = false;
+	private int timestamp = 0;
 	
 	public Message(byte dataType, int initialCapacity){
 		this.dataType = dataType;
@@ -16,7 +17,15 @@ public class Message implements Constants {
 		data.acquire(); // this stops it being released
 		acquire();
 	}
-	
+
+	public int getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(int timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	public byte getDataType() {
 		return dataType;
 	}

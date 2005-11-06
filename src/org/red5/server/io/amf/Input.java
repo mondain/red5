@@ -170,6 +170,7 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		if(log.isDebugEnabled()) {
 			log.debug("len: "+len);
 		}
+		log.info("limit: "+strBuf.position() + len);
 		strBuf.limit(strBuf.position() + len);
 		final String string = AMF.CHARSET.decode(strBuf).toString();
 		buf.limit(limit); // Reset the limit

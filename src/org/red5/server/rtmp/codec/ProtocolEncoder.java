@@ -28,14 +28,15 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 
 	protected static Log log =
         LogFactory.getLog(ProtocolEncoder.class.getName());
+
+	protected static Log ioLog =
+        LogFactory.getLog(ProtocolEncoder.class.getName()+".out");
 	
 	private Serializer serializer = null;
 	
 	public void encode(ProtocolSession session, Object message, ProtocolEncoderOutput out) 
 		throws ProtocolViolationException {
-		
-		log.debug("Encode");
-		
+				
 		try {
 			final Connection conn = (Connection) session.getAttachment();
 			final OutPacket packet = (OutPacket) message;
@@ -47,7 +48,7 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 				out.write(packet.getMessage().getData());
 				return;
 			}
-				
+			
 			final ByteBuffer data = encodeMessage(packet.getMessage());
 			header.setSize(data.limit());
 			ByteBuffer headers = encodeHeader(header,channel.getLastWriteHeader());
@@ -61,15 +62,14 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	
 			int numChunks =  (int) Math.ceil((header.getSize() / (float) header.getChunkSize()));
 			
-			
 			// TODO: threadsafe way of doing this reusing the data here, im thinking a lock
 			for(int i=0; i<numChunks; i++){
 				int readAmount = (data.remaining()>header.getChunkSize()) 
 					? header.getChunkSize() : data.remaining();
-				log.debug("putting chunk");
+				// log.debug("putting chunk");
 				BufferUtils.put(buf,data,readAmount);
 				if(data.remaining()>0){
-					log.debug("header byte");
+					// log.debug("header byte");
 					buf.put(RTMPUtils.encodeHeaderByte(HEADER_CONTINUE, header.getChannelId()));
 				}
 			}
@@ -77,8 +77,8 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 			buf.flip();
 			
 			if(log.isDebugEnabled()){
-				log.debug(" ====== WRITE DATA ===== ");
-				BufferLogUtils.debug(log,"Write raw response",buf);
+				ioLog.debug(packet.getDestination());
+				ioLog.debug(packet.getMessage());
 			}
 			
 			out.write(buf);
@@ -163,7 +163,10 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	}
 	
 	public void encodePing(Ping ping){
-
+		final ByteBuffer out = ping.getData();
+		out.putShort(ping.getValue1());
+		out.putInt(ping.getValue2());
+		log.debug(ping);
 	}
 	
 	public void encodeStreamBytesRead(StreamBytesRead streamBytesRead){

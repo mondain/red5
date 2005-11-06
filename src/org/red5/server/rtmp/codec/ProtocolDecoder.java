@@ -25,7 +25,9 @@ import org.red5.server.rtmp.message.Message;
 import org.red5.server.rtmp.message.Notify;
 import org.red5.server.rtmp.message.PacketHeader;
 import org.red5.server.rtmp.message.Ping;
+import org.red5.server.rtmp.message.SharedObject;
 import org.red5.server.rtmp.message.StreamBytesRead;
+import org.red5.server.rtmp.message.Unknown;
 import org.red5.server.rtmp.message.VideoData;
 import org.red5.server.service.Call;
 import org.red5.server.utils.BufferLogUtils;
@@ -34,6 +36,9 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 
 	protected static Log log =
         LogFactory.getLog(ProtocolDecoder.class.getName());
+
+	protected static Log ioLog =
+        LogFactory.getLog(ProtocolDecoder.class.getName()+".in");
 	
 	private Deserializer deserializer = null;
 
@@ -50,7 +55,7 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 		
 		try {
 			
-			log.debug("doDecode: "+in.remaining());
+			//log.debug("doDecode: "+in.remaining());
 		
 			if(in.remaining() < 1) {
 				log.debug("Empty read, buffering");
@@ -61,6 +66,12 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 			final Connection conn = (Connection) session.getAttachment();
 			final byte headerByte = in.get();
 			final byte channelId = RTMPUtils.decodeChannelId(headerByte);
+			
+			if(channelId<0) {
+				log.debug("Bad channel id: "+channelId+" skipping");
+				return true;
+			}
+			
 			final Channel channel = conn.getChannel(channelId);
 			final byte headerSize = (byte) RTMPUtils.decodeHeaderSize(headerByte);
 			int headerLength = RTMPUtils.getHeaderLength(headerSize);
@@ -107,7 +118,7 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 				channel.setInPacket(packet);
 			}
 			
-			
+			ioLog.debug(header);
 			
 			final ByteBuffer buf = packet.getMessage().getData();
 			
@@ -115,21 +126,21 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 			
 			final int readAmount = (readRemaining > header.getChunkSize()) ? header.getChunkSize() : readRemaining;
 			
-			log.debug("Read amount: "+readAmount);
+			//log.debug("Read amount: "+readAmount);
 			
 			if(in.remaining() < readAmount) {
-				log.debug("Chunk too small, buffering");
-				log.debug("Remaining: "+in.remaining());
+				log.debug("Chunk too small, buffering ("+in.remaining()+","+readAmount);
+				// log.debug("Remaining: "+in.remaining());
 				in.position(startPosition);
 				return false;
 			}
 			
 			BufferUtils.put(buf, in, readAmount);
 			
-			log.debug("Position" + buf.position());
+			//log.debug("Position" + buf.position());
 			
 			if(buf.position() >= header.getSize()){
-				log.debug("Finished read, decode packet");
+				//log.debug("Finished read, decode packet");
 				buf.flip();
 				decodeMessage(packet.getMessage());
 				if(header.getDataType()==TYPE_HANDSHAKE){
@@ -137,7 +148,8 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 						conn.setState(Connection.STATE_HANDSHAKE);
 					} 
 				}
-				log.debug(packet);
+				ioLog.debug(packet.getSource());
+				ioLog.debug(packet.getMessage());
 				out.write(packet);
 				channel.setInPacket(null);
 			} 
@@ -225,6 +237,12 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 		case TYPE_VIDEO_DATA:
 			packet.setMessage(new VideoData());
 			break;
+		case TYPE_SHARED_OBJECT:
+			packet.setMessage(new SharedObject());
+			break;
+		default:
+			packet.setMessage(new Unknown(header.getDataType()));
+			break;
 		}
 		return packet;
 	}
@@ -252,14 +270,51 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 		case TYPE_VIDEO_DATA:
 			decodeVideoData((VideoData) message);
 			break;
+		case TYPE_SHARED_OBJECT:
+			decodeSharedObject((SharedObject) message);
+			break;
 		}
 	}
 	
+	public void decodeSharedObject(SharedObject so) {
+		log.info(so);
+		final ByteBuffer data = so.getData();
+		int position = data.position();
+		try {
+			Input input = new Input(data);
+			
+			if(data.getShort()>20){
+				data.position(data.position()-2);
+				int num0 = data.getInt();
+				log.info("num0: "+num0);
+			} else {
+				data.position(data.position()-2);
+			}
+			
+			String str1 = Input.getString(data);
+			log.info("str1: "+str1);
+			long num1 = data.getLong();
+			log.info("num1: "+num1);
+			while(data.remaining()>0){
+				log.info(deserializer.deserialize(input));
+			}
+		} catch (RuntimeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			data.position(position);
+		}
+		//String str1 = 
+	}
+
 	public void decodeInvoke(Invoke invoke){
 		
 		Input input = new Input(invoke.getData());
-		
+	
 		String action = (String) deserializer.deserialize(input);
+		
+		log.debug("Action "+action);
+		
 		int invokeId = ((Number) deserializer.deserialize(input)).intValue();
 		invoke.setInvokeId(invokeId);
 				
@@ -300,7 +355,10 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 	}
 	
 	public void decodePing(Ping ping){
-
+		final ByteBuffer in = ping.getData();
+		ping.setValue1(in.getShort());
+		ping.setValue2(in.getInt());
+		log.debug(ping);
 	}
 	
 	public void decodeStreamBytesRead(StreamBytesRead streamBytesRead){

@@ -15,7 +15,7 @@ public interface Constants {
 	
 	// somthing to do with shared object
 	public static final byte TYPE_SHARED_OBJECT = 0x13;
-	public static final byte TYPE_SHARED_OBJECT_CONNECT = 0x19;
+	//public static final byte TYPE_SHARED_OBJECT_CONNECT = 0x13;
 	
 	public static final byte TYPE_HANDSHAKE = 0x30;
 	public static final byte TYPE_HANDSHAKE_REPLY = 0x31;
