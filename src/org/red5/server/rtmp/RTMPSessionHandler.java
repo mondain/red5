@@ -17,14 +17,12 @@ import org.red5.server.rtmp.message.HandshakeReply;
 import org.red5.server.rtmp.message.InPacket;
 import org.red5.server.rtmp.message.Invoke;
 import org.red5.server.rtmp.message.Message;
-import org.red5.server.rtmp.message.Notify;
 import org.red5.server.rtmp.message.PacketHeader;
 import org.red5.server.rtmp.message.Ping;
 import org.red5.server.rtmp.message.StreamBytesRead;
 import org.red5.server.rtmp.message.VideoData;
 import org.red5.server.service.Call;
 import org.red5.server.service.ServiceInvoker;
-import org.red5.server.stream.Stream;
 
 public class RTMPSessionHandler implements ProtocolHandler, Constants{
 
@@ -198,8 +196,10 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 	}
 	
 	public void onPing(Connection conn, Channel channel, PacketHeader source, Ping ping){
-		// respond to the ping
-		log.debug("Ping!!!");
+		final Ping pong = new Ping();
+		pong.setValue1((short)(ping.getValue1()+1));
+		pong.setValue2(ping.getValue2());
+		channel.write(pong);
 	}
 	
 	public void onStreamBytesRead(Connection conn, Channel channel, PacketHeader source, StreamBytesRead streamBytesRead){
@@ -209,11 +209,12 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 	
 	public void onAudioData(Connection conn, Channel channel, PacketHeader source, AudioData audioData){
 		// get the stream, pass the event to the stream
-		
+		Scope.getStream().publish(audioData);
 	}
 	
-	public void onVideoData(Connection conns, Channel channel, PacketHeader source, VideoData videoData){
+	public void onVideoData(Connection conn, Channel channel, PacketHeader source, VideoData videoData){
 		// get the stream, pass the event to the stream
+		Scope.getStream().publish(videoData);
 		
 	}
 	

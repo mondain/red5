@@ -75,22 +75,40 @@ public class BaseApplication implements ApplicationContextAware, Application {
 	}
 	
 	public void play(String name){
+		play(name, -1); // not sure what the number does
+	}
+	
+	public void play(String name, int number){
 		final Stream stream = Scope.getStream();
 		log.debug("play: "+name);
 		log.debug("stream: "+stream);
+		log.debug("number:"+number);
+		// lookup the source with 
+		
 		//streamManager.play(stream, name);
 	}
+	
+	public StatusObject publish(String name, String mode){
+		final Stream stream = Scope.getStream();
+		// register the name with the stream manager	
+		log.debug("publish: "+name);
+		log.debug("stream: "+stream);
+		log.debug("mode:"+mode);
+		return getStatus(StatusObjectService.NS_PUBLISH_START);
+	}
+	
 	
 	public void pause(){
 		
 	}
 	
 	public void deleteStream(){
-		
+		// unpublish ?
 	}
 	
 	public void closeStream(){
-		
+		final Stream stream = Scope.getStream();
+		stream.stop();
 	}
 	// publishStream ?
 	

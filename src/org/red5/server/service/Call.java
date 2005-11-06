@@ -105,7 +105,12 @@ public class Call {
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		sb.append("Service: "+serviceName+" Method: "+serviceMethodName);
-		if(arguments!=null) sb.append(" Num Params: "+arguments.length);
+		if(arguments!=null) {
+			sb.append(" Num Params: "+arguments.length);
+			for(int i=0; i<arguments.length; i++){
+				sb.append(i).append(": ").append(arguments[i]);
+			}
+		}
 		else sb.append(" No params");
 		return sb.toString();
 	}
