@@ -40,7 +40,7 @@ public class RTMPTestCase extends TestCase implements Constants {
 		PacketHeader header = new PacketHeader();
 		header.setChannelId((byte)0x12);
 		header.setDataType(TYPE_INVOKE);
-		header.setSource(100);
+		header.setStreamId(100);
 		header.setTimer(2);
 		header.setSize(320);
 		ByteBuffer buf = encoder.encodeHeader(header,null);

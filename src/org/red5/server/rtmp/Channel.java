@@ -6,6 +6,7 @@ import org.red5.server.rtmp.message.InPacket;
 import org.red5.server.rtmp.message.Message;
 import org.red5.server.rtmp.message.OutPacket;
 import org.red5.server.rtmp.message.PacketHeader;
+import org.red5.server.stream.Stream;
 
 public class Channel {
 
@@ -19,6 +20,7 @@ public class Channel {
 	private PacketHeader lastWriteHeader = null;
 	private InPacket inPacket = null;
 	private OutPacket outPacket = null;
+	private int source = 0;
 
 	public Channel(Connection conn, byte channelId){
 		connection = conn;
@@ -68,17 +70,19 @@ public class Channel {
 	}
 	
 	public void write(Message message){
-		write(message, 0, 0);
+		final Stream stream = connection.getStreamByChannelId(id);
+		final int streamId = (stream==null) ? 0 : stream.getStreamId();
+		write(message, message.getTimestamp(), streamId);
 	}
 	
-	public void write(Message message, int timer, int source){
+	private void write(Message message, int timer, int streamId){
 		
 		final OutPacket packet = new OutPacket();
 		final PacketHeader header = new PacketHeader();
 		
 		header.setChannelId(id);
 		header.setTimer(timer);
-		header.setSource(source);
+		header.setStreamId(streamId);
 		header.setDataType(message.getDataType());
 		
 		packet.setDestination(header);

@@ -107,7 +107,8 @@ public class Connection extends Client {
 	
 	public Stream getStreamByChannelId(byte channelId){
 		if(channelId < 4) return null;
-		int streamId = (int) Math.floor((channelId-3)/5);
+		log.debug("Channel id: "+channelId);
+		int streamId = (int) Math.floor((channelId-4)/5);
 		log.debug("Stream: "+streamId);
 		if(streams[streamId]==null) 
 			streams[streamId] = createStream(streamId);
@@ -117,9 +118,9 @@ public class Connection extends Client {
 	protected Stream createStream(int streamId){
 		byte channelId = (byte) (streamId + 4);
 		Stream stream = new Stream();
+		final Channel data = getChannel(channelId++);
 		final Channel video = getChannel(channelId++);
 		final Channel audio = getChannel(channelId++);
-		final Channel data = getChannel(channelId++);
 		final Channel unknown = getChannel(channelId++);
 		final Channel ctrl = getChannel(channelId++);
 		final IStreamSink down = new DownStreamSink(video,audio,data);

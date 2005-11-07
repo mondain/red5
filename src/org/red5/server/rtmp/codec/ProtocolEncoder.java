@@ -113,8 +113,8 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		// write datatype
 		buf.put(header.getDataType());
 		
-		// write source
-		buf.putInt(header.getSource());
+		// write stream
+		RTMPUtils.writeReverseInt(buf, header.getStreamId());
 		return buf;
 	}
 	

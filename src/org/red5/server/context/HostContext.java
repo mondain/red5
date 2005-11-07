@@ -57,6 +57,7 @@ public class HostContext
 		String appPath = this.getBaseDir() + APP_DIR +"/"+appName;
 		AppContext appContext = new AppContext(this, appName,  appPath);
 		this.getBeanFactory().registerSingleton(appName, appContext);
+		appContext.initialize();
 	}
 	
 	public boolean hasAppContext(String appName){

@@ -27,6 +27,15 @@ import org.red5.server.rtmp.message.Constants;
 
 public class RTMPUtils implements Constants {
 
+	public static void writeReverseInt(ByteBuffer out, int value) {
+		byte[] bytes = new byte[4];
+		bytes[3] = (byte) ((value >>> 32) & 0x000000FF);
+		bytes[2] = (byte) ((value >>> 16) & 0x000000FF);
+		bytes[1] = (byte) ((value >>> 8) & 0x000000FF);
+		bytes[0] = (byte) (value & 0x00FF);
+		out.put(bytes);
+	}
+	
 	public static void writeMediumInt(ByteBuffer out, int value) {
 		byte[] bytes = new byte[3];
 		bytes[0] = (byte) ((value >>> 16) & 0x000000FF);
@@ -45,7 +54,6 @@ public class RTMPUtils implements Constants {
 		return val;
 	}
 	
-	
 	public static int readMediumInt(ByteBuffer in) {
 		byte[] bytes = new byte[3];
 		in.get(bytes);
@@ -58,6 +66,17 @@ public class RTMPUtils implements Constants {
 		return val;
 	}
 
+	public static int readReverseInt(ByteBuffer in) {
+		byte[] bytes = new byte[4];
+		in.get(bytes);
+		int val = 0;
+		val += bytes[3] * 256 * 256 * 256;
+		val += bytes[2] * 256 * 256;
+		val += bytes[1] * 256;
+		val += bytes[0];
+		return val;
+	}
+	
 	public static byte encodeHeaderByte(byte headerSize, byte channelId){
 		return (byte) ((headerSize << 6) + channelId);
 	}

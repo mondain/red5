@@ -17,12 +17,14 @@ import org.red5.server.rtmp.message.HandshakeReply;
 import org.red5.server.rtmp.message.InPacket;
 import org.red5.server.rtmp.message.Invoke;
 import org.red5.server.rtmp.message.Message;
+import org.red5.server.rtmp.message.OutPacket;
 import org.red5.server.rtmp.message.PacketHeader;
 import org.red5.server.rtmp.message.Ping;
 import org.red5.server.rtmp.message.StreamBytesRead;
 import org.red5.server.rtmp.message.VideoData;
 import org.red5.server.service.Call;
 import org.red5.server.service.ServiceInvoker;
+import org.red5.server.stream.Stream;
 
 public class RTMPSessionHandler implements ProtocolHandler, Constants{
 
@@ -62,9 +64,16 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 			final Message message = packet.getMessage();
 			final PacketHeader source = packet.getSource();
 			final Channel channel = conn.getChannel(packet.getSource().getChannelId());
+			final Stream stream = conn.getStreamByChannelId(channel.getId());
+			
+			log.debug("nsid: "+source);
+			
+			if(stream != null){
+				stream.setStreamId(source.getStreamId());
+			}
 			
 			Scope.setClient(conn);
-			Scope.setStream(conn.getStreamByChannelId(channel.getId()));
+			Scope.setStream(stream);
 			Scope.setStatusObjectService(statusObjectService);
 			
 			log.debug("Channel: "+channel);
@@ -97,8 +106,16 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 	}
 
 	public void messageSent(ProtocolSession session, Object message) throws Exception {
+		final Connection conn = (Connection) session.getAttachment();
 		// TODO Auto-generated method stub
 		log.debug("Message sent");
+		
+		OutPacket sent = (OutPacket) message;
+		final byte channelId = sent.getDestination().getChannelId();
+		final Stream stream = conn.getStreamByChannelId(channelId);
+		if(stream!=null){
+			stream.written(sent.getMessage());
+		}
 	}
 
 	public void sessionClosed(ProtocolSession session) throws Exception {
