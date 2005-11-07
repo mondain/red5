@@ -9,7 +9,6 @@ import org.red5.server.context.AppContext;
 import org.red5.server.context.Client;
 import org.red5.server.rtmp.message.OutPacket;
 import org.red5.server.stream.DownStreamSink;
-import org.red5.server.stream.IStreamSink;
 import org.red5.server.stream.Stream;
 
 public class Connection extends Client {
@@ -107,9 +106,9 @@ public class Connection extends Client {
 	
 	public Stream getStreamByChannelId(byte channelId){
 		if(channelId < 4) return null;
-		log.debug("Channel id: "+channelId);
+		//log.debug("Channel id: "+channelId);
 		int streamId = (int) Math.floor((channelId-4)/5);
-		log.debug("Stream: "+streamId);
+		//log.debug("Stream: "+streamId);
 		if(streams[streamId]==null) 
 			streams[streamId] = createStream(streamId);
 		return streams[streamId];
@@ -123,7 +122,7 @@ public class Connection extends Client {
 		final Channel audio = getChannel(channelId++);
 		final Channel unknown = getChannel(channelId++);
 		final Channel ctrl = getChannel(channelId++);
-		final IStreamSink down = new DownStreamSink(video,audio,data);
+		final DownStreamSink down = new DownStreamSink(video,audio,data);
 		stream.setDownstream(down);
 		return stream;
 	}

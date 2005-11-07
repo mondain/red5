@@ -3,6 +3,8 @@ package org.red5.server.rtmp;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.IdleStatus;
+import org.apache.mina.common.SessionConfig;
+import org.apache.mina.io.socket.SocketSessionConfig;
 import org.apache.mina.protocol.ProtocolHandler;
 import org.apache.mina.protocol.ProtocolSession;
 import org.red5.server.context.AppContext;
@@ -127,6 +129,20 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 
 	public void sessionCreated(ProtocolSession session) throws Exception {
 		log.debug("Session created");
+		
+		SessionConfig cfg = session.getConfig();
+		
+		try {
+			if (cfg instanceof SocketSessionConfig) {
+				SocketSessionConfig sessionConfig = (SocketSessionConfig) cfg;
+				//sessionConfig.setSessionReceiveBufferSize(2048);
+				//sessionConfig.setSendBufferSize(1460);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		session.setAttachment(new Connection(session));
 	}
 

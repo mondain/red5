@@ -103,6 +103,7 @@ public class ProxyHandler extends IoHandlerAdapter {
 		private IoSession session;
 		private boolean direction = false;
 		private Log log = null;
+		private int bytesSkipped = 0;
 	    
 		ProxyConnector(IoSession session, boolean direction){
 			this.session = session;
@@ -135,6 +136,14 @@ public class ProxyHandler extends IoHandlerAdapter {
 		
 		public Log getLog(){
 			return log;
+		}
+
+		public int getBytesSkipped() {
+			return bytesSkipped;
+		}
+
+		public void setBytesSkipped(int bytesSkipped) {
+			this.bytesSkipped = bytesSkipped;
 		}
 		
 	}

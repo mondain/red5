@@ -41,7 +41,19 @@ public class DownStreamSink implements IStreamSink, Constants {
 			break;
 		}
 	}
-	
+
+	public Channel getAudio() {
+		return audio;
+	}
+
+	public Channel getData() {
+		return data;
+	}
+
+	public Channel getVideo() {
+		return video;
+	}
+
 	public void close(){
 		// do something ?
 	}

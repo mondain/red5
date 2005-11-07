@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.red5.server.rtmp.message.Constants;
 import org.red5.server.rtmp.message.Message;
+import org.red5.server.rtmp.message.Status;
 
 public class Stream implements Constants, IStream, IStreamSink {
 	
@@ -16,7 +17,7 @@ public class Stream implements Constants, IStream, IStreamSink {
 	private long startTS = 0;
 	private long currentTS = 0;
 	
-	private IStreamSink downstream = null;
+	private DownStreamSink downstream = null;
 	private IStreamSink upstream = null;
 	private IStreamSource source = null;
 	
@@ -33,11 +34,11 @@ public class Stream implements Constants, IStream, IStreamSink {
 		this.streamId = streamId;
 	}
 
-	public IStreamSink getDownstream() {
+	public DownStreamSink getDownstream() {
 		return downstream;
 	}
 
-	public void setDownstream(IStreamSink downstream) {
+	public void setDownstream(DownStreamSink downstream) {
 		this.downstream = downstream;
 	}
 
@@ -59,9 +60,21 @@ public class Stream implements Constants, IStream, IStreamSink {
 
 	public void start(){
 		startTime = System.currentTimeMillis();
+		
+		Status reset = new Status(Status.NS_PLAY_RESET);
+		Status start = new Status(Status.NS_PLAY_START);
+		reset.setClientid(1);
+		start.setClientid(1);
+		
+		downstream.getVideo().sendStatus(reset);
+		downstream.getData().sendStatus(start);
+		downstream.getVideo().sendStatus(new Status(Status.NS_DATA_START));
+		
+		/*
 		if(source!=null && source.hasMore()){
 			write(source.dequeue());
 		}
+		*/
 	}
 	
 	public void stop(){

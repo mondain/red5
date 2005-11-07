@@ -22,7 +22,7 @@ import org.red5.server.rtmp.message.PacketHeader;
 import org.red5.server.rtmp.message.Ping;
 import org.red5.server.rtmp.message.StreamBytesRead;
 import org.red5.server.rtmp.message.VideoData;
-import org.red5.server.utils.BufferLogUtils;
+import org.red5.server.service.Call;
 
 public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder, Constants {
 
@@ -76,7 +76,7 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 			
 			buf.flip();
 			
-			if(log.isDebugEnabled()){
+			if(ioLog.isDebugEnabled()){
 				ioLog.debug(packet.getDestination());
 				ioLog.debug(packet.getMessage());
 			}
@@ -127,7 +127,7 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 			encodeInvoke((Invoke) message);
 			break;
 		case TYPE_NOTIFY:
-			encodeNotify((Notify) message);
+			encodeInvoke((Invoke) message);
 			break;
 		case TYPE_PING:
 			encodePing((Ping) message);
@@ -150,11 +150,29 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	public void encodeInvoke(Invoke invoke){
 		log.debug("Encode invoke");
 		Output output = new Output(invoke.getData());
-		serializer.serialize(output, "_result"); // seems right
+		
+		final boolean isPending =(invoke.getCall().getStatus()==Call.STATUS_PENDING);
+		
+		if(!isPending){
+			serializer.serialize(output, "_result"); // seems right
+		} else {
+			serializer.serialize(output, invoke.getCall().getServiceMethodName()); // seems right
+		}
+		
 		// dont know what this number does, so im just sending it back
 		serializer.serialize(output, new Integer(invoke.getInvokeId())); 
 		serializer.serialize(output, null);
-		serializer.serialize(output, invoke.getCall().getResult());
+		if(!isPending){
+			serializer.serialize(output, invoke.getCall().getResult());
+		} else {
+			final Object[] args = invoke.getCall().getArguments();
+			if(args!=null){
+				for (int i = 0; i < args.length; i++) {
+					serializer.serialize(output, args[i]);
+				}
+			}
+		}
+		
 		//invoke.getData().flip();
 	}
 	
@@ -170,7 +188,8 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	}
 	
 	public void encodeStreamBytesRead(StreamBytesRead streamBytesRead){
-
+		final ByteBuffer out = streamBytesRead.getData();
+		out.putInt(streamBytesRead.getBytesRead());
 	}
 	
 	public void encodeAudioData(AudioData audioData){

@@ -11,6 +11,7 @@ import org.red5.server.rtmp.message.AudioData;
 import org.red5.server.rtmp.message.Constants;
 import org.red5.server.rtmp.message.Invoke;
 import org.red5.server.rtmp.message.Message;
+import org.red5.server.rtmp.message.Notify;
 import org.red5.server.rtmp.message.Unknown;
 import org.red5.server.rtmp.message.VideoData;
 
@@ -47,19 +48,25 @@ public class FileStreamSource implements IStreamSource, Constants {
 		case TYPE_INVOKE:
 			msg = new Invoke();
 			break;
+		case TYPE_NOTIFY:
+			msg = new Notify();
+			break;
 		default:
 			log.warn("Unexpected type? "+tag.getDataType());
 			msg = new Unknown(tag.getDataType());
 			break;
 		}
-		msg.setData(tag.getBody().flip());
+		msg.setData(tag.getBody());
 		msg.setTimestamp(tag.getTimestamp());
 		msg.setSealed(true);
 		return msg;
 	}
+	
+	int i=0;
 
 	public boolean hasMore() {
 		//return false;
+		//if(i++>20) return false;
 		return reader.hasMoreTags();
 	}
 	

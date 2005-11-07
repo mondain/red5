@@ -29,10 +29,14 @@ public class RTMPUtils implements Constants {
 
 	public static void writeReverseInt(ByteBuffer out, int value) {
 		byte[] bytes = new byte[4];
-		bytes[3] = (byte) ((value >>> 32) & 0x000000FF);
-		bytes[2] = (byte) ((value >>> 16) & 0x000000FF);
-		bytes[1] = (byte) ((value >>> 8) & 0x000000FF);
-		bytes[0] = (byte) (value & 0x00FF);
+		ByteBuffer rev = ByteBuffer.allocate(4);
+		rev.putInt(value);
+		rev.flip();
+		bytes[3] = rev.get();
+		bytes[2] = rev.get();
+		bytes[1] = rev.get();
+		bytes[0] = rev.get();
+		rev.release();
 		out.put(bytes);
 	}
 	
