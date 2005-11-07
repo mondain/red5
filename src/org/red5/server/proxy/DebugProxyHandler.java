@@ -46,22 +46,28 @@ public class DebugProxyHandler extends ProxyHandler {
 	}
 
 	public void decodeBuffer(IoSession session, ByteBuffer in){
+		log.info("DECODE BUFFER");
 		final SimpleProtocolDecoderOutput out = new SimpleProtocolDecoderOutput();
 		final ProtocolSession protocolSession = (ProtocolSession) protocolSessions.get(session);
 		final ProxyConnector conn = (ProxyConnector) session.getAttachment();
 		final Connection connection = (Connection) protocolSession.getAttachment();
 		int handshakeSize = (Constants.HANDSHAKE_SIZE * 2);
 		if(conn.isUp()) handshakeSize += 1;
-		if(conn.isDown()) handshakeSize += 1;
+		if(conn.isDown()) handshakeSize += 0;
 		if(connection.getState() == Connection.STATE_CONNECT){			
-			conn.getLog().debug("hs: "+handshakeSize +" read:"+ session.getReadBytes()+" remain:"+in.remaining());
-			if(session.getReadBytes() >= handshakeSize){
-				int skip = (int) session.getReadBytes() - handshakeSize;
-				in.skip(skip);
-				connection.setState(Connection.STATE_CONNECTED);
+			conn.getLog().debug("hs: "+handshakeSize +" skipped:"+ conn.getBytesSkipped()+" remain:"+in.remaining());
+			if(conn.getBytesSkipped() < handshakeSize){
+				int skip = (int) handshakeSize - conn.getBytesSkipped();
+				if(skip > in.remaining()) skip = in.remaining();
+				in.position(in.position()+skip);
+				conn.setBytesSkipped(conn.getBytesSkipped()+skip);
+			} 
+			if(conn.getBytesSkipped() == handshakeSize){
 				conn.getLog().debug("Passed handshake, set state == connected");
+				connection.setState(Connection.STATE_CONNECTED);
+				log.debug(">>>"+in.getHexDump());
 			} else {
-				return;
+				return; 
 			}
 		}
 		try {
@@ -82,18 +88,13 @@ public class DebugProxyHandler extends ProxyHandler {
 			
 			
 			final Connection conn = (Connection) session.getAttachment();
-			
-			log.debug("Message recieved");
-			
+						
 			final InPacket packet = (InPacket) in;
 			final Message message = packet.getMessage();
 			final PacketHeader source = packet.getSource();
 			final Channel channel = conn.getChannel(packet.getSource().getChannelId());
 			
-			log.debug(conn);
-			log.debug(source);
-			log.debug(message);
-			log.debug(channel);
+			log.info("\n\n"+source + "\n" + message + "\n" + message.getData().getHexDump()+"\n\n");
 			
 		} catch (RuntimeException e) {
 			// TODO Auto-generated catch block

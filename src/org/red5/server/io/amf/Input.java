@@ -167,10 +167,10 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		short len = buf.getShort();
 		int limit = buf.limit();
 		final java.nio.ByteBuffer strBuf = buf.buf();
-		if(log.isDebugEnabled()) {
-			log.debug("len: "+len);
-		}
-		log.info("limit: "+strBuf.position() + len);
+		//if(log.isDebugEnabled()) {
+		//	log.debug("len: "+len);
+		//}
+		//log.info("limit: "+strBuf.position() + len);
 		strBuf.limit(strBuf.position() + len);
 		final String string = AMF.CHARSET.decode(strBuf).toString();
 		buf.limit(limit); // Reset the limit

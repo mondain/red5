@@ -257,7 +257,7 @@ public class Serializer {
 			if(entry.getKey().toString().equals("class")) continue;
 			out.writePropertyName(entry.getKey().toString());
 			
-			log.info(entry.getKey().toString()+" = "+entry.getValue());
+			//log.info(entry.getKey().toString()+" = "+entry.getValue());
 			serialize(out,entry.getValue());
 			if(it.hasNext()) out.markPropertySeparator();
 		}

@@ -29,6 +29,18 @@
 					<entry key="port"><value>1937</value></entry>
 					<entry key="handler"><ref bean="proxyHandler" /></entry>
 				</map></entry>
+				<entry key="rawProxy"><map>
+					<entry key="port"><value>1938</value></entry>
+					<entry key="handler"><ref bean="rawProxyHandler" /></entry>
+				</map></entry>
+				<entry key="rawOldProxy"><map>
+					<entry key="port"><value>1939</value></entry>
+					<entry key="handler"><ref bean="rawOldProxyHandler" /></entry>
+				</map></entry>
+				<entry key="rtmpProxy2"><map>
+					<entry key="port"><value>1940</value></entry>
+					<entry key="handler"><ref bean="proxyHandler2" /></entry>
+				</map></entry>
 				<!--
 				<entry key="remoting"><map>
 					<entry key="port"><value>${remoting.port}</value></entry>
@@ -39,10 +51,32 @@
 		</property>
 	</bean> 
 	
+	<bean id="rawProxyHandler" class="org.red5.server.proxy.ProxyHandler"
+		init-method="initialize">
+		<property name="forwardHost"><value>192.168.0.10</value></property>
+		<property name="forwardPort"><value>1936</value></property>
+		<property name="forwardTimeOut"><value>10000</value></property>
+	</bean>
+	
+		<bean id="rawOldProxyHandler" class="org.red5.server.proxy.ProxyHandler"
+		init-method="initialize">
+		<property name="forwardHost"><value>192.168.0.150</value></property>
+		<property name="forwardPort"><value>1935</value></property>
+		<property name="forwardTimeOut"><value>10000</value></property>
+	</bean>
+	
 	<bean id="proxyHandler" class="org.red5.server.proxy.DebugProxyHandler"
 		init-method="initialize">
-		<property name="forwardHost"><value>192.168.0.41</value></property>
+		<property name="forwardHost"><value>192.168.0.150</value></property>
 		<property name="forwardPort"><value>1935</value></property>
+		<property name="forwardTimeOut"><value>10000</value></property>
+		<property name="decoder"><ref bean="rtmpProtocolDecoder" /></property>
+	</bean>
+	
+		<bean id="proxyHandler2" class="org.red5.server.proxy.DebugProxyHandler"
+		init-method="initialize">
+		<property name="forwardHost"><value>192.168.0.10</value></property>
+		<property name="forwardPort"><value>1936</value></property>
 		<property name="forwardTimeOut"><value>10000</value></property>
 		<property name="decoder"><ref bean="rtmpProtocolDecoder" /></property>
 	</bean>

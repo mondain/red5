@@ -102,11 +102,11 @@ public class Stream {
 		// This is what john sends, so im sending it back
 		String details = flvPath; //flvPath;
 		
-		/*
+		
 		sessionHandler.sendRuntimeStatus(videoChannel, StatusObjectService.NS_PLAY_RESET, details, clientid);
 		sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
 		sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
-		*/
+		
 		
 		// It seems we were sending too much data in a single write
 		// So send an empty packet, this will callback and buy us enough time ;)
@@ -155,8 +155,10 @@ public class Stream {
 		return state;
 	}
 	
+	int i=0;
+	
 	public boolean hasMorePackets(){
-		//if(1<2) return false;
+		//if(i++>100) return false;
 		if(flvReader==null) return false;
 		if(state!=STATE_PLAYING) return false;
 		if(!flvReader.hasMoreTags()){

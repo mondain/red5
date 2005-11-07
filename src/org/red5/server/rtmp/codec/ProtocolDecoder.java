@@ -362,7 +362,8 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 	}
 	
 	public void decodeStreamBytesRead(StreamBytesRead streamBytesRead){
-
+		final ByteBuffer in = streamBytesRead.getData();
+		streamBytesRead.setBytesRead(in.getInt());
 	}
 	
 	public void decodeAudioData(AudioData audioData){
