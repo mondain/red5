@@ -39,6 +39,10 @@ public class GenericRed5Context extends GenericApplicationContext
 		this.refresh();
 	}
 	
+	public void initialize(){
+		// 
+	}
+	
 	public void setApplicationContext(ApplicationContext appCtx){
 		this.setParent(appCtx);
 	}

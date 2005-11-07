@@ -68,7 +68,7 @@ public class Stream {
 		try {
 		
 			flvReader = new FLVReader(this.flvPath);
-			
+			// 4 5 6 78 
 			dataChannel = conn.getChannel((byte)conn.getNextAvailableChannelId());
 			if(log.isDebugEnabled()) 
 				log.debug("data channel: "+dataChannel.getId());
@@ -102,11 +102,11 @@ public class Stream {
 		// This is what john sends, so im sending it back
 		String details = flvPath; //flvPath;
 		
+		/*
 		sessionHandler.sendRuntimeStatus(videoChannel, StatusObjectService.NS_PLAY_RESET, details, clientid);
-
 		sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
-		
 		sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
+		*/
 		
 		// It seems we were sending too much data in a single write
 		// So send an empty packet, this will callback and buy us enough time ;)

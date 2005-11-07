@@ -7,7 +7,7 @@ public class PacketHeader implements Constants {
 	private int timer = 0;
 	private int size = 0;
 	private byte dataType = 0;
-	private int source = 0;
+	private int streamId = 0;
 	
 	public byte getChannelId() {
 		return channelId;
@@ -33,12 +33,12 @@ public class PacketHeader implements Constants {
 		this.size = size;
 	}
 	
-	public int getSource() {
-		return source;
+	public int getStreamId() {
+		return streamId;
 	}
 	
-	public void setSource(int source) {
-		this.source = source;
+	public void setStreamId(int streamId) {
+		this.streamId = streamId;
 	}
 	
 	public int getTimer() {
@@ -56,7 +56,7 @@ public class PacketHeader implements Constants {
 			&& header.getDataType() == dataType
 			&& header.getSize() == size
 			&& header.getTimer() == timer
-			&& header.getSource() == source);
+			&& header.getStreamId() == streamId);
 	}
 	
 	public String toString(){
@@ -65,7 +65,7 @@ public class PacketHeader implements Constants {
 		sb.append("Timer: ").append(timer).append(", ");
 		sb.append("Size: ").append(size).append(", ");
 		sb.append("DateType: ").append(dataType).append(", ");
-		sb.append("Source: ").append(source);
+		sb.append("StreamId: ").append(streamId);
 		return sb.toString();
 	}
 	
@@ -75,7 +75,7 @@ public class PacketHeader implements Constants {
 		header.setTimer(timer);
 		header.setSize(size);
 		header.setDataType(dataType);
-		header.setSource(source);
+		header.setStreamId(streamId);
 		return header;
 	}
 	

@@ -1,9 +1,14 @@
 package org.red5.server.stream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.red5.server.rtmp.message.Constants;
 import org.red5.server.rtmp.message.Message;
 
 public class Stream implements Constants, IStream, IStreamSink {
+	
+	protected static Log log =
+        LogFactory.getLog(Stream.class.getName());
 	
 	private int writeQueue = 0;
 	
@@ -15,9 +20,19 @@ public class Stream implements Constants, IStream, IStreamSink {
 	private IStreamSink upstream = null;
 	private IStreamSource source = null;
 	
+	private int streamId = 0;
+	
 	public Stream(){
 	}
 	
+	public int getStreamId() {
+		return streamId;
+	}
+	
+	public void setStreamId(int streamId) {
+		this.streamId = streamId;
+	}
+
 	public IStreamSink getDownstream() {
 		return downstream;
 	}

@@ -65,6 +65,7 @@ public class GlobalContext
 		String hostPath = this.getBaseDir() + hostsPath + "/"+ hostname;
 		HostContext hostContext = new HostContext(this, hostname, hostPath);
 		this.getBeanFactory().registerSingleton(hostname,hostContext);
+		hostContext.initialize();
 	}
 	
 	public HostContext getDefaultHost(){

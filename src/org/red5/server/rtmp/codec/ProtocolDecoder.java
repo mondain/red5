@@ -179,7 +179,7 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 			header.setTimer(RTMPUtils.readMediumInt(in));
 			header.setSize(RTMPUtils.readMediumInt(in));
 			header.setDataType(in.get());
-			header.setSource(in.getInt());
+			header.setStreamId(RTMPUtils.readReverseInt(in));
 			break;
 			
 		case HEADER_SAME_SOURCE:
@@ -188,7 +188,7 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 			header.setTimer(RTMPUtils.readMediumInt(in));
 			header.setSize(RTMPUtils.readMediumInt(in));
 			header.setDataType(in.get());
-			header.setSource(lastHeader.getSource());
+			header.setStreamId(lastHeader.getStreamId());
 			break;
 			
 		case HEADER_TIMER_CHANGE:
@@ -197,7 +197,7 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 			header.setTimer(RTMPUtils.readMediumInt(in));
 			header.setSize(lastHeader.getSize());
 			header.setDataType(lastHeader.getDataType());
-			header.setSource(lastHeader.getSource());
+			header.setStreamId(lastHeader.getStreamId());
 			break;
 			
 		case HEADER_CONTINUE:

@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.red5.server.protocol.rtmp.status2.StatusObject;
 import org.red5.server.protocol.rtmp.status2.StatusObjectService;
+import org.red5.server.stream.IStreamSource;
 import org.red5.server.stream.Stream;
 import org.red5.server.stream.StreamManager;
 import org.springframework.context.ApplicationContext;
@@ -74,18 +75,29 @@ public class BaseApplication implements ApplicationContextAware, Application {
 		return 1; 
 	}
 	
-	public void play(String name){
-		play(name, -1); // not sure what the number does
+	public StatusObject play(String name){
+		return play(name, -1); // not sure what the number does
 	}
 	
-	public void play(String name, int number){
+	public StatusObject play(String name, int number){
 		final Stream stream = Scope.getStream();
+		
+		//sessionHandler.sendRuntimeStatus(videoChannel, StatusObjectService.NS_PLAY_RESET, details, clientid);
+		//sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
+		//sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
+		
+		
 		log.debug("play: "+name);
 		log.debug("stream: "+stream);
 		log.debug("number:"+number);
-		// lookup the source with 
-		
+		final IStreamSource source = streamManager.lookupStreamSource(name);
+		log.debug(source);
+		stream.setSource(source);
+		//Integer.MAX_VALUE;
+		//stream.setNSId();
+		stream.start();
 		//streamManager.play(stream, name);
+		return getStatus(StatusObjectService.NS_PLAY_START);
 	}
 	
 	public StatusObject publish(String name, String mode){
