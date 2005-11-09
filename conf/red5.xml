@@ -17,23 +17,21 @@
 	<bean id="networkManager" class="org.red5.server.net.NetworkManager">
 		<property name="serviceConfig">
 			<map>
-				<!--
 				<entry key="rtmp"><map>
 					<entry key="port"><value>1934</value></entry>
 					<entry key="handler"><ref bean="rtmpHandler" /></entry>
 				</map></entry>
-				-->
 				<entry key="rtmp2"><map>
 					<entry key="port"><value>1936</value></entry>
 					<entry key="handler"><ref bean="rtmpProtocolProvider" /></entry>
 				</map></entry>
-				<entry key="fcsProxyRaw"><map>
+				<entry key="otherProxyRaw"><map>
 					<entry key="port"><value>1940</value></entry>
-					<entry key="handler"><ref bean="fcsProxyRaw" /></entry>
+					<entry key="handler"><ref bean="otherProxyRaw" /></entry>
 				</map></entry>
-				<entry key="fcsProxyDebug"><map>
+				<entry key="otherProxyDebug"><map>
 					<entry key="port"><value>1941</value></entry>
-					<entry key="handler"><ref bean="fcsProxyDebug" /></entry>
+					<entry key="handler"><ref bean="otherProxyDebug" /></entry>
 				</map></entry>
 				<entry key="red5ProxyRaw"><map>
 					<entry key="port"><value>1950</value></entry>
@@ -53,7 +51,7 @@
 		</property>
 	</bean> 
 	
-	<bean id="fcsProxyRaw" class="org.red5.server.proxy.ProxyHandler"
+	<bean id="otherProxyRaw" class="org.red5.server.proxy.ProxyHandler"
 		init-method="initialize">
 		<property name="forwardHost"><value>127.0.0.1</value></property>
 		<property name="forwardPort"><value>1935</value></property>
@@ -67,7 +65,7 @@
 		<property name="forwardTimeOut"><value>10000</value></property>
 	</bean>
 	
-	<bean id="fcsProxyDebug" class="org.red5.server.proxy.DebugProxyHandler"
+	<bean id="otherProxyDebug" class="org.red5.server.proxy.DebugProxyHandler"
 		init-method="initialize">
 		<property name="forwardHost"><value>127.0.0.1</value></property>
 		<property name="forwardPort"><value>1935</value></property>
