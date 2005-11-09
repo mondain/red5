@@ -23,6 +23,7 @@ package org.red5.server.protocol.rtmp;
  */
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.server.io.BufferUtils;
 import org.red5.server.rtmp.message.Constants;
 
 public class RTMPUtils implements Constants {
@@ -59,6 +60,16 @@ public class RTMPUtils implements Constants {
 	}
 	
 	public static int readMediumInt(ByteBuffer in) {
+		ByteBuffer buf = ByteBuffer.allocate(4);
+		buf.put((byte)0x00);
+		buf.put(in.get());
+		buf.put(in.get());
+		buf.put(in.get());
+		buf.flip();
+		return buf.getInt();
+	}
+	
+	public static int readMediumInt2(ByteBuffer in) {
 		byte[] bytes = new byte[3];
 		in.get(bytes);
 		int val = 0;

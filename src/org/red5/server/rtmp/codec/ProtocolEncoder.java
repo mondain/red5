@@ -38,16 +38,25 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		throws ProtocolViolationException {
 				
 		try {
+			
+			if(message instanceof ByteBuffer){
+				log.debug("Sending raw buffer");
+				out.write((ByteBuffer)message);
+				return;
+			}
+			
 			final Connection conn = (Connection) session.getAttachment();
 			final OutPacket packet = (OutPacket) message;
 			final PacketHeader header = packet.getDestination();
 			final Channel channel = conn.getChannel(header.getChannelId());	
 			
+			/*
 			if(conn.getState() == Connection.STATE_HANDSHAKE){
 				log.debug("Sending handshake");
 				out.write(packet.getMessage().getData());
 				return;
 			}
+			*/
 			
 			final ByteBuffer data = encodeMessage(packet.getMessage());
 			header.setSize(data.limit());
@@ -66,7 +75,7 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 			for(int i=0; i<numChunks; i++){
 				int readAmount = (data.remaining()>header.getChunkSize()) 
 					? header.getChunkSize() : data.remaining();
-				// log.debug("putting chunk");
+				log.debug("putting chunk: "+readAmount);
 				BufferUtils.put(buf,data,readAmount);
 				if(data.remaining()>0){
 					// log.debug("header byte");
@@ -79,6 +88,7 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 			if(ioLog.isDebugEnabled()){
 				ioLog.debug(packet.getDestination());
 				ioLog.debug(packet.getMessage());
+				ioLog.debug(buf.getHexDump());
 			}
 			
 			out.write(buf);
@@ -154,8 +164,10 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		final boolean isPending =(invoke.getCall().getStatus()==Call.STATUS_PENDING);
 		
 		if(!isPending){
+			log.debug("Call has been executed, send result");
 			serializer.serialize(output, "_result"); // seems right
 		} else {
+			log.debug("This is a pending call, send request");
 			serializer.serialize(output, invoke.getCall().getServiceMethodName()); // seems right
 		}
 		
@@ -163,8 +175,10 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		serializer.serialize(output, new Integer(invoke.getInvokeId())); 
 		serializer.serialize(output, null);
 		if(!isPending){
+			log.debug("Writing result: "+invoke.getCall().getResult());
 			serializer.serialize(output, invoke.getCall().getResult());
 		} else {
+			log.debug("Writing params");
 			final Object[] args = invoke.getCall().getArguments();
 			if(args!=null){
 				for (int i = 0; i < args.length; i++) {
@@ -184,6 +198,8 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		final ByteBuffer out = ping.getData();
 		out.putShort(ping.getValue1());
 		out.putInt(ping.getValue2());
+		if(ping.getValue3()!=Ping.UNDEFINED)
+			out.putInt(ping.getValue3());
 		log.debug(ping);
 	}
 	

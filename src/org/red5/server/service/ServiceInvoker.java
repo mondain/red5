@@ -140,9 +140,14 @@ public class ServiceInvoker  {
 		
 		try {
 			log.debug("Invoking method: "+method.toString());
-			result = method.invoke(service, params);
-			call.setResult(result);
-			call.setStatus( result==null ? Call.STATUS_SUCCESS_NULL : Call.STATUS_SUCCESS_RESULT );
+			if(method.getReturnType() == Void.class){
+				method.invoke(service, params);
+				call.setStatus(Call.STATUS_SUCCESS_VOID);
+			} else {
+				result = method.invoke(service, params);
+				call.setResult(result);
+				call.setStatus( result==null ? Call.STATUS_SUCCESS_NULL : Call.STATUS_SUCCESS_RESULT );
+			}
 		} catch (IllegalAccessException accessEx){
 			call.setException(accessEx);
 			call.setStatus(Call.STATUS_ACCESS_DENIED);

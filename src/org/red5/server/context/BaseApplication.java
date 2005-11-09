@@ -7,6 +7,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.red5.server.protocol.rtmp.status2.StatusObject;
 import org.red5.server.protocol.rtmp.status2.StatusObjectService;
+import org.red5.server.rtmp.Connection;
+import org.red5.server.rtmp.message.Ping;
 import org.red5.server.stream.IStreamSource;
 import org.red5.server.stream.Stream;
 import org.red5.server.stream.StreamManager;
@@ -53,6 +55,11 @@ public class BaseApplication implements ApplicationContextAware, Application {
 		log.debug("Calling onConnect");
 		if(onConnect(client, params)){
 			clients.add(client);
+			Connection conn = (Connection) client;
+			Ping ping = new Ping();
+			ping.setValue1((short)0);
+			ping.setValue2(0);
+			conn.ping(ping);
 			return getStatus(StatusObjectService.NC_CONNECT_SUCCESS);
 		} else {
 			return getStatus(StatusObjectService.NC_CONNECT_REJECTED);
@@ -75,33 +82,37 @@ public class BaseApplication implements ApplicationContextAware, Application {
 		return 1; 
 	}
 	
-	public StatusObject play(String name){
-		return play(name, -1); // not sure what the number does
+	public void play(String name){
+		 play(name, -1); // not sure what the number does
 	}
 	
-	public StatusObject play(String name, int number){
+	public void play(String name, int number){
 		final Stream stream = Scope.getStream();
-		
-		//sessionHandler.sendRuntimeStatus(videoChannel, StatusObjectService.NS_PLAY_RESET, details, clientid);
-		//sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
-		//sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
-		
-		
+		stream.setName(name);
 		log.debug("play: "+name);
 		log.debug("stream: "+stream);
 		log.debug("number:"+number);
-		final IStreamSource source = streamManager.lookupStreamSource(name);
-		log.debug(source);
-		stream.setSource(source);
-		//Integer.MAX_VALUE;
-		//stream.setNSId();
-		stream.start();
+		if(streamManager.isPublishedStream(name)){
+			streamManager.connectToPublishedStream(stream);
+			stream.start();
+		} else {
+			final IStreamSource source = streamManager.lookupStreamSource(name);
+			log.debug(source);
+			stream.setSource(source);
+			
+			//Integer.MAX_VALUE;
+			//stream.setNSId();
+			stream.start();
+		}
 		//streamManager.play(stream, name);
-		return getStatus(StatusObjectService.NS_PLAY_START);
+		//return getStatus(StatusObjectService.NS_PLAY_START);
 	}
 	
 	public StatusObject publish(String name, String mode){
 		final Stream stream = Scope.getStream();
+		stream.setName(name);
+		streamManager.publishStream(stream);
+		stream.publish();
 		// register the name with the stream manager	
 		log.debug("publish: "+name);
 		log.debug("stream: "+stream);

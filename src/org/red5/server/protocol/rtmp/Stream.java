@@ -103,14 +103,16 @@ public class Stream {
 		String details = flvPath; //flvPath;
 		
 		
-		sessionHandler.sendRuntimeStatus(videoChannel, StatusObjectService.NS_PLAY_RESET, details, clientid);
-		sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
-		sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
+		//sessionHandler.sendRuntimeStatus(videoChannel, StatusObjectService.NS_PLAY_RESET, details, clientid);
+		//sessionHandler.sendRuntimeStatus(dataChannel, StatusObjectService.NS_PLAY_START, details, clientid);
+		//sessionHandler.sendNotify(videoChannel, StatusObjectService.NS_DATA_START);
 		
 		
 		// It seems we were sending too much data in a single write
 		// So send an empty packet, this will callback and buy us enough time ;)
-		conn.getIoSession().write(ByteBuffer.allocate(0).flip(),this);
+		//conn.getIoSession().write(ByteBuffer.allocate(0).flip(),this);
+		
+		writeNextPacket();
 		
 		//while(hasMorePackets()){
 		//	writeNextPacket();
@@ -202,17 +204,24 @@ public class Stream {
 			
 			byte dataType = tag.getDataType();
 			
+			
 			if(dataType == FLVTag.TYPE_METADATA){
 				packet = new Packet(tag.getBody(), tag.getTimestamp(), Packet.TYPE_FUNCTION_CALL_NOREPLY, source);
-				dataChannel.writePacket(packet, this);
+
+				videoChannel.writePacket(packet,this);
+				//dataChannel.writePacket(packet, this);
 			}
 			else if(dataType == FLVTag.TYPE_VIDEO){
 				packet = new Packet(tag.getBody(), tag.getTimestamp(), tag.getDataType(), statusPacketID);
-				videoChannel.writePacket(packet, this);
+
+				videoChannel.writePacket(packet,this);
+				//videoChannel.writePacket(packet, this);
 			}
 			else if(dataType == FLVTag.TYPE_AUDIO){
 				packet = new Packet(tag.getBody(), tag.getTimestamp(), tag.getDataType(), statusPacketID);				
-				audioChannel.writePacket(packet, this);
+
+				videoChannel.writePacket(packet,this);
+				//audioChannel.writePacket(packet, this);
 			} else {
 				log.error("Unexpected datatype: "+dataType);
 				writeNextPacket();

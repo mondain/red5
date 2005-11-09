@@ -24,9 +24,22 @@ public class StreamManager implements ApplicationContextAware {
 		this.appCtx = appCtx;
 	}
 	
+	public void publishStream(Stream stream){
+		MultiStreamSink multi = new MultiStreamSink();
+		stream.setUpstream(multi);
+		published.put(stream.getName(),multi);
+	}
+	
+	public boolean isPublishedStream(String name){
+		return published.containsKey(name);
+	}
+	
+	public void connectToPublishedStream(Stream stream){
+		MultiStreamSink multi = (MultiStreamSink) published.get(stream.getName());
+		multi.connect(stream);
+	}
+	
 	public IStreamSource lookupStreamSource(String name){
-		if(published.containsKey(name)) 
-			return (IStreamSource) published.get(name);
 		return createFileStreamSource(name);
 	}
 
