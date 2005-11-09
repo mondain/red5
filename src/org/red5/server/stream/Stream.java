@@ -2,6 +2,7 @@ package org.red5.server.stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.red5.server.rtmp.message.AudioData;
 import org.red5.server.rtmp.message.Constants;
 import org.red5.server.rtmp.message.Message;
 import org.red5.server.rtmp.message.Status;
@@ -16,6 +17,7 @@ public class Stream implements Constants, IStream, IStreamSink {
 	private long startTime = 0;
 	private long startTS = 0;
 	private long currentTS = 0;
+	private String name = "";
 	
 	private DownStreamSink downstream = null;
 	private IStreamSink upstream = null;
@@ -32,6 +34,14 @@ public class Stream implements Constants, IStream, IStreamSink {
 	
 	public void setStreamId(int streamId) {
 		this.streamId = streamId;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public DownStreamSink getDownstream() {
@@ -58,6 +68,13 @@ public class Stream implements Constants, IStream, IStreamSink {
 		this.upstream = upstream;
 	}
 
+	public void publish(){
+		Status publish = new Status(Status.NS_PUBLISH_START);
+		publish.setClientid(1);
+		publish.setDetails(name);
+		downstream.getData().sendStatus(publish);
+	}
+	
 	public void start(){
 		startTime = System.currentTimeMillis();
 		
@@ -65,10 +82,17 @@ public class Stream implements Constants, IStream, IStreamSink {
 		Status start = new Status(Status.NS_PLAY_START);
 		reset.setClientid(1);
 		start.setClientid(1);
+		reset.setDetails(name);
+		start.setDetails(name);
 		
-		downstream.getVideo().sendStatus(reset);
-		downstream.getData().sendStatus(start);
-		downstream.getVideo().sendStatus(new Status(Status.NS_DATA_START));
+		// This hack fixes the on meta data problem
+		// TODO: Perhaps its a good idea to init each channel with a blank audio packet
+		AudioData blankAudio = new AudioData();
+		downstream.getData().write(blankAudio);
+				
+		downstream.getData().sendStatus(reset);
+		downstream.getVideo().sendStatus(start);
+		//downstream.getVideo().sendStatus(new Status(Status.NS_DATA_START));
 		
 		/*
 		if(source!=null && source.hasMore()){
@@ -98,6 +122,7 @@ public class Stream implements Constants, IStream, IStreamSink {
 	
 	protected void write(Message message){
 		if(downstream.canAccept()){
+			log.info("Sending downstream");
 			writeQueue++;
 			currentTS = message.getTimestamp();
 			downstream.enqueue(message);
@@ -105,8 +130,10 @@ public class Stream implements Constants, IStream, IStreamSink {
 	}
 	
 	public void publish(Message message){
-		if(upstream.canAccept()){
+		if(upstream != null && upstream.canAccept()){
 			upstream.enqueue(message);
+		} else {
+			log.warn("No where for upstream packet to go :(");
 		}
 	}
 	

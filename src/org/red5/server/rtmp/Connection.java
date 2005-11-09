@@ -8,6 +8,7 @@ import org.apache.mina.protocol.ProtocolSession;
 import org.red5.server.context.AppContext;
 import org.red5.server.context.Client;
 import org.red5.server.rtmp.message.OutPacket;
+import org.red5.server.rtmp.message.Ping;
 import org.red5.server.stream.DownStreamSink;
 import org.red5.server.stream.Stream;
 
@@ -20,6 +21,8 @@ public class Connection extends Client {
 	public static final byte STATE_HANDSHAKE = 1;
 	public static final byte STATE_CONNECTED = 2;
 	public static final byte STATE_DISCONNECTED = 3;
+	public static final boolean MODE_CLIENT = true;
+	public static final boolean MODE_SERVER = false;
 	
 	private ProtocolSession protocolSession;
 	//private Context context;
@@ -29,6 +32,7 @@ public class Connection extends Client {
 	private Channel lastReadChannel = null;
 	private Channel lastWriteChannel = null;
 	private AppContext appCtx = null;
+	private boolean mode = MODE_SERVER;
 	
 	public Connection(ProtocolSession protocolSession){
 		this.protocolSession = protocolSession;
@@ -53,7 +57,15 @@ public class Connection extends Client {
 	public void setState(byte state) {
 		this.state = state;
 	}
-	
+
+	public boolean getMode() {
+		return mode;
+	}
+
+	public void setMode(boolean mode) {
+		this.mode = mode;
+	}
+
 	public int getNextAvailableChannelId(){
 		int result = -1;
 		for(byte i=4; i<channels.length; i++){
@@ -125,6 +137,10 @@ public class Connection extends Client {
 		final DownStreamSink down = new DownStreamSink(video,audio,data);
 		stream.setDownstream(down);
 		return stream;
+	}
+	
+	public void ping(Ping ping){
+		getChannel((byte)2).write(ping);
 	}
 	
 }

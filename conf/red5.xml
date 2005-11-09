@@ -16,30 +16,32 @@
 	<!-- Network Manager, adds services to mina registry -->
 	<bean id="networkManager" class="org.red5.server.net.NetworkManager">
 		<property name="serviceConfig">
-			<map> 
+			<map>
+				<!--
 				<entry key="rtmp"><map>
-					<entry key="port"><value>${rtmp.port}</value></entry>
+					<entry key="port"><value>1934</value></entry>
 					<entry key="handler"><ref bean="rtmpHandler" /></entry>
 				</map></entry>
+				-->
 				<entry key="rtmp2"><map>
-					<entry key="port"><value>${rtmp2.port}</value></entry>
+					<entry key="port"><value>1936</value></entry>
 					<entry key="handler"><ref bean="rtmpProtocolProvider" /></entry>
 				</map></entry>
-				<entry key="rtmpProxy"><map>
-					<entry key="port"><value>1937</value></entry>
-					<entry key="handler"><ref bean="proxyHandler" /></entry>
-				</map></entry>
-				<entry key="rawProxy"><map>
-					<entry key="port"><value>1938</value></entry>
-					<entry key="handler"><ref bean="rawProxyHandler" /></entry>
-				</map></entry>
-				<entry key="rawOldProxy"><map>
-					<entry key="port"><value>1939</value></entry>
-					<entry key="handler"><ref bean="rawOldProxyHandler" /></entry>
-				</map></entry>
-				<entry key="rtmpProxy2"><map>
+				<entry key="fcsProxyRaw"><map>
 					<entry key="port"><value>1940</value></entry>
-					<entry key="handler"><ref bean="proxyHandler2" /></entry>
+					<entry key="handler"><ref bean="fcsProxyRaw" /></entry>
+				</map></entry>
+				<entry key="fcsProxyDebug"><map>
+					<entry key="port"><value>1941</value></entry>
+					<entry key="handler"><ref bean="fcsProxyDebug" /></entry>
+				</map></entry>
+				<entry key="red5ProxyRaw"><map>
+					<entry key="port"><value>1950</value></entry>
+					<entry key="handler"><ref bean="red5ProxyRaw" /></entry>
+				</map></entry>
+				<entry key="red5ProxyDebug"><map>
+					<entry key="port"><value>1951</value></entry>
+					<entry key="handler"><ref bean="red5ProxyDebug" /></entry>
 				</map></entry>
 				<!--
 				<entry key="remoting"><map>
@@ -51,31 +53,31 @@
 		</property>
 	</bean> 
 	
-	<bean id="rawProxyHandler" class="org.red5.server.proxy.ProxyHandler"
+	<bean id="fcsProxyRaw" class="org.red5.server.proxy.ProxyHandler"
 		init-method="initialize">
-		<property name="forwardHost"><value>192.168.0.10</value></property>
-		<property name="forwardPort"><value>1936</value></property>
-		<property name="forwardTimeOut"><value>10000</value></property>
-	</bean>
-	
-		<bean id="rawOldProxyHandler" class="org.red5.server.proxy.ProxyHandler"
-		init-method="initialize">
-		<property name="forwardHost"><value>192.168.0.150</value></property>
+		<property name="forwardHost"><value>127.0.0.1</value></property>
 		<property name="forwardPort"><value>1935</value></property>
 		<property name="forwardTimeOut"><value>10000</value></property>
 	</bean>
 	
-	<bean id="proxyHandler" class="org.red5.server.proxy.DebugProxyHandler"
+	<bean id="red5ProxyRaw" class="org.red5.server.proxy.ProxyHandler"
 		init-method="initialize">
-		<property name="forwardHost"><value>192.168.0.150</value></property>
+		<property name="forwardHost"><value>127.0.0.1</value></property>
+		<property name="forwardPort"><value>1936</value></property>
+		<property name="forwardTimeOut"><value>10000</value></property>
+	</bean>
+	
+	<bean id="fcsProxyDebug" class="org.red5.server.proxy.DebugProxyHandler"
+		init-method="initialize">
+		<property name="forwardHost"><value>127.0.0.1</value></property>
 		<property name="forwardPort"><value>1935</value></property>
 		<property name="forwardTimeOut"><value>10000</value></property>
 		<property name="decoder"><ref bean="rtmpProtocolDecoder" /></property>
 	</bean>
 	
-		<bean id="proxyHandler2" class="org.red5.server.proxy.DebugProxyHandler"
+	<bean id="red5ProxyDebug" class="org.red5.server.proxy.DebugProxyHandler"
 		init-method="initialize">
-		<property name="forwardHost"><value>192.168.0.10</value></property>
+		<property name="forwardHost"><value>127.0.0.1</value></property>
 		<property name="forwardPort"><value>1936</value></property>
 		<property name="forwardTimeOut"><value>10000</value></property>
 		<property name="decoder"><ref bean="rtmpProtocolDecoder" /></property>

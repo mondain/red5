@@ -115,11 +115,13 @@ public class SessionHandler {
 					log.info("Server Bandwidth");
 				onServerBandwidthPacket(packet);
 				break;
+			
 			case Packet.TYPE_PING:
 				if(log.isInfoEnabled())
 					log.info("Ping");
 				onPingPacket(packet);
 				break;
+			
 			case Packet.TYPE_CLIENT_BYTES_READ:
 				if(log.isInfoEnabled())
 					log.info("Client bytes read");
@@ -465,10 +467,11 @@ public class SessionHandler {
 		
 		out2.flip();
 		
+		/*
 		Packet ping2 = new Packet(out2, 0, Packet.TYPE_PING, packet.getSource());
 		log.debug(ping2);
 		packet.getSourceChannel().writePacket(ping2);
-		
+		*/
 	}
 
 	public void onClientBytesReadPacket(Packet packet){

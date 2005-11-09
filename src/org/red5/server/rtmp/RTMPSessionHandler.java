@@ -2,6 +2,7 @@ package org.red5.server.rtmp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.SessionConfig;
 import org.apache.mina.io.socket.SocketSessionConfig;
@@ -57,6 +58,11 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 	}
 
 	public void messageReceived(ProtocolSession session, Object in) throws Exception {
+	
+		if(in instanceof ByteBuffer){
+			rawBufferRecieved(session, (ByteBuffer) in);
+			return;
+		}
 		
 		try {
 			log.debug("Message recieved");
@@ -107,10 +113,31 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		}
 	}
 
+	private void rawBufferRecieved(ProtocolSession session, ByteBuffer in) {
+		
+		final Connection conn = (Connection) session.getAttachment();
+		
+		if(conn.getState() != Connection.STATE_HANDSHAKE){
+			log.warn("Raw buffer after handshake, something odd going on");
+		}
+		
+		log.debug("Writing handshake reply");
+		ByteBuffer out = ByteBuffer.allocate((Constants.HANDSHAKE_SIZE*2)+1);
+		log.debug("handskake size:"+in.remaining());
+		out.put((byte)0x03);
+		out.fill((byte)0x00,Constants.HANDSHAKE_SIZE);
+		out.put(in).flip();
+		session.write(out);
+	}
+
 	public void messageSent(ProtocolSession session, Object message) throws Exception {
 		final Connection conn = (Connection) session.getAttachment();
 		// TODO Auto-generated method stub
 		log.debug("Message sent");
+		
+		if(message instanceof ByteBuffer){
+			return;
+		}
 		
 		OutPacket sent = (OutPacket) message;
 		final byte channelId = sent.getDestination().getChannelId();
@@ -135,8 +162,8 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		try {
 			if (cfg instanceof SocketSessionConfig) {
 				SocketSessionConfig sessionConfig = (SocketSessionConfig) cfg;
-				//sessionConfig.setSessionReceiveBufferSize(2048);
-				//sessionConfig.setSendBufferSize(1460);
+				sessionConfig.setSessionReceiveBufferSize(1024);
+				sessionConfig.setSendBufferSize(1024);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -219,13 +246,16 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		
 		if(invoke.isAndReturn()){
 		
+			if(call.getStatus() == Call.STATUS_SUCCESS_VOID ||
+				call.getStatus() == Call.STATUS_SUCCESS_NULL ){
+				log.debug("Method does not have return value, do not reply");
+				return;
+			}
 			Invoke reply = new Invoke();
 			reply.setCall(call);
 			reply.setInvokeId(invoke.getInvokeId());
 			channel.write(reply);
-		
 		}
-		
 	}
 	
 	public void onPing(Connection conn, Channel channel, PacketHeader source, Ping ping){
@@ -233,6 +263,12 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		pong.setValue1((short)(ping.getValue1()+1));
 		pong.setValue2(ping.getValue2());
 		channel.write(pong);
+		// No idea why this is needed, 
+		// but it was the thing stopping the new rtmp code streaming
+		final Ping pong2 = new Ping();
+		pong2.setValue1((short)0);
+		pong2.setValue2(1);
+		channel.write(pong2);
 	}
 	
 	public void onStreamBytesRead(Connection conn, Channel channel, PacketHeader source, StreamBytesRead streamBytesRead){

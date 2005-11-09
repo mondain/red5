@@ -27,11 +27,13 @@ public class Call {
 	public static final byte STATUS_PENDING = 0x01;
 	public static final byte STATUS_SUCCESS_RESULT = 0x02;
 	public static final byte STATUS_SUCCESS_NULL = 0x03;
-	public static final byte STATUS_SERVICE_NOT_FOUND = 0x04;
-	public static final byte STATUS_METHOD_NOT_FOUND = 0x05;
-	public static final byte STATUS_ACCESS_DENIED = 0x06;
-	public static final byte STATUS_INVOCATION_EXCEPTION = 0x07;
-	public static final byte STATUS_GENERAL_EXCEPTION = 0x08;
+	public static final byte STATUS_SUCCESS_VOID = 0x04;
+	
+	public static final byte STATUS_SERVICE_NOT_FOUND = 0x10;
+	public static final byte STATUS_METHOD_NOT_FOUND = 0x11;
+	public static final byte STATUS_ACCESS_DENIED = 0x12;
+	public static final byte STATUS_INVOCATION_EXCEPTION = 0x13;
+	public static final byte STATUS_GENERAL_EXCEPTION = 0x14;
 	
     protected String serviceName = null;
     protected String serviceMethodName = null;
@@ -56,7 +58,9 @@ public class Call {
     }
     
     public boolean isSuccess(){
-    		return (status == STATUS_SUCCESS_RESULT) || (status == STATUS_SUCCESS_NULL);
+    		return (status == STATUS_SUCCESS_RESULT) || 
+    			(status == STATUS_SUCCESS_NULL) || 
+    			(status == STATUS_SUCCESS_VOID);
     }
     
 	public String getServiceMethodName() {

@@ -32,7 +32,7 @@ import org.red5.server.rtmp.message.VideoData;
 import org.red5.server.service.Call;
 import org.red5.server.utils.BufferLogUtils;
 
-public class ProtocolDecoder extends CumulativeProtocolDecoder implements Constants {
+public class ProtocolDecoder implements Constants, org.apache.mina.protocol.ProtocolDecoder {
 
 	protected static Log log =
         LogFactory.getLog(ProtocolDecoder.class.getName());
@@ -43,20 +43,63 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 	private Deserializer deserializer = null;
 
 	public ProtocolDecoder(){
-		super(1024); // default capacity, auto expands
+		
 	}
 	
 	public void setDeserializer(Deserializer deserializer) {
 		this.deserializer = deserializer;
 	}
 	
+    public void decode( ProtocolSession session, ByteBuffer in,
+            ProtocolDecoderOutput out ) throws ProtocolViolationException {
+		
+		ByteBuffer buf = (ByteBuffer) session.getAttribute("buffer");
+		if(buf==null){
+			log.warn("New buffer");
+			buf = ByteBuffer.allocate(1024);
+			buf.setAutoExpand(true);
+			session.setAttribute("buffer",buf);
+		}
+		buf.put(in);
+		buf.flip();
+		
+		try
+		{
+		for( ;; )
+		{
+		    int oldPos = buf.position();
+		    boolean decoded = doDecode( session, buf, out );
+		    if( decoded )
+		    {
+		        if( buf.position() == oldPos )
+		        {
+		            throw new IllegalStateException(
+		                    "doDecode() can't return true when buffer is not consumed." );
+		        }
+		        
+		        if( !buf.hasRemaining() )
+		        {
+		            break;
+		        }
+		    }
+		    else
+		    {
+		        break;
+		    }
+		}
+		}
+		finally
+		{
+		buf.compact();
+		}
+	}
+
+	
 	protected boolean doDecode(ProtocolSession session, ByteBuffer in,
 			 ProtocolDecoderOutput out) throws ProtocolViolationException {
 		
 		try {
 			
-			//log.debug("doDecode: "+in.remaining());
-		
 			if(in.remaining() < 1) {
 				log.debug("Empty read, buffering");
 				return false;
@@ -64,14 +107,64 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 			
 			final int startPosition = in.position();
 			final Connection conn = (Connection) session.getAttachment();
+			
+			if(conn.getMode()==Connection.MODE_SERVER){
+			
+				if(conn.getState()==Connection.STATE_CONNECT){
+					if(in.remaining() < HANDSHAKE_SIZE + 1){ 
+						log.warn("Handshake init too small, buffering");
+						log.warn("remaining: "+in.remaining());
+						return false;
+					}
+					ByteBuffer hs = ByteBuffer.allocate(HANDSHAKE_SIZE);
+					hs.setAutoExpand(true);
+					in.get(); // skip the header byte
+					int limit = in.limit();
+					in.limit(in.position() + HANDSHAKE_SIZE);
+					hs.put(in).flip();
+					out.write(hs);
+					conn.setState(Connection.STATE_HANDSHAKE);
+					in.limit(limit);
+					return true;
+				} 
+				
+				if(conn.getState()==Connection.STATE_HANDSHAKE){
+					log.debug("Handshake reply");
+					if(in.remaining() < HANDSHAKE_SIZE){ 
+						log.warn("Handshake reply too small, buffering");
+						return false;
+					}
+					in.skip(HANDSHAKE_SIZE);
+					conn.setState(Connection.STATE_CONNECTED);
+					return true;
+				}
+				
+			} else {
+				
+				// this is client mode. 
+				if(conn.getState()==Connection.STATE_CONNECT){
+					if(in.remaining() < (2*HANDSHAKE_SIZE)+1){ 
+						log.warn("Handshake init too small, buffering");
+						return false;
+					}
+					ByteBuffer hs = ByteBuffer.allocate(HANDSHAKE_SIZE);
+					hs.setAutoExpand(true);
+					hs.put(in).flip();
+					out.write(hs);
+					conn.setState(Connection.STATE_CONNECTED);
+					return true;
+				} 
+				
+				
+			}
+			
 			final byte headerByte = in.get();
 			final byte channelId = RTMPUtils.decodeChannelId(headerByte);
 			
-			if(channelId<0) {
-				log.debug("Bad channel id: "+channelId+" skipping");
-				return true;
-			}
+			if(channelId<0)
+				throw new ProtocolViolationException("Bad channel id");
 			
+			// Get the channel, and header size
 			final Channel channel = conn.getChannel(channelId);
 			final byte headerSize = (byte) RTMPUtils.decodeHeaderSize(headerByte);
 			int headerLength = RTMPUtils.getHeaderLength(headerSize);
@@ -82,35 +175,20 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 				return false;
 			}
 			
+			// Read the header
 			PacketHeader header = null;
+			in.position(in.position()-1);
 			
-			if(conn.getState()==Connection.STATE_CONNECT){
-				header = new PacketHeader();
-				header.setChannelId(channelId);
-				header.setSize(HANDSHAKE_SIZE);
-				header.setDataType(TYPE_HANDSHAKE);
-			} else if(conn.getState()==Connection.STATE_HANDSHAKE){
-				if(in.remaining() < HANDSHAKE_SIZE){ 
-					log.debug("Handshake reply too small, buffering");
-					return false;
-				}
-				in.position(in.position()-1);
-				in.skip(HANDSHAKE_SIZE-1);
-				conn.setState(Connection.STATE_CONNECTED);
-				return true;
-			} else {
-				in.position(in.position()-1);
-				BufferLogUtils.debug(log,"buf",in);
-				header = decodeHeader(in,channel.getLastReadHeader());
+			header = decodeHeader(in,channel.getLastReadHeader());
+			
+			if(header==null){
+				log.warn("Header is null");
+				throw new ProtocolViolationException("Header is null, check for error");
 			}
 				
-			if(header==null) 
-				throw new ProtocolViolationException("Header is null, check for error");
-			
 			log.debug(header);
 			
 			channel.setLastReadHeader(header);
-			
 			InPacket packet = channel.getInPacket();
 			
 			if(packet==null){
@@ -118,36 +196,35 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 				channel.setInPacket(packet);
 			}
 			
-			ioLog.debug(header);
-			
 			final ByteBuffer buf = packet.getMessage().getData();
+			int readRemaining = header.getSize() - buf.position();
+			//readRemaining += Math.floor(header.getSize()/128);
 			
-			final int readRemaining = header.getSize() - buf.position();
-			
-			final int readAmount = (readRemaining > header.getChunkSize()) ? header.getChunkSize() : readRemaining;
+			int chunkSize = header.getChunkSize();
+			final int readAmount = (readRemaining > chunkSize) ? chunkSize : readRemaining;
 			
 			//log.debug("Read amount: "+readAmount);
 			
 			if(in.remaining() < readAmount) {
-				log.debug("Chunk too small, buffering ("+in.remaining()+","+readAmount);
+				log.error("Chunk too small, buffering ("+in.remaining()+","+readAmount);
 				// log.debug("Remaining: "+in.remaining());
 				in.position(startPosition);
 				return false;
 			}
 			
-			BufferUtils.put(buf, in, readAmount);
+			log.debug("in: "+in.remaining()+" read: "+readAmount+" pos: "+buf.position());
 			
-			//log.debug("Position" + buf.position());
+			try {
+				BufferUtils.put(buf, in, readAmount);
+			} catch (RuntimeException e) {
+				log.error("Error",e);
+				throw new ProtocolViolationException("Error copying buffer");
+			}
 			
 			if(buf.position() >= header.getSize()){
-				//log.debug("Finished read, decode packet");
+				log.debug("Finished read, decode packet");
 				buf.flip();
 				decodeMessage(packet.getMessage());
-				if(header.getDataType()==TYPE_HANDSHAKE){
-					if(conn.getState()==Connection.STATE_CONNECT){
-						conn.setState(Connection.STATE_HANDSHAKE);
-					} 
-				}
 				ioLog.debug(packet.getSource());
 				ioLog.debug(packet.getMessage());
 				out.write(packet);
@@ -155,12 +232,11 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 			} 
 			return true;
 
-		} catch (RuntimeException e) {
-			log.error("Exception", e);
+		} catch (RuntimeException e){
+			log.error("Error", e);
+			throw new ProtocolViolationException("Error copying buffer");
 		}
 		
-		in.skip(in.remaining());
-		return true;
 	}
 	
 	public PacketHeader decodeHeader(ByteBuffer in, PacketHeader lastHeader){
@@ -174,33 +250,34 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 		switch(headerSize){
 		
 		case HEADER_NEW:
-			if(log.isDebugEnabled())
-				log.debug("0: Full headers");			
-			header.setTimer(RTMPUtils.readMediumInt(in));
+			log.debug("0: Full headers");	
+			log.debug(in.getHexDump());
+			header.setTimer(RTMPUtils.readUnsignedMediumInt(in));
 			header.setSize(RTMPUtils.readMediumInt(in));
 			header.setDataType(in.get());
 			header.setStreamId(RTMPUtils.readReverseInt(in));
 			break;
 			
-		case HEADER_SAME_SOURCE:
-			if(log.isDebugEnabled())
-				log.debug("1: Same source as last time");
-			header.setTimer(RTMPUtils.readMediumInt(in));
+		case HEADER_SAME_SOURCE:			
+			log.debug("1: Same source as last time");
+			log.debug(in.getHexDump());
+			header.setTimer(RTMPUtils.readUnsignedMediumInt(in));
 			header.setSize(RTMPUtils.readMediumInt(in));
 			header.setDataType(in.get());
 			header.setStreamId(lastHeader.getStreamId());
 			break;
 			
 		case HEADER_TIMER_CHANGE:
-			if(log.isDebugEnabled())
-				log.debug("2: Only the timer changed");
-			header.setTimer(RTMPUtils.readMediumInt(in));
+			log.debug("2: Only the timer changed");
+			log.debug(in.getHexDump());
+			header.setTimer(RTMPUtils.readUnsignedMediumInt(in));
 			header.setSize(lastHeader.getSize());
 			header.setDataType(lastHeader.getDataType());
 			header.setStreamId(lastHeader.getStreamId());
 			break;
 			
 		case HEADER_CONTINUE:
+			log.debug("3: Continue");
 			header = lastHeader;
 			break;
 			
@@ -358,6 +435,7 @@ public class ProtocolDecoder extends CumulativeProtocolDecoder implements Consta
 		final ByteBuffer in = ping.getData();
 		ping.setValue1(in.getShort());
 		ping.setValue2(in.getInt());
+		if(in.remaining() > 0) ping.setValue3(in.getInt());
 		log.debug(ping);
 	}
 	

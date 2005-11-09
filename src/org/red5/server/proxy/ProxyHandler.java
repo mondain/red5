@@ -56,8 +56,6 @@ public class ProxyHandler extends IoHandlerAdapter {
 		int position = buf.position();
 
 		decodeBuffer(session, buf);
-		//
-		//}//buf.flip();
 		buf.position(position);
 		buf.acquire();
 		conn.write(buf);
@@ -109,7 +107,7 @@ public class ProxyHandler extends IoHandlerAdapter {
 			this.session = session;
 			this.direction = direction;
 			final String logName = ProxyConnector.class.getName() 
-				+ (direction ? "UP" : "DOWN" ); 
+				+ (direction ? ".UP" : ".DN" ); 
 			this.log = LogFactory.getLog(logName);
 		}
 		
