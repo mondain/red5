@@ -88,9 +88,15 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 		    }
 		}
 		}
-		finally
-		{
-		buf.compact();
+		catch(ProtocolViolationException pvx){
+			log.error("Error",pvx);
+		}
+		catch(Exception ex){
+			log.error("Error",ex);
+		}
+		finally {
+			// is this needed?
+			buf.compact();
 		}
 	}
 
@@ -206,13 +212,14 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 			//log.debug("Read amount: "+readAmount);
 			
 			if(in.remaining() < readAmount) {
-				log.error("Chunk too small, buffering ("+in.remaining()+","+readAmount);
+				if(log.isDebugEnabled())
+					log.debug("Chunk too small, buffering ("+in.remaining()+","+readAmount);
 				// log.debug("Remaining: "+in.remaining());
 				in.position(startPosition);
 				return false;
 			}
 			
-			log.debug("in: "+in.remaining()+" read: "+readAmount+" pos: "+buf.position());
+			//log.debug("in: "+in.remaining()+" read: "+readAmount+" pos: "+buf.position());
 			
 			try {
 				BufferUtils.put(buf, in, readAmount);
@@ -222,9 +229,11 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 			}
 			
 			if(buf.position() >= header.getSize()){
-				log.debug("Finished read, decode packet");
+				if(log.isDebugEnabled())
+					log.debug("Finished read, decode packet");
 				buf.flip();
 				decodeMessage(packet.getMessage());
+				packet.getMessage().setTimestamp(packet.getSource().getTimer());
 				ioLog.debug(packet.getSource());
 				ioLog.debug(packet.getMessage());
 				out.write(packet);
@@ -250,8 +259,8 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 		switch(headerSize){
 		
 		case HEADER_NEW:
-			log.debug("0: Full headers");	
-			log.debug(in.getHexDump());
+			//log.debug("0: Full headers");	
+			//log.debug(in.getHexDump());
 			header.setTimer(RTMPUtils.readUnsignedMediumInt(in));
 			header.setSize(RTMPUtils.readMediumInt(in));
 			header.setDataType(in.get());
@@ -259,8 +268,8 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 			break;
 			
 		case HEADER_SAME_SOURCE:			
-			log.debug("1: Same source as last time");
-			log.debug(in.getHexDump());
+			//log.debug("1: Same source as last time");
+			//log.debug(in.getHexDump());
 			header.setTimer(RTMPUtils.readUnsignedMediumInt(in));
 			header.setSize(RTMPUtils.readMediumInt(in));
 			header.setDataType(in.get());
@@ -268,8 +277,8 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 			break;
 			
 		case HEADER_TIMER_CHANGE:
-			log.debug("2: Only the timer changed");
-			log.debug(in.getHexDump());
+			//log.debug("2: Only the timer changed");
+			//log.debug(in.getHexDump());
 			header.setTimer(RTMPUtils.readUnsignedMediumInt(in));
 			header.setSize(lastHeader.getSize());
 			header.setDataType(lastHeader.getDataType());
@@ -277,7 +286,7 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 			break;
 			
 		case HEADER_CONTINUE:
-			log.debug("3: Continue");
+			//log.debug("3: Continue");
 			header = lastHeader;
 			break;
 			
@@ -355,11 +364,37 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 	
 	public void decodeSharedObject(SharedObject so) {
 		log.info(so);
+		
+		//final int pos = so.getData().position();
+		
 		final ByteBuffer data = so.getData();
 		int position = data.position();
 		try {
 			Input input = new Input(data);
+			//log.debug("so: " +input.getString(data));
+			so.setName(input.getString(data));
+			so.setId(data.getLong());// not sure if this is needed
 			
+			while(true){
+				so.addNumber((Number)deserializer.deserialize(input));
+				//log.debug("amf num: "+deserializer.deserialize(input));
+				if(!data.hasRemaining()) break;
+				byte cont = data.get();
+				log.debug("cont: "+cont);
+				if(cont != (byte) 0x08){
+					data.position(data.position()-1);
+					break;
+				}
+			} 
+			
+			if(data.hasRemaining()){
+				log.debug("method?");
+				so.setKey((String)deserializer.deserialize(input));
+				//log.debug("method: "+method);
+				so.setValue(deserializer.deserialize(input));
+			}
+			
+			/*
 			if(data.getShort()>20){
 				data.position(data.position()-2);
 				int num0 = data.getInt();
@@ -367,20 +402,26 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 			} else {
 				data.position(data.position()-2);
 			}
-			
+			*/
+			/*
 			String str1 = Input.getString(data);
-			log.info("str1: "+str1);
-			long num1 = data.getLong();
-			log.info("num1: "+num1);
-			while(data.remaining()>0){
-				log.info(deserializer.deserialize(input));
-			}
+			Number num1 = (Number) deserializer.deserialize(input);  
+			if(data.remaining()>8){
+				while(data.remaining()>0){
+					log.info(deserializer.deserialize(input));
+				}
+			} else {
+				log.debug(""+data.getInt());
+				log.debug(""+data.getInt());
+			}*/
 		} catch (RuntimeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			data.position(position);
 		}
+		//so.getData().position(pos);
+		so.setSealed(true);
 		//String str1 = 
 	}
 
@@ -390,7 +431,8 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 	
 		String action = (String) deserializer.deserialize(input);
 		
-		log.debug("Action "+action);
+		if(log.isDebugEnabled())
+			log.debug("Action "+action);
 		
 		int invokeId = ((Number) deserializer.deserialize(input)).intValue();
 		invoke.setInvokeId(invokeId);
@@ -436,7 +478,8 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 		ping.setValue1(in.getShort());
 		ping.setValue2(in.getInt());
 		if(in.remaining() > 0) ping.setValue3(in.getInt());
-		log.debug(ping);
+		if(log.isDebugEnabled())
+			log.debug(ping);
 	}
 	
 	public void decodeStreamBytesRead(StreamBytesRead streamBytesRead){
@@ -445,11 +488,11 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 	}
 	
 	public void decodeAudioData(AudioData audioData){
-
+		audioData.setSealed(true);
 	}
 	
 	public void decodeVideoData(VideoData videoData){
-
+		videoData.setSealed(true);
 	}
 	
 }

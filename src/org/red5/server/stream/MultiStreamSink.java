@@ -27,11 +27,12 @@ public class MultiStreamSink implements IStreamSink {
 		final Iterator it = outs.iterator();
 		while(it.hasNext()){
 			IStreamSink out = (IStreamSink) it.next();
-			log.info("Sending");
+			if(log.isDebugEnabled())
+				log.info("Sending");
 			if(out.canAccept()){
 				out.enqueue(message);
 			} else {
-				log.info("Out cant accept");
+				log.warn("Out cant accept");
 			}
 		}
 	}

@@ -128,7 +128,7 @@ public class Connection extends Client {
 	
 	protected Stream createStream(int streamId){
 		byte channelId = (byte) (streamId + 4);
-		Stream stream = new Stream();
+		Stream stream = new Stream(this);
 		final Channel data = getChannel(channelId++);
 		final Channel video = getChannel(channelId++);
 		final Channel audio = getChannel(channelId++);

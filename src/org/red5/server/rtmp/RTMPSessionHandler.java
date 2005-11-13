@@ -13,7 +13,6 @@ import org.red5.server.context.GlobalContext;
 import org.red5.server.context.HostContext;
 import org.red5.server.context.Scope;
 import org.red5.server.protocol.rtmp.status2.StatusObjectService;
-import org.red5.server.rtmp.message.AudioData;
 import org.red5.server.rtmp.message.Constants;
 import org.red5.server.rtmp.message.Handshake;
 import org.red5.server.rtmp.message.HandshakeReply;
@@ -23,8 +22,9 @@ import org.red5.server.rtmp.message.Message;
 import org.red5.server.rtmp.message.OutPacket;
 import org.red5.server.rtmp.message.PacketHeader;
 import org.red5.server.rtmp.message.Ping;
+import org.red5.server.rtmp.message.SharedObject;
 import org.red5.server.rtmp.message.StreamBytesRead;
-import org.red5.server.rtmp.message.VideoData;
+import org.red5.server.rtmp.message.Unknown;
 import org.red5.server.service.Call;
 import org.red5.server.service.ServiceInvoker;
 import org.red5.server.stream.Stream;
@@ -65,7 +65,7 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		}
 		
 		try {
-			log.debug("Message recieved");
+			
 			
 			final Connection conn = (Connection) session.getAttachment();
 			final InPacket packet = (InPacket) in;
@@ -74,17 +74,20 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 			final Channel channel = conn.getChannel(packet.getSource().getChannelId());
 			final Stream stream = conn.getStreamByChannelId(channel.getId());
 			
-			log.debug("nsid: "+source);
-			
+			if(log.isDebugEnabled()){
+				log.debug("Message recieved");
+				log.debug("Stream Id: "+source);
+				log.debug("Channel: "+channel);
+			}
+				
 			if(stream != null){
 				stream.setStreamId(source.getStreamId());
 			}
 			
+			// Is this a bad for performance ?
 			Scope.setClient(conn);
 			Scope.setStream(stream);
 			Scope.setStatusObjectService(statusObjectService);
-			
-			log.debug("Channel: "+channel);
 			
 			switch(message.getDataType()){
 			case TYPE_HANDSHAKE:
@@ -101,15 +104,21 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 				onStreamBytesRead(conn, channel, source, (StreamBytesRead) message);
 				break;
 			case TYPE_AUDIO_DATA:
-				onAudioData(conn, channel, source, (AudioData) message);
-				break;
 			case TYPE_VIDEO_DATA:
-				onVideoData(conn, channel, source, (VideoData) message);
+				log.info("in packet: "+source.getSize()+" ts:"+source.getTimer());
+				stream.publish(message);
 				break;
+			case TYPE_SHARED_OBJECT:
+				SharedObject so = (SharedObject) message;
+				conn.getChannel((byte)4).write(so);
+				break;
+			}
+			if(message instanceof Unknown){
+				log.info(message);
 			}
 		} catch (RuntimeException e) {
 			// TODO Auto-generated catch block
-			log.debug("Exception",e);
+			log.error("Exception",e);
 		}
 	}
 
@@ -121,9 +130,13 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 			log.warn("Raw buffer after handshake, something odd going on");
 		}
 		
-		log.debug("Writing handshake reply");
 		ByteBuffer out = ByteBuffer.allocate((Constants.HANDSHAKE_SIZE*2)+1);
-		log.debug("handskake size:"+in.remaining());
+		
+		if(log.isDebugEnabled()){
+			log.debug("Writing handshake reply");
+			log.debug("handskake size:"+in.remaining());
+		}
+		
 		out.put((byte)0x03);
 		out.fill((byte)0x00,Constants.HANDSHAKE_SIZE);
 		out.put(in).flip();
@@ -133,7 +146,8 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 	public void messageSent(ProtocolSession session, Object message) throws Exception {
 		final Connection conn = (Connection) session.getAttachment();
 		// TODO Auto-generated method stub
-		log.debug("Message sent");
+		if(log.isDebugEnabled())
+			log.debug("Message sent");
 		
 		if(message instanceof ByteBuffer){
 			return;
@@ -151,19 +165,21 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		final Connection conn = (Connection) session.getAttachment();
 		conn.setState(Connection.STATE_DISCONNECTED);
 		invokeCall(conn, new Call("disconnect"));
-		log.debug("Session closed");
+		if(log.isDebugEnabled())
+			log.debug("Session closed");
 	}
 
 	public void sessionCreated(ProtocolSession session) throws Exception {
-		log.debug("Session created");
+		if(log.isDebugEnabled())
+			log.debug("Session created");
 		
 		SessionConfig cfg = session.getConfig();
 		
 		try {
 			if (cfg instanceof SocketSessionConfig) {
 				SocketSessionConfig sessionConfig = (SocketSessionConfig) cfg;
-				sessionConfig.setSessionReceiveBufferSize(1024);
-				sessionConfig.setSendBufferSize(1024);
+				sessionConfig.setSessionReceiveBufferSize(256);
+				sessionConfig.setSendBufferSize(256);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -263,6 +279,7 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		pong.setValue1((short)(ping.getValue1()+1));
 		pong.setValue2(ping.getValue2());
 		channel.write(pong);
+		log.info(ping);
 		// No idea why this is needed, 
 		// but it was the thing stopping the new rtmp code streaming
 		final Ping pong2 = new Ping();
@@ -273,18 +290,7 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 	
 	public void onStreamBytesRead(Connection conn, Channel channel, PacketHeader source, StreamBytesRead streamBytesRead){
 		// get the stream, pass the event to the stream
-		
-	}
-	
-	public void onAudioData(Connection conn, Channel channel, PacketHeader source, AudioData audioData){
-		// get the stream, pass the event to the stream
-		Scope.getStream().publish(audioData);
-	}
-	
-	public void onVideoData(Connection conn, Channel channel, PacketHeader source, VideoData videoData){
-		// get the stream, pass the event to the stream
-		Scope.getStream().publish(videoData);
-		
+		log.info("Stream Bytes Read: "+streamBytesRead.getBytesRead());
 	}
 	
 	//	 ---------------------------------------------------------------------------
