@@ -8,5 +8,8 @@ public class AudioData extends Message {
 		super(TYPE_AUDIO_DATA, INITIAL_CAPACITY);
 	}
 
+	public String toString(){
+		return "Video ts: "+getTimestamp()+" size: "+getData().limit(); 
+	}
 	
 }

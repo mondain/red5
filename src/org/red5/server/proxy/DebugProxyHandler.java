@@ -116,7 +116,10 @@ public class DebugProxyHandler extends ProxyHandler {
 			final PacketHeader source = packet.getSource();
 			final Channel channel = conn.getChannel(packet.getSource().getChannelId());
 			
-			log.info(source + " | " + message + " | " + message.getData().getHexDump()+" | ");
+			log.info(source);
+			log.info(message);
+			
+			//log.info(source + " | " + message );
 			
 		} catch (RuntimeException e) {
 			// TODO Auto-generated catch block

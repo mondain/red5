@@ -26,18 +26,19 @@ public class DownStreamSink implements IStreamSink, Constants {
 	}
 	
 	public void enqueue(Message message){
+		log.info("out ts:"+message.getTimestamp());
 		switch(message.getDataType()){
 		case TYPE_VIDEO_DATA:
-			log.debug("write video");
+			//log.debug("write video");
 			video.write(message);
 			break;
 		case TYPE_AUDIO_DATA:
 			audio.write(message);
-			log.debug("write audio");
+			//log.debug("write audio");
 			break;
 		default:
 			data.write(message);
-			log.debug("write other");
+			//log.debug("write other");
 			break;
 		}
 	}

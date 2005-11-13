@@ -2,10 +2,12 @@ package org.red5.server.stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.red5.server.rtmp.Connection;
 import org.red5.server.rtmp.message.AudioData;
 import org.red5.server.rtmp.message.Constants;
 import org.red5.server.rtmp.message.Message;
 import org.red5.server.rtmp.message.Status;
+import org.red5.server.rtmp.message.StreamBytesRead;
 
 public class Stream implements Constants, IStream, IStreamSink {
 	
@@ -25,9 +27,12 @@ public class Stream implements Constants, IStream, IStreamSink {
 	
 	private int streamId = 0;
 	
-	public Stream(){
-	}
+	private Connection conn;
 	
+	public Stream(Connection conn) {
+		this.conn = conn;
+	}
+
 	public int getStreamId() {
 		return streamId;
 	}
@@ -68,6 +73,9 @@ public class Stream implements Constants, IStream, IStreamSink {
 		this.upstream = upstream;
 	}
 
+	protected int bytesReadInterval = 125000;
+	protected int bytesRead = 0;
+	
 	public void publish(){
 		Status publish = new Status(Status.NS_PUBLISH_START);
 		publish.setClientid(1);
@@ -122,14 +130,28 @@ public class Stream implements Constants, IStream, IStreamSink {
 	
 	protected void write(Message message){
 		if(downstream.canAccept()){
-			log.info("Sending downstream");
-			writeQueue++;
+			if(log.isDebugEnabled())
+				log.debug("Sending downstream");
+			//writeQueue++;
 			currentTS = message.getTimestamp();
 			downstream.enqueue(message);
 		}
 	}
 	
+	private int ts = 0;
+	private int bytesReadPacketCount = 0;
+	
 	public void publish(Message message){
+		ts += message.getTimestamp();
+		bytesRead += message.getData().limit();
+		if(bytesReadPacketCount < Math.floor(bytesRead / bytesReadInterval)){
+			bytesReadPacketCount++;
+			StreamBytesRead streamBytesRead = new StreamBytesRead();
+			streamBytesRead.setBytesRead(bytesRead);
+			log.info(streamBytesRead);
+			conn.getChannel((byte)2).write(streamBytesRead);
+		}
+		message.setTimestamp(ts);
 		if(upstream != null && upstream.canAccept()){
 			upstream.enqueue(message);
 		} else {

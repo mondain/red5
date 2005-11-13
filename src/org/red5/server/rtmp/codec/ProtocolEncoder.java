@@ -40,7 +40,8 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		try {
 			
 			if(message instanceof ByteBuffer){
-				log.debug("Sending raw buffer");
+				if(log.isDebugEnabled())
+					log.debug("Sending raw buffer");
 				out.write((ByteBuffer)message);
 				return;
 			}
@@ -63,11 +64,12 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 			ByteBuffer headers = encodeHeader(header,channel.getLastWriteHeader());
 
 			ByteBuffer buf = null;
-			buf = ByteBuffer.allocate(2048); // FIX ME
+			buf = ByteBuffer.allocate(data.limit()+(int)Math.floor(data.limit()/128)); // FIX ME
 			buf.setAutoExpand(true);
 
 			headers.flip();	
 			buf.put(headers);
+			headers.release();
 	
 			int numChunks =  (int) Math.ceil((header.getSize() / (float) header.getChunkSize()));
 			
@@ -75,7 +77,8 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 			for(int i=0; i<numChunks; i++){
 				int readAmount = (data.remaining()>header.getChunkSize()) 
 					? header.getChunkSize() : data.remaining();
-				log.debug("putting chunk: "+readAmount);
+				if(log.isDebugEnabled())
+					log.debug("putting chunk: "+readAmount);
 				BufferUtils.put(buf,data,readAmount);
 				if(data.remaining()>0){
 					// log.debug("header byte");
@@ -158,16 +161,19 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	}
 	
 	public void encodeInvoke(Invoke invoke){
-		log.debug("Encode invoke");
+		// TODO: tidy up here
+		// log.debug("Encode invoke");
 		Output output = new Output(invoke.getData());
 		
 		final boolean isPending =(invoke.getCall().getStatus()==Call.STATUS_PENDING);
 		
 		if(!isPending){
-			log.debug("Call has been executed, send result");
+			if(log.isDebugEnabled())
+				log.debug("Call has been executed, send result");
 			serializer.serialize(output, "_result"); // seems right
 		} else {
-			log.debug("This is a pending call, send request");
+			if(log.isDebugEnabled())
+				log.debug("This is a pending call, send request");
 			serializer.serialize(output, invoke.getCall().getServiceMethodName()); // seems right
 		}
 		
@@ -175,10 +181,12 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		serializer.serialize(output, new Integer(invoke.getInvokeId())); 
 		serializer.serialize(output, null);
 		if(!isPending){
-			log.debug("Writing result: "+invoke.getCall().getResult());
+			if(log.isDebugEnabled())
+				log.debug("Writing result: "+invoke.getCall().getResult());
 			serializer.serialize(output, invoke.getCall().getResult());
 		} else {
-			log.debug("Writing params");
+			if(log.isDebugEnabled())
+				log.debug("Writing params");
 			final Object[] args = invoke.getCall().getArguments();
 			if(args!=null){
 				for (int i = 0; i < args.length; i++) {
@@ -200,7 +208,8 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		out.putInt(ping.getValue2());
 		if(ping.getValue3()!=Ping.UNDEFINED)
 			out.putInt(ping.getValue3());
-		log.debug(ping);
+		if(log.isDebugEnabled())
+			log.debug(ping);
 	}
 	
 	public void encodeStreamBytesRead(StreamBytesRead streamBytesRead){
@@ -209,7 +218,6 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	}
 	
 	public void encodeAudioData(AudioData audioData){
-
 	}
 	
 	public void encodeVideoData(VideoData videoData){
@@ -219,6 +227,4 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 	public void enchunkData(ByteBuffer in, int chunkSize){
 
 	}
-		
-	
 }
