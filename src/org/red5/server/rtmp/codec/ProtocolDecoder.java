@@ -1,6 +1,7 @@
 package org.red5.server.rtmp.codec;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -9,7 +10,6 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.protocol.ProtocolDecoderOutput;
 import org.apache.mina.protocol.ProtocolSession;
 import org.apache.mina.protocol.ProtocolViolationException;
-import org.apache.mina.protocol.codec.CumulativeProtocolDecoder;
 import org.red5.server.io.BufferUtils;
 import org.red5.server.io.Deserializer;
 import org.red5.server.io.amf.Input;
@@ -30,7 +30,6 @@ import org.red5.server.rtmp.message.StreamBytesRead;
 import org.red5.server.rtmp.message.Unknown;
 import org.red5.server.rtmp.message.VideoData;
 import org.red5.server.service.Call;
-import org.red5.server.utils.BufferLogUtils;
 
 public class ProtocolDecoder implements Constants, org.apache.mina.protocol.ProtocolDecoder {
 
@@ -374,9 +373,9 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 			//log.debug("so: " +input.getString(data));
 			so.setName(input.getString(data));
 			so.setId(data.getLong());// not sure if this is needed
-			
+			LinkedList nums = so.getNumbers();
 			while(true){
-				so.addNumber((Number)deserializer.deserialize(input));
+				nums.add((Number)deserializer.deserialize(input));
 				//log.debug("amf num: "+deserializer.deserialize(input));
 				if(!data.hasRemaining()) break;
 				byte cont = data.get();
@@ -421,7 +420,7 @@ public class ProtocolDecoder implements Constants, org.apache.mina.protocol.Prot
 			data.position(position);
 		}
 		//so.getData().position(pos);
-		so.setSealed(true);
+		//so.setSealed(true);
 		//String str1 = 
 	}
 

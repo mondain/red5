@@ -1,5 +1,7 @@
 package org.red5.server.rtmp.codec;
 
+import java.util.Iterator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
@@ -20,6 +22,7 @@ import org.red5.server.rtmp.message.Notify;
 import org.red5.server.rtmp.message.OutPacket;
 import org.red5.server.rtmp.message.PacketHeader;
 import org.red5.server.rtmp.message.Ping;
+import org.red5.server.rtmp.message.SharedObject;
 import org.red5.server.rtmp.message.StreamBytesRead;
 import org.red5.server.rtmp.message.VideoData;
 import org.red5.server.service.Call;
@@ -154,12 +157,35 @@ public class ProtocolEncoder implements org.apache.mina.protocol.ProtocolEncoder
 		case TYPE_VIDEO_DATA:
 			encodeVideoData((VideoData) message);
 			break;
+		case TYPE_SHARED_OBJECT:
+			encodeSharedObject((SharedObject) message);
+			break;
 		}
 		message.getData().flip();
 		message.setSealed(true);
 		return message.getData();
 	}
 	
+	private void encodeSharedObject(SharedObject so) {
+		final ByteBuffer data = so.getData();
+		if(so.getTimer()!=-1){
+			data.putInt(so.getTimer());
+		}
+		Output output = new Output(data);
+		Output.putString(data,so.getName());
+		data.putLong(so.getId());
+		Iterator it = so.getNumbers().iterator();
+		while(it.hasNext()){
+			serializer.serialize(output,(Number) it.next());
+		} 
+		if(so.getKey()!=null){
+			serializer.serialize(output,(String) so.getKey());
+		}
+		if(so.getValue()!=null){
+			serializer.serialize(output,(Object) so.getValue());
+		}
+	}
+
 	public void encodeInvoke(Invoke invoke){
 		// TODO: tidy up here
 		// log.debug("Encode invoke");

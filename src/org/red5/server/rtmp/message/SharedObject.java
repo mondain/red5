@@ -1,6 +1,5 @@
 package org.red5.server.rtmp.message;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class SharedObject extends Unknown {
@@ -10,6 +9,7 @@ public class SharedObject extends Unknown {
 	private long id;
 	private String key;
 	private Object value;
+	private int timer;
 
 	public SharedObject(){
 		super(TYPE_SHARED_OBJECT);
@@ -39,10 +39,6 @@ public class SharedObject extends Unknown {
 		this.id = id;
 	}
 
-	public void addNumber(Number number) {
-		numbers.add(number);
-	}
-
 	public void setKey(String key) {
 		this.key = key;
 	}
@@ -51,10 +47,18 @@ public class SharedObject extends Unknown {
 		this.value = value;
 	}
 	
-	public Iterator getNumbers(){
-		return numbers.iterator();
+	public LinkedList getNumbers(){
+		return numbers;
 	}
-	
+
+	public int getTimer() {
+		return timer;
+	}
+
+	public void setTimer(int timer) {
+		this.timer = timer;
+	}
+
 	public String toString(){
 		final StringBuffer sb = new StringBuffer();
 		sb.append("SharedObject: ").append(name).append(" | ");
