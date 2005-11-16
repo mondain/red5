@@ -110,6 +110,22 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 				break;
 			case TYPE_SHARED_OBJECT:
 				SharedObject so = (SharedObject) message;
+				if(soName==null){
+					log.info("First shared object");
+					SharedObject init = new SharedObject();
+					//14293651161096
+					
+					init.getNumbers().add(new Double(Double.longBitsToDouble(14293651161096L)));
+					init.getNumbers().add(so.getNumbers().getFirst());
+					init.setName(so.getName());
+					init.setId(so.getId());
+					init.setTimestamp(Integer.MAX_VALUE);
+					init.setTimer(26023003);// stab in dark
+					soName = so.getName();
+				} else {
+					log.debug("Seal shared object and send back");
+					so.setSealed(true);
+				}
 				conn.getChannel((byte)4).write(so);
 				break;
 			}
@@ -122,6 +138,9 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 		}
 	}
 
+	// TOTAL QUICK HACK
+	String soName = null;
+	
 	private void rawBufferRecieved(ProtocolSession session, ByteBuffer in) {
 		
 		final Connection conn = (Connection) session.getAttachment();

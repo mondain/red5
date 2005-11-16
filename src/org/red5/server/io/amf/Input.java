@@ -138,9 +138,10 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		//	return new Byte( (byte) num);
 		//if(num < Short.MAX_VALUE) 
 		//	return new Short( (short) num);
-		if(num < Integer.MAX_VALUE) 
-			return new Integer( (int) num);
-		else return new Double(num);
+		//if(num < Integer.MAX_VALUE) 
+		//	return new Integer( (int) num);
+		//else 
+		return new Double(num);
 	}
 
 	
