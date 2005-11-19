@@ -87,8 +87,10 @@
 	</copy>
 	<copy todir="${dist.dir}/flvs">
 		<fileset dir="flvs">
+			<!--
 			<include name="on2_flash8_w_audio.flv" />
 			<include name="spark_flash7_no_audio.flv" />
+			-->
 		</fileset>
 	</copy>
 	<copy todir="${dist.dir}">
@@ -100,7 +102,9 @@
 			<include name="known_bugs.txt" />
 		</fileset>
 		<fileset dir="tests">
+			<!--
 			<include name="ofla_demo.swf" />
+			-->
 		</fileset>
 	</copy>
 </target>
