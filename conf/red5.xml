@@ -25,22 +25,6 @@
 					<entry key="port"><value>1936</value></entry>
 					<entry key="handler"><ref bean="rtmpProtocolProvider" /></entry>
 				</map></entry>
-				<entry key="otherProxyRaw"><map>
-					<entry key="port"><value>1940</value></entry>
-					<entry key="handler"><ref bean="otherProxyRaw" /></entry>
-				</map></entry>
-				<entry key="otherProxyDebug"><map>
-					<entry key="port"><value>1941</value></entry>
-					<entry key="handler"><ref bean="otherProxyDebug" /></entry>
-				</map></entry>
-				<entry key="red5ProxyRaw"><map>
-					<entry key="port"><value>1950</value></entry>
-					<entry key="handler"><ref bean="red5ProxyRaw" /></entry>
-				</map></entry>
-				<entry key="red5ProxyDebug"><map>
-					<entry key="port"><value>1951</value></entry>
-					<entry key="handler"><ref bean="red5ProxyDebug" /></entry>
-				</map></entry>
 				<!--
 				<entry key="remoting"><map>
 					<entry key="port"><value>${remoting.port}</value></entry>
@@ -50,37 +34,7 @@
 			</map>
 		</property>
 	</bean> 
-	
-	<bean id="otherProxyRaw" class="org.red5.server.proxy.ProxyHandler"
-		init-method="initialize">
-		<property name="forwardHost"><value>127.0.0.1</value></property>
-		<property name="forwardPort"><value>1935</value></property>
-		<property name="forwardTimeOut"><value>10000</value></property>
-	</bean>
-	
-	<bean id="red5ProxyRaw" class="org.red5.server.proxy.ProxyHandler"
-		init-method="initialize">
-		<property name="forwardHost"><value>127.0.0.1</value></property>
-		<property name="forwardPort"><value>1936</value></property>
-		<property name="forwardTimeOut"><value>10000</value></property>
-	</bean>
-	
-	<bean id="otherProxyDebug" class="org.red5.server.proxy.DebugProxyHandler"
-		init-method="initialize">
-		<property name="forwardHost"><value>127.0.0.1</value></property>
-		<property name="forwardPort"><value>1935</value></property>
-		<property name="forwardTimeOut"><value>10000</value></property>
-		<property name="decoder"><ref bean="rtmpProtocolDecoder" /></property>
-	</bean>
-	
-	<bean id="red5ProxyDebug" class="org.red5.server.proxy.DebugProxyHandler"
-		init-method="initialize">
-		<property name="forwardHost"><value>127.0.0.1</value></property>
-		<property name="forwardPort"><value>1936</value></property>
-		<property name="forwardTimeOut"><value>10000</value></property>
-		<property name="decoder"><ref bean="rtmpProtocolDecoder" /></property>
-	</bean>
-	
+		
 	<!-- RTMP Protcol Handler: handles the handshake, 
 	passes rtmp session and packet to session handler -->
 	<bean id="rtmpHandler" class="org.red5.server.protocol.rtmp.NetworkHandler">

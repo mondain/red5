@@ -109,12 +109,13 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 				stream.publish(message);
 				break;
 			case TYPE_SHARED_OBJECT:
+				log.warn("Shared Object soon.");
+				/*
 				SharedObject so = (SharedObject) message;
 				if(soName==null){
 					log.info("First shared object");
 					SharedObject init = new SharedObject();
 					//14293651161096
-					
 					init.getNumbers().add(new Double(Double.longBitsToDouble(14293651161096L)));
 					init.getNumbers().add(so.getNumbers().getFirst());
 					init.setName(so.getName());
@@ -127,6 +128,7 @@ public class RTMPSessionHandler implements ProtocolHandler, Constants{
 					so.setSealed(true);
 				}
 				conn.getChannel((byte)4).write(so);
+				*/
 				break;
 			}
 			if(message instanceof Unknown){
