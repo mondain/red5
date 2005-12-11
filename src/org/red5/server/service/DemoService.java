@@ -51,7 +51,7 @@ public class DemoService implements IDemoService, ApplicationContextAware {
 	
 	protected ApplicationContext appCtx = null;
 	
-	public DemoService(){
+	public DemoService(){ 
 		
 	}
 
