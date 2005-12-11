@@ -1,6 +1,6 @@
 package org.red5.server.rtmp.message;
 
-import org.red5.server.protocol.rtmp.status2.StatusCodes;
+import org.red5.server.rtmp.status.StatusCodes;
 
 public class Status implements StatusCodes {
 

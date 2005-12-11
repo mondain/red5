@@ -1,4 +1,4 @@
-package org.red5.server.protocol.rtmp.status2;
+package org.red5.server.rtmp.status;
 
 public class RuntimeStatusObject extends StatusObject {
 

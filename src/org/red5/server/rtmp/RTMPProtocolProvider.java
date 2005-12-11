@@ -35,7 +35,6 @@ public class RTMPProtocolProvider implements
         return (ProtocolDecoder) appCtx.getBean(protocolDecoderName);
     }
 
-
     public ProtocolCodecFactory getCodecFactory(){
         return this;
     }

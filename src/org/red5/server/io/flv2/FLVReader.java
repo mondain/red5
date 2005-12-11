@@ -11,16 +11,14 @@ import java.nio.channels.FileChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
-import org.apache.mina.common.ByteBufferProxy;
 import org.red5.server.io.flv.FLVHeader;
-import org.red5.server.protocol.rtmp.RTMPUtils;
-import org.red5.server.protocol.rtmp.Stream;
+import org.red5.server.rtmp.RTMPUtils;
 import org.red5.server.utils.HexDump;
 
 public class FLVReader {
 	
 	protected static Log log =
-        LogFactory.getLog(Stream.class.getName());
+        LogFactory.getLog(FLVReader.class.getName());
 	
 	protected String fileName = null;
 	protected FileInputStream fis = null;

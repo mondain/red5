@@ -23,13 +23,13 @@ package org.red5.server.net;
  * @author Dominick Accattato (daccattato@gmail.com)
  */
 
+import java.net.InetSocketAddress;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.TransportType;
-import org.apache.mina.io.IoAcceptor;
 import org.apache.mina.io.IoHandlerAdapter;
 import org.apache.mina.protocol.ProtocolProvider;
 import org.apache.mina.registry.Service;
@@ -83,10 +83,12 @@ public class NetworkManager {
 				String serviceName = (String) it.next();
 				Map conf = (Map) serviceConfig.get(serviceName);
 				int port = Integer.parseInt((String) conf.get("port"));
+				String host = (String) conf.get("host");
 				Object handler = conf.get("handler");
 				// TODO: add support for other transport types, socket should be default
 				TransportType transportType = TransportType.SOCKET;
-				Service service = new Service(serviceName, transportType, port);
+				InetSocketAddress address = new InetSocketAddress(host,port);
+				Service service = new Service(serviceName, transportType,address);
 				if(handler instanceof IoHandlerAdapter){
 					IoHandlerAdapter ioHandlerAdapter = (IoHandlerAdapter) handler;
 					if(log.isDebugEnabled())

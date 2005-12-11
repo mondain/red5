@@ -52,11 +52,7 @@ public class AppContext
 		}
 	}
 	
-	
-	
 	public ServiceInvoker getServiceInvoker(){
 		return (ServiceInvoker) getBean(ServiceInvoker.SERVICE_NAME);
 	}
-	
-	
 }
