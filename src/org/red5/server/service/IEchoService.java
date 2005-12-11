@@ -38,7 +38,7 @@ public interface IEchoService {
 	 * Used to verify that Spring has loaded the bean.
 	 *
 	 */
-	public abstract void startUp();
+	public abstract void startUp(); 
 	
 	/**
 	 * Verifies that a boolean that is passed in returns correctly.
