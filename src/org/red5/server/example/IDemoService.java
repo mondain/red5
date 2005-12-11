@@ -1,5 +1,4 @@
-package org.red5.server.protocol.rtmp;
-
+package org.red5.server.example;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
@@ -19,34 +18,12 @@ package org.red5.server.protocol.rtmp;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  * 
  * @author The Red5 Project (red5@osflash.org)
- * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @author Chris Allen (mrchrisallen@gmail.com)
  */
+import java.util.Map;
 
-import org.red5.server.service.Call;
+public interface IDemoService {
 
-public class RTMPCall extends Call {
+	public Map getListOfAvailableFLVs();
 
-	protected int packetId = -1;
-	protected int packetSource = -1;
-	protected Channel channel;
-
-	public RTMPCall(String serviceName, String serviceMethod, Object[] args, int packetId, int packetSource, Channel channel){
-		super(serviceName, serviceMethod, args);
-		this.packetId = packetId;
-		this.packetSource = packetSource;
-		this.channel = channel;
-	}
-
-	public Channel getChannel() {
-		return channel;
-	}
-
-	public int getPacketId(){
-		return packetId;
-	}
-
-	public int getPacketSource() {
-		return packetSource;
-	}
-	
 }

@@ -1,4 +1,4 @@
-package org.red5.server.protocol.rtmp;
+package org.red5.server.rtmp;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5

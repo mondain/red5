@@ -1,26 +1,31 @@
 package org.red5.server.context;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.red5.server.protocol.rtmp.status2.StatusObject;
-import org.red5.server.protocol.rtmp.status2.StatusObjectService;
 import org.red5.server.rtmp.Connection;
 import org.red5.server.rtmp.message.Ping;
+import org.red5.server.rtmp.status.StatusObject;
+import org.red5.server.rtmp.status.StatusObjectService;
 import org.red5.server.stream.IStreamSource;
 import org.red5.server.stream.Stream;
 import org.red5.server.stream.StreamManager;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class BaseApplication implements ApplicationContextAware, Application {
+public class BaseApplication 
+	implements ApplicationContextAware, BeanPostProcessor {
 
 	//private StatusObjectService statusObjectService = null;
 	private ApplicationContext appCtx = null;
 	private HashSet clients = new HashSet();
 	private StreamManager streamManager = null;
+	private HashSet listeners = new HashSet();
 	
 	protected static Log log =
         LogFactory.getLog(BaseApplication.class.getName());
@@ -138,7 +143,7 @@ public class BaseApplication implements ApplicationContextAware, Application {
 	// -----------------------------------------------------------------------------
 	
 	public void onAppStart(){
-		// called when the app starts
+		
 	}
 	
 	public boolean onConnect(Client conn, List params){
@@ -147,7 +152,23 @@ public class BaseApplication implements ApplicationContextAware, Application {
 	}
 	
 	public void onDisconnect(Client conn){
-		// do nothing, override
+		Iterator it = listeners.iterator();
+		while(it.hasNext()){
+			AppLifecycleAware el = (AppLifecycleAware) it.next();
+			el.onDisconnect(conn);
+		}
 	}
 
+	public Object postProcessBeforeInitialization(Object bean, String name) throws BeansException {
+		if(bean instanceof AppLifecycleAware){
+			listeners.add(bean);
+		}
+		return bean;
+	}
+	
+	public Object postProcessAfterInitialization(Object bean, String name) throws BeansException {
+		// not needed
+		return bean;
+	}
+	
 }

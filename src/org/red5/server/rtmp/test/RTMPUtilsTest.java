@@ -1,4 +1,4 @@
-package org.red5.server.protocol.rtmp.test;
+package org.red5.server.rtmp.test;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.red5.server.protocol.rtmp.RTMPUtils;
+import org.red5.server.rtmp.RTMPUtils;
 import org.red5.server.utils.HexDump;
 
 public class RTMPUtilsTest extends TestCase {
