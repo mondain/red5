@@ -25,19 +25,42 @@ package org.red5.server.io;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * BaseOutput represents a way to map input to a HashMap.  This class
+ * is meant to be extended.
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class BaseOutput {
 
 	protected Map refMap;
 	protected short refId = 0;
 	
+	/**
+	 * BaseOutput Constructor
+	 *
+	 */
 	protected BaseOutput(){
 		refMap = new HashMap();
 	}
 	
+	/**
+	 * Store an object into a map
+	 * @param obj
+	 * @return void
+	 */
 	public void storeReference(Object obj){
 		refMap.put(obj,new Short(refId++));
 	}
 	
+	/**
+	 * Returns a boolean stating whether the map contains an object by
+	 * that key
+	 * @param obj
+	 * @return boolean
+	 */
 	public boolean hasReference(Object obj){
 		//System.out.println("obj"+obj);
 		//System.out.println("simpletest"+obj.hashCode());
@@ -45,11 +68,20 @@ public class BaseOutput {
 		return refMap.containsKey(obj);
 	}
 	
+	/**
+	 * Clears the map
+	 * @return void
+	 */
 	public void clearReferences(){
 		refMap.clear();
 		refId = 0;
 	}
 	
+	/**
+	 * Returns the reference id based on the parameter obj
+	 * @param obj
+	 * @return short
+	 */
 	protected short getReferenceId(Object obj){
 		return ((Short) refMap.get(obj)).shortValue();
 	}

@@ -33,6 +33,13 @@ import org.apache.mina.common.ByteBuffer;
 import org.red5.server.io.BaseInput;
 import org.red5.server.io.DataTypes;
 
+/**
+ * Input for red5 data types
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class Input extends BaseInput implements org.red5.server.io.Input  {
 
 	protected static Log log =
@@ -42,11 +49,19 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 	
 	protected byte currentDataType;
 	
+	/**
+	 * Input Constructor
+	 * @param buf
+	 */
 	public Input(ByteBuffer buf){
 		super();
 		this.buf = buf;
 	}
 
+	/**
+	 * Reads the data type
+	 * @return byte
+	 */
 	public byte readDataType() {
 		
 		if(buf==null){
@@ -122,16 +137,27 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 	}
 	
 	// Basic
-	
+	/**
+	 * Reads a null
+	 * @return Object
+	 */
 	public Object readNull() {
 		return null;
 	}
 
+	/**
+	 * Reads a boolean
+	 * @return boolean
+	 */
 	public Boolean readBoolean() {
 		// TODO: check values 
 		return (buf.get() == AMF.VALUE_TRUE) ? Boolean.TRUE : Boolean.FALSE;
 	}
 
+	/**
+	 * Reads a Number
+	 * @return Number
+	 */
 	public Number readNumber() {
 		double num = buf.getDouble();
 		//if(num < Byte.MAX_VALUE) 
@@ -144,8 +170,10 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		return new Double(num);
 	}
 
-	
-	
+	/**
+	 * Reads a string
+	 * @return String
+	 */
 	public String readString(){
 		int len = 0;
 		switch(currentDataType){
@@ -164,6 +192,11 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		return string;
 	}
 	
+	/**
+	 * Returns a string based on the buffer
+	 * @param buf
+	 * @return String
+	 */
 	public static String getString(ByteBuffer buf){
 		short len = buf.getShort();
 		int limit = buf.limit();
@@ -178,6 +211,10 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		return string;
 	}
 	
+	/**
+	 * Returns a date
+	 * @return Date
+	 */
 	public Date readDate() {
 		/*
 		 * Date: 0x0B T7 T6 .. T0 Z1 Z2
@@ -199,47 +236,86 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 	}
 
 	// Array
-	
+	/**
+	 * Returns an array
+	 * @return int
+	 */
 	public int readStartArray() {
 		return buf.getInt();
 	}
 
+	/**
+	 * Skips elements
+	 * TODO
+	 */
 	public void skipElementSeparator() {
 		// SKIP
 	}
 
+	/**
+	 * Skips end array
+	 * TODO
+	 */
 	public void skipEndArray() {
 		// SKIP
 	}
 	
-//	 Object
+	// Object
+	/**
+	 * Reads start list
+	 * @return int
+	 */	
 	public int readStartList() {
 		return buf.getInt();
 	}
 
+	/**
+	 * Returns a boolean stating whether this has more items
+	 * @return boolean
+	 */
 	public boolean hasMoreItems() {
 		return hasMoreProperties();
 	}
 
+	/**
+	 * Reads the item index
+	 * @return int
+	 */
 	public int readItemIndex() {
 		return Integer.parseInt(getString(buf));
 	}
 
+	/**
+	 * Skips item seperator
+	 * @return void
+	 */
 	public void skipItemSeparator(){
 		// SKIP
 	}
 
+	/**
+	 * Skips end list
+	 * @return void
+	 */
 	public void skipEndList(){
 		skipEndObject();
 	}
 	
 	// Object
+	/**
+	 * Reads start object
+	 * @return String
+	 */
 	public String readStartObject() {
 		if(currentDataType == AMF.TYPE_CLASS_OBJECT)
 			return getString(buf);
 		else return null;
 	}
 
+	/**
+	 * Returns a boolean stating whether there are more properties
+	 * @return boolean
+	 */
 	public boolean hasMoreProperties() {
 		byte pad = 0x00;
 		byte pad0 = buf.get();
@@ -254,14 +330,26 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 		return !isEndOfObject;
 	}
 
+	/**
+	 * Reads property name
+	 * @return String
+	 */
 	public String readPropertyName() {
 		return getString(buf);
 	}
 
+	/**
+	 * Skips property seperator
+	 * @return void
+	 */
 	public void skipPropertySeparator(){
 		// SKIP
 	}
 
+	/**
+	 * Skips end object
+	 * @return void
+	 */
 	public void skipEndObject() {
 		// skip two marker bytes
 		// then end of object byte
@@ -270,24 +358,36 @@ public class Input extends BaseInput implements org.red5.server.io.Input  {
 	}
 
     // Others
-	
+	/**
+	 * Reads xml
+	 * @return String
+	 */
 	public String readXML() {
 		return readString();
 	}
 
+	/**
+	 * Reads Custom
+	 * @return Object
+	 */
 	public Object readCustom(){
 		// Return null for now
 		return null;
 	}
 
+	/**
+	 * Reads Reference
+	 * @return Object
+	 */
 	public Object readReference() {
 		return getReference(buf.getShort());
 	}
 	
+	/**
+	 * Resets map
+	 * @return void
+	 */
 	public void reset(){
 		this.clearReferences();
 	}
-	
-	
-	
 }

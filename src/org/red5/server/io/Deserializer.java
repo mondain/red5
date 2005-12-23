@@ -34,11 +34,26 @@ import org.apache.commons.logging.LogFactory;
 import org.red5.server.utils.XMLUtils;
 import org.w3c.dom.Document;
 
+/**
+ * The Deserializer class reads data input and handles the data 
+ * according to the core data types 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class Deserializer {
 
+	// Initialize Logging
 	protected static Log log =
         LogFactory.getLog(Deserializer.class.getName());
 	
+	/**
+	 * Deserializes the input parameter and returns an Object
+	 * which must then be cast to a core data type
+	 * @param in
+	 * @return Object
+	 */
 	public Object deserialize(Input in){
 		
 		byte type = in.readDataType();
@@ -95,6 +110,11 @@ public class Deserializer {
 		return result;
 	}
 	
+	/**
+	 * Reads the input and returns an array of Objects
+	 * @param in
+	 * @return Object
+	 */
 	protected Object readArray(Input in){
 		if(log.isDebugEnabled()) {
 			log.debug("Read array");
@@ -110,6 +130,11 @@ public class Deserializer {
  		return array;
 	}
 	
+	/**
+	 * Reads the input and returns a List
+	 * @param in
+	 * @return List
+	 */
 	protected List readList(Input in){
 		if(log.isDebugEnabled()) {
 			log.debug("read list");
@@ -144,6 +169,11 @@ public class Deserializer {
 		return list;
 	}
 	
+	/**
+	 * Reads the input as xml and returns an object
+	 * @param in
+	 * @return
+	 */
 	protected Object readXML(Input in){
 		final String xmlString = in.readString();
 		Document doc = null;
@@ -156,6 +186,11 @@ public class Deserializer {
 		return doc;
 	}
 	
+	/**
+	 * Reads the input as and object and returns an Object
+	 * @param in
+	 * @return Object
+	 */
 	protected Object readObject(Input in){
 		if(log.isDebugEnabled()) {
 			log.debug("read object");
@@ -173,6 +208,12 @@ public class Deserializer {
 		return readMap(in);
 	}
 	
+	/**
+	 * Reads the input as a bean and returns an object
+	 * @param in
+	 * @param bean
+	 * @return Object
+	 */
 	protected Object readBean(Input in, Object bean){
 		if(log.isDebugEnabled()) {
 			log.debug("read bean");
@@ -206,6 +247,11 @@ public class Deserializer {
 		return bean;
 	}
 	
+	/**
+	 * Reads the input as a map and returns a Map
+	 * @param in
+	 * @return Map
+	 */
 	protected Map readMap(Input in){
 		if(log.isDebugEnabled()) {
 			log.debug("read map");
@@ -230,6 +276,12 @@ public class Deserializer {
 		return map;
 	}
 	
+	/**
+	 * Creats a new instance of the className parameter and 
+	 * returns as an Object
+	 * @param className
+	 * @return Object
+	 */
 	protected Object newInstance(String className){
 		Object instance = null; 
 		try	{ 
@@ -241,14 +293,21 @@ public class Deserializer {
 		return instance;
 	}
 	
+	/**
+	 * Reads the input as a reference and returns an Object
+	 * @param in
+	 * @return Object
+	 */
 	protected Object readReference(Input in){
 		final Object ref = in.readReference();
 		if(ref==null) log.error("Reference returned by input is null");
 		return ref;
 	}
 	
-	// Extension point
-	
+	/**
+	 * Post processes the result
+	 * TODO Extension Point
+	 */
 	protected Object postProcessExtension(Object result){
 		// does nothing at the moment, but will later!
 		return result;

@@ -25,20 +25,42 @@ package org.red5.server.io;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * BaseInput represents a way to map input to a HashMap.  This class
+ * is meant to be extended.
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class BaseInput {
 
 	protected Map refMap = new HashMap();
 	protected short refId = 0;
 	
+	/**
+	 * Store an object into a map
+	 * @param obj
+	 * @return void
+	 */
 	public void storeReference(Object obj){
 		refMap.put(new Short(refId++),obj);
 	}
 	
+	/**
+	 * Clears the map
+	 * @return void
+	 */
 	public void clearReferences(){
 		refMap.clear();
 		refId = 0;
 	}
 	
+	/**
+	 * Returns the object with the parameters id
+	 * @param id
+	 * @return Object
+	 */
 	protected Object getReference(short id){
 		return refMap.get(new Short(id));
 	}

@@ -39,13 +39,25 @@ import org.red5.server.utils.XMLUtils;
 import org.springframework.beans.BeanUtils;
 import org.w3c.dom.Document;
 
-
+/**
+ * The Serializer class writes data output and handles the data 
+ * according to the core data types 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class Serializer {
 
+	// Initialize Logging
 	protected static Log log =
         LogFactory.getLog(Serializer.class.getName());
 	
-	// Any
+	/**
+	 * serializes output to a core data type object
+	 * @param out
+	 * @param any
+	 */
 	public void serialize(Output out, Object any) {
 		// TODO Auto-generated method stub
 		if(log.isDebugEnabled()) {
@@ -77,7 +89,12 @@ public class Serializer {
 			}
 	}
 		
-	// Basic
+	/**
+	 * Writes a primitive out as an object
+	 * @param out
+	 * @param basic
+	 * @return boolean
+	 */
 	protected boolean writeBasic(Output out, Object basic){
 		if(basic==null) 
 			out.writeNull();
@@ -93,7 +110,12 @@ public class Serializer {
 		return true;
 	}
 	
-	// Complex
+	/**
+	 * Writes a complex type out as an object
+	 * @param out
+	 * @param complex
+	 * @return boolean
+	 */
 	public boolean writeComplex(Output out, Object complex){
 		if(log.isDebugEnabled()) {
 			log.debug("writeComplex");
@@ -106,7 +128,12 @@ public class Serializer {
 		else return false;
 	}
 	
-//	 Arrays, Collections, etc
+	/**
+	 * Writes Lists out as a data type
+	 * @param out
+	 * @param listType
+	 * @return boolean
+	 */
 	protected boolean writeListType(Output out, Object listType){
 		if(log.isDebugEnabled()) {
 			log.debug("writeListType");
@@ -117,6 +144,11 @@ public class Serializer {
 		return true;
 	}
 	
+	/**
+	 * Writes a List out as an Object
+	 * @param out
+	 * @param list
+	 */
 	protected void writeList(Output out, List list){
 		int size = list.size();
 		out.writeStartList(size);
@@ -131,7 +163,13 @@ public class Serializer {
 		out.markEndList();
 	}
 	
-	// Arrays, Collections, etc
+	/**
+	 * Writes an Array type out as output
+	 * Arrays, Collections, etc
+	 * @param out
+	 * @param arrType
+	 * @return
+	 */
 	protected boolean writeArrayType(Output out, Object arrType){
 		if(log.isDebugEnabled()) {
 			log.debug("writeArrayType");
@@ -149,6 +187,11 @@ public class Serializer {
 		return true;
 	}
 	
+	/**
+	 * Writes a collection to the output
+	 * @param out
+	 * @param col
+	 */
 	protected void writeCollection(Output out, Collection col){
 		if(log.isDebugEnabled()) {
 			log.debug("writeCollection");
@@ -164,6 +207,11 @@ public class Serializer {
 		out.markEndArray();
 	}
 	
+	/**
+	 * Writes a primitive array to the output
+	 * @param out
+	 * @param array
+	 */
 	protected void writePrimitiveArray(Output out, Object array){
 		//out.writeS
 		if(log.isDebugEnabled()) {
@@ -178,6 +226,11 @@ public class Serializer {
 		out.markEndArray();
 	}
 	
+	/**
+	 * Writes an object array out to the output
+	 * @param out
+	 * @param array
+	 */
 	protected void writeObjectArray(Output out, Object[] array){
 		//out.writeS
 		if(log.isDebugEnabled()) {
@@ -194,6 +247,11 @@ public class Serializer {
 		out.markEndArray();
 	}
 	
+	/**
+	 * Writes an iterator out to the output
+	 * @param out
+	 * @param it
+	 */
 	protected void writeIterator(Output out,Iterator it){
 		if(log.isDebugEnabled()) {
 			log.debug("writeIterator");
@@ -203,7 +261,12 @@ public class Serializer {
 		writeCollection(out, list);
 	}
 	
-	// XML
+	/**
+	 * Writes an xml type out to the output
+	 * @param out
+	 * @param xml
+	 * @return boolean
+	 */
 	protected boolean writeXMLType(Output out, Object xml){
 		if(log.isDebugEnabled()) {
 			log.debug("writeXMLType");
@@ -214,11 +277,21 @@ public class Serializer {
 		return true;
 	}
 	
+	/**
+	 * Writes a document to the output
+	 * @param out
+	 * @param doc
+	 */
 	protected void writeDocument(Output out, Document doc){
 		out.writeXML(XMLUtils.docToString(doc));
 	}
 	
-	// Object
+	/**
+	 * Writes an object to the output
+	 * @param out
+	 * @param obj
+	 * @return
+	 */
 	protected boolean writeObjectType(Output out, Object obj){		
 		if(obj instanceof Map) 
 			writeMap(out, (Map) obj);
@@ -226,6 +299,11 @@ public class Serializer {
 		return true;
 	}
 	
+	/**
+	 * Writes a map to the output
+	 * @param out
+	 * @param map
+	 */
 	public void writeMap(Output out, Map map){
 		if(log.isDebugEnabled()) {
 			log.debug("writeMap");
@@ -244,6 +322,11 @@ public class Serializer {
 		out.markEndObject();
 	}
 	
+	/**
+	 * Writes a bean to the output
+	 * @param out
+	 * @param bean
+	 */
 	public void writeBean(Output out, Object bean){
 		if(log.isDebugEnabled()) {
 			log.debug("writeBean");
@@ -265,12 +348,21 @@ public class Serializer {
 	}
 	
 	// Extension points
-	
+	/**
+	 * Pre processes an object
+	 * TODO must be implemented
+	 */
 	public Object preProcessExtension(Object any){
 		// Does nothing right now but will later
 		return any;
 	}
 	
+	/**
+	 * Writes a custom data type to the output
+	 * @param out
+	 * @param obj
+	 * @return
+	 */
 	protected boolean writeCustomType(Output out, Object obj){
 		if(out.isCustom(obj)){
 			out.writeCustom(obj);
