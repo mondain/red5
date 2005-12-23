@@ -27,15 +27,27 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
+/**
+ * Entry point from which the server config file is loaded
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Dominick Accattato (Dominick@gmail.com)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class Standalone {
 	
+	// Initialize Logging
 	protected static Log log =
         LogFactory.getLog(Standalone.class.getName());
 	
 	protected static String red5ConfigPath = "./conf/red5.xml";
 	
 	/**
-	 * @param args
+	 * Main entry point for the Red5 Server 
+	 * usage java Standalone
+	 * @param args String passed in that points to a red5.xml config file
+	 * @return void
 	 */
 	public static void main(String[] args) throws Exception {
 		
@@ -48,6 +60,8 @@ public class Standalone {
 			log.info("Loading Spring Application Context: "+red5ConfigPath);
 		}
 		
+		// Spring Loads the xml config file which initializes 
+		// beans and loads the server
 		FileSystemXmlApplicationContext appCtx = new FileSystemXmlApplicationContext(red5ConfigPath);
 		if(log.isDebugEnabled()) {
 			log.debug("Startup date: "+appCtx.getStartupDate());

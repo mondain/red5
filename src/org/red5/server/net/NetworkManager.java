@@ -36,6 +36,17 @@ import org.apache.mina.registry.Service;
 import org.apache.mina.registry.ServiceRegistry;
 import org.apache.mina.registry.SimpleServiceRegistry;
 
+/**
+ * The NetworkManager class represents the servers network status.  
+ * The server can be started by calling networkManager.up() {@link org.red5.server.Server.java}
+ * The server can be brought down by calling networkManager.down();
+ * Last, the server can be extended through Mina to bind other protocols through this class.
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @author Dominick Accattato (daccattato@gmail.com)
+ * @version 0.3
+ */
 public class NetworkManager {
 
 	public static final byte STATUS_NETWORK_UP = 0x00;
@@ -43,6 +54,7 @@ public class NetworkManager {
 	public static final byte STATUS_NETWORK_ERROR = 0x02;
 	private static final boolean USE_SSL = false;
 	
+	// Initialize Logging
 	protected static Log log =
         LogFactory.getLog(NetworkManager.class.getName());
 
@@ -50,15 +62,27 @@ public class NetworkManager {
 	protected Map serviceConfig;
 	protected ServiceRegistry registry;
 	
+	/**
+	 * NetworkManager Constructor
+	 * @return instance of NetworkManager
+	 */
 	public NetworkManager(){
 		if(log.isDebugEnabled()) log.debug("Creating network service registry");
 		registry = new SimpleServiceRegistry(); 
 	}
 	
+	/**
+	 * Sets the ServiceConfig file
+	 * @param serviceConfig
+	 */
 	public void setServiceConfig(Map serviceConfig){
 		this.serviceConfig = serviceConfig;		
 	}
 	
+	/**
+	 * Start the process of binding to ports.  Review red5.properties file to see which port were binding to.
+	 * @return void
+	 */
 	public void up(){
 		if(networkStatus == STATUS_NETWORK_UP){
 			log.warn("Network is already up, taking no action, call down() first or restart()");
@@ -109,6 +133,10 @@ public class NetworkManager {
 		}
 	}
 	
+	/**
+	 * Brings the network down by unbinding ports.
+	 * @return void
+	 */
 	public void down(){
 		if(networkStatus != STATUS_NETWORK_UP){
 			log.warn("Network is already down, taking no action, call up() first.");
@@ -125,6 +153,10 @@ public class NetworkManager {
 		}
 	}
 	
+	/**
+	 * Restarts the Server by checking the status and then calling the proper method
+	 * @return void
+	 */
 	public void restart(){
 		if(networkStatus == STATUS_NETWORK_UP){
 			down();
