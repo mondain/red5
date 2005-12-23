@@ -15,6 +15,15 @@ import org.red5.server.io.flv.FLVHeader;
 import org.red5.server.rtmp.RTMPUtils;
 import org.red5.server.utils.HexDump;
 
+/**
+ * A FLVReader reads a flv video file from disc, parses the file, 
+ * and send the byte stream down to the client 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Dominick Accattato (Dominick@gmail.com)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class FLVReader {
 	
 	protected static Log log =
@@ -28,11 +37,21 @@ public class FLVReader {
 	protected FLVHeader header = new FLVHeader();
 	protected int limit = 0;
 	
+	/**
+	 * main entry point for testing the FLVReader
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception{
 		//TODO create a testcase for FLVReader.java
 		//FLVReader reader = new FLVReader("flvs/nvnlogo1.flv");
 	}
 	
+	/**
+	 * FLVReader Constructor which takes a File Object as a parameter
+	 * @param fileName
+	 * @throws IOException
+	 */
 	public FLVReader(File fileName) throws IOException {	
 		log.debug("Reading: "+ fileName.getName());
 		
@@ -50,6 +69,13 @@ public class FLVReader {
 		decodeHeader();		
 	}
 	
+	/**
+	 * FLVReader Constructor which takes a String as a parameter.  
+	 * @param fileName
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @deprecated 
+	 */
 	public FLVReader(String fileName) throws FileNotFoundException, IOException {
 		log.debug("Reading: "+fileName);
 		
@@ -63,10 +89,18 @@ public class FLVReader {
 		decodeHeader();		
 	}
 	
+	/**
+	 * Gets the Header Tag
+	 * @return FLVHeader
+	 */
 	public FLVHeader getHeader() {
 		return header;
 	}
 
+	/**
+	 * Decodes the Header bytes
+	 * @return void
+	 */
 	protected void decodeHeader(){
 		// SIGNATURE, lets just skip
 		in.skip(3);
@@ -75,6 +109,10 @@ public class FLVReader {
 		header.setDataOffset(in.getInt());
 	}
 	
+	/**
+	 * Decodes the body bytes
+	 * @return void
+	 */
 	protected void decodeBody(){
 		// SIGNATURE, lets just skip
 		
@@ -106,6 +144,10 @@ public class FLVReader {
 		}
 	}
 	
+	/**
+	 * Gets the next FLVTag for parsing
+	 * @return FLVTag
+	 */
 	public FLVTag getNextTag(){		
 		// skip the prev tag size.. 
 		log.debug("PREV TAG SIZE: "+ in.getInt());
@@ -127,6 +169,10 @@ public class FLVReader {
 		return tag;
 	}
 	
+	/**
+	 * Returns a boolean stating whether this has more tags to read.
+	 * @return boolean
+	 */
 	public boolean hasMoreTags(){
 		return in.remaining() > 4;
 	}	

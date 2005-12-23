@@ -27,34 +27,65 @@ import java.nio.MappedByteBuffer;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.server.protocol.remoting.RemotingService;
 
+/**
+ * A FLVBody represents the contents of a FLV Video file.  The  flv file consists of
+ * a HEADER, BODY, and the body consists of 1,.,.,n FLVTags. 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Dominick Accattato (Dominick@gmail.com)
+ * @version 0.3
+ */
 public class FLVBody {
 	private int previousTagSize = 0;
 	private FLVTag tag;
 	private MappedByteBuffer mappedFile;
 	int packetSize = 0;
 	
-	
+	/**
+	 * FLVBody Constructor
+	 * @param mappedFile
+	 */
 	public FLVBody(MappedByteBuffer mappedFile) {
 		// TODO Auto-generated constructor stub
 		this.mappedFile = mappedFile;
 	}
 	
+	/**
+	 * Gets the previousTagSize
+	 * @return int
+	 */
 	public int getPreviousTagSize() {
 		return previousTagSize;
 	}
 	
+	/**
+	 * Sets the previousTagSize
+	 * @param previousTagSize
+	 */
 	public void setPreviousTagSize(int previousTagSize) {
 		this.previousTagSize = previousTagSize;
 	}
 	
+	/**
+	 * Gets the FLVTag
+	 * @return FLVTag
+	 */
 	public FLVTag getTag() {
 		return tag;
 	}
 	
+	/**
+	 * Sets the FLVTag
+	 * @param tag
+	 */
 	public void setTag(FLVTag tag) {
 		this.tag = tag;
 	}
 	
+	/**
+	 * Gets the complete contents of the FLVBody
+	 * @return void
+	 */
 	public void getTags() {
 		// TODO Auto-generated method stub
 		int packetSize = 0;
@@ -111,6 +142,12 @@ public class FLVBody {
 		}
 		
 	}
+	
+	/**
+	 * Callback method that is called when a tag is received.  The tag
+	 * is then passed into this method
+	 * @param tag2
+	 */
 	private void onTag(FLVTag tag2) {
 		// TODO Auto-generated method stub
 		if(tag2.getTagType() == 0x12) {
@@ -123,6 +160,12 @@ public class FLVBody {
 			System.out.println("\n\n");
 		}
 	}
+	
+	/**
+	 * Read the data
+	 * @param dataSize
+	 * @return byte[]
+	 */
 	private byte[] readData(int dataSize) {
 		/*
 		int tmp = unsignedByteToInt(dataSize[0]);
@@ -139,6 +182,11 @@ public class FLVBody {
 		
 		return b;
 	}
+	
+	/** 
+	 * Read the time stamp
+	 * @return byte[]
+	 */
 	private byte[] readTimeStamp() {
 		int timeStampBytes = 3;
 		byte b[] = new byte[3];
@@ -148,6 +196,11 @@ public class FLVBody {
 		
 		return b;
 	}
+	
+	/**
+	 * Read the data size
+	 * @return byte[]
+	 */
 	private byte[] readDataSize() {
 		int dataSizeBytes = 3;
 		byte b[] = new byte[3];
@@ -159,10 +212,19 @@ public class FLVBody {
 		return b;
 	}
 	
+	/**
+	 * Read unsigned byte and return an int
+	 * @param b
+	 * @return int
+	 */
 	public static int unsignedByteToInt(byte b) {
 	    return (int) b & 0xFF;
 	}
 	
+	/**
+	 * Get next tag
+	 * @return FLVTag
+	 */
 	public FLVTag getNextTag() {
 				
 		// PREVIOUS_TAG_SIZE
@@ -212,6 +274,10 @@ public class FLVBody {
 		
 	}
 
+	/**
+	 * Returns a boolean stating whether there is more data
+	 * @return boolean
+	 */
 	public boolean hasRemaining() {
 		return mappedFile.hasRemaining();
 	}

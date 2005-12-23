@@ -22,14 +22,22 @@ package org.red5.server.io.flv;
  * @author Dominick Accattato (daccattato@gmail.com)
  */
 
+/**
+ * FLVEncoder encodes a bytestream into a FLV
+ * This class is not currently being worked on due
+ * to license restrictions 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Dominick Accattato (Dominick@gmail.com)
+ * @version 0.3
+ */
 public class FLVEncoder {
 
 	/**
+	 * main entry point for the command line
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
 	}
-
 }

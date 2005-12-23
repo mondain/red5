@@ -29,13 +29,23 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
+/**
+ * FLVDecoder parses out the contents of a FLV video file and returns
+ * the data in chunks
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Dominick Accattato (Dominick@gmail.com)
+ * @version 0.3
+ */
 public class FLVDecoder {
 
 	private String fileName = null;
 	FileInputStream fis = null;
 	FileChannel channel = null;
 	private MappedByteBuffer mappedFile;
+	
 	/**
+	 * main entry point for testing purposes
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -48,16 +58,22 @@ public class FLVDecoder {
 		}
 		
 		FLVDecoder decoder = new FLVDecoder(args[0]);
-		
-		
 		decoder.decode();
 	}
 	
+	/**
+	 * Show usage of command line
+	 * @return void
+	 */
 	private static void usage() {
 		// TODO Auto-generated method stub
 		System.out.println("java FLVDecoder.java [filename]");
 	}
 
+	/**
+	 * FLVDecoder Constructor
+	 * @param s
+	 */
 	public FLVDecoder(String s) {
 		this.fileName = s;
 		
@@ -83,6 +99,10 @@ public class FLVDecoder {
 		//decode();
 	}
 	
+	/**
+	 * decode method decodes the different types inside of a FLV
+	 *
+	 */
 	public void decode() {
 		
 		// Instantiate FLVHeader
@@ -114,6 +134,10 @@ public class FLVDecoder {
 	
 	}
 
+	/**
+	 * Reads the signature bytes of a FLV
+	 * @return byte[]
+	 */
 	private byte[] readSignatureBytes() {
 		int signatureBytes = 3;
 		byte b[] = new byte[3];
@@ -124,22 +148,42 @@ public class FLVDecoder {
 		return b;
 	}
 
+	/**
+	 * Gets the file name
+	 * @return String
+	 */
 	public String getFileName() {
 		return fileName;
 	}
 
+	/**
+	 * Sets the filename
+	 * @param fileName
+	 */
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
 
+	/**
+	 * Gets the FileInputStream
+	 * @return FileInputStream
+	 */
 	public FileInputStream getFis() {
 		return fis;
 	}
 
+	/**
+	 * Sets the FileInputStream
+	 * @param fis
+	 */
 	public void setFis(FileInputStream fis) {
 		this.fis = fis;
 	}
 
+	/**
+	 * Decodes the header bytes
+	 * @return FLVHeader
+	 */
 	public FLVHeader decodeHeader() {
 		// Instantiate FLVHeader
 		FLVHeader header = new FLVHeader();
@@ -162,8 +206,12 @@ public class FLVDecoder {
 		return header;
 	}
 
+	/**
+	 * Decodes the body of the files bytes
+	 * @return FLVBody
+	 */
 	public FLVBody decodeBody() {
-//		 Instantiate FLVBody
+		// Instantiate FLVBody
 		FLVBody body = new FLVBody(mappedFile);
 		return body;
 	}
