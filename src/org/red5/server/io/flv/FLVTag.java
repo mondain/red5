@@ -25,6 +25,15 @@ package org.red5.server.io.flv;
 
 import java.nio.ByteBuffer;
 
+/**
+ * A FLVTag represents the contents of a FLV Video file.  The  flv file consists of
+ * a HEADER, BODY, and the body consists of 1,.,.,n FLVTags. 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Dominick Accattato (Dominick@gmail.com)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class FLVTag {
 	
 	private byte tagType = 0x00; //audio=8, video=9
@@ -34,24 +43,44 @@ public class FLVTag {
 	private byte[] data; // audio or video data
 	private ByteBuffer buf;
 
+	/**
+	 * FLVTag Constructor
+	 * @param buf
+	 */
 	public FLVTag(ByteBuffer buf) {
 		// TODO Auto-generated constructor stub
 		this.buf = buf;
 	}
 
+	/**
+	 * Gets the data
+	 * @return byte[]
+	 */
 	public byte[] getData() {
 		return data;
 	}
 
-	public void setData(byte[] data) {
-		
+	/**
+	 * Sets the data
+	 * @param data
+	 */
+	public void setData(byte[] data) {		
 		this.data = data;
 	}
 
+	/**
+	 * Gets the data's size
+	 * @return int
+	 */
 	public int getDataSize() {
 		return dataSize;
 	}
 
+	/**
+	 * Sets the data's size
+	 * @param dataSize
+	 * @return void
+	 */
 	public void setDataSize(byte[] dataSize) {
 		int n = 0;
 	//	System.out.println("dataSize[0]: " + dataSize[1]);
@@ -84,30 +113,60 @@ public class FLVTag {
 		this.dataSize = ret;
 	}
 
+	/**
+	 * Gets the reserved bytes
+	 * @return int
+	 */
 	public int getReserved() {
 		return reserved;
 	}
 
+	/**
+	 * Sets the reserved bytes
+	 * @param reserved
+	 * @return void
+	 */
 	public void setReserved(int reserved) {
 		this.reserved = reserved;
 	}
 
+	/**
+	 * Gets the tag type
+	 * @return byte
+	 */
 	public byte getTagType() {
 		return tagType;
 	}
 
+	/**
+	 * Sets the tag type
+	 * @param tagType
+	 * @return void
+	 */
 	public void setTagType(byte tagType) {
 		this.tagType = tagType;
 	}
 
+	/**
+	 * Gets the time stamp
+	 * @return byte[]
+	 */
 	public byte[] getTimeStamp() {
 		return timeStamp;
 	}
 
+	/**
+	 * Sets the time stamp
+	 * @param timeStamp
+	 * @return void
+	 */
 	public void setTimeStamp(byte[] timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 
+	/**
+	 * Overrides the toString method
+	 */
 	public String toString() {
 		String ret = "";
 		//ret += "SIGNATURE: \t" + getSIGNATURE() + "\n";
@@ -122,18 +181,27 @@ public class FLVTag {
 		return ret;
 	}
 	
+	/**
+	 * Converts an unsigned byte to an int
+	 * @param b
+	 * @return int
+	 */
 	public static int unsignedByteToInt(byte b) {
 	    return (int) b & 0xFF;
 	}
 	
 	/**
+	 * entry point for testing FLVTag
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
 	}
 
+	/**
+	 * Returns a boolean stating whether there are remaining bytes
+	 * @return boolean
+	 */
 	public boolean hasRemaining() {
 		// TODO Auto-generated method stub
 		return false;

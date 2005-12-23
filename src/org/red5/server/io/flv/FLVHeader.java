@@ -23,6 +23,15 @@ package org.red5.server.io.flv;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
+/**
+ * FLVHeader parses out the contents of a FLV video file and returns
+ * the Header data 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Dominick Accattato (Dominick@gmail.com)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class FLVHeader {
 
 	// Signature
@@ -39,18 +48,35 @@ public class FLVHeader {
 	// reserved for data up to 4,294,967,295
 	public int dataOffset = 0x00;
 
+	/**
+	 * Returns the data offset bytes
+	 * @return int
+	 */
 	public int getDataOffset() {
 		return dataOffset;
 	}
 
+	/**
+	 * Sets the data offset bytes
+	 * @param data_offset
+	 */
 	public void setDataOffset(int data_offset) {
 		dataOffset = data_offset;
 	}
 
+	/**
+	 * Returns the signature bytes
+	 * @return byte[]
+	 */
 	public byte[] getSignature() {		
 		return signature;
 	}
 	
+	/**
+	 * Overrides the toString method so that a FLVHeader can
+	 * be represented by its datatypes
+	 * @return String
+	 */
 	public String toString() {
 		String ret = "";
 		//ret += "SIGNATURE: \t" + getSIGNATURE() + "\n";
@@ -65,51 +91,103 @@ public class FLVHeader {
 		
 	}
 
+	/**
+	 * Sets the signature bytes
+	 * @param signature
+	 */
 	public void setSignature(byte[] signature) {
 		this.signature = signature;
 	}
 
+	/**
+	 * Returns a boolean on whether this data contains audio
+	 * @return boolean
+	 */
 	public boolean getFlagAudio() {
 		return flagAudio;
 	}
 
+	/**
+	 * Sets the audioflag on whether this data contains audio
+	 * @param flagAudio
+	 */
 	public void setFlagAudio(boolean flagAudio) {
 		this.flagAudio = flagAudio;
 	}
 
+	/**
+	 * Sets the type flags on whether this data is audio or video
+	 * @param typeFlags
+	 * @return void
+	 */
 	public void setTypeFlags(byte typeFlags) {
 		flagVideo = (((typeFlags << 7) >> 7) > 0x00) ? true : false;
 		flagAudio = (((typeFlags << 5) >> 7) > 0x00) ? true : false;
 	}
 	
+	/**
+	 * Gets the FlagReserved01 which is a datatype specified in the Flash Specification
+	 * @return byte
+	 */
 	public byte getFlagReserved01() {
 		return flagReserved01;
 	}
 
+	/**
+	 * Sets the FlagReserved01 which is a datatype specified in the Flash Specification
+	 * @param flagReserved01
+	 * @return void
+	 */
 	public void setFlagReserved01(byte flagReserved01) {
 		this.flagReserved01 = flagReserved01;
 	}
 
+	/**
+	 * Gets the FlagReserved02 which is a datatype specified in the Flash Specification
+	 * @return byte
+	 */
 	public byte getFlagReserved02() {
 		return flagReserved02;
 	}
 
+	/**
+	 * Sets the Flag Reserved02 which is a datatype specified in the Flash Specification
+	 * @param flagReserved02
+	 * @return void
+	 */
 	public void setFlagReserved02(byte flagReserved02) {
 		this.flagReserved02 = flagReserved02;
 	}
 
+	/**
+	 * Returns a boolean on whether this data contains video
+	 * @return boolean
+	 */
 	public boolean getFlagVideo() {
 		return flagVideo;
 	}
 
+	/**
+	 * Sets the audioflag on whether this data contains audio
+	 * @param type_flags_video
+	 * @return void
+	 */
 	public void setFlagVideo(boolean type_flags_video) {
 		flagVideo = type_flags_video;
 	}
 
+	/**
+	 * Gets the version byte
+	 * @return byte
+	 */
 	public byte getVersion() {
 		return version;
 	}
 
+	/**
+	 * Sets the version byte
+	 * @param version
+	 */
 	public void setVersion(byte version) {
 		this.version = version;
 	}
