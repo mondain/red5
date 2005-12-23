@@ -29,50 +29,38 @@ public class FLVReader {
 	protected int limit = 0;
 	
 	public static void main(String[] args) throws Exception{
-		FLVReader reader = new FLVReader("flvs/nvnlogo1.flv");
+		//TODO create a testcase for FLVReader.java
+		//FLVReader reader = new FLVReader("flvs/nvnlogo1.flv");
 	}
 	
-	public FLVReader(File fileName) throws IOException {
-		//this.fileName = fileName;
-		//log.debug("Reading: "+fileName);
+	public FLVReader(File fileName) throws IOException {	
+		log.debug("Reading: "+ fileName.getName());
+		
 		try {
 			fis = new FileInputStream(fileName);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		channel = fis.getChannel();
 		mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
 		mappedFile.order(ByteOrder.BIG_ENDIAN);
 		in = ByteBuffer.wrap(mappedFile);
 		limit = in.limit();
-		decodeHeader();
-		log.debug(header);
+		decodeHeader();		
 	}
 	
 	public FLVReader(String fileName) throws FileNotFoundException, IOException {
-		this.fileName = fileName;
 		log.debug("Reading: "+fileName);
+		
+		this.fileName = fileName;
 		fis = new FileInputStream(fileName);
 		channel = fis.getChannel();
 		mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
 		mappedFile.order(ByteOrder.BIG_ENDIAN);
 		in = ByteBuffer.wrap(mappedFile);
 		limit = in.limit();
-		decodeHeader();
-		log.debug(header);
-		
-		/*
-		int counter = 0;
-		while(hasMoreTags()){
-			counter++;
-			if(counter>5) return;
-			getNextTag();
-		}
-		*/
-		
-		//decodeBody();
-		
+		decodeHeader();		
 	}
 	
 	public FLVHeader getHeader() {
@@ -85,7 +73,6 @@ public class FLVReader {
 		header.setVersion((byte) in.get());
 		header.setTypeFlags((byte) in.get());
 		header.setDataOffset(in.getInt());
-		//in.skip(header.getDataOffset());
 	}
 	
 	protected void decodeBody(){
@@ -115,27 +102,11 @@ public class FLVReader {
 			in.limit(in.position()+dataSize);
 			log.debug(HexDump.formatHexDump(in.getHexDump()));
 			in.limit(limit);
-			
-			
-			//ByteBuffer.w
-			
-			//in.skip(dataSize);
 				
 		}
-		//System.out.println("test: " + mappedFile.get());
-		// DATA SIZE
-		
-		//tag.setDataSize(this.readDataSize());
-		
-		// TIME STAMP
-		//tag.setTimeStamp(this.readTimeStamp());
-		
-		// RESERVED
-		//tag.setReserved(mappedFile.getInt());
 	}
 	
-	public FLVTag getNextTag(){
-		
+	public FLVTag getNextTag(){		
 		// skip the prev tag size.. 
 		log.debug("PREV TAG SIZE: "+ in.getInt());
 		
@@ -150,19 +121,13 @@ public class FLVReader {
 		body.put(in);
 		body.flip();
 		in.limit(limit);
-		//body.flip();
-		
-		//in.skip(bodySize);
 		
 		FLVTag tag = new FLVTag(dataType, timestamp, bodySize, body);
-		
-		//log.debug(HexDump.formatHexDump(body.getHexDump()));
-		
+
 		return tag;
 	}
 	
 	public boolean hasMoreTags(){
 		return in.remaining() > 4;
-	}
-	
+	}	
 }
