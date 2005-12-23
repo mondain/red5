@@ -24,6 +24,13 @@ package org.red5.server.io;
 
 import java.util.Date;
 
+/**
+ * Output interface which defines contract methods to be implemented
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public interface Output {
 
 	boolean supportsDataType(byte type);

@@ -24,6 +24,13 @@ package org.red5.server.io.amf;
 
 import java.nio.charset.Charset;
 
+/**
+ * These are the core AMF data types supported by Red5
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class AMF {
 	
 	// add link to amf docs on the osflash wiki

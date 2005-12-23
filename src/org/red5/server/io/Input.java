@@ -24,6 +24,14 @@ package org.red5.server.io;
 
 import java.util.Date;
 
+/**
+ * Interface for Input which defines the contract methods which are
+ * to be implemented 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public interface Input {
 
 	byte readDataType(); 

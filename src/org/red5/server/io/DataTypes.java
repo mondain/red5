@@ -22,11 +22,17 @@ package org.red5.server.io;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
+/**
+ * These are the core data types supported by Red5
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @version 0.3
+ */
 public class DataTypes {
 
 	// The core datatypes supported by red5, I have left out undefined (this is up for debate).
 	// If a codec returns one of these datatypes its handled by the base serializer
-	
 	public final static byte CORE_SKIP = 0x00; // padding
 	
 	public final static byte CORE_NULL = 0x01; // no undefined type
@@ -55,6 +61,10 @@ public class DataTypes {
 	
 	// Some helper methods..
 	
+	/**
+	 * Returns the string value of the data type
+	 * @return String
+	 */
 	public static String toStringValue(byte dataType){
 		
 		switch(dataType){
@@ -91,14 +101,29 @@ public class DataTypes {
 
 	}
 	
+	/**
+	 * Returns whether it is a basic data type
+	 * @param type
+	 * @return boolean
+	 */
 	public static boolean isBasicType(byte type){
 		return type <= CORE_DATE;
 	}
 	
+	/**
+	 * Returns whether it is a complex data type
+	 * @param type
+	 * @return boolean
+	 */
 	public static boolean isComplexType(byte type){
 		return type >= CORE_ARRAY ||  type <= CORE_OBJECT;
 	}
 	
+	/**
+	 * Returns whether it is a custom data type
+	 * @param type
+	 * @return boolean
+	 */
 	public static boolean isCustomType(byte type){
 		return type >= CUSTOM_AMF_MASK;
 	}
