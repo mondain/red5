@@ -1,4 +1,4 @@
-package org.red5.server.io.amf;
+package org.red5.io.amf;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -28,9 +28,9 @@ import java.util.TimeZone;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
-import org.red5.server.io.BaseOutput;
+import org.red5.io.object.BaseOutput;
 
-public class Output extends BaseOutput implements org.red5.server.io.Output {
+public class Output extends BaseOutput implements org.red5.io.object.Output {
 	
 	protected static Log log =
         LogFactory.getLog(Output.class.getName());

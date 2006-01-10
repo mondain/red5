@@ -1,9 +1,9 @@
-package org.red5.server.io.mock;
+package org.red5.io.mock;
 
 import java.util.Iterator;
 import java.util.List;
 
-import org.red5.server.io.DataTypes;
+import org.red5.io.object.DataTypes;
 
 public class Mock {
 	

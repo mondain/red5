@@ -1,4 +1,4 @@
-package org.red5.server.io.amf;
+package org.red5.io.amf;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -30,8 +30,8 @@ import java.util.SimpleTimeZone;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
-import org.red5.server.io.BaseInput;
-import org.red5.server.io.DataTypes;
+import org.red5.io.object.BaseInput;
+import org.red5.io.object.DataTypes;
 
 /**
  * Input for red5 data types
@@ -40,7 +40,7 @@ import org.red5.server.io.DataTypes;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class Input extends BaseInput implements org.red5.server.io.Input  {
+public class Input extends BaseInput implements org.red5.io.object.Input  {
 
 	protected static Log log =
         LogFactory.getLog(Input.class.getName());

@@ -1,4 +1,4 @@
-package org.red5.server.io;
+package org.red5.io.object;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5

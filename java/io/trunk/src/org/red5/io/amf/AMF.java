@@ -1,4 +1,4 @@
-package org.red5.server.io.amf;
+package org.red5.io.amf;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
