@@ -11,9 +11,8 @@ import java.nio.channels.FileChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
-import org.red5.server.io.flv.FLVHeader;
-import org.red5.server.rtmp.RTMPUtils;
-import org.red5.server.utils.HexDump;
+import org.red5.io.utils.IOUtils;
+import org.red5.io.utils.HexDump;
 
 /**
  * A FLVReader reads a flv video file from disc, parses the file, 
@@ -129,10 +128,10 @@ public class FLVReader {
 			
 			log.debug("TAG TYPE: " + in.get());
 			
-			int dataSize = RTMPUtils.readUnsignedMediumInt(in);
+			int dataSize = IOUtils.readUnsignedMediumInt(in);
 		
 			log.debug("DATA SIZE: "+dataSize);
-			log.debug("TIMESTAMP: "+RTMPUtils.readUnsignedMediumInt(in));
+			log.debug("TIMESTAMP: "+IOUtils.readUnsignedMediumInt(in));
 			log.debug("RESERVED: "+ in.getInt());
 			
 			int limit = in.limit();
@@ -153,8 +152,8 @@ public class FLVReader {
 		log.debug("PREV TAG SIZE: "+ in.getInt());
 		
 		byte dataType = in.get();
-		int bodySize = RTMPUtils.readUnsignedMediumInt(in);
-		int timestamp = RTMPUtils.readUnsignedMediumInt(in);
+		int bodySize = IOUtils.readUnsignedMediumInt(in);
+		int timestamp = IOUtils.readUnsignedMediumInt(in);
 		
 		log.debug("RESERVED: "+ in.getInt());
 		

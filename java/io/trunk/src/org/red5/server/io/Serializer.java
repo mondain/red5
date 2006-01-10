@@ -31,12 +31,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.BeanMap;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.red5.server.utils.XMLUtils;
-import org.springframework.beans.BeanUtils;
+import org.red5.io.utils.XMLUtils;
 import org.w3c.dom.Document;
 
 /**

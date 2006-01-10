@@ -29,6 +29,8 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
+import org.red5.server.io.flv2.FLVHeader;
+
 /**
  * FLVDecoder parses out the contents of a FLV video file and returns
  * the data in chunks
