@@ -1,4 +1,4 @@
-package org.red5.server.io;
+package org.red5.io.object;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -25,51 +25,48 @@ package org.red5.server.io;
 import java.util.Date;
 
 /**
- * Interface for Input which defines the contract methods which are
- * to be implemented 
+ * Output interface which defines contract methods to be implemented
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public interface Input {
+public interface Output {
 
-	byte readDataType(); 
+	boolean supportsDataType(byte type);
 	
-	// Data Types
-	Object readNull();
-	Boolean readBoolean();
-	Number readNumber();
-	String readString(); 
-	Date readDate();
+	// Basic Data Types
+	void writeNumber(Number num);
+	void writeBoolean(Boolean bol);
+	void writeString(String string);
+	void writeDate(Date date);
+	void writeNull();
 	
-	// Stuctures
-	int readStartArray(); 
-	void skipElementSeparator();
-	void skipEndArray();
+	// Complex Data Types
+	void writeStartArray(int length);
+	void markElementSeparator();
+	void markEndArray();
 	
-	int readStartList();
-	int readItemIndex();
-	void skipItemSeparator();
-	boolean hasMoreItems();
-	void skipEndList();
+	void writeStartList(int highestIndex);
+	void writeItemIndex(int index);
+	void markItemSeparator();
+	void markEndList();
 	
-	String readStartObject();
-	String readPropertyName();
-	void skipPropertySeparator();
-	boolean hasMoreProperties();
-	void skipEndObject();
+	void writeStartObject(String classname);
+	void writePropertyName(String name);
+	void markPropertySeparator();
+	void markEndObject();
 	
-	//int readStartXML();
-	String readXML();
-	
-	Object readCustom();
-	
-	//void readEndXML();
+	void writeXML(String xml);
 
 	// Reference to Complex Data Type
-	Object readReference();
+	void writeReference(Object obj);
+	
+	// Custom datatypes can be handled by
+	boolean isCustom(Object custom);
+	void writeCustom(Object custom);
+	
 	void storeReference(Object obj);
+	boolean hasReference(Object obj);
 	void clearReferences();
-
 }

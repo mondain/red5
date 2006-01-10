@@ -1,14 +1,14 @@
-package org.red5.server.io.mock;
+package org.red5.io.mock;
 
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.red5.server.io.DataTypes;
-import org.red5.server.io.BaseOutput;
+import org.red5.io.object.BaseOutput;
+import org.red5.io.object.DataTypes;
 
-public class Output extends BaseOutput implements org.red5.server.io.Output {
+public class Output extends BaseOutput implements org.red5.io.object.Output {
 	
 	protected static Log log =
         LogFactory.getLog(Output.class.getName());
