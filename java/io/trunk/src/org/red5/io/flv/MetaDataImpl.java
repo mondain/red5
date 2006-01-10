@@ -8,117 +8,110 @@ package org.red5.io.flv;
  *
  */
 public class MetaDataImpl implements MetaData {
-
+	private boolean canSeekToEnd = true;
+	private int videocodecid = 4;
+	private int framerate = 15;
+	private int videodatarate = 400;
+	private int height = 215;
+	private int width = 320;
+	private double duration = 7.347;
+	
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getCanSeekToEnd()
 	 */
 	public boolean getCanSeekToEnd() {
-		// TODO Auto-generated method stub
-		return false;
+		return canSeekToEnd;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setCanSeekToEnd(boolean)
 	 */
 	public void setCanSeekToEnd(boolean b) {
-		// TODO Auto-generated method stub
-
+		canSeekToEnd = b;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getVideoCodecId()
 	 */
 	public int getVideoCodecId() {
-		// TODO Auto-generated method stub
-		return 0;
+		return videocodecid;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setVideoCodecId(int)
 	 */
 	public void setVideoCodecId(int id) {
-		// TODO Auto-generated method stub
-
+		videocodecid = id;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getframeRate()
 	 */
 	public int getframeRate() {
-		// TODO Auto-generated method stub
-		return 0;
+		return framerate;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setframeRate(int)
 	 */
 	public void setframeRate(int rate) {
-		// TODO Auto-generated method stub
-
+		framerate = rate;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getVideoDataRate()
 	 */
 	public int getVideoDataRate() {
-		// TODO Auto-generated method stub
-		return 0;
+		return videodatarate;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setVideoDataRate(int)
 	 */
 	public void setVideoDataRate(int rate) {
-		// TODO Auto-generated method stub
-
+		videodatarate = rate;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getHeight()
 	 */
 	public int getHeight() {
-		// TODO Auto-generated method stub
-		return 0;
+		return height;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setHeight(int)
 	 */
 	public void setHeight(int h) {
-		// TODO Auto-generated method stub
-
+		height = h;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getWidth()
 	 */
 	public int getWidth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return width;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setWidth(int)
 	 */
 	public void setWidth(int w) {
-		// TODO Auto-generated method stub
-
+		width = w;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getDuration()
 	 */
-	public int getDuration() {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getDuration() {
+		return duration;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setDuration(int)
 	 */
-	public void setDuration(int d) {
-		// TODO Auto-generated method stub
-
+	public void setDuration(double d) {
+		duration = d;
 	}
 
 }
