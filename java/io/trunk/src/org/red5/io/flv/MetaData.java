@@ -121,15 +121,15 @@ public interface MetaData {
 	
 	/**
 	 * Returns the duration
-	 * @return int duration
+	 * @return double duration
 	 */
-	public int getDuration();
+	public double getDuration();
 	
 	/**
 	 * Sets the duration
 	 * @param d duration
 	 * @return void
 	 */
-	public void setDuration(int d);
+	public void setDuration(double d);
 
 }
