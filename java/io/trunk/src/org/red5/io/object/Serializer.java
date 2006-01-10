@@ -178,8 +178,8 @@ public class Serializer {
 			writeCollection(out, (Collection) arrType);
 		} else if(arrType instanceof Iterator) {
 			writeIterator(out, (Iterator) arrType);
-		// Need a replacement here. Perhaps copy from spring BeanUtils to util class
-		} else if(BeanUtils.isPrimitiveArray(arrType.getClass())) {
+		} else if(arrType.getClass().isArray() 
+				&& arrType.getClass().getComponentType().isPrimitive()) {
 			writePrimitiveArray(out, arrType);
 		} else if(arrType instanceof Object[]) {
 			writeObjectArray(out, (Object[]) arrType);
