@@ -25,7 +25,7 @@ package org.red5.server.io.test;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.server.io.amf.Input;
 import org.red5.server.io.amf.Output;
-import org.red5.server.utils.HexDump;
+import org.red5.io.utils.HexDump;
 
 public class AMFIOTest extends AbstractIOTest {
 

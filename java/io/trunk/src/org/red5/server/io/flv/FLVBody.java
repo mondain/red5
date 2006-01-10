@@ -25,7 +25,6 @@ package org.red5.server.io.flv;
 import java.nio.MappedByteBuffer;
 
 import org.apache.mina.common.ByteBuffer;
-import org.red5.server.protocol.remoting.RemotingService;
 
 /**
  * A FLVBody represents the contents of a FLV Video file.  The  flv file consists of
@@ -155,8 +154,6 @@ public class FLVBody {
 			byte[] bb = tag2.getData();
 			ByteBuffer bb1 = ByteBuffer.allocate(tag2.getDataSize());
 			bb1.put(bb);
-			RemotingService rs = new RemotingService();
-			rs.handleRequest(bb1);
 			System.out.println("\n\n");
 		}
 	}
