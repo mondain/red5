@@ -1,5 +1,6 @@
 package org.red5.io.flv;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -21,5 +22,6 @@ public interface FLV {
 	
 	public Writer writer();
 	public Writer writerFromNearestKeyFrame(int seekPoint);
+	public void setFileInputStream(FileInputStream fis);
 	
 }
