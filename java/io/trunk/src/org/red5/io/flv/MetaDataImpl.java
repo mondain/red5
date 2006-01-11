@@ -36,7 +36,7 @@ public class MetaDataImpl implements MetaData {
 	private int videocodecid = 4;
 	private int framerate = 15;
 	private int videodatarate = 400;
-	private int height = 215;
+	private int height;
 	private int width = 320;
 	private double duration = 7.347;
 	
@@ -96,19 +96,12 @@ public class MetaDataImpl implements MetaData {
 		videodatarate = rate;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.red5.io.flv.MetaData#getHeight()
-	 */
-	public int getHeight() {
-		return height;
-	}
+
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setHeight(int)
 	 */
-	public void setHeight(int h) {
-		height = h;
-	}
+	
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getWidth()
@@ -136,6 +129,14 @@ public class MetaDataImpl implements MetaData {
 	 */
 	public void setDuration(double d) {
 		duration = d;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int h) {
+		this.height = h;
 	}
 
 }
