@@ -45,54 +45,45 @@ public class FLVServiceImpl implements FLVService {
 	private Serializer serializer;
 	private Deserializer deserializer;
 	
-	/**
-	 * Sets the serializer
-	 * @param serializer
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.FLVService#setSerializer(org.red5.io.object.Serializer)
 	 */
 	public void setSerializer(Serializer serializer) {
-		this.serializer = serializer;
+		// TODO Auto-generated method stub
+
 	}
 
-	/**
-	 * Sets the deserializer
-	 * @param deserializer
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.FLVService#setDeserializer(org.red5.io.object.Deserializer)
 	 */
 	public void setDeserializer(Deserializer deserializer) {
-		this.deserializer = deserializer;
+		// TODO Auto-generated method stub
 
 	}
 
-	/**
-	 * Returns a FLV file based on the String parameter
-	 * @param filename
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.FLVService#getFLV(java.lang.String)
 	 */
-	public FLV getFLV(String fileName) throws FileNotFoundException,
+	public FLV getFLV(String filename) throws FileNotFoundException,
 			IOException {
-		FLV flv = new FLVImp(); 
-		FileInputStream fis = new FileInputStream(fileName);
-		flv.setFileInputStream(fis);
+		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/**
-	 * Returns a FLV file based on the FileInputStream parameter
-	 * @param fis
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.FLVService#getFLV(java.io.FileInputStream)
 	 */
 	public FLV getFLV(FileInputStream fis) throws IOException {
-		FLV flv = new FLVImp(); 
-		flv.setFileInputStream(fis);
+		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/**
-	 * Returns a FLV object based on the File parameter
-	 * @param file
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
 	 */
 	public FLV getFLV(File file) throws IOException {
-		FLV flv = new FLVImp(); 
-		FileInputStream fis = new FileInputStream(file);
-		flv.setFileInputStream(fis);
-		return flv;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
