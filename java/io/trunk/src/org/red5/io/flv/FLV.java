@@ -89,6 +89,6 @@ public interface FLV {
 	 * Sets the FileInputStream
 	 * @return void
 	 */
-	public void setFileInputStream(FileInputStream fis);
+	public void setFileInputStream(FileInputStream f);
 	
 }

@@ -41,9 +41,9 @@ public interface Reader {
 	
 	/**
 	 * Returns the offet length
-	 * @return long
+	 * @return int
 	 */
-	public long getOffset();
+	public int getOffset();
 	
 	/**
 	 * Returns the amount of bytes read
@@ -68,5 +68,7 @@ public interface Reader {
 	 * @return void
 	 */
 	public void close();
+
+	public void decodeHeader();
 	
 }
