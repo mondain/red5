@@ -23,7 +23,7 @@ package org.red5.io.flv;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
-import java.nio.ByteBuffer;
+import org.apache.mina.common.ByteBuffer;
 
 /**
  * A Tag represents the contents or payload of a FLV file
@@ -39,11 +39,44 @@ public interface Tag {
 	public static final byte TYPE_AUDIO = 0x08;
 	public static final byte TYPE_METADATA = 0x12;
 	
+	
+	/**
+	 * Return the body ByteBuffer
+	 * @return ByteBuffer
+	 */
+	public ByteBuffer getBody();
+	
+	/**
+	 * Return the size of the body
+	 * @return int
+	 */
+	public int getBodySize();
+	
+	/**
+	 * Get the data type
+	 * @return byte
+	 */
+	public byte getDataType();
+	
+	/**
+	 * Return the timestamp
+	 * @return int
+	 */
+	public int getTimestamp();
+	
 	/**
 	 * Returns the type of content
 	 * @return byte contentType
 	 */
 	public byte getType();
+	
+	/**
+	 * Sets the type of content
+	 * @param b 
+	 * @return byte contentType
+	 */
+	public byte setType(byte b);
+	
 	
 	/**
 	 * Returns the size
@@ -56,5 +89,7 @@ public interface Tag {
 	 * @return ByteBuffer buf
 	 */
 	public ByteBuffer getData();
+
+	public void setSize(int int1);
 	
 }

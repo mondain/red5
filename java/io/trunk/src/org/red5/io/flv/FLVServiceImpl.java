@@ -66,7 +66,7 @@ public class FLVServiceImpl implements FLVService {
 	 */
 	public FLV getFLV(String filename) throws FileNotFoundException,
 			IOException {
-		FLV flv = new FLVImp(new FileInputStream(filename));		
+		FLV flv = new FLVImp(new FileInputStream(new File(filename)));		
 		return flv;
 	}
 
