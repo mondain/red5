@@ -24,6 +24,8 @@ package org.red5.io.flv;
  * @author Dominick Accattato (daccattato@gmail.com)
  */
 
+import java.util.HashMap;
+
 /**
  * MetaData Implementation
  * 
@@ -31,7 +33,7 @@ package org.red5.io.flv;
  * @author daccattato (daccattato@gmail.com)
  * @version 0.3
  */
-public class MetaDataImpl implements MetaData {
+public class MetaDataImpl extends HashMap implements MetaData {
 	private boolean canSeekToEnd = true;
 	private int videocodecid = 4;
 	private int framerate = 15;
@@ -44,6 +46,7 @@ public class MetaDataImpl implements MetaData {
 	 * @see org.red5.io.flv.MetaData#getCanSeekToEnd()
 	 */
 	public boolean getCanSeekToEnd() {
+		boolean canSeekToEnd = ((Boolean)this.get("canSeekToEnd")).booleanValue();
 		return canSeekToEnd;
 	}
 
@@ -52,12 +55,14 @@ public class MetaDataImpl implements MetaData {
 	 */
 	public void setCanSeekToEnd(boolean b) {
 		canSeekToEnd = b;
+		this.put("canSeekToEnd", new Boolean(b));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getVideoCodecId()
 	 */
 	public int getVideoCodecId() {
+		int videocodecid = ((Integer)this.get("videocodecid")).intValue();
 		return videocodecid;
 	}
 
@@ -66,12 +71,14 @@ public class MetaDataImpl implements MetaData {
 	 */
 	public void setVideoCodecId(int id) {
 		videocodecid = id;
+		this.put("videocodecid", new Integer(id));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getframeRate()
 	 */
 	public int getframeRate() {
+		int framerate = ((Integer)this.get("framerate")).intValue();
 		return framerate;
 	}
 
@@ -80,12 +87,14 @@ public class MetaDataImpl implements MetaData {
 	 */
 	public void setframeRate(int rate) {
 		framerate = rate;
+		this.put("framerate", new Integer(rate));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getVideoDataRate()
 	 */
 	public int getVideoDataRate() {
+		int videodatarate = ((Integer)this.get("videodatarate")).intValue();
 		return videodatarate;
 	}
 
@@ -94,6 +103,7 @@ public class MetaDataImpl implements MetaData {
 	 */
 	public void setVideoDataRate(int rate) {
 		videodatarate = rate;
+		this.put("videodatarate", new Integer(rate));
 	}
 
 
@@ -107,6 +117,7 @@ public class MetaDataImpl implements MetaData {
 	 * @see org.red5.io.flv.MetaData#getWidth()
 	 */
 	public int getWidth() {
+		int width = ((Integer)this.get("width")).intValue();
 		return width;
 	}
 
@@ -115,12 +126,14 @@ public class MetaDataImpl implements MetaData {
 	 */
 	public void setWidth(int w) {
 		width = w;
+		this.put("width", new Integer(w));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getDuration()
 	 */
 	public double getDuration() {
+		double duration = ((Double)this.get("duration")).doubleValue();
 		return duration;
 	}
 
@@ -129,14 +142,17 @@ public class MetaDataImpl implements MetaData {
 	 */
 	public void setDuration(double d) {
 		duration = d;
+		this.put("duration", new Double(d));
 	}
 
 	public int getHeight() {
+		int height = ((Integer)this.get("height")).intValue();
 		return height;
 	}
 
 	public void setHeight(int h) {
 		this.height = h;
+		this.put("height", new Integer(h));
 	}
 
 }
