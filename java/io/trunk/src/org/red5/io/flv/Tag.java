@@ -64,32 +64,11 @@ public interface Tag {
 	 */
 	public int getTimestamp();
 	
-	/**
-	 * Returns the type of content
-	 * @return byte contentType
-	 */
-	public byte getType();
-	
-	/**
-	 * Sets the type of content
-	 * @param b 
-	 * @return byte contentType
-	 */
-	public byte setType(byte b);
-	
-	
-	/**
-	 * Returns the size
-	 * @return int size
-	 */
-	public int getSize();
-	
+
 	/**
 	 * Returns the data as a ByteBuffer
 	 * @return ByteBuffer buf
 	 */
 	public ByteBuffer getData();
 
-	public void setSize(int int1);
-	
 }
