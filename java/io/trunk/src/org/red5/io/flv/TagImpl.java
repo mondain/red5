@@ -55,26 +55,7 @@ public class TagImpl implements Tag {
 		this.bodySize = bodySize;
 		this.body = body;
 	}
-	
-	public byte setType(byte b) {
-		return (type = b);
-	}
 
-	/* (non-Javadoc)
-	 * @see org.red5.io.flv.Tag#getType()
-	 */
-	public byte getType() {
-		
-		return type;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.red5.io.flv.Tag#getSize()
-	 */
-	public int getSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Tag#getData()
@@ -84,10 +65,6 @@ public class TagImpl implements Tag {
 		return null;
 	}
 
-	public void setSize(int int1) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	/**
 	 * Return the body ByteBuffer

@@ -27,6 +27,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.utils.IOUtils;
+
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -89,6 +91,9 @@ public class WriterImpl implements Writer {
 		fos.write((byte)0x08);
 		
 		fos.write(0x09);
+		
+		// Write first previous tag size
+		fos.write(0x00);
 	}
 
 	/* (non-Javadoc)
@@ -120,7 +125,9 @@ public class WriterImpl implements Writer {
 	 */
 	public boolean writeTag(Tag tag) throws IOException {
 		// TODO Auto-generated method stub
-		
+		in.put((byte)(tag.getDataType()));
+		in.putInt(tag.getBodySize());
+		//in.putInt(IOUtils.readUnsignedMediumInt(tag.getTimestamp();
 		return false;
 	}
 
