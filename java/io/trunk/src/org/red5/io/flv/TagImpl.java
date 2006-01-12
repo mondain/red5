@@ -23,7 +23,7 @@ package org.red5.io.flv;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
-import java.nio.ByteBuffer;
+import org.apache.mina.common.ByteBuffer;
 
 /**
  * A Tag represents the contents or payload of a FLV file
@@ -35,12 +35,37 @@ import java.nio.ByteBuffer;
  */
 public class TagImpl implements Tag {
 
+	private byte type;
+	private byte dataType;
+	private int timestamp;
+	private int bodySize;
+	private ByteBuffer body;
+
+	/**
+	 * TagImpl Constructor
+	 * 
+	 * @param dataType
+	 * @param timestamp
+	 * @param bodySize
+	 * @param body
+	 */
+	public TagImpl(byte dataType, int timestamp, int bodySize, ByteBuffer body){
+		this.dataType = dataType;
+		this.timestamp = timestamp;
+		this.bodySize = bodySize;
+		this.body = body;
+	}
+	
+	public byte setType(byte b) {
+		return (type = b);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Tag#getType()
 	 */
 	public byte getType() {
 		
-		return 0;
+		return type;
 	}
 
 	/* (non-Javadoc)
@@ -57,6 +82,57 @@ public class TagImpl implements Tag {
 	public ByteBuffer getData() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setSize(int int1) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/**
+	 * Return the body ByteBuffer
+	 * @return ByteBuffer
+	 */
+	public ByteBuffer getBody() {
+		return body;
+	}
+	
+	/**
+	 * Return the size of the body
+	 * @return int
+	 */
+	public int getBodySize() {
+		return bodySize;
+	}
+	
+	/**
+	 * Get the data type
+	 * @return byte
+	 */
+	public byte getDataType() {
+		return dataType;
+	}
+	
+	/**
+	 * Return the timestamp
+	 * @return int
+	 */
+	public int getTimestamp() {
+		return timestamp;
+	}
+	
+	/**
+	 * Prints out the contents of the tag
+	 * @return tag contents
+	 */
+	public String toString() {
+		String ret 	 = "type=\t ##";
+		ret 		+= "size=\t ##";
+		ret			+= "time=\t ##";
+		ret			+= "res =\t ##";
+		ret			+= "data=\t ##";
+		
+		return ret;
 	}
 
 }

@@ -32,6 +32,7 @@ import org.red5.io.flv.FLV;
 import org.red5.io.flv.FLVService;
 import org.red5.io.flv.FLVServiceImpl;
 import org.red5.io.flv.Reader;
+import org.red5.io.flv.Tag;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
 
@@ -66,7 +67,18 @@ public class FLVServiceImplTest extends TestCase {
 	 */
 	public void testFLVString() throws FileNotFoundException, IOException  {
 		FLV flv = service.getFLV("tests/test.flv");
-		//Reader reader = flv.reader();
+		
+		Reader reader = flv.reader();
+		reader.decodeHeader();
+		
+		/*
+		Tag tag = null;
+		while(reader.hasMoreTags()) {
+			tag = reader.readTag();
+		}
+		*/
+		
+		//System.out.println("tag: " + tag);
 		Assert.assertEquals(0,0);
 	}
 	

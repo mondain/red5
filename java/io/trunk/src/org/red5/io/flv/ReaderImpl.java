@@ -7,6 +7,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.utils.IOUtils;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -48,6 +49,7 @@ public class ReaderImpl implements Reader {
 	private MappedByteBuffer mappedFile = null;
 	private ByteBuffer in = null;
 	private int limit = 0;
+	private Tag tag = null;
 	
 	public ReaderImpl(FileInputStream f) {
 		this.fis = f;
@@ -61,6 +63,7 @@ public class ReaderImpl implements Reader {
 		mappedFile.order(ByteOrder.BIG_ENDIAN);
 		in = ByteBuffer.wrap(mappedFile);
 		limit  = in.limit();
+		decodeHeader();
 	}
 
 	public void decodeHeader() {
@@ -84,7 +87,8 @@ public class ReaderImpl implements Reader {
 	 * @see org.red5.io.flv.Reader#getOffset()
 	 */
 	public int getOffset() {
-		return header.getDataOffset();
+		//return header.getDataOffset();
+		return 0;
 	}
 
 	/* (non-Javadoc)
@@ -106,8 +110,23 @@ public class ReaderImpl implements Reader {
 	 * @see org.red5.io.flv.Reader#readTag()
 	 */
 	public Tag readTag() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		// PREVIOUS TAG SIZE
+		int previousTagSize = in.getInt();
+		byte dataType = in.get();
+		int bodySize = IOUtils.readUnsignedMediumInt(in);
+		int timestamp = IOUtils.readUnsignedMediumInt(in);
+		int reserved = in.getInt();
+		
+		ByteBuffer body = ByteBuffer.allocate(bodySize);
+		in.limit(in.position()+bodySize);
+		body.put(in);
+		body.flip();
+		in.limit(limit);
+		
+		tag = new TagImpl(dataType,timestamp, bodySize, body);
+	
+		return tag;
 	}
 
 	/* (non-Javadoc)

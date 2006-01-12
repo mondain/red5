@@ -111,6 +111,7 @@ public class FLVImp implements FLV {
 	 * @see org.red5.io.flv.FLV#reader()
 	 */
 	public Reader reader() {
+		System.out.println(fis);
 		if(fis != null) {
 			return new ReaderImpl(fis);
 		}
