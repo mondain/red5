@@ -1,5 +1,13 @@
 package org.red5.io.flv;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteOrder;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+
+import org.apache.mina.common.ByteBuffer;
+
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
@@ -33,21 +41,50 @@ package org.red5.io.flv;
  * @version 0.3
  */
 public class ReaderImpl implements Reader {
+	
+	private FileInputStream fis = null;
+	private FLVHeader header = null;
+	private FileChannel channel = null;
+	private MappedByteBuffer mappedFile = null;
+	private ByteBuffer in = null;
+	private int limit = 0;
+	
+	public ReaderImpl(FileInputStream f) {
+		this.fis = f;
+		channel = fis.getChannel();
+		try {
+			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		mappedFile.order(ByteOrder.BIG_ENDIAN);
+		in = ByteBuffer.wrap(mappedFile);
+		limit  = in.limit();
+	}
+
+	public void decodeHeader() {
+		// SIGNATURE, lets just skip
+		in.skip(3);
+		header.setVersion((byte) in.get());
+		header.setTypeFlags((byte) in.get());
+		header.setDataOffset(in.getInt());		
+	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Reader#getFLV()
 	 */
 	public FLV getFLV() {
 		// TODO Auto-generated method stub
+		// TODO wondering if we need to have a reference
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Reader#getOffset()
 	 */
-	public long getOffset() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getOffset() {
+		return header.getDataOffset();
 	}
 
 	/* (non-Javadoc)
@@ -62,8 +99,7 @@ public class ReaderImpl implements Reader {
 	 * @see org.red5.io.flv.Reader#hasMoreTags()
 	 */
 	public boolean hasMoreTags() {
-		// TODO Auto-generated method stub
-		return false;
+		return in.remaining() > 4;
 	}
 
 	/* (non-Javadoc)
@@ -78,7 +114,13 @@ public class ReaderImpl implements Reader {
 	 * @see org.red5.io.flv.Reader#close()
 	 */
 	public void close() {
-		// TODO Auto-generated method stub
+		mappedFile.clear();
+		try {
+			channel.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 
 	}
 

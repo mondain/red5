@@ -37,6 +37,12 @@ import java.util.Map;
  */
 public class FLVImp implements FLV {
 
+	private FileInputStream fis;
+
+	public FLVImp(FileInputStream f) {
+		this.fis = f;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#hasMetaData()
 	 */
@@ -105,7 +111,9 @@ public class FLVImp implements FLV {
 	 * @see org.red5.io.flv.FLV#reader()
 	 */
 	public Reader reader() {
-		// TODO Auto-generated method stub
+		if(fis != null) {
+			return new ReaderImpl(fis);
+		}
 		return null;
 	}
 
@@ -136,8 +144,8 @@ public class FLVImp implements FLV {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#setFileInputStream(java.io.FileInputStream)
 	 */
-	public void setFileInputStream(FileInputStream fis) {
+	public void setFileInputStream(FileInputStream f) {
 		// TODO Auto-generated method stub
-
+		this.fis = f;
 	}
 }

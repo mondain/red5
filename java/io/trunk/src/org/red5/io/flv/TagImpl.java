@@ -39,7 +39,7 @@ public class TagImpl implements Tag {
 	 * @see org.red5.io.flv.Tag#getType()
 	 */
 	public byte getType() {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 

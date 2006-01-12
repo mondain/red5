@@ -66,9 +66,7 @@ public class FLVServiceImpl implements FLVService {
 	 */
 	public FLV getFLV(String filename) throws FileNotFoundException,
 			IOException {
-		FLV flv = new FLVImp();
-		FileInputStream fis = new FileInputStream(filename);
-		flv.setFileInputStream(fis);
+		FLV flv = new FLVImp(new FileInputStream(filename));		
 		return flv;
 	}
 
@@ -76,18 +74,15 @@ public class FLVServiceImpl implements FLVService {
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.FileInputStream)
 	 */
 	public FLV getFLV(FileInputStream fis) throws IOException {
-		FLV flv = new FLVImp(); 
-		flv.setFileInputStream(fis);
+		FLV flv = new FLVImp(fis); 
 		return flv;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
 	 */
-	public FLV getFLV(File file) throws IOException {
-		FLV flv = new FLVImp(); 
-		FileInputStream fis = new FileInputStream(file);
-		flv.setFileInputStream(fis);
+	public FLV getFLV(File file) throws IOException {new FileInputStream(file);
+		FLV flv = new FLVImp(new FileInputStream(file)); 
 		return flv;
 	}
 
