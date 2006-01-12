@@ -1,5 +1,7 @@
 package org.red5.io.flv;
 
+import java.util.Map;
+
 /*
  * * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
