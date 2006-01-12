@@ -69,19 +69,22 @@ public class FLVServiceImplTest extends TestCase {
 		FLV flv = service.getFLV("tests/test.flv");
 		
 		Reader reader = flv.reader();
-		reader.decodeHeader();
+		//reader.decodeHeader();
 		
-		/*
+		
 		Tag tag = null;
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
+			printTag(tag);
 		}
-		*/
-		
-		//System.out.println("tag: " + tag);
+				
 		Assert.assertEquals(0,0);
 	}
 	
+	private void printTag(Tag tag) {
+		System.out.println("tag:\n-------\n " + tag);
+	}
+
 	/**
 	 * Tests: getFLVFile(File f)
 	 * @return void
