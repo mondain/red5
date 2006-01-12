@@ -25,7 +25,7 @@ package org.red5.io.flv;
 
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import org.apache.mina.common.ByteBuffer;
 
 /**
  * A Writer is used to write the contents of a FLV file
@@ -77,5 +77,6 @@ public interface Writer {
 	 * @return void
 	 */
 	public void close();
+
 	
 }

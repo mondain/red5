@@ -26,6 +26,7 @@ package org.red5.io.flv;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.red5.io.object.Deserializer;
@@ -55,6 +56,13 @@ public interface FLVService {
 	public void setDeserializer(Deserializer deserializer);
 	
 	/**
+	 * Returns a FLV object
+	 * @param filename
+	 */
+	public FLV getFLV() throws FileNotFoundException, IOException;
+	
+	
+	/**
 	 * Returns a FLV file based on the String parameter
 	 * @param filename
 	 */
@@ -71,5 +79,7 @@ public interface FLVService {
 	 * @param file
 	 */
 	public FLV getFLV(File file) throws IOException;
-	
+
+	public FLV getFLV(FileOutputStream fos);
+
 }

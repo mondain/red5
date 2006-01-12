@@ -27,6 +27,7 @@ package org.red5.io.flv;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.red5.io.object.Deserializer;
@@ -60,6 +61,14 @@ public class FLVServiceImpl implements FLVService {
 		// TODO Auto-generated method stub
 
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.FLVService#getFLV()
+	 */
+	public FLV getFLV() throws FileNotFoundException, IOException {
+		FLV flv = new FLVImp();
+		return flv;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLVService#getFLV(java.lang.String)
@@ -86,4 +95,10 @@ public class FLVServiceImpl implements FLVService {
 		return flv;
 	}
 
+	public FLV getFLV(FileOutputStream fos) {
+		FLV flv = new FLVImp(fos);
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

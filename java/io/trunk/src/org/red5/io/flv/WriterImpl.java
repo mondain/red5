@@ -23,8 +23,12 @@ package org.red5.io.flv;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import org.apache.mina.common.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 /**
  * A Writer is used to write the contents of a FLV file
@@ -35,6 +39,57 @@ import java.nio.ByteBuffer;
  * @version 0.3
  */
 public class WriterImpl implements Writer {
+	
+	private FileOutputStream fos = null;
+	private FileChannel channel;
+	private MappedByteBuffer mappedFile;
+	private ByteBuffer in;
+	private int limit;
+	
+	/**
+	 * WriterImpl Constructor
+	 * @param fos 
+	 */
+	public WriterImpl(FileOutputStream f) {
+		this.fos = f;
+		try {
+			writeHeader();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		channel = fos.getChannel();
+		try {
+			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		mappedFile.order(ByteOrder.BIG_ENDIAN);
+		in = ByteBuffer.wrap(mappedFile);
+		limit  = in.limit();
+	}
+
+	/**
+	 * Writes the header bytes
+	 * @throws IOException 
+	 *
+	 */
+	private void writeHeader() throws IOException {
+		// TODO Auto-generated method stub
+		fos.write((byte)0x46);
+		fos.write((byte)0x4C);
+		fos.write((byte)0x56);
+		
+		// Write version
+		fos.write((byte)0x01);
+		
+		// For testing purposes write video only
+		// TODO CHANGE
+		fos.write((byte)0x08);
+		
+		fos.write(0x09);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Writer#getFLV()
@@ -57,7 +112,7 @@ public class WriterImpl implements Writer {
 	 */
 	public long getBytesWritten() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 0; 
 	}
 
 	/* (non-Javadoc)
@@ -65,6 +120,7 @@ public class WriterImpl implements Writer {
 	 */
 	public boolean writeTag(Tag tag) throws IOException {
 		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
@@ -76,7 +132,7 @@ public class WriterImpl implements Writer {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/* (non-Javadoc) 
 	 * @see org.red5.io.flv.Writer#close()
 	 */
 	public void close() {
