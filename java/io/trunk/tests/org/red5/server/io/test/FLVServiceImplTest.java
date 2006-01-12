@@ -26,13 +26,16 @@ package org.red5.server.io.test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.red5.io.flv.FLV;
+import org.red5.io.flv.FLVImp;
 import org.red5.io.flv.FLVService;
 import org.red5.io.flv.FLVServiceImpl;
 import org.red5.io.flv.Reader;
 import org.red5.io.flv.Tag;
+import org.red5.io.flv.Writer;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
 
@@ -127,5 +130,50 @@ public class FLVServiceImplTest extends TestCase {
 		// simply tests to see if the last tag of the flv file
 		// has a timestamp of 2500
 		Assert.assertEquals(2500,tag.getTimestamp());	
+	}
+	
+	public void testWriteFLVFileOutputStream() throws IOException {
+		File f = new File("tests/test2.flv");
+		if(f.exists()) {			
+			f.delete();
+		}
+		
+		// Create new file
+		f.createNewFile();
+		System.out.println(f.exists());
+		
+		FileOutputStream fos = new FileOutputStream(f);
+		FLV flv = service.getFLV(fos);
+		Writer writer = flv.writer();
+		
+		// Create a reader for testing
+		File readfile = new File("tests/test.flv");
+		FileInputStream fis = new FileInputStream(readfile);
+		FLV readflv = service.getFLV(fis);
+		Reader reader = readflv.reader();
+		
+		writeTags(reader, writer);		
+		
+		Assert.assertEquals(true, true);
+	}
+	
+	private void writeTags(Reader reader, Writer writer) throws IOException {
+		
+		Tag tag = null;
+		
+		while(reader.hasMoreTags()) {
+			tag = reader.readTag();
+			writer.writeTag(tag);
+			//printTag(tag);
+		}
+		
+	}
+
+	public void testWriteFLVString() {
+		
+	}
+	
+	public void testWriteFLVFile() {
+		
 	}
 }

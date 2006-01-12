@@ -24,6 +24,7 @@ package org.red5.io.flv;
  */
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -38,9 +39,18 @@ import java.util.Map;
 public class FLVImp implements FLV {
 
 	private FileInputStream fis;
+	private FileOutputStream fos;
 
 	public FLVImp(FileInputStream f) {
 		this.fis = f;
+	}
+
+	public FLVImp() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public FLVImp(FileOutputStream f) {
+		this.fos = f;
 	}
 
 	/* (non-Javadoc)
@@ -131,8 +141,12 @@ public class FLVImp implements FLV {
 	 * @see org.red5.io.flv.FLV#writer()
 	 */
 	public Writer writer() {
-		// TODO Auto-generated method stub
-		return null;
+		if(fos != null) {
+			Writer writer = new WriterImpl(fos);
+			return writer;
+		}else {
+			return null;
+		}
 	}
 
 	/* (non-Javadoc)
