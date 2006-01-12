@@ -57,9 +57,12 @@ public class ReaderImpl implements Reader {
 		try {
 			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
 		} catch (IOException e) {
+			
+			System.out.println("in");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("out");
 		mappedFile.order(ByteOrder.BIG_ENDIAN);
 		in = ByteBuffer.wrap(mappedFile);
 		limit  = in.limit();
@@ -68,6 +71,7 @@ public class ReaderImpl implements Reader {
 
 	public void decodeHeader() {
 		// SIGNATURE, lets just skip
+		header = new FLVHeader();
 		in.skip(3);
 		header.setVersion((byte) in.get());
 		header.setTypeFlags((byte) in.get());
