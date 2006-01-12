@@ -72,10 +72,12 @@ public class FLVServiceImplTest extends TestCase {
 		
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
-			printTag(tag);
+			//printTag(tag);
 		}
-				
-		Assert.assertEquals(0,0);
+		
+		// simply tests to see if the last tag of the flv file
+		// has a timestamp of 2500
+		Assert.assertEquals(2500,tag.getTimestamp());
 	}
 	
 	private void printTag(Tag tag) {
@@ -96,10 +98,12 @@ public class FLVServiceImplTest extends TestCase {
 		
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
-			printTag(tag);
+			//printTag(tag);
 		}
 		
-		Assert.assertEquals(0,0);
+		// simply tests to see if the last tag of the flv file
+		// has a timestamp of 2500
+		Assert.assertEquals(2500,tag.getTimestamp());
 	}
 	
 	/**
@@ -117,8 +121,11 @@ public class FLVServiceImplTest extends TestCase {
 		
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
-			printTag(tag);
+			//printTag(tag);
 		}
-		Assert.assertEquals(0,0);
+
+		// simply tests to see if the last tag of the flv file
+		// has a timestamp of 2500
+		Assert.assertEquals(2500,tag.getTimestamp());	
 	}
 }
