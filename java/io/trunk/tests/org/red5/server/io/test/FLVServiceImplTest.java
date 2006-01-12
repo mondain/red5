@@ -66,13 +66,10 @@ public class FLVServiceImplTest extends TestCase {
 	 * @throws FileNotFoundException 
 	 */
 	public void testFLVString() throws FileNotFoundException, IOException  {
-		FLV flv = service.getFLV("tests/test.flv");
-		
+		FLV flv = service.getFLV("tests/test.flv");		
 		Reader reader = flv.reader();
-		//reader.decodeHeader();
-		
-		
 		Tag tag = null;
+		
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
 			printTag(tag);
@@ -93,8 +90,15 @@ public class FLVServiceImplTest extends TestCase {
 	 */
 	public void testFLVFile() throws FileNotFoundException, IOException  {
 		File f = new File("tests/test.flv");
-		FLV flv = service.getFLV(f);
-		//Reader reader = flv.reader();
+		FLV flv = service.getFLV(f);		
+		Reader reader = flv.reader();
+		Tag tag = null;
+		
+		while(reader.hasMoreTags()) {
+			tag = reader.readTag();
+			printTag(tag);
+		}
+		
 		Assert.assertEquals(0,0);
 	}
 	
@@ -108,7 +112,13 @@ public class FLVServiceImplTest extends TestCase {
 		File f = new File("tests/test.flv");
 		FileInputStream fis = new FileInputStream(f);
 		FLV flv = service.getFLV(fis);
-		//Reader reader = flv.reader();
+		Reader reader = flv.reader();
+		Tag tag = null;
+		
+		while(reader.hasMoreTags()) {
+			tag = reader.readTag();
+			printTag(tag);
+		}
 		Assert.assertEquals(0,0);
 	}
 }
