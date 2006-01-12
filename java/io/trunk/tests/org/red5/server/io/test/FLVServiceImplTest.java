@@ -30,7 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.red5.io.flv.FLV;
-import org.red5.io.flv.FLVImp;
+import org.red5.io.flv.FLVImpl;
 import org.red5.io.flv.FLVService;
 import org.red5.io.flv.FLVServiceImpl;
 import org.red5.io.flv.Reader;

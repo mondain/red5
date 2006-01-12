@@ -66,7 +66,7 @@ public class FLVServiceImpl implements FLVService {
 	 * @see org.red5.io.flv.FLVService#getFLV()
 	 */
 	public FLV getFLV() throws FileNotFoundException, IOException {
-		FLV flv = new FLVImp();
+		FLV flv = new FLVImpl();
 		return flv;
 	}
 
@@ -75,7 +75,7 @@ public class FLVServiceImpl implements FLVService {
 	 */
 	public FLV getFLV(String filename) throws FileNotFoundException,
 			IOException {
-		FLV flv = new FLVImp(new FileInputStream(new File(filename)));		
+		FLV flv = new FLVImpl(new FileInputStream(new File(filename)));		
 		return flv;
 	}
 
@@ -83,7 +83,7 @@ public class FLVServiceImpl implements FLVService {
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.FileInputStream)
 	 */
 	public FLV getFLV(FileInputStream fis) throws IOException {
-		FLV flv = new FLVImp(fis); 
+		FLV flv = new FLVImpl(fis); 
 		return flv;
 	}
 
@@ -91,12 +91,12 @@ public class FLVServiceImpl implements FLVService {
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
 	 */
 	public FLV getFLV(File file) throws IOException {new FileInputStream(file);
-		FLV flv = new FLVImp(new FileInputStream(file)); 
+		FLV flv = new FLVImpl(new FileInputStream(file)); 
 		return flv;
 	}
 
 	public FLV getFLV(FileOutputStream fos) {
-		FLV flv = new FLVImp(fos);
+		FLV flv = new FLVImpl(fos);
 		// TODO Auto-generated method stub
 		return null;
 	}

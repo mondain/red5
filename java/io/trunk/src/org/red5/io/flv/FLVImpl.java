@@ -36,20 +36,20 @@ import java.util.Map;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class FLVImp implements FLV {
+public class FLVImpl implements FLV {
 
 	private FileInputStream fis;
 	private FileOutputStream fos;
 
-	public FLVImp(FileInputStream f) {
+	public FLVImpl(FileInputStream f) {
 		this.fis = f;
 	}
 
-	public FLVImp() {
+	public FLVImpl() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public FLVImp(FileOutputStream f) {
+	public FLVImpl(FileOutputStream f) {
 		this.fos = f;
 	}
 
