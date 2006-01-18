@@ -70,7 +70,7 @@ public class WriterImpl implements Writer {
 		}
 		*/
 		//mappedFile.order(ByteOrder.BIG_ENDIAN);
-		out = ByteBuffer.allocate(5000);
+		out = ByteBuffer.allocate(1024);
 		limit  = out.limit();
 		
 		try {
@@ -156,11 +156,35 @@ public class WriterImpl implements Writer {
 		// Reserved
 		out.putInt(0x00);
 		
+		//System.out.println("size: " + tag.getBodySize());
+		//out.expand(tag.getBodySize());
+		//out.
 		// Tag Data
-		out.put(tag.getBody().buf());
-		
+		//out.put(tag.getBody().buf());
 		out.flip();
 		channel.write(out.buf());
+		
+		// Write chunks
+		//int remaining = tag.getBodySize();
+		//int index = 0;
+		
+		/*
+		System.out.println("tmp: " + tag.getBody().buf());
+		byte[] tmp = tag.getBody().buf().array();
+		System.out.println("tmp: " + tmp);
+		if(remaining > 1024) {
+			while(remaining > 1024) {				
+				ByteBuffer tmpBuffer = out.put(tmp, index, (index + 1024));
+				tmpBuffer.flip();
+				remaining = channel.write(tmpBuffer.buf());
+				out.clear();
+			}
+		}
+		*/
+		//out.flip();
+		ByteBuffer bodyBuf = tag.getBody();
+		//bodyBuf.flip();
+		channel.write(bodyBuf.buf());
 		
 		return false;
 	}
