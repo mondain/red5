@@ -70,5 +70,11 @@ public interface Tag {
 	 * @return ByteBuffer buf
 	 */
 	public ByteBuffer getData();
+	
+	/**
+	 * Returns the data as a ByteBuffer
+	 * @return ByteBuffer buf
+	 */
+	public int getPreviousTagSize();
 
 }

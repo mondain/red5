@@ -26,11 +26,13 @@ package org.red5.io.flv;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
+
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.utils.IOUtils;
 
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * A Writer is used to write the contents of a FLV file
@@ -43,9 +45,9 @@ import java.nio.channels.FileChannel;
 public class WriterImpl implements Writer {
 	
 	private FileOutputStream fos = null;
-	private FileChannel channel;
+	private WritableByteChannel channel;
 	private MappedByteBuffer mappedFile;
-	private ByteBuffer in;
+	private ByteBuffer out;
 	private int limit;
 	
 	/**
@@ -54,22 +56,29 @@ public class WriterImpl implements Writer {
 	 */
 	public WriterImpl(FileOutputStream f) {
 		this.fos = f;
+		
+		
+		channel = this.fos.getChannel();
+		/*
+		try {
+			System.out.println("channel: " + channel);
+			mappedFile = channel.map(FileChannel.MapMode.READ_WRITE, 0, channel.size());
+			System.out.println("mappedFile: " + mappedFile);
+		} catch (IOException e) {
+			System.out.println("e: " + e.toString());
+			//e.printStackTrace(); 
+		}
+		*/
+		//mappedFile.order(ByteOrder.BIG_ENDIAN);
+		out = ByteBuffer.allocate(5000);
+		limit  = out.limit();
+		
 		try {
 			writeHeader();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		channel = fos.getChannel();
-		try {
-			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		mappedFile.order(ByteOrder.BIG_ENDIAN);
-		in = ByteBuffer.wrap(mappedFile);
-		limit  = in.limit();
 	}
 
 	/**
@@ -79,21 +88,27 @@ public class WriterImpl implements Writer {
 	 */
 	private void writeHeader() throws IOException {
 		// TODO Auto-generated method stub
-		fos.write((byte)0x46);
-		fos.write((byte)0x4C);
-		fos.write((byte)0x56);
+		out.put((byte)0x46);
+		out.put((byte)0x4C);
+		out.put((byte)0x56);
 		
 		// Write version
-		fos.write((byte)0x01);
+		out.put((byte)0x01);
 		
 		// For testing purposes write video only
 		// TODO CHANGE
-		fos.write((byte)0x08);
+		out.put((byte)0x08);
 		
-		fos.write(0x09);
+		// Data Offset
+		out.putInt(0x09);
 		
+		out.flip();
+		
+		channel.write(out.buf());
+		//out.reset();
+		// Not part of header, but hacked for quick impl
 		// Write first previous tag size
-		fos.write(0x00);
+		//out.write(0x00);
 	}
 
 	/* (non-Javadoc)
@@ -124,10 +139,29 @@ public class WriterImpl implements Writer {
 	 * @see org.red5.io.flv.Writer#writeTag(org.red5.io.flv.Tag)
 	 */
 	public boolean writeTag(Tag tag) throws IOException {
-		// TODO Auto-generated method stub
-		in.put((byte)(tag.getDataType()));
-		in.putInt(tag.getBodySize());
-		//in.putInt(IOUtils.readUnsignedMediumInt(tag.getTimestamp();
+		// PreviousTagSize
+		//out = out.reset();
+		out.clear();
+		out.putInt(tag.getPreviousTagSize());
+		
+		// Data Type
+		out.put((byte)(tag.getDataType()));
+		
+		// Body Size
+		IOUtils.writeMediumInt(out, tag.getBodySize());
+		
+		// Timestamp
+		IOUtils.writeMediumInt(out, tag.getTimestamp());
+		
+		// Reserved
+		out.putInt(0x00);
+		
+		// Tag Data
+		out.put(tag.getBody().buf());
+		
+		out.flip();
+		channel.write(out.buf());
+		
 		return false;
 	}
 

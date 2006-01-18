@@ -124,7 +124,7 @@ public class ReaderImpl implements Reader {
 		body.flip();
 		in.limit(limit);
 		
-		tag = new TagImpl(dataType,timestamp, bodySize, body);
+		tag = new TagImpl(dataType,timestamp, bodySize, body, previousTagSize);
 	
 		return tag;
 	}
