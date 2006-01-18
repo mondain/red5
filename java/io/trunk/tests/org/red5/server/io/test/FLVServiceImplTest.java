@@ -134,7 +134,7 @@ public class FLVServiceImplTest extends TestCase {
 	}
 	
 	public void testWriteFLVFileOutputStream() throws IOException {
-		File f = new File("tests/test3.flv");
+		File f = new File("tests/on2_flash8_w_audio_copy.flv");
 		
 		if(f.exists()) {			
 			f.delete();
@@ -152,7 +152,7 @@ public class FLVServiceImplTest extends TestCase {
 		Writer writer = flv.writer();
 		
 		// Create a reader for testing
-		File readfile = new File("tests/test.flv");
+		File readfile = new File("tests/on2_flash8_w_audio.flv");
 		FileInputStream fis = new FileInputStream(readfile);
 		FLV readflv = service.getFLV(fis);
 		Reader reader = readflv.reader();
