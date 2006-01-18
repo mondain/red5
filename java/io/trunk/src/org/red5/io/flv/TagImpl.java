@@ -40,6 +40,7 @@ public class TagImpl implements Tag {
 	private int timestamp;
 	private int bodySize;
 	private ByteBuffer body;
+	private int previuosTagSize;
 
 	/**
 	 * TagImpl Constructor
@@ -49,11 +50,12 @@ public class TagImpl implements Tag {
 	 * @param bodySize
 	 * @param body
 	 */
-	public TagImpl(byte dataType, int timestamp, int bodySize, ByteBuffer body){
+	public TagImpl(byte dataType, int timestamp, int bodySize, ByteBuffer body, int previousTagSize){
 		this.dataType = dataType;
 		this.timestamp = timestamp;
 		this.bodySize = bodySize;
 		this.body = body;
+		this.previuosTagSize = previousTagSize;
 	}
 
 
@@ -99,6 +101,14 @@ public class TagImpl implements Tag {
 	}
 	
 	/**
+	 * Return the timestamp
+	 * @return int
+	 */
+	public int getPreviousTagSize() {
+		return previuosTagSize;
+	}
+	
+	/**
 	 * Prints out the contents of the tag
 	 * @return tag contents
 	 */
@@ -109,6 +119,46 @@ public class TagImpl implements Tag {
 		ret			+= "data=\t" + body + "\n";
 		
 		return ret;
+	}
+
+
+	public int getPreviuosTagSize() {
+		return previuosTagSize;
+	}
+
+
+	public void setPreviuosTagSize(int previuosTagSize) {
+		this.previuosTagSize = previuosTagSize;
+	}
+
+
+	public byte getType() {
+		return type;
+	}
+
+
+	public void setType(byte type) {
+		this.type = type;
+	}
+
+
+	public void setBody(ByteBuffer body) {
+		this.body = body;
+	}
+
+
+	public void setBodySize(int bodySize) {
+		this.bodySize = bodySize;
+	}
+
+
+	public void setDataType(byte dataType) {
+		this.dataType = dataType;
+	}
+
+
+	public void setTimestamp(int timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

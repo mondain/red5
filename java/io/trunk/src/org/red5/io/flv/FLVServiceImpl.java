@@ -98,7 +98,7 @@ public class FLVServiceImpl implements FLVService {
 	public FLV getFLV(FileOutputStream fos) {
 		FLV flv = new FLVImpl(fos);
 		// TODO Auto-generated method stub
-		return null;
+		return flv;
 	}
 	
 }

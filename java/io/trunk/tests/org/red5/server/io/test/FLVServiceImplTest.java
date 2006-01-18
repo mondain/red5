@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import org.red5.io.flv.FLV;
 import org.red5.io.flv.FLVImpl;
@@ -133,17 +134,21 @@ public class FLVServiceImplTest extends TestCase {
 	}
 	
 	public void testWriteFLVFileOutputStream() throws IOException {
-		File f = new File("tests/test2.flv");
+		File f = new File("tests/test3.flv");
+		
 		if(f.exists()) {			
 			f.delete();
 		}
 		
 		// Create new file
 		f.createNewFile();
-		System.out.println(f.exists());
+		//RandomAccessFile raf = new RandomAccessFile(f, "rw");
 		
+		System.out.println(f.exists());
 		FileOutputStream fos = new FileOutputStream(f);
+		//fos.write((byte)0x01);
 		FLV flv = service.getFLV(fos);
+		System.out.println("flv: " + flv);
 		Writer writer = flv.writer();
 		
 		// Create a reader for testing
