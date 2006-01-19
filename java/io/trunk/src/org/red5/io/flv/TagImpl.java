@@ -122,17 +122,6 @@ public class TagImpl implements Tag {
 		return ret;
 	}
 
-
-	public int getPreviuosTagSize() {
-		return previuosTagSize;
-	}
-
-
-	public void setPreviuosTagSize(int previuosTagSize) {
-		this.previuosTagSize = previuosTagSize;
-	}
-
-
 	public byte getType() {
 		return type;
 	}
@@ -161,5 +150,18 @@ public class TagImpl implements Tag {
 	public void setTimestamp(int timestamp) {
 		this.timestamp = timestamp;
 	}
+
+
+	public void setData() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void setPreviousTagSize(int size) {
+		this.previuosTagSize = size;
+		
+	}
+
 
 }

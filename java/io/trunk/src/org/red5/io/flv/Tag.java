@@ -76,5 +76,36 @@ public interface Tag {
 	 * @return ByteBuffer buf
 	 */
 	public int getPreviousTagSize();
+	
+	/**
+	 * Return the body ByteBuffer
+	 * @return ByteBuffer
+	 */
+	public void setBody(ByteBuffer body);
+	
+	/**
+	 * Return the size of the body
+	 * @return int
+	 */
+	public void setBodySize(int size);
+	
+	/**
+	 * Get the data type
+	 * @return byte
+	 */
+	public void setDataType(byte datatype);
+	
+	/**
+	 * Return the timestamp
+	 * @return int
+	 */
+	public void setTimestamp(int timestamp);
+	
+
+	/**
+	 * Returns the data as a ByteBuffer
+	 * @return ByteBuffer buf
+	 */
+	public void setPreviousTagSize(int size);
 
 }
