@@ -29,16 +29,23 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeSet;
 
+import org.apache.mina.common.ByteBuffer;
+import org.red5.io.amf.Output;
 import org.red5.io.flv.FLV;
 import org.red5.io.flv.FLVImpl;
 import org.red5.io.flv.FLVService;
 import org.red5.io.flv.FLVServiceImpl;
+import org.red5.io.flv.MetaDataImpl;
 import org.red5.io.flv.Reader;
 import org.red5.io.flv.Tag;
 import org.red5.io.flv.Writer;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
+import org.red5.io.utils.IOUtils;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -70,7 +77,7 @@ public class FLVServiceImplTest extends TestCase {
 	 * @throws FileNotFoundException 
 	 */
 	public void testFLVString() throws FileNotFoundException, IOException  {
-		FLV flv = service.getFLV("tests/test.flv");		
+		FLV flv = service.getFLV("tests/test_cue.flv");		
 		Reader reader = flv.reader();
 		Tag tag = null;
 		
@@ -81,11 +88,12 @@ public class FLVServiceImplTest extends TestCase {
 		
 		// simply tests to see if the last tag of the flv file
 		// has a timestamp of 2500
-		Assert.assertEquals(2500,tag.getTimestamp());
+		Assert.assertEquals(4166,tag.getTimestamp());
+		//Assert.assertEquals(true,true);
 	}
 	
 	private void printTag(Tag tag) {
-		System.out.println("tag:\n-------\n " + tag);
+		System.out.println("tag:\n-------\n" + tag);
 	}
 
 	/**
@@ -95,19 +103,23 @@ public class FLVServiceImplTest extends TestCase {
 	 * @throws FileNotFoundException 
 	 */
 	public void testFLVFile() throws FileNotFoundException, IOException  {
-		File f = new File("tests/test.flv");
-		FLV flv = service.getFLV(f);		
+		File f = new File("tests/test_cue.flv");
+		System.out.println("test: " + f);
+		FLV flv = service.getFLV(f);	
+		System.out.println("test: " + flv);
 		Reader reader = flv.reader();
+		System.out.println("test: " + reader);
 		Tag tag = null;
-		
+		System.out.println("test: " + reader.hasMoreTags());
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
+			//System.out.println("test: " + f);
 			//printTag(tag);
 		}
 		
 		// simply tests to see if the last tag of the flv file
 		// has a timestamp of 2500
-		Assert.assertEquals(2500,tag.getTimestamp());
+		Assert.assertEquals(4166,tag.getTimestamp());
 	}
 	
 	/**
@@ -117,7 +129,7 @@ public class FLVServiceImplTest extends TestCase {
 	 * @throws FileNotFoundException 
 	 */
 	public void testFLVFileInputStream() throws FileNotFoundException, IOException  {
-		File f = new File("tests/test.flv");
+		File f = new File("tests/test_cue.flv");
 		FileInputStream fis = new FileInputStream(f);
 		FLV flv = service.getFLV(fis);
 		Reader reader = flv.reader();
@@ -130,11 +142,11 @@ public class FLVServiceImplTest extends TestCase {
 
 		// simply tests to see if the last tag of the flv file
 		// has a timestamp of 2500
-		Assert.assertEquals(2500,tag.getTimestamp());	
+		Assert.assertEquals(4166,tag.getTimestamp());	
 	}
 	
 	public void testWriteFLVFileOutputStream() throws IOException {
-		File f = new File("tests/on2_flash8_w_audio_copy.flv");
+		File f = new File("tests/test_cue2.flv");
 		
 		if(f.exists()) {			
 			f.delete();
@@ -142,23 +154,21 @@ public class FLVServiceImplTest extends TestCase {
 		
 		// Create new file
 		f.createNewFile();
-		//RandomAccessFile raf = new RandomAccessFile(f, "rw");
-		
-		System.out.println(f.exists());
 		FileOutputStream fos = new FileOutputStream(f);
 		//fos.write((byte)0x01);
 		FLV flv = service.getFLV(fos);
-		System.out.println("flv: " + flv);
 		Writer writer = flv.writer();
 		
 		// Create a reader for testing
-		File readfile = new File("tests/on2_flash8_w_audio.flv");
+		File readfile = new File("tests/test_cue.flv");
 		FileInputStream fis = new FileInputStream(readfile);
 		FLV readflv = service.getFLV(fis);
 		Reader reader = readflv.reader();
 		
 		writeTags(reader, writer);		
 		
+		// Currently asserts to true.  I just wanted to see
+		// if the method threw an exception
 		Assert.assertEquals(true, true);
 	}
 	
@@ -180,5 +190,127 @@ public class FLVServiceImplTest extends TestCase {
 	
 	public void testWriteFLVFile() {
 		
+	}
+	
+	public void testMetaDataInjection() throws IOException {
+		File f = new File("tests/test_cue2.flv");
+		
+		if(f.exists()) {			
+			f.delete();
+		}
+		
+		// Create new file
+		f.createNewFile();
+		FileOutputStream fos = new FileOutputStream(f);
+		//fos.write((byte)0x01);
+		FLV flv = service.getFLV(fos);
+		Writer writer = flv.writer();
+		
+		// Create a reader for testing
+		File readfile = new File("tests/test_cue.flv");
+		FileInputStream fis = new FileInputStream(readfile);
+		FLV readflv = service.getFLV(fis);
+		Reader reader = readflv.reader();
+		
+		writeTagsWithInjection(reader, writer);		
+	}
+
+	
+	private void writeTagsWithInjection(Reader reader, Writer writer) throws IOException {
+		Tag tag = null;
+		
+		MetaDataImpl mdi1 = new MetaDataImpl("mdi1");
+		mdi1.setTimestamp(100);
+		mdi1.put("test1", "test1");
+		
+		MetaDataImpl mdi2 = new MetaDataImpl("mdi2");
+		mdi2.setTimestamp(50);
+		mdi1.put("test2", "test2");
+		
+		MetaDataImpl mdi3 = new MetaDataImpl("mdi3");
+		mdi3.setTimestamp(0);
+		mdi1.put("test3", "test3");
+		
+		// Place in Treeset for sorting
+		TreeSet ts = new TreeSet();
+		ts.add(mdi1);
+		ts.add(mdi2);
+		ts.add(mdi3);
+						
+		System.out.println("ts: " + ts);
+		int tmpTimeStamp = ((MetaDataImpl) ts.first()).getTimestamp();
+		
+		while(reader.hasMoreTags()) {
+			tag = reader.readTag();
+			
+			if(!ts.isEmpty()) {
+				if(tag.getTimestamp() > tmpTimeStamp) {
+					injectMetaData(ts.first(), writer, tag);
+					ts.remove(ts.first());
+				}
+			}
+			writer.writeTag(tag);
+			//printTag(tag);
+		}
+		
+	}
+		
+	private void injectMetaData(Object mdi, Writer writer, Tag tag) {
+		System.out.println("in inject");
+		
+		ByteBuffer buf = ByteBuffer.allocate(1000);
+		Output out = new Output(buf);
+		Serializer ser = new Serializer();
+		
+//		 PreviousTagSize
+		//out = out.reset();
+		buf.clear();
+		buf.putInt(tag.getPreviousTagSize());
+		
+		// Data Type
+		buf.put((byte)(Tag.TYPE_METADATA));
+		
+		// Body Size
+		IOUtils.writeMediumInt(buf, tag.getBodySize());
+		
+		// Timestamp
+		IOUtils.writeMediumInt(buf, tag.getTimestamp());
+		
+		// Reserved
+		buf.putInt(0x00);
+
+		buf.flip();
+		//bytesWritten += channel.write(out.buf());
+
+		ByteBuffer bodyBuf = tag.getBody();
+		//bytesWritten += channel.write(bodyBuf.buf());
+		
+		
+		ser.serialize(out, new Object());
+		/*
+		 * Pseudo code
+		 * 
+		 * 
+		 */
+	}
+
+	public void testMetaDataOrder() {
+		MetaDataImpl mdi1 = new MetaDataImpl("mdi1");
+		mdi1.setTimestamp(100);
+		
+		MetaDataImpl mdi2 = new MetaDataImpl("mdi2");
+		mdi2.setTimestamp(50);
+		
+		MetaDataImpl mdi3 = new MetaDataImpl("mdi3");
+		mdi3.setTimestamp(0);
+		
+		TreeSet ts = new TreeSet();
+		ts.add(mdi1);
+		ts.add(mdi2);
+		ts.add(mdi3);
+		
+		System.out.println("ts: " + ts);
+		
+		Assert.assertEquals(true, true);
 	}
 }

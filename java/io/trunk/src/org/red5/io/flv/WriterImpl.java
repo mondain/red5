@@ -50,26 +50,19 @@ public class WriterImpl implements Writer {
 	private ByteBuffer out;
 	private int limit;
 	
+	
+	private FLV flv = null;
+	private long bytesWritten = 0;
+	private long offset;
+	
 	/**
 	 * WriterImpl Constructor
 	 * @param fos 
 	 */
 	public WriterImpl(FileOutputStream f) {
 		this.fos = f;
-		
-		
+				
 		channel = this.fos.getChannel();
-		/*
-		try {
-			System.out.println("channel: " + channel);
-			mappedFile = channel.map(FileChannel.MapMode.READ_WRITE, 0, channel.size());
-			System.out.println("mappedFile: " + mappedFile);
-		} catch (IOException e) {
-			System.out.println("e: " + e.toString());
-			//e.printStackTrace(); 
-		}
-		*/
-		//mappedFile.order(ByteOrder.BIG_ENDIAN);
 		out = ByteBuffer.allocate(1024);
 		limit  = out.limit();
 		
@@ -105,18 +98,21 @@ public class WriterImpl implements Writer {
 		out.flip();
 		
 		channel.write(out.buf());
-		//out.reset();
-		// Not part of header, but hacked for quick impl
-		// Write first previous tag size
-		//out.write(0x00);
+	
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Writer#getFLV()
 	 */
 	public FLV getFLV() {
-		// TODO Auto-generated method stub
-		return null;
+		return flv;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.Writer#setFLV()
+	 */
+	public void setFLV(FLV flv) {
+		this.flv = flv;
 	}
 
 	/* (non-Javadoc)
@@ -124,15 +120,18 @@ public class WriterImpl implements Writer {
 	 */
 	public long getOffset() {
 		// TODO Auto-generated method stub
-		return 0;
+		return offset;
+	}
+
+	public void setOffset(long offset) {
+		this.offset = offset;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Writer#getBytesWritten()
 	 */
 	public long getBytesWritten() {
-		// TODO Auto-generated method stub
-		return 0; 
+		return bytesWritten; 
 	}
 
 	/* (non-Javadoc)
@@ -155,36 +154,12 @@ public class WriterImpl implements Writer {
 		
 		// Reserved
 		out.putInt(0x00);
-		
-		//System.out.println("size: " + tag.getBodySize());
-		//out.expand(tag.getBodySize());
-		//out.
-		// Tag Data
-		//out.put(tag.getBody().buf());
+
 		out.flip();
-		channel.write(out.buf());
-		
-		// Write chunks
-		//int remaining = tag.getBodySize();
-		//int index = 0;
-		
-		/*
-		System.out.println("tmp: " + tag.getBody().buf());
-		byte[] tmp = tag.getBody().buf().array();
-		System.out.println("tmp: " + tmp);
-		if(remaining > 1024) {
-			while(remaining > 1024) {				
-				ByteBuffer tmpBuffer = out.put(tmp, index, (index + 1024));
-				tmpBuffer.flip();
-				remaining = channel.write(tmpBuffer.buf());
-				out.clear();
-			}
-		}
-		*/
-		//out.flip();
+		bytesWritten += channel.write(out.buf());
+
 		ByteBuffer bodyBuf = tag.getBody();
-		//bodyBuf.flip();
-		channel.write(bodyBuf.buf());
+		bytesWritten += channel.write(bodyBuf.buf());
 		
 		return false;
 	}
@@ -201,7 +176,13 @@ public class WriterImpl implements Writer {
 	 * @see org.red5.io.flv.Writer#close()
 	 */
 	public void close() {
-		// TODO Auto-generated method stub
+		try {
+			channel.close();
+			fos.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 

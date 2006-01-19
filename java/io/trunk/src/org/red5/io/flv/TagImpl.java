@@ -113,10 +113,11 @@ public class TagImpl implements Tag {
 	 * @return tag contents
 	 */
 	public String toString() {
-		String ret 	 = "type=\t" + dataType + "\n";
-		ret 		+= "size=\t" + bodySize + "\n";
-		ret			+= "time=\t" + timestamp + "\n";
-		ret			+= "data=\t" + body + "\n";
+		String ret 	 = "Data Type\t=" + dataType + "\n";
+		ret 		+= "Prev. Tag Size\t=" + previuosTagSize + "\n";
+		ret 		+= "Body size\t=" + bodySize + "\n";
+		ret			+= "timestamp\t=" + timestamp + "\n";
+		ret			+= "Body Data\t=" + body + "\n";
 		
 		return ret;
 	}

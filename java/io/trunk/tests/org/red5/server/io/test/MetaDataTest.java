@@ -39,7 +39,7 @@ public class MetaDataTest extends TestCase {
 	MetaDataImpl data;
 	
 	public MetaDataTest() {
-		data = new MetaDataImpl();
+		data = new MetaDataImpl("test");
 	}
 	
 	protected void setUp() throws Exception {

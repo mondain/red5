@@ -113,7 +113,15 @@ public class ReaderImpl implements Reader {
 		
 		// PREVIOUS TAG SIZE
 		int previousTagSize = in.getInt();
+		
+		// START OF FLV TAG
 		byte dataType = in.get();
+		
+		// The next two lines use a utility method which reads in
+		// three consecutive bytes but stores them in a 4 byte int.
+		// We are able to write those three bytes back out by using
+		// another utility method which strips off the last byte
+		// However, we will have to check into this during optimization
 		int bodySize = IOUtils.readUnsignedMediumInt(in);
 		int timestamp = IOUtils.readUnsignedMediumInt(in);
 		int reserved = in.getInt();

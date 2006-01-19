@@ -33,7 +33,7 @@ import java.util.HashMap;
  * @author daccattato (daccattato@gmail.com)
  * @version 0.3
  */
-public class MetaDataImpl extends HashMap implements MetaData {
+public class MetaDataImpl extends HashMap implements MetaData, Comparable {
 	private boolean canSeekToEnd = true;
 	private int videocodecid = 4;
 	private int framerate = 15;
@@ -42,6 +42,13 @@ public class MetaDataImpl extends HashMap implements MetaData {
 	private int width = 320;
 	private double duration = 7.347;
 	
+	private int timestamp = 0;
+	private String name = null;
+	
+	public MetaDataImpl(String string) {
+		this.name  = string;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getCanSeekToEnd()
 	 */
@@ -153,6 +160,34 @@ public class MetaDataImpl extends HashMap implements MetaData {
 	public void setHeight(int h) {
 		this.height = h;
 		this.put("height", new Integer(h));
+	}
+
+	public int compareTo(Object arg0) {		
+		MetaDataImpl mdi = (MetaDataImpl) arg0;
+		int mdiTime = mdi.getTimestamp();
+		int thisTime = this.getTimestamp();
+		
+		if(mdiTime > thisTime) {
+			return -1;
+		} else if(mdiTime < thisTime) {
+			return 1;
+		}
+		
+		return 0;
+	}
+
+	public int getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(int timestamp) {
+		this.timestamp = timestamp;
+	}
+	
+	public String toString() {
+		String ret = "";
+		ret += name;
+		return ret;
 	}
 
 }
