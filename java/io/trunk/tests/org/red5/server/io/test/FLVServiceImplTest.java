@@ -130,7 +130,7 @@ public class FLVServiceImplTest extends TestCase {
 	 * @throws FileNotFoundException 
 	 */
 	public void testFLVFileInputStream() throws FileNotFoundException, IOException  {
-		File f = new File("tests/test_cue.flv");
+		File f = new File("tests/test_cue3.flv");
 		FileInputStream fis = new FileInputStream(f);
 		FLV flv = service.getFLV(fis);
 		Reader reader = flv.reader();
@@ -138,7 +138,7 @@ public class FLVServiceImplTest extends TestCase {
 		
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
-			//printTag(tag);
+			printTag(tag);
 		}
 
 		// simply tests to see if the last tag of the flv file
@@ -193,130 +193,4 @@ public class FLVServiceImplTest extends TestCase {
 		
 	}
 	
-	/*
-	public void testMetaDataInjection() throws IOException {
-		File f = new File("tests/test_cue2.flv");
-		
-		if(f.exists()) {			
-			f.delete();
-		}
-		
-		// Create new file
-		f.createNewFile();
-		FileOutputStream fos = new FileOutputStream(f);
-		//fos.write((byte)0x01);
-		FLV flv = service.getFLV(fos);
-		Writer writer = flv.writer();
-		
-		// Create a reader for testing
-		File readfile = new File("tests/test_cue.flv");
-		FileInputStream fis = new FileInputStream(readfile);
-		FLV readflv = service.getFLV(fis);
-		Reader reader = readflv.reader();
-		
-		writeTagsWithInjection(reader, writer);		
-	}
-*/
-	
-	private void writeTagsWithInjection(Reader reader, Writer writer) throws IOException {
-		Tag tag = null;
-		
-		MetaDataImpl mdi1 = new MetaDataImpl("mdi1");
-		mdi1.setTimestamp(100);
-		mdi1.put("test1", "test1");
-		
-		MetaDataImpl mdi2 = new MetaDataImpl("mdi2");
-		mdi2.setTimestamp(50);
-		mdi1.put("test2", "test2");
-		
-		MetaDataImpl mdi3 = new MetaDataImpl("mdi3");
-		mdi3.setTimestamp(0);
-		mdi1.put("test3", "test3");
-		
-		// Place in Treeset for sorting
-		TreeSet ts = new TreeSet();
-		ts.add(mdi1);
-		ts.add(mdi2);
-		ts.add(mdi3);
-						
-		System.out.println("ts: " + ts);
-		int tmpTimeStamp = ((MetaDataImpl) ts.first()).getTimestamp();
-		
-		while(reader.hasMoreTags()) {
-			tag = reader.readTag();
-			
-			if(!ts.isEmpty()) {
-				if(tag.getTimestamp() > tmpTimeStamp) {
-					TagImpl injectedTag = (TagImpl) injectMetaData(ts.first(), writer, tag);
-					//tag.setPreviousTagSize(injectedTag.);
-					ts.remove(ts.first());
-				}
-			}
-			writer.writeTag(tag);
-			//printTag(tag);
-		}
-		
-	}
-		
-	private Tag injectMetaData(Object mdi, Writer writer, Tag tag) {
-		System.out.println("in inject");
-		
-		ByteBuffer buf = ByteBuffer.allocate(1000);
-		Output out = new Output(buf);
-		Serializer ser = new Serializer();
-		
-		MetaDataImpl tmpMdi = (MetaDataImpl) mdi;
-//		 PreviousTagSize
-		//out = out.reset();
-		buf.clear();
-		buf.putInt(tag.getPreviousTagSize());
-		
-		// Data Type
-		buf.put((byte)(Tag.TYPE_METADATA));
-		
-		// Body Size
-		IOUtils.writeMediumInt(buf, tag.getBodySize());
-		
-		// Timestamp
-		IOUtils.writeMediumInt(buf, tmpMdi.getTimestamp());
-		
-		// Reserved
-		buf.putInt(0x00);
-
-		buf.flip();
-		//bytesWritten += channel.write(out.buf());
-
-		ByteBuffer bodyBuf = tag.getBody();
-		//bytesWritten += channel.write(bodyBuf.buf());
-		
-		
-		ser.serialize(out, tmpMdi);
-		/*
-		 * Pseudo code
-		 * 
-		 * 
-		 */
-		Tag retTag = null;
-		return retTag;
-	}
-
-	public void testMetaDataOrder() {
-		MetaDataImpl mdi1 = new MetaDataImpl("mdi1");
-		mdi1.setTimestamp(100);
-		
-		MetaDataImpl mdi2 = new MetaDataImpl("mdi2");
-		mdi2.setTimestamp(50);
-		
-		MetaDataImpl mdi3 = new MetaDataImpl("mdi3");
-		mdi3.setTimestamp(0);
-		
-		TreeSet ts = new TreeSet();
-		ts.add(mdi1);
-		ts.add(mdi2);
-		ts.add(mdi3);
-		
-		System.out.println("ts: " + ts);
-		
-		Assert.assertEquals(true, true);
-	}
 }

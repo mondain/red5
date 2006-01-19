@@ -24,6 +24,7 @@ package org.red5.io.flv;
  * @author Dominick Accattato (daccattato@gmail.com)
  */
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -33,7 +34,7 @@ import java.util.HashMap;
  * @author daccattato (daccattato@gmail.com)
  * @version 0.3
  */
-public class MetaDataImpl extends HashMap implements MetaData, Comparable {
+public class MetaDataImpl extends HashMap implements MetaData, Comparable, Serializable {
 	private boolean canSeekToEnd = true;
 	private int videocodecid = 4;
 	private int framerate = 15;
