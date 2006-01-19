@@ -42,6 +42,7 @@ import org.red5.io.flv.FLVServiceImpl;
 import org.red5.io.flv.MetaDataImpl;
 import org.red5.io.flv.Reader;
 import org.red5.io.flv.Tag;
+import org.red5.io.flv.TagImpl;
 import org.red5.io.flv.Writer;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
@@ -192,6 +193,7 @@ public class FLVServiceImplTest extends TestCase {
 		
 	}
 	
+	/*
 	public void testMetaDataInjection() throws IOException {
 		File f = new File("tests/test_cue2.flv");
 		
@@ -214,7 +216,7 @@ public class FLVServiceImplTest extends TestCase {
 		
 		writeTagsWithInjection(reader, writer);		
 	}
-
+*/
 	
 	private void writeTagsWithInjection(Reader reader, Writer writer) throws IOException {
 		Tag tag = null;
@@ -245,7 +247,8 @@ public class FLVServiceImplTest extends TestCase {
 			
 			if(!ts.isEmpty()) {
 				if(tag.getTimestamp() > tmpTimeStamp) {
-					injectMetaData(ts.first(), writer, tag);
+					TagImpl injectedTag = (TagImpl) injectMetaData(ts.first(), writer, tag);
+					//tag.setPreviousTagSize(injectedTag.);
 					ts.remove(ts.first());
 				}
 			}
@@ -255,13 +258,14 @@ public class FLVServiceImplTest extends TestCase {
 		
 	}
 		
-	private void injectMetaData(Object mdi, Writer writer, Tag tag) {
+	private Tag injectMetaData(Object mdi, Writer writer, Tag tag) {
 		System.out.println("in inject");
 		
 		ByteBuffer buf = ByteBuffer.allocate(1000);
 		Output out = new Output(buf);
 		Serializer ser = new Serializer();
 		
+		MetaDataImpl tmpMdi = (MetaDataImpl) mdi;
 //		 PreviousTagSize
 		//out = out.reset();
 		buf.clear();
@@ -274,7 +278,7 @@ public class FLVServiceImplTest extends TestCase {
 		IOUtils.writeMediumInt(buf, tag.getBodySize());
 		
 		// Timestamp
-		IOUtils.writeMediumInt(buf, tag.getTimestamp());
+		IOUtils.writeMediumInt(buf, tmpMdi.getTimestamp());
 		
 		// Reserved
 		buf.putInt(0x00);
@@ -286,12 +290,14 @@ public class FLVServiceImplTest extends TestCase {
 		//bytesWritten += channel.write(bodyBuf.buf());
 		
 		
-		ser.serialize(out, new Object());
+		ser.serialize(out, tmpMdi);
 		/*
 		 * Pseudo code
 		 * 
 		 * 
 		 */
+		Tag retTag = null;
+		return retTag;
 	}
 
 	public void testMetaDataOrder() {
