@@ -41,6 +41,7 @@ public class TagImpl implements Tag {
 	private int bodySize;
 	private ByteBuffer body;
 	private int previuosTagSize;
+	private byte bitflags;
 
 	/**
 	 * TagImpl Constructor
@@ -56,6 +57,34 @@ public class TagImpl implements Tag {
 		this.bodySize = bodySize;
 		this.body = body;
 		this.previuosTagSize = previousTagSize;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.Tag#setBitflags()
+	 */
+	public byte getBitflags() {
+		return bitflags;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.Tag#setBitflags()
+	 */
+	public void setBitflags(byte bitflags) {
+		this.bitflags = bitflags;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.Tag#getPreviuosTagSize()
+	 */
+	public int getPreviuosTagSize() {
+		return previuosTagSize;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.Tag#setPreviuosTagSize()
+	 */
+	public void setPreviuosTagSize(int previuosTagSize) {
+		this.previuosTagSize = previuosTagSize;
 	}
 
 
@@ -118,7 +147,6 @@ public class TagImpl implements Tag {
 		ret 		+= "Body size\t=" + bodySize + "\n";
 		ret			+= "timestamp\t=" + timestamp + "\n";
 		ret			+= "Body Data\t=" + body + "\n";
-		
 		return ret;
 	}
 

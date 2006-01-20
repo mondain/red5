@@ -35,6 +35,7 @@ import java.util.HashMap;
  * @version 0.3
  */
 public class MetaDataImpl extends HashMap implements MetaData, Comparable, Serializable {
+	
 	private boolean canSeekToEnd = true;
 	private int videocodecid = 4;
 	private int framerate = 15;

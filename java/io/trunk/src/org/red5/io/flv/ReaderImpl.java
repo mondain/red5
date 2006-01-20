@@ -71,7 +71,7 @@ public class ReaderImpl implements Reader {
 		in.skip(3);
 		header.setVersion((byte) in.get());
 		header.setTypeFlags((byte) in.get());
-		header.setDataOffset(in.getInt());		
+		header.setDataOffset(in.getInt());	
 	}
 
 	/* (non-Javadoc)
@@ -96,7 +96,7 @@ public class ReaderImpl implements Reader {
 	 */
 	public long getBytesRead() {
 		// TODO Auto-generated method stub
-		return 0;
+		return in.position();
 	}
 
 	/* (non-Javadoc)
