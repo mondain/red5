@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Map;
 
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.utils.IOUtils;
@@ -41,7 +42,7 @@ import org.red5.io.utils.IOUtils;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class ReaderImpl implements Reader {
+public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 	
 	private FileInputStream fis = null;
 	private FLVHeader header = null;
@@ -71,7 +72,7 @@ public class ReaderImpl implements Reader {
 		in.skip(3);
 		header.setVersion((byte) in.get());
 		header.setTypeFlags((byte) in.get());
-		header.setDataOffset(in.getInt());	
+		header.setDataOffset(in.getInt());		
 	}
 
 	/* (non-Javadoc)
@@ -149,6 +150,32 @@ public class ReaderImpl implements Reader {
 			e.printStackTrace();
 		}		
 
+	}
+
+	public Map analyzeKeyFrames() {
+		// TODO Auto-generated method stub
+		Tag tmpTag = null;
+		//in.rewind();
+		ByteBuffer bb = null;
+		while(this.hasMoreTags()) {
+			tmpTag = this.readTag();
+			
+			if(tag.getDataType() == Tag.TYPE_VIDEO) {
+				// Get the body payload
+				bb = tag.getBody();
+				
+				// Grab Frame type
+				byte frametype = bb.get();
+				frametype = (byte) (frametype >> 4);
+				if(frametype == 0x01) {
+					System.out.println("it is a keyframe");
+					System.out.println("tag:  " + tag);
+					
+				}
+			}
+			//printTag(tag);
+		}
+		return null;
 	}
 
 }

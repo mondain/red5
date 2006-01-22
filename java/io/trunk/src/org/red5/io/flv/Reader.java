@@ -31,7 +31,7 @@ package org.red5.io.flv;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public interface Reader {
+public interface Reader extends KeyFrameDataAnalyzer {
 
 	/**
 	 * Returns a FLV object
