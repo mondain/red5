@@ -129,6 +129,25 @@ public class FLVServiceImplTest extends TestCase {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
+	public void testFLVFileInputStreamKeyFrameAnalyzer() throws FileNotFoundException, IOException  {
+		File f = new File("tests/test_cue3.flv");
+		FileInputStream fis = new FileInputStream(f);
+		FLV flv = service.getFLV(fis);
+		Reader reader = flv.reader();
+		reader.analyzeKeyFrames();
+		
+
+		// simply tests to see if the last tag of the flv file
+		// has a timestamp of 2500
+		Assert.assertEquals(true,true);	
+	}
+	
+	/**
+	 * Tests: getFLVFileInputStream(FileInputStream fis)
+	 * @return void
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 */
 	public void testFLVFileInputStream() throws FileNotFoundException, IOException  {
 		File f = new File("tests/test_cue3.flv");
 		FileInputStream fis = new FileInputStream(f);

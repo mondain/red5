@@ -4,6 +4,6 @@ import java.util.Map;
 
 public interface KeyFrameDataAnalyzer {
 
-	public Map analyzeKeyFrames(FLV flv);
+	public Map analyzeKeyFrames();
 	
 }
