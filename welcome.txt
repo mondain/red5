@@ -1,7 +1,0 @@
-welcome to the RED5 Repository
-
-Hi! Anonymous SVN commits are fun!
-
-dominick 09/23/2005
-
-Testing commit -- Luke
