@@ -50,7 +50,7 @@
 			       fork="yes" 
 			       verbose="no"
 			       nowarn="yes"
-			       executable="${java.home}/bin/javac" 
+			       executable="${java.home}/../bin/javac" 
 			       target="${java.target_version}" >
 		
 		</javac>
@@ -124,6 +124,58 @@
 	</java>
 </target>
 
-<target name="all" depends="clean, prepare, compile"/>
+	<target name="webwar" depends="compile">
+		<delete dir="webdir"/>
+		<mkdir dir="webdir"/>
+		<mkdir dir="webdir/WEB-INF"/>
+		<mkdir dir="webdir/WEB-INF/lib" />
+		<mkdir dir="webdir/conf" />
+		<mkdir dir="webdir/hosts" />
+		<copy todir="webdir/WEB-INF/lib">
+				<fileset dir="${lib.dir}">
+					<include name="cglib-nodep-2.1_2.jar" />
+					<include name="commons-beanutils.jar" />
+					<include name="commons-collections.jar" />
+					<include name="commons-logging.jar" />
+					<include name="jpda.jar" />
+					<include name="js.jar" />
+					<include name="junit.jar" />
+					<include name="log4j-1.2.9.jar" />
+					<include name="mina-0.8.0.jar" />
+					<include name="slf4j-log4j12.jar" />
+					<include name="spring.jar" />
+					<include name="spring-scripting-support.jar" />
+					<include name="xbean.jar" />
+					<include name="xbean_xpath.jar" />
+				</fileset>
+				<fileset dir="./">
+					<include name="red5.jar" />
+				</fileset>
+		</copy>
+		<copy todir="webdir/conf">
+				<fileset dir="./conf">
+					<include name="global.xml" />
+					<include name="log4j.properties" />
+					<include name="red5.properties" />
+					<include name="red5_web.xml" />
+				</fileset>
+		</copy>
+		<copy todir="webdir">
+				<fileset dir="./webapps/defaultApp">
+					<include name="index.html" />
+				</fileset>
+		</copy>
+		<copy todir="webdir/hosts">
+				<fileset dir="hosts">
+					<exclude name=".svn" />
+				</fileset>
+		</copy>
+		<war destfile="Red5.war" webxml="conf/web.xml">
+		  <fileset dir="webdir"/>
+		  <lib dir="webdir/WEB-INF/lib"/>
+		</war>
+		<delete dir="webdir"/>
+	</target>
+<target name="all" depends="clean, prepare, compile, jar, webwar"/>
 
 </project>
