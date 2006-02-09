@@ -155,6 +155,7 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 	public Map analyzeKeyFrames() {
 		// TODO Auto-generated method stub
 		Tag tmpTag = null;
+		Map m = null;
 		//in.rewind();
 		ByteBuffer bb = null;
 		while(this.hasMoreTags()) {
@@ -169,7 +170,10 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 				frametype = (byte) (frametype >> 4);
 				if(frametype == 0x01) {
 					System.out.println("it is a keyframe");
+					System.out.println("position: " + this.getBytesRead());
 					System.out.println("tag:  " + tag);
+					
+					//m.put()
 					
 				}
 			}
