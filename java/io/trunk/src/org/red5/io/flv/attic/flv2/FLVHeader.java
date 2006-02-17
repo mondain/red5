@@ -1,4 +1,4 @@
-package org.red5.server.io.flv2;
+package org.red5.io.flv.attic.flv2;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
