@@ -81,5 +81,12 @@ public interface FLVService {
 	public FLV getFLV(File file) throws IOException;
 
 	public FLV getFLV(FileOutputStream fos);
+	
+	/**
+	 * Returns a FLV file based on the String parameter
+	 * for writing to disk
+	 * @param filename
+	 */
+	public FLV setFLV(String filename);
 
 }

@@ -73,6 +73,14 @@ public interface Writer {
 	public boolean writeTag(byte type, ByteBuffer data) throws IOException;
 	
 	/**
+	 * Write a Stream to disk using bytes
+	 * @param b
+	 * @return boolean
+	 * @throws IOException
+	 */
+	public boolean writeStream(byte[] b);
+	
+	/**
 	 * Closes a Writer
 	 * @return void
 	 */
