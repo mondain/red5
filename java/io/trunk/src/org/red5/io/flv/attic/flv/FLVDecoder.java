@@ -1,4 +1,4 @@
-package org.red5.server.io.flv;
+package org.red5.io.flv.attic.flv;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -29,7 +29,7 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
-import org.red5.server.io.flv2.FLVHeader;
+import org.red5.io.flv.attic.flv2.FLVHeader;
 
 /**
  * FLVDecoder parses out the contents of a FLV video file and returns

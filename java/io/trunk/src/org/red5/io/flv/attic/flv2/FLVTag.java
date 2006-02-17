@@ -1,4 +1,4 @@
-package org.red5.server.io.flv2;
+package org.red5.io.flv.attic.flv2;
 
 import org.apache.mina.common.ByteBuffer;
 
