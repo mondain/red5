@@ -100,5 +100,16 @@ public class FLVServiceImpl implements FLVService {
 		// TODO Auto-generated method stub
 		return flv;
 	}
+
+	public FLV setFLV(String filename) {
+		FLV flv = null;
+		try {
+			flv = new FLVImpl(new FileInputStream(new File(filename)));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return flv;
+	}
 	
 }

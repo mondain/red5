@@ -186,4 +186,9 @@ public class WriterImpl implements Writer {
 
 	}
 
+	public boolean writeStream(byte[] b) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
