@@ -49,7 +49,7 @@ public class WriterImpl implements Writer {
 	private MappedByteBuffer mappedFile;
 	private ByteBuffer out;
 	private int limit;
-	
+	private Tag lastTag = null;
 	
 	private FLV flv = null;
 	private long bytesWritten = 0;
@@ -90,7 +90,10 @@ public class WriterImpl implements Writer {
 		
 		// For testing purposes write video only
 		// TODO CHANGE
-		out.put((byte)0x08);
+		// out.put((byte)0x08);
+		// NOTE (luke): I looked at the docs on the wiki and it says it should be 0x05 for audio and video
+		// I think its safe to assume it will be both
+		out.put((byte)0x05);
 		
 		// Data Offset
 		out.putInt(0x09);
@@ -141,7 +144,8 @@ public class WriterImpl implements Writer {
 		// PreviousTagSize
 		//out = out.reset();
 		out.clear();
-		out.putInt(tag.getPreviousTagSize());
+		
+		out.putInt((lastTag == null) ? 0 : (lastTag.getBodySize() + 11));
 		
 		// Data Type
 		out.put((byte)(tag.getDataType()));
@@ -160,6 +164,8 @@ public class WriterImpl implements Writer {
 
 		ByteBuffer bodyBuf = tag.getBody();
 		bytesWritten += channel.write(bodyBuf.buf());
+		
+		lastTag = tag;
 		
 		return false;
 	}

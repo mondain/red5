@@ -63,7 +63,7 @@ public interface FLV {
 	 * Returns a Reader to parse and read the flv file
 	 * @return Reader reader
 	 */
-	public Reader reader();
+	public Reader reader() throws IOException;
 	
 	/**
 	 * Returns a Reader closest to the nearest keyframe
@@ -76,7 +76,7 @@ public interface FLV {
 	 * Returns a Writer
 	 * @return Writer writer
 	 */
-	public Writer writer();
+	public Writer writer() throws IOException;
 	
 	/**
 	 * Returns a Writer based on the nearest key frame
@@ -84,11 +84,5 @@ public interface FLV {
 	 * @return Writer writer
 	 */
 	public Writer writerFromNearestKeyFrame(int seekPoint);
-	
-	/**
-	 * Sets the FileInputStream
-	 * @return void
-	 */
-	public void setFileInputStream(FileInputStream f);
 	
 }

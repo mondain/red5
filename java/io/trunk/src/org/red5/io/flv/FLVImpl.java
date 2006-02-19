@@ -23,6 +23,7 @@ package org.red5.io.flv;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,9 +39,15 @@ import java.util.Map;
  */
 public class FLVImpl implements FLV {
 
+	private File file;
+	
+	public FLVImpl(File file){
+		this.file = file;
+	}
+	
+	/*
 	private FileInputStream fis;
 	private FileOutputStream fos;
-
 	public FLVImpl(FileInputStream f) {
 		this.fis = f;
 	}
@@ -52,6 +59,7 @@ public class FLVImpl implements FLV {
 	public FLVImpl(FileOutputStream f) {
 		this.fos = f;
 	}
+	*/
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#hasMetaData()
@@ -120,13 +128,10 @@ public class FLVImpl implements FLV {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#reader()
 	 */
-	public Reader reader() {
-		if(fis != null) {
-			ReaderImpl rt = new ReaderImpl(fis);
-			return rt;
-		}else {
-			return null;
-		}
+	public Reader reader() throws IOException{
+		if(!file.exists()) file.createNewFile();
+		ReaderImpl reader = new ReaderImpl(new FileInputStream(file));
+		return reader;
 	}
 
 	/* (non-Javadoc)
@@ -140,13 +145,10 @@ public class FLVImpl implements FLV {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#writer()
 	 */
-	public Writer writer() {
-		if(fos != null) {
-			Writer writer = new WriterImpl(fos);
-			return writer;
-		}else {
-			return null;
-		}
+	public Writer writer() throws IOException {
+		if(!file.exists()) file.createNewFile();
+		Writer writer = new WriterImpl(new FileOutputStream(file));
+		return writer;
 	}
 
 	/* (non-Javadoc)
@@ -155,13 +157,5 @@ public class FLVImpl implements FLV {
 	public Writer writerFromNearestKeyFrame(int seekPoint) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.red5.io.flv.FLV#setFileInputStream(java.io.FileInputStream)
-	 */
-	public void setFileInputStream(FileInputStream f) {
-		// TODO Auto-generated method stub
-		this.fis = f;
 	}
 }
