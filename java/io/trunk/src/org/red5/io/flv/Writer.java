@@ -81,6 +81,12 @@ public interface Writer {
 	public boolean writeStream(byte[] b);
 	
 	/**
+	 * Write a header
+	 * @throws IOException
+	 */
+	public void writeHeader() throws IOException;
+	
+	/**
 	 * Closes a Writer
 	 * @return void
 	 */

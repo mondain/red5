@@ -66,12 +66,6 @@ public class WriterImpl implements Writer {
 		out = ByteBuffer.allocate(1024);
 		limit  = out.limit();
 		
-		try {
-			writeHeader();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -79,7 +73,7 @@ public class WriterImpl implements Writer {
 	 * @throws IOException 
 	 *
 	 */
-	private void writeHeader() throws IOException {
+	public void writeHeader() throws IOException {
 		// TODO Auto-generated method stub
 		out.put((byte)0x46);
 		out.put((byte)0x4C);
