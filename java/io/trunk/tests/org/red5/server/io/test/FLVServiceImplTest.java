@@ -77,6 +77,7 @@ public class FLVServiceImplTest extends TestCase {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
+	/*
 	public void testFLVString() throws FileNotFoundException, IOException  {
 		FLV flv = service.getFLV("tests/test_cue.flv");		
 		Reader reader = flv.reader();
@@ -92,6 +93,7 @@ public class FLVServiceImplTest extends TestCase {
 		Assert.assertEquals(4166,tag.getTimestamp());
 		//Assert.assertEquals(true,true);
 	}
+	*/
 	
 	private void printTag(Tag tag) {
 		System.out.println("tag:\n-------\n" + tag);
@@ -129,6 +131,7 @@ public class FLVServiceImplTest extends TestCase {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
+	/*
 	public void testFLVFileInputStreamKeyFrameAnalyzer() throws FileNotFoundException, IOException  {
 		File f = new File("tests/test_cue3.flv");
 		FileInputStream fis = new FileInputStream(f);
@@ -141,6 +144,7 @@ public class FLVServiceImplTest extends TestCase {
 		// has a timestamp of 2500
 		Assert.assertEquals(true,true);	
 	}
+	*/
 	
 	/**
 	 * Tests: getFLVFileInputStream(FileInputStream fis)
@@ -148,6 +152,7 @@ public class FLVServiceImplTest extends TestCase {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
+	/*
 	public void testFLVFileInputStream() throws FileNotFoundException, IOException  {
 		File f = new File("tests/test_cue3.flv");
 		FileInputStream fis = new FileInputStream(f);
@@ -164,7 +169,9 @@ public class FLVServiceImplTest extends TestCase {
 		// has a timestamp of 2500
 		Assert.assertEquals(4166,tag.getTimestamp());	
 	}
+	*/
 	
+	/*
 	public void testWriteFLVFileOutputStream() throws IOException {
 		File f = new File("tests/test_cue2.flv");
 		
@@ -191,6 +198,7 @@ public class FLVServiceImplTest extends TestCase {
 		// if the method threw an exception
 		Assert.assertEquals(true, true);
 	}
+	*/
 	
 	private void writeTags(Reader reader, Writer writer) throws IOException {
 		
