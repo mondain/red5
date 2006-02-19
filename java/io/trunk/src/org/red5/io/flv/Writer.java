@@ -45,15 +45,21 @@ public interface Writer {
 	
 	/**
 	 * Return the offset
-	 * @return long offset
+	 * @return int offset
 	 */
-	public long getOffset();
+	public int getOffset();
 	
 	/**
 	 * Return the bytes written
 	 * @return long bytesWritten
 	 */
 	public long getBytesWritten();
+	
+	/**
+	 * Writes the header bytes
+	 * @throws IOException 
+	 */
+	public void writeHeader() throws IOException;
 	
 	/**
 	 * Writes a Tag object
@@ -80,11 +86,6 @@ public interface Writer {
 	 */
 	public boolean writeStream(byte[] b);
 	
-	/**
-	 * Write a header
-	 * @throws IOException
-	 */
-	public void writeHeader() throws IOException;
 	
 	/**
 	 * Closes a Writer

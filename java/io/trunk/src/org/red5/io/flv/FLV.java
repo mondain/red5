@@ -77,6 +77,12 @@ public interface FLV {
 	 * @return Writer writer
 	 */
 	public Writer writer() throws IOException;
+
+	/**
+	 * Returns a Writer which is setup to append to flv
+	 * @return Writer writer
+	 */
+	public Writer append() throws IOException;
 	
 	/**
 	 * Returns a Writer based on the nearest key frame

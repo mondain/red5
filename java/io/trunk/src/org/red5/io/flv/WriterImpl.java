@@ -53,19 +53,24 @@ public class WriterImpl implements Writer {
 	
 	private FLV flv = null;
 	private long bytesWritten = 0;
-	private long offset;
+	private int offset = 0;
+	
+	public WriterImpl(FileOutputStream fos){
+		new WriterImpl(fos, null);
+	}
 	
 	/**
 	 * WriterImpl Constructor
 	 * @param fos 
 	 */
-	public WriterImpl(FileOutputStream f) {
-		this.fos = f;
-				
+	public WriterImpl(FileOutputStream fos, Tag lastTag) {
+		this.fos = fos;
+		this.lastTag = lastTag;
+		if(lastTag !=null) offset=lastTag.getTimestamp();
 		channel = this.fos.getChannel();
 		out = ByteBuffer.allocate(1024);
 		limit  = out.limit();
-		
+
 	}
 
 	/**
@@ -75,6 +80,9 @@ public class WriterImpl implements Writer {
 	 */
 	public void writeHeader() throws IOException {
 		// TODO Auto-generated method stub
+		
+		
+		
 		out.put((byte)0x46);
 		out.put((byte)0x4C);
 		out.put((byte)0x56);
@@ -115,12 +123,12 @@ public class WriterImpl implements Writer {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Writer#getOffset()
 	 */
-	public long getOffset() {
+	public int getOffset() {
 		// TODO Auto-generated method stub
 		return offset;
 	}
 
-	public void setOffset(long offset) {
+	public void setOffset(int offset) {
 		this.offset = offset;
 	}
 
@@ -148,7 +156,7 @@ public class WriterImpl implements Writer {
 		IOUtils.writeMediumInt(out, tag.getBodySize());
 		
 		// Timestamp
-		IOUtils.writeMediumInt(out, tag.getTimestamp());
+		IOUtils.writeMediumInt(out, tag.getTimestamp() + offset);
 		
 		// Reserved
 		out.putInt(0x00);
