@@ -29,6 +29,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.red5.io.amf.Input;
+
 /**
  * A FLVImpl implements the FLV api
  * 
@@ -39,6 +43,10 @@ import java.util.Map;
  */
 public class FLVImpl implements FLV {
 
+	
+	protected static Log log =
+        LogFactory.getLog(FLVImpl.class.getName());
+	
 	private File file;
 	
 	public FLVImpl(File file){
@@ -129,7 +137,11 @@ public class FLVImpl implements FLV {
 	 * @see org.red5.io.flv.FLV#reader()
 	 */
 	public Reader reader() throws IOException{
-		if(!file.exists()) file.createNewFile();
+		if(!file.exists()) {
+			log.info("Creating new file: "+file);
+			file.createNewFile();
+		}
+		log.info("File size: "+file.length());
 		ReaderImpl reader = new ReaderImpl(new FileInputStream(file));
 		return reader;
 	}
@@ -146,7 +158,8 @@ public class FLVImpl implements FLV {
 	 * @see org.red5.io.flv.FLV#writer()
 	 */
 	public Writer writer() throws IOException {
-		if(!file.exists()) file.createNewFile();
+		if(file.exists()) file.delete();
+		file.createNewFile();
 		Writer writer = new WriterImpl(new FileOutputStream(file));
 		writer.writeHeader();
 		return writer;
@@ -154,18 +167,23 @@ public class FLVImpl implements FLV {
 	
 	public Writer append() throws IOException {
 		// If the file doesnt exist, we cant append to it, so return a writer
-		if(!file.exists()) return writer();
+		if(!file.exists()){ 
+			log.info("File does not exist, calling writer. This will create a new file.");
+			return writer();
+		}
 		Reader reader = reader();
 		// Its an empty flv, so no point appending call writer
-		if(!reader.hasMoreTags()) return writer();
+		if(!reader.hasMoreTags()) {
+			reader.close();
+			log.info("Reader is empty, calling writer. This will create a new file.");
+			return writer();
+		}
 		Tag lastTag = null;
 		while(reader.hasMoreTags()){
 			lastTag = reader.readTag();
 		}
-		long position = reader.getBytesRead();
 		reader.close();
-		FileOutputStream fos = new FileOutputStream(file);
-		fos.getChannel().position(position);
+		FileOutputStream fos = new FileOutputStream(file, true);
 		Writer writer = new WriterImpl(fos, lastTag);
 		return writer;
 	}
