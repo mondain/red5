@@ -48,7 +48,6 @@ public class WriterImpl implements Writer {
 	private WritableByteChannel channel;
 	private MappedByteBuffer mappedFile;
 	private ByteBuffer out;
-	private int limit;
 	private Tag lastTag = null;
 	
 	private FLV flv = null;
@@ -56,7 +55,7 @@ public class WriterImpl implements Writer {
 	private int offset = 0;
 	
 	public WriterImpl(FileOutputStream fos){
-		new WriterImpl(fos, null);
+		this(fos,null);
 	}
 	
 	/**
@@ -69,8 +68,7 @@ public class WriterImpl implements Writer {
 		if(lastTag !=null) offset=lastTag.getTimestamp();
 		channel = this.fos.getChannel();
 		out = ByteBuffer.allocate(1024);
-		limit  = out.limit();
-
+		out.setAutoExpand(true);
 	}
 
 	/**
@@ -80,8 +78,6 @@ public class WriterImpl implements Writer {
 	 */
 	public void writeHeader() throws IOException {
 		// TODO Auto-generated method stub
-		
-		
 		
 		out.put((byte)0x46);
 		out.put((byte)0x4C);

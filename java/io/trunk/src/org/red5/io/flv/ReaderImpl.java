@@ -49,7 +49,6 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 	private FileChannel channel = null;
 	private MappedByteBuffer mappedFile = null;
 	private ByteBuffer in = null;
-	private int limit = 0;
 	private Tag tag = null;
 	
 	public ReaderImpl(FileInputStream f) {
@@ -62,8 +61,7 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 		}
 		mappedFile.order(ByteOrder.BIG_ENDIAN);
 		in = ByteBuffer.wrap(mappedFile);
-		limit  = in.limit();
-		decodeHeader();
+		if(in.remaining() >=9 ) decodeHeader();
 	}
 
 	public void decodeHeader() {
@@ -128,6 +126,7 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 		int reserved = in.getInt();
 		
 		ByteBuffer body = ByteBuffer.allocate(bodySize);
+		final int limit = in.limit();
 		in.limit(in.position()+bodySize);
 		body.put(in);
 		body.flip();
