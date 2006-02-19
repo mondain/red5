@@ -56,37 +56,10 @@ public interface FLVService {
 	public void setDeserializer(Deserializer deserializer);
 	
 	/**
-	 * Returns a FLV object
-	 * @param filename
-	 */
-	public FLV getFLV() throws FileNotFoundException, IOException;
-	
-	
-	/**
-	 * Returns a FLV file based on the String parameter
-	 * @param filename
-	 */
-	public FLV getFLV(String filename) throws FileNotFoundException, IOException;
-	
-	/**
-	 * Returns a FLV file based on the FileInputStream parameter
-	 * @param fis
-	 */
-	public FLV getFLV(FileInputStream fis) throws IOException;
-	
-	/**
 	 * Returns a FLV object based on the File parameter
 	 * @param file
 	 */
 	public FLV getFLV(File file) throws IOException;
 
-	public FLV getFLV(FileOutputStream fos);
-	
-	/**
-	 * Returns a FLV file based on the String parameter
-	 * for writing to disk
-	 * @param filename
-	 */
-	public FLV setFLV(String filename);
 
 }

@@ -42,6 +42,7 @@ import org.red5.io.object.DataTypes;
  */
 public class Input extends BaseInput implements org.red5.io.object.Input  {
 
+	
 	protected static Log log =
         LogFactory.getLog(Input.class.getName());
 	

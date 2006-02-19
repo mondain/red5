@@ -61,54 +61,12 @@ public class FLVServiceImpl implements FLVService {
 		// TODO Auto-generated method stub
 
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.red5.io.flv.FLVService#getFLV()
-	 */
-	public FLV getFLV() throws FileNotFoundException, IOException {
-		FLV flv = new FLVImpl();
-		return flv;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.red5.io.flv.FLVService#getFLV(java.lang.String)
-	 */
-	public FLV getFLV(String filename) throws FileNotFoundException,
-			IOException {
-		FLV flv = new FLVImpl(new FileInputStream(new File(filename)));		
-		return flv;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.red5.io.flv.FLVService#getFLV(java.io.FileInputStream)
-	 */
-	public FLV getFLV(FileInputStream fis) throws IOException {
-		FLV flv = new FLVImpl(fis); 
-		return flv;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
 	 */
-	public FLV getFLV(File file) throws IOException {new FileInputStream(file);
-		FLV flv = new FLVImpl(new FileInputStream(file)); 
-		return flv;
-	}
-
-	public FLV getFLV(FileOutputStream fos) {
-		FLV flv = new FLVImpl(fos);
-		// TODO Auto-generated method stub
-		return flv;
-	}
-
-	public FLV setFLV(String filename) {
-		FLV flv = null;
-		try {
-			flv = new FLVImpl(new FileInputStream(new File(filename)));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public FLV getFLV(File file) throws IOException {
+		FLV flv = new FLVImpl(file); 
 		return flv;
 	}
 	

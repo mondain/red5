@@ -59,6 +59,10 @@ public class TagImpl implements Tag {
 		this.previuosTagSize = previousTagSize;
 	}
 	
+	public TagImpl(){
+		
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Tag#setBitflags()
 	 */
