@@ -148,9 +148,31 @@ public class FLVImpl implements FLV {
 	public Writer writer() throws IOException {
 		if(!file.exists()) file.createNewFile();
 		Writer writer = new WriterImpl(new FileOutputStream(file));
+		writer.writeHeader();
 		return writer;
 	}
+	
+	public Writer append() throws IOException {
+		// If the file doesnt exist, we cant append to it, so return a writer
+		if(!file.exists()) return writer();
+		Reader reader = reader();
+		// Its an empty flv, so no point appending call writer
+		if(!reader.hasMoreTags()) return writer();
+		Tag lastTag = null;
+		while(reader.hasMoreTags()){
+			lastTag = reader.readTag();
+		}
+		long position = reader.getBytesRead();
+		reader.close();
+		FileOutputStream fos = new FileOutputStream(file);
+		fos.getChannel().position(position);
+		Writer writer = new WriterImpl(fos, lastTag);
+		return writer;
+	}
+	
 
+	
+	
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#writerFromNearestKeyFrame(int)
 	 */
