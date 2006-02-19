@@ -37,6 +37,7 @@ public class MetaDataInjectionTest extends TestCase {
 		service.setDeserializer(new Deserializer());
 	}
 	
+	/*
 	public void testMetaDataInjection() throws IOException {
 		File f = new File("tests/test_cue3.flv");
 		
@@ -59,6 +60,7 @@ public class MetaDataInjectionTest extends TestCase {
 		
 		writeTagsWithInjection(reader, writer);		
 	}
+	*/
 
 	
 	private void writeTagsWithInjection(Reader reader, Writer writer) throws IOException {
