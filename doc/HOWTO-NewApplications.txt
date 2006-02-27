@@ -1,0 +1,47 @@
+HOWTO create new applications in Red5
+=====================================
+
+:author: Joachim Bauch (jojo@struktur.de)
+
+This document describes how new applications can be created in Red5.
+
+1. Create a new folder under the "apps" directory with the name of your
+   new application.
+
+2. Create a file "app.xml" inside the new directory with the following
+   contents::
+   
+     <?xml version="1.0" encoding="UTF-8"?>
+     <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+               "http://www.springframework.org/dtd/spring-beans.dtd">
+     <beans>
+       <bean id="appService"
+             class="org.red5.example.HowtoApplication"
+             singleton="true"
+             />
+     </beans>
+
+   The "class" attribute defines the Java class that will be instantiated
+   when the application is loaded.
+
+3. The class specified in the "app.xml" must extend
+   "org.red5.server.context.BaseApplication" and implement the interface
+   "org.red5.server.context.AppLifecycleAware".
+   
+   You can override the following methods:
+   
+   public void onAppStart();
+     Gets executed when the application starts.
+     
+   public void onAppStop();
+     Gets executed when the application is terminated.
+     
+   public boolean onConnect(Client client, List params);
+     Called for each client that connects to the application.  Return `true`
+     if the client is allowed to connect, `false` otherwise.
+     
+   public void onDisconnect(Client client);
+     Called for each client that leaves the application.
+
+4. Restart Red5, you should see log entries that your application has been
+   loaded.
