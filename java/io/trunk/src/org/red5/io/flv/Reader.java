@@ -3,7 +3,7 @@ package org.red5.io.flv;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright © 2006 by respective authors. All rights reserved.
+ * Copyright ? 2006 by respective authors. All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -70,5 +70,11 @@ public interface Reader extends KeyFrameDataAnalyzer {
 	public void close();
 
 	public void decodeHeader();
+	
+	/**
+	 * Move the reader pointer to pos
+	 * @param pos Position to move to
+	 */
+	public void position(long pos);
 	
 }

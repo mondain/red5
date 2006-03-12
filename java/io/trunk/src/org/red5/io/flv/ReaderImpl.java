@@ -5,15 +5,18 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.flv.KeyFrameDataAnalyzer.KeyFrameMeta;
 import org.red5.io.utils.IOUtils;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright © 2006 by respective authors. All rights reserved.
+ * Copyright ? 2006 by respective authors. All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -65,6 +68,7 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 	}
 
 	public void decodeHeader() {
+		// XXX check signature?
 		// SIGNATURE, lets just skip
 		header = new FLVHeader();
 		in.skip(3);
@@ -93,7 +97,7 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Reader#getBytesRead()
 	 */
-	public long getBytesRead() {
+	synchronized public long getBytesRead() {
 		// TODO Auto-generated method stub
 		return in.position();
 	}
@@ -101,15 +105,86 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Reader#hasMoreTags()
 	 */
-	public boolean hasMoreTags() {
+	synchronized public boolean hasMoreTags() {
 		return in.remaining() > 4;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Reader#readTag()
 	 */
-	public Tag readTag() {
+	synchronized public Tag readTag() {
+		tag = readTagHeader();
 		
+		ByteBuffer body = ByteBuffer.allocate(tag.getBodySize());
+		final int limit = in.limit();
+		in.limit(in.position()+tag.getBodySize());
+		body.put(in);
+		body.flip();
+		in.limit(limit);
+		
+		tag.setBody(body);
+	
+		return tag;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.Reader#close()
+	 */
+	synchronized public void close() {
+		mappedFile.clear();
+		try {
+			channel.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+
+	}
+
+	synchronized public KeyFrameMeta analyzeKeyFrames() {
+		List positionList = new ArrayList();
+		List timestampList = new ArrayList();
+		int origPos = in.position();
+		// point to the first tag
+		in.position(9);
+		while(this.hasMoreTags()) {
+			int pos = in.position();
+			Tag tmpTag = this.readTagHeader();
+			if(tmpTag.getDataType() == Tag.TYPE_VIDEO) {
+				// Grab Frame type
+				byte frametype = in.get();
+				if((frametype & 0xf0) == 0x10) {
+					positionList.add(new Integer(pos));
+					timestampList.add(new Integer(tmpTag.getTimestamp()));
+				}
+			}
+			in.position(pos + tmpTag.getBodySize() + 15);
+		}
+		// restore the pos
+		in.position(origPos);
+		
+		KeyFrameMeta meta = new KeyFrameMeta();
+		meta.positions = new int[positionList.size()];
+		meta.timestamps = new int[timestampList.size()];
+		for (int i = 0; i < meta.positions.length; i++) {
+			meta.positions[i] = ((Integer) positionList.get(i)).intValue();
+		}
+		for (int i = 0; i < meta.timestamps.length; i++) {
+			meta.timestamps[i] = ((Integer) timestampList.get(i)).intValue();
+		}
+		return meta;
+	}
+
+	synchronized public void position(long pos) {
+		// FIXME what if file size is larger than 2G?
+		in.position((int) pos);
+	}
+
+	/**
+	 * Read only header part of a tag
+	 * @return
+	 */
+	private Tag readTagHeader() {
 		// PREVIOUS TAG SIZE
 		int previousTagSize = in.getInt();
 		
@@ -123,62 +198,9 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 		// However, we will have to check into this during optimization
 		int bodySize = IOUtils.readUnsignedMediumInt(in);
 		int timestamp = IOUtils.readUnsignedMediumInt(in);
-		int reserved = in.getInt();
+		// reserved
+		in.getInt();
 		
-		ByteBuffer body = ByteBuffer.allocate(bodySize);
-		final int limit = in.limit();
-		in.limit(in.position()+bodySize);
-		body.put(in);
-		body.flip();
-		in.limit(limit);
-		
-		tag = new TagImpl(dataType,timestamp, bodySize, body, previousTagSize);
-	
-		return tag;
+		return new TagImpl(dataType,timestamp, bodySize, null, previousTagSize);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.red5.io.flv.Reader#close()
-	 */
-	public void close() {
-		mappedFile.clear();
-		try {
-			channel.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-
-	}
-
-	public Map analyzeKeyFrames() {
-		// TODO Auto-generated method stub
-		Tag tmpTag = null;
-		Map m = null;
-		//in.rewind();
-		ByteBuffer bb = null;
-		while(this.hasMoreTags()) {
-			tmpTag = this.readTag();
-			
-			if(tag.getDataType() == Tag.TYPE_VIDEO) {
-				// Get the body payload
-				bb = tag.getBody();
-				
-				// Grab Frame type
-				byte frametype = bb.get();
-				frametype = (byte) (frametype >> 4);
-				if(frametype == 0x01) {
-					System.out.println("it is a keyframe");
-					System.out.println("position: " + this.getBytesRead());
-					System.out.println("tag:  " + tag);
-					
-					//m.put()
-					
-				}
-			}
-			//printTag(tag);
-		}
-		return null;
-	}
-
 }
