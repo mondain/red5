@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tns:FlashVideo xmlns:tns="http://www.example.org/FLVMetaData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.example.org/FLVMetaData FLVMetaData.xsd ">
-  <File>
-    <Meta>
-      <Position>Position</Position>
-      <TimeStamp>TimeStamp</TimeStamp>
-    </Meta>
-  </File>
-</tns:FlashVideo>
+<tns:flashvideo xmlns:tns="http://www.example.org/FLVMetaData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.example.org/FLVMetaData FLVMetaData.xsd ">
+  <file>
+  	<name>
+  		FLV File One
+  	</name>
+  	<size>
+  		333333333333
+  	</size>
+  	<modified>
+  		modified time
+  	</modified>
+    <meta>
+      <position>Position</position>
+      <timestamp>TimeStamp</timestamp>
+    </meta>
+  </file>
+  <file>
+  	<name>
+  		FLV File Two
+  	</name>
+  	<size>
+  		333333333333333
+  	</size>
+  	<modified>
+  		modified time
+  	</modified>
+    <meta>
+      <position>Position</position>
+      <timestamp>TimeStamp</timestamp>
+    </meta>
+  </file>
+</tns:flashvideo>
