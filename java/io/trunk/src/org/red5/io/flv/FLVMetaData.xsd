@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/FLVMetaData" xmlns:tns="http://www.example.org/FLVMetaData">
+	<element name="FlashVideo">
+		<annotation>
+			<documentation>Root element</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+			
+				<element name="File">
+					<complexType>
+						<sequence>
+				<element name="Meta">
+					<complexType>
+						<sequence>
+							<element name="Position" type="string"></element>
+							<element name="TimeStamp" type="string"></element>
+						</sequence>
+					</complexType>
+				</element></sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+</schema>
