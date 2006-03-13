@@ -41,7 +41,7 @@ import org.red5.io.amf.Input;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class FLVImpl implements FLV {
+public class FLVImpl implements IFLV {
 
 	
 	protected static Log log =
@@ -136,7 +136,7 @@ public class FLVImpl implements FLV {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#reader()
 	 */
-	public Reader reader() throws IOException{
+	public IReader reader() throws IOException{
 		if(!file.exists()) {
 			log.info("Creating new file: "+file);
 			file.createNewFile();
@@ -149,7 +149,7 @@ public class FLVImpl implements FLV {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#readerFromNearestKeyFrame(int)
 	 */
-	public Reader readerFromNearestKeyFrame(int seekPoint) {
+	public IReader readerFromNearestKeyFrame(int seekPoint) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -157,34 +157,34 @@ public class FLVImpl implements FLV {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#writer()
 	 */
-	public Writer writer() throws IOException {
+	public IWriter writer() throws IOException {
 		if(file.exists()) file.delete();
 		file.createNewFile();
-		Writer writer = new WriterImpl(new FileOutputStream(file));
+		IWriter writer = new WriterImpl(new FileOutputStream(file));
 		writer.writeHeader();
 		return writer;
 	}
 	
-	public Writer append() throws IOException {
+	public IWriter append() throws IOException {
 		// If the file doesnt exist, we cant append to it, so return a writer
 		if(!file.exists()){ 
 			log.info("File does not exist, calling writer. This will create a new file.");
 			return writer();
 		}
-		Reader reader = reader();
+		IReader reader = reader();
 		// Its an empty flv, so no point appending call writer
 		if(!reader.hasMoreTags()) {
 			reader.close();
 			log.info("Reader is empty, calling writer. This will create a new file.");
 			return writer();
 		}
-		Tag lastTag = null;
+		ITag lastTag = null;
 		while(reader.hasMoreTags()){
 			lastTag = reader.readTag();
 		}
 		reader.close();
 		FileOutputStream fos = new FileOutputStream(file, true);
-		Writer writer = new WriterImpl(fos, lastTag);
+		IWriter writer = new WriterImpl(fos, lastTag);
 		return writer;
 	}
 	
@@ -194,7 +194,7 @@ public class FLVImpl implements FLV {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#writerFromNearestKeyFrame(int)
 	 */
-	public Writer writerFromNearestKeyFrame(int seekPoint) {
+	public IWriter writerFromNearestKeyFrame(int seekPoint) {
 		// TODO Auto-generated method stub
 		return null;
 	}

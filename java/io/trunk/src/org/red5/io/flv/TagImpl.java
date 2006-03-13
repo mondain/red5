@@ -33,7 +33,7 @@ import org.apache.mina.common.ByteBuffer;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class TagImpl implements Tag {
+public class TagImpl implements ITag {
 
 	private byte type;
 	private byte dataType;

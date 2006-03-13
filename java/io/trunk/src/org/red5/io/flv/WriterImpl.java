@@ -42,15 +42,15 @@ import java.nio.channels.WritableByteChannel;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class WriterImpl implements Writer {
+public class WriterImpl implements IWriter {
 	
 	private FileOutputStream fos = null;
 	private WritableByteChannel channel;
 	private MappedByteBuffer mappedFile;
 	private ByteBuffer out;
-	private Tag lastTag = null;
+	private ITag lastTag = null;
 	
-	private FLV flv = null;
+	private IFLV flv = null;
 	private long bytesWritten = 0;
 	private int offset = 0;
 	
@@ -62,7 +62,7 @@ public class WriterImpl implements Writer {
 	 * WriterImpl Constructor
 	 * @param fos 
 	 */
-	public WriterImpl(FileOutputStream fos, Tag lastTag) {
+	public WriterImpl(FileOutputStream fos, ITag lastTag) {
 		this.fos = fos;
 		this.lastTag = lastTag;
 		if(lastTag !=null) offset=lastTag.getTimestamp();
@@ -105,14 +105,14 @@ public class WriterImpl implements Writer {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Writer#getFLV()
 	 */
-	public FLV getFLV() {
+	public IFLV getFLV() {
 		return flv;
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Writer#setFLV()
 	 */
-	public void setFLV(FLV flv) {
+	public void setFLV(IFLV flv) {
 		this.flv = flv;
 	}
 
@@ -138,7 +138,7 @@ public class WriterImpl implements Writer {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Writer#writeTag(org.red5.io.flv.Tag)
 	 */
-	public boolean writeTag(Tag tag) throws IOException {
+	public boolean writeTag(ITag tag) throws IOException {
 		// PreviousTagSize
 		//out = out.reset();
 		out.clear();
