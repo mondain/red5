@@ -23,75 +23,43 @@ package org.red5.io.flv;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import org.apache.mina.common.ByteBuffer;
+
+import org.red5.io.object.Deserializer;
+import org.red5.io.object.Serializer;
 
 /**
- * A Writer is used to write the contents of a FLV file
+ * A FLVService sets up the service and hands out FLV objects to 
+ * its callers
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public interface Writer {
-	
-	/**
-	 * Return a FLV object
-	 * @return FLV flvObject
-	 */
-	public FLV getFLV();
-	
-	/**
-	 * Return the offset
-	 * @return int offset
-	 */
-	public int getOffset();
-	
-	/**
-	 * Return the bytes written
-	 * @return long bytesWritten
-	 */
-	public long getBytesWritten();
-	
-	/**
-	 * Writes the header bytes
-	 * @throws IOException 
-	 */
-	public void writeHeader() throws IOException;
-	
-	/**
-	 * Writes a Tag object
-	 * @param tag
-	 * @return boolean 
-	 * @throws IOException
-	 */
-	public boolean writeTag(Tag tag) throws IOException;
-	
-	/**
-	 * Write a Tag using bytes
-	 * @param type
-	 * @param data
-	 * @return boolean
-	 * @throws IOException
-	 */
-	public boolean writeTag(byte type, ByteBuffer data) throws IOException;
-	
-	/**
-	 * Write a Stream to disk using bytes
-	 * @param b
-	 * @return boolean
-	 * @throws IOException
-	 */
-	public boolean writeStream(byte[] b);
-	
-	
-	/**
-	 * Closes a Writer
-	 * @return void
-	 */
-	public void close();
+public interface IFLVService {
 
+	/**
+	 * Sets the serializer
+	 * @param serializer
+	 */
+	public void setSerializer(Serializer serializer);
 	
+	/**
+	 * Sets the deserializer
+	 * @param deserializer
+	 */
+	public void setDeserializer(Deserializer deserializer);
+	
+	/**
+	 * Returns a FLV object based on the File parameter
+	 * @param file
+	 */
+	public IFLV getFLV(File file) throws IOException;
+
+
 }

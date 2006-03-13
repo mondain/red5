@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.mina.common.ByteBuffer;
-import org.red5.io.flv.KeyFrameDataAnalyzer.KeyFrameMeta;
+import org.red5.io.flv.IKeyFrameDataAnalyzer.KeyFrameMeta;
 import org.red5.io.utils.IOUtils;
 
 /*
@@ -45,14 +45,14 @@ import org.red5.io.utils.IOUtils;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
+public class ReaderImpl implements IReader, IKeyFrameDataAnalyzer {
 	
 	private FileInputStream fis = null;
 	private FLVHeader header = null;
 	private FileChannel channel = null;
 	private MappedByteBuffer mappedFile = null;
 	private ByteBuffer in = null;
-	private Tag tag = null;
+	private ITag tag = null;
 	
 	public ReaderImpl(FileInputStream f) {
 		this.fis = f;
@@ -80,7 +80,7 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Reader#getFLV()
 	 */
-	public FLV getFLV() {
+	public IFLV getFLV() {
 		// TODO Auto-generated method stub
 		// TODO wondering if we need to have a reference
 		return null;
@@ -112,7 +112,7 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Reader#readTag()
 	 */
-	synchronized public Tag readTag() {
+	synchronized public ITag readTag() {
 		tag = readTagHeader();
 		
 		ByteBuffer body = ByteBuffer.allocate(tag.getBodySize());
@@ -149,8 +149,8 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 		in.position(9);
 		while(this.hasMoreTags()) {
 			int pos = in.position();
-			Tag tmpTag = this.readTagHeader();
-			if(tmpTag.getDataType() == Tag.TYPE_VIDEO) {
+			ITag tmpTag = this.readTagHeader();
+			if(tmpTag.getDataType() == ITag.TYPE_VIDEO) {
 				// Grab Frame type
 				byte frametype = in.get();
 				if((frametype & 0xf0) == 0x10) {
@@ -184,7 +184,7 @@ public class ReaderImpl implements Reader, KeyFrameDataAnalyzer {
 	 * Read only header part of a tag
 	 * @return
 	 */
-	private Tag readTagHeader() {
+	private ITag readTagHeader() {
 		// PREVIOUS TAG SIZE
 		int previousTagSize = in.getInt();
 		

@@ -42,7 +42,7 @@ import org.red5.io.object.Serializer;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class FLVServiceImpl implements FLVService {
+public class FLVServiceImpl implements IFLVService {
 	private Serializer serializer;
 	private Deserializer deserializer;
 	
@@ -65,8 +65,8 @@ public class FLVServiceImpl implements FLVService {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
 	 */
-	public FLV getFLV(File file) throws IOException {
-		FLV flv = new FLVImpl(file); 
+	public IFLV getFLV(File file) throws IOException {
+		IFLV flv = new FLVImpl(file); 
 		return flv;
 	}
 	

@@ -33,7 +33,7 @@ import org.apache.mina.common.ByteBuffer;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public interface Tag {
+public interface ITag {
 
 	public static final byte TYPE_VIDEO = 0x09;
 	public static final byte TYPE_AUDIO = 0x08;

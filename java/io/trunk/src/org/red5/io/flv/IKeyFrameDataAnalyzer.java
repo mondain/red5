@@ -3,7 +3,7 @@ package org.red5.io.flv;
 import java.io.Serializable;
 
 
-public interface KeyFrameDataAnalyzer {
+public interface IKeyFrameDataAnalyzer {
 
 	public KeyFrameMeta analyzeKeyFrames();
 	

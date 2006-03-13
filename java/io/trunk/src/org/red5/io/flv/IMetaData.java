@@ -40,7 +40,7 @@ import java.util.Map;
  *  private int width = 320;
  *  private int duration = 7.347;
  */
-public interface MetaData {
+public interface IMetaData {
 	
 	/**
 	 * Returns a boolean depending on whether the video can

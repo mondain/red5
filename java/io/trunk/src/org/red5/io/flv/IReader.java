@@ -31,13 +31,13 @@ package org.red5.io.flv;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public interface Reader extends KeyFrameDataAnalyzer {
+public interface IReader extends IKeyFrameDataAnalyzer {
 
 	/**
 	 * Returns a FLV object
 	 * @return FLV
 	 */
-	public FLV getFLV();
+	public IFLV getFLV();
 	
 	/**
 	 * Returns the offet length
@@ -61,7 +61,7 @@ public interface Reader extends KeyFrameDataAnalyzer {
 	 * Returns a Tag object
 	 * @return Tag
 	 */
-	public Tag readTag();
+	public ITag readTag();
 	
 	/**
 	 * Closes the Reader

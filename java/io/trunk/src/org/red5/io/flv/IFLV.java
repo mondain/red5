@@ -63,32 +63,32 @@ public interface IFLV {
 	 * Returns a Reader to parse and read the flv file
 	 * @return Reader reader
 	 */
-	public Reader reader() throws IOException;
+	public IReader reader() throws IOException;
 	
 	/**
 	 * Returns a Reader closest to the nearest keyframe
 	 * @param int seekPoint
 	 * @return Reader reader
 	 */
-	public Reader readerFromNearestKeyFrame(int seekPoint);
+	public IReader readerFromNearestKeyFrame(int seekPoint);
 	
 	/**
 	 * Returns a Writer
 	 * @return Writer writer
 	 */
-	public Writer writer() throws IOException;
+	public IWriter writer() throws IOException;
 
 	/**
 	 * Returns a Writer which is setup to append to flv
 	 * @return Writer writer
 	 */
-	public Writer append() throws IOException;
+	public IWriter append() throws IOException;
 	
 	/**
 	 * Returns a Writer based on the nearest key frame
 	 * @param int seekPoint
 	 * @return Writer writer
 	 */
-	public Writer writerFromNearestKeyFrame(int seekPoint);
+	public IWriter writerFromNearestKeyFrame(int seekPoint);
 	
 }
