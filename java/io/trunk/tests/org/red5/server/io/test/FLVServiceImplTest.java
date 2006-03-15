@@ -35,15 +35,15 @@ import java.util.TreeSet;
 
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.amf.Output;
-import org.red5.io.flv.FLV;
+import org.red5.io.flv.IFLV;
 import org.red5.io.flv.FLVImpl;
-import org.red5.io.flv.FLVService;
+import org.red5.io.flv.IFLVService;
 import org.red5.io.flv.FLVServiceImpl;
 import org.red5.io.flv.MetaDataImpl;
-import org.red5.io.flv.Reader;
-import org.red5.io.flv.Tag;
+import org.red5.io.flv.IReader;
+import org.red5.io.flv.ITag;
 import org.red5.io.flv.TagImpl;
-import org.red5.io.flv.Writer;
+import org.red5.io.flv.IWriter;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
 import org.red5.io.utils.IOUtils;
@@ -59,7 +59,7 @@ import junit.framework.TestCase;
  * @version 0.3
  */
 public class FLVServiceImplTest extends TestCase {
-	private FLVService service;
+	private IFLVService service;
 	
 	/**
 	 * SetUp is called before each test
@@ -95,7 +95,7 @@ public class FLVServiceImplTest extends TestCase {
 	}
 	*/
 	
-	private void printTag(Tag tag) {
+	private void printTag(ITag tag) {
 		System.out.println("tag:\n-------\n" + tag);
 	}
 
@@ -108,11 +108,11 @@ public class FLVServiceImplTest extends TestCase {
 	public void testFLVFile() throws FileNotFoundException, IOException  {
 		File f = new File("tests/test_cue.flv");
 		System.out.println("test: " + f);
-		FLV flv = service.getFLV(f);	
+		IFLV flv = service.getFLV(f);	
 		System.out.println("test: " + flv);
-		Reader reader = flv.reader();
+		IReader reader = flv.reader();
 		System.out.println("test: " + reader);
-		Tag tag = null;
+		ITag tag = null;
 		System.out.println("test: " + reader.hasMoreTags());
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
@@ -200,9 +200,9 @@ public class FLVServiceImplTest extends TestCase {
 	}
 	*/
 	
-	private void writeTags(Reader reader, Writer writer) throws IOException {
+	private void writeTags(IReader reader, IWriter writer) throws IOException {
 		
-		Tag tag = null;
+		ITag tag = null;
 		
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
