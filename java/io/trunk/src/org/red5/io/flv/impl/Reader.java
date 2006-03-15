@@ -1,4 +1,4 @@
-package org.red5.io.impl;
+package org.red5.io.flv.impl;
 
 import java.io.FileInputStream;
 import java.io.IOException;

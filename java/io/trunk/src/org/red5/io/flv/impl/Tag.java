@@ -1,4 +1,4 @@
-package org.red5.io.impl;
+package org.red5.io.flv.impl;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
