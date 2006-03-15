@@ -36,13 +36,13 @@ import java.util.TreeSet;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.amf.Output;
 import org.red5.io.flv.IFLV;
-import org.red5.io.flv.FLVImpl;
+import org.red5.io.flv.impl.FLV;
 import org.red5.io.flv.IFLVService;
-import org.red5.io.flv.FLVServiceImpl;
-import org.red5.io.flv.MetaDataImpl;
+import org.red5.io.flv.impl.FLVService;
+import org.red5.io.flv.impl.MetaData;
 import org.red5.io.flv.IReader;
 import org.red5.io.flv.ITag;
-import org.red5.io.flv.TagImpl;
+import org.red5.io.flv.impl.Tag;
 import org.red5.io.flv.IWriter;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
@@ -66,7 +66,7 @@ public class FLVServiceImplTest extends TestCase {
 	 * @return void
 	 */
 	public void setUp() {
-		service = new FLVServiceImpl();
+		service = new FLVService();
 		service.setSerializer(new Serializer());
 		service.setDeserializer(new Deserializer());
 	}

@@ -10,11 +10,11 @@ import org.apache.mina.common.ByteBuffer;
 import org.red5.io.amf.Output;
 import org.red5.io.flv.IFLV;
 import org.red5.io.flv.IFLVService;
-import org.red5.io.flv.FLVServiceImpl;
-import org.red5.io.flv.MetaDataImpl;
+import org.red5.io.flv.impl.FLVService;
+import org.red5.io.flv.impl.MetaData;
 import org.red5.io.flv.IReader;
 import org.red5.io.flv.ITag;
-import org.red5.io.flv.TagImpl;
+import org.red5.io.flv.impl.Tag;
 import org.red5.io.flv.IWriter;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
@@ -32,7 +32,7 @@ public class MetaDataInjectionTest extends TestCase {
 	 * @return void
 	 */
 	public void setUp() {
-		service = new FLVServiceImpl();
+		service = new FLVService();
 		service.setSerializer(new Serializer());
 		service.setDeserializer(new Deserializer());
 	}
@@ -66,19 +66,19 @@ public class MetaDataInjectionTest extends TestCase {
 	private void writeTagsWithInjection(IReader reader, IWriter writer) throws IOException {
 		ITag tag = null;
 		
-		MetaDataImpl mdi1 = new MetaDataImpl("mdi1");
+		MetaData mdi1 = new MetaData("mdi1");
 		mdi1.setTimestamp(100);
 		mdi1.put("name", "test1");
 		
-		MetaDataImpl mdi2 = new MetaDataImpl("mdi2");
+		MetaData mdi2 = new MetaData("mdi2");
 		mdi2.setTimestamp(150);
 		mdi2.put("name", "test2");
 		
-		MetaDataImpl mdi3 = new MetaDataImpl("mdi3");
+		MetaData mdi3 = new MetaData("mdi3");
 		mdi3.setTimestamp(300);
 		mdi3.put("name", "test3333");
 		
-		MetaDataImpl mdi4 = new MetaDataImpl("mdi3");
+		MetaData mdi4 = new MetaData("mdi3");
 		mdi4.setTimestamp(300);
 		mdi4.put("name", "test3333");
 		
@@ -91,15 +91,15 @@ public class MetaDataInjectionTest extends TestCase {
 		ts.add(mdi3);
 						
 		System.out.println("ts: " + ts);
-		int tmpTimeStamp = ((MetaDataImpl) ts.first()).getTimestamp();
-		TagImpl injectedTag = null;
+		int tmpTimeStamp = ((MetaData) ts.first()).getTimestamp();
+		Tag injectedTag = null;
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
 			
 			if(!ts.isEmpty()) {
 				
 				while(tag.getTimestamp() > tmpTimeStamp) {
-					injectedTag = (TagImpl) injectMetaData(ts.first(), writer, tag);
+					injectedTag = (Tag) injectMetaData(ts.first(), writer, tag);
 					writer.writeTag(injectedTag);
 					System.out.println("BodySize: " + injectedTag.getBodySize());
 					
@@ -108,7 +108,7 @@ public class MetaDataInjectionTest extends TestCase {
 					if(ts.isEmpty()) {
 						break;						
 					}
-					tmpTimeStamp = ((MetaDataImpl) ts.first()).getTimestamp();
+					tmpTimeStamp = ((MetaData) ts.first()).getTimestamp();
 				}
 				
 			}
@@ -135,7 +135,7 @@ public class MetaDataInjectionTest extends TestCase {
 		Output out = new Output(buf);
 		Serializer ser = new Serializer();
 				
-		MetaDataImpl tmpMdi = (MetaDataImpl) mdi;
+		MetaData tmpMdi = (MetaData) mdi;
 		
 		out.buf().clear();
 		ser.serialize(out, tmpMdi);
@@ -147,7 +147,7 @@ public class MetaDataInjectionTest extends TestCase {
 		tmpTimestamp = tmpMdi.getTimestamp();
 
 		
-		retTag = new TagImpl(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody, tmpPreviousTagSize);
+		retTag = new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody, tmpPreviousTagSize);
 		System.out.println("tmpBody: " + tmpBody);
 		System.out.println("tmpBodySize: " + tmpBodySize);
 		System.out.println("tmpDataType: " + tmpDataType);
@@ -157,13 +157,13 @@ public class MetaDataInjectionTest extends TestCase {
 	}
 
 	public void testMetaDataOrder() {
-		MetaDataImpl mdi1 = new MetaDataImpl("mdi1");
+		MetaData mdi1 = new MetaData("mdi1");
 		mdi1.setTimestamp(100);
 		
-		MetaDataImpl mdi2 = new MetaDataImpl("mdi2");
+		MetaData mdi2 = new MetaData("mdi2");
 		mdi2.setTimestamp(50);
 		
-		MetaDataImpl mdi3 = new MetaDataImpl("mdi3");
+		MetaData mdi3 = new MetaData("mdi3");
 		mdi3.setTimestamp(0);
 		
 		TreeSet ts = new TreeSet();

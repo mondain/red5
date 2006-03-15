@@ -22,7 +22,7 @@ package org.red5.server.io.test;
  * @author Dominick Accattato (daccattato@gmail.com)
  */
 
-import org.red5.io.flv.MetaDataImpl;
+import org.red5.io.flv.impl.MetaData;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -36,10 +36,10 @@ import junit.framework.TestCase;
  * @version 0.3
  */
 public class MetaDataTest extends TestCase {
-	MetaDataImpl data;
+	MetaData data;
 	
 	public MetaDataTest() {
-		data = new MetaDataImpl("test");
+		data = new MetaData("test");
 	}
 	
 	protected void setUp() throws Exception {
