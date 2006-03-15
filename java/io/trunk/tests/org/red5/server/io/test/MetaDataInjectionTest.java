@@ -8,14 +8,14 @@ import java.util.TreeSet;
 
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.amf.Output;
-import org.red5.io.flv.FLV;
-import org.red5.io.flv.FLVService;
+import org.red5.io.flv.IFLV;
+import org.red5.io.flv.IFLVService;
 import org.red5.io.flv.FLVServiceImpl;
 import org.red5.io.flv.MetaDataImpl;
-import org.red5.io.flv.Reader;
-import org.red5.io.flv.Tag;
+import org.red5.io.flv.IReader;
+import org.red5.io.flv.ITag;
 import org.red5.io.flv.TagImpl;
-import org.red5.io.flv.Writer;
+import org.red5.io.flv.IWriter;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
 import org.red5.io.utils.IOUtils;
@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 
 public class MetaDataInjectionTest extends TestCase {
 
-	private FLVService service;
+	private IFLVService service;
 	
 	/**
 	 * SetUp is called before each test
@@ -63,8 +63,8 @@ public class MetaDataInjectionTest extends TestCase {
 	*/
 
 	
-	private void writeTagsWithInjection(Reader reader, Writer writer) throws IOException {
-		Tag tag = null;
+	private void writeTagsWithInjection(IReader reader, IWriter writer) throws IOException {
+		ITag tag = null;
 		
 		MetaDataImpl mdi1 = new MetaDataImpl("mdi1");
 		mdi1.setTimestamp(100);
@@ -120,10 +120,10 @@ public class MetaDataInjectionTest extends TestCase {
 		
 	}
 		
-	private Tag injectMetaData(Object mdi, Writer writer, Tag tag) {
+	private ITag injectMetaData(Object mdi, IWriter writer, ITag tag) {
 		System.out.println("in inject");
 		
-		Tag retTag = null;
+		ITag retTag = null;
 		
 		byte tmpDataType = 0x00;
 		int tmpTimestamp = 0;
@@ -143,7 +143,7 @@ public class MetaDataInjectionTest extends TestCase {
 		tmpBody = out.buf().flip();		
 		tmpBodySize = out.buf().limit();	
 		tmpPreviousTagSize = tag.getPreviousTagSize();
-		tmpDataType = ((byte)(Tag.TYPE_METADATA));
+		tmpDataType = ((byte)(ITag.TYPE_METADATA));
 		tmpTimestamp = tmpMdi.getTimestamp();
 
 		
