@@ -14,7 +14,7 @@
 							<element name="size" type="string"></element>
 							<element name="modified" type="string">
 							</element>
-							<element name="meta">
+							<element name="meta" maxOccurs="unbounded">
 								<complexType>
 									<sequence>
 										<element name="position"
