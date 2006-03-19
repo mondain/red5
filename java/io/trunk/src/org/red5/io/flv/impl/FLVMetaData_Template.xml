@@ -22,6 +22,10 @@
       <position>Position3</position>
       <timestamp>TimeStamp3</timestamp>
     </meta>
+    <meta>
+      <position>Position4</position>
+      <timestamp>TimeStamp4</timestamp>
+    </meta>
   </file>
   <file>
   	<name>
