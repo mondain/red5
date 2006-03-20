@@ -71,18 +71,18 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 		Object next = list.get(idx);
 		if (! (next instanceof Byte)) return true;
 		Byte b = (Byte) next;
-		return (b.byteValue() != Mock.TYPE_END_OF_LIST);
+		return (b.byteValue() != Mock.TYPE_END_OF_MAP);
 	}
 
-	public int readItemIndex() {
+	public String readItemKey() {
+		return (String) getNext();
+	}
+
+	public int readStartMap() {
 		return ((Integer) getNext()).intValue();
 	}
 
-	public int readStartList() {
-		return ((Integer) getNext()).intValue();
-	}
-
-	public void skipEndList() {
+	public void skipEndMap() {
 		getNext();
 	}
 

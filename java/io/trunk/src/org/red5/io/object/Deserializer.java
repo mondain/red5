@@ -86,8 +86,8 @@ public class Deserializer {
 			case DataTypes.CORE_ARRAY:
 				result = readArray(in);
 				break;
-			case DataTypes.CORE_LIST:
-				result = readList(in);
+			case DataTypes.CORE_MAP:
+				result = readMap(in);
 				break;
 			case DataTypes.CORE_XML:
 				result = readXML(in);
@@ -113,60 +113,57 @@ public class Deserializer {
 	/**
 	 * Reads the input and returns an array of Objects
 	 * @param in
-	 * @return Object
+	 * @return ArrayList
 	 */
-	protected Object readArray(Input in){
+	protected ArrayList readArray(Input in){
 		if(log.isDebugEnabled()) {
 			log.debug("Read array");
 		}
 		final int arraySize = in.readStartArray();
-		Object[] array = new Object[arraySize];
-		in.storeReference(array);
+		ArrayList list = new ArrayList(arraySize);
+		in.storeReference(list);
 		for(int i=0; i<arraySize; i++){
-			array[i] = deserialize(in);
+			list.add(deserialize(in));
 			in.skipElementSeparator();
 		}
 		in.skipEndArray();
- 		return array;
+ 		return list;
 	}
 	
 	/**
-	 * Reads the input and returns a List
+	 * Reads the input and returns a Map
 	 * @param in
 	 * @return List
 	 */
-	protected List readList(Input in){
+	protected Map readMap(Input in){
 		if(log.isDebugEnabled()) {
-			log.debug("read list");
+			log.debug("read map");
 		}
 		
-		int highestIndex = in.readStartList();
+		int size = in.readStartMap();
 		
 		if(log.isDebugEnabled()) {
-			log.debug("Read start list: "+highestIndex);
+			log.debug("Read start map: "+size);
 		}
 		
-		List list = new ArrayList(highestIndex);
-		for(int i=0; i<highestIndex; i++){
-			list.add(i, null); // fill with null
-		}
+		final HashMap map = new HashMap();
 			
-		in.storeReference(list);
+		in.storeReference(map);
 		while(in.hasMoreItems()){
-			int index = in.readItemIndex();
+			String key = in.readItemKey();
 			if(log.isDebugEnabled()) {
-				log.debug("index: "+index);
+				log.debug("key: "+key);
 			}
 			Object item = deserialize(in);
 			if(log.isDebugEnabled()) {
 				log.debug("item: "+item);
 			}
-			list.set(index, item);
+			map.put(key, item);
 			if(in.hasMoreItems()) 
 				in.skipItemSeparator();
 		}
-		in.skipEndList();
-		return list;
+		in.skipEndMap();
+		return map;
 	}
 	
 	/**
@@ -205,7 +202,7 @@ public class Deserializer {
 				return readBean(in, instance);
 			} // else fall through
 		} 
-		return readMap(in);
+		return readSimpleObject(in);
 	}
 	
 	/**
@@ -252,7 +249,7 @@ public class Deserializer {
 	 * @param in
 	 * @return Map
 	 */
-	protected Map readMap(Input in){
+	protected Map readSimpleObject(Input in){
 		if(log.isDebugEnabled()) {
 			log.debug("read map");
 		}

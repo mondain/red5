@@ -47,10 +47,10 @@ public interface Output {
 	void markElementSeparator();
 	void markEndArray();
 	
-	void writeStartList(int highestIndex);
-	void writeItemIndex(int index);
+	void writeStartMap(int size);
+	void writeItemKey(String key);
 	void markItemSeparator();
-	void markEndList();
+	void markEndMap();
 	
 	void writeStartObject(String classname);
 	void writePropertyName(String name);

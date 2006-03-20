@@ -39,8 +39,8 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 		list.add(new Byte(Mock.TYPE_END_OF_OBJECT));
 	}
 	
-	public void markEndList(){
-		list.add(new Byte(Mock.TYPE_END_OF_LIST));
+	public void markEndMap(){
+		list.add(new Byte(Mock.TYPE_END_OF_MAP));
 	}
 
 	// DONE
@@ -89,8 +89,8 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 		list.add(name);
 	}
 	
-	public void writeItemIndex(int index) {
-		list.add(new Integer(index));
+	public void writeItemKey(String key) {
+		list.add(key);
 	}
 
 	public void writeReference(Object obj) {
@@ -103,8 +103,8 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 		list.add(new Integer(length));
 	}
 	
-	public void writeStartList(int highestIndex) {
-		list.add(new Byte(DataTypes.CORE_LIST));
+	public void writeStartMap(int highestIndex) {
+		list.add(new Byte(DataTypes.CORE_MAP));
 		list.add(new Integer(highestIndex));
 	}
 

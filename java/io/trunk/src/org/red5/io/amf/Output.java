@@ -59,7 +59,7 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 	}
 	
 	// DONE
-	public void markEndList() {
+	public void markEndMap() {
 		markEndObject();
 	}
 
@@ -128,7 +128,7 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 		buf.putShort(getReferenceId(obj));
 	}
 	
-	public void writeStartList(int length) {
+	public void writeStartMap(int length) {
 		buf.put(AMF.TYPE_MIXED_ARRAY);
 		buf.putInt(length);
 	}
@@ -137,10 +137,10 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 		// nothing
 	}
 
-	public void writeItemIndex(int index) {
-		writePropertyName(Integer.toString(index));
+	public void writeItemKey(String key) {
+		writePropertyName(key);
 	}
-
+	
 	public void writeStartArray(int length) {
 		buf.put(AMF.TYPE_ARRAY);
 		buf.putInt(length);

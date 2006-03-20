@@ -150,18 +150,42 @@ public class Serializer {
 	 * @param list
 	 */
 	protected void writeList(Output out, List list){
+		// if its a small list, write it as an array
+		if(list.size() < 100 ) writeListAsArray(out, list);
+		// else we should check for lots of null values,
+		// if there are over 80% then its probably best to do it as a map
 		int size = list.size();
-		out.writeStartList(size);
+		int nullCount = 0;
+		for(int i=0; i<size; i++) if(list.get(i)==null) nullCount++;
+		if(nullCount > (size * 0.8)) writeListAsMap(out, list);
+		else writeListAsArray(out, list);
+	}
+	
+	protected void writeListAsMap(Output out, List list){
+		int size = list.size();
+		out.writeStartMap(size);
 		for(int i=0; i<size; i++){
 			Object item = list.get(i);
 			if(item!=null){
-				out.writeItemIndex(i);
+				out.writeItemKey(Integer.toString(i));
 				serialize(out, item);
 				out.markItemSeparator();
 			}
 		}
-		out.markEndList();
+		out.markEndMap();
 	}
+	
+	protected void writeListAsArray(Output out, List list){
+		int size = list.size();
+		out.writeStartArray(size);
+		for(int i=0; i<size; i++){
+			if(i>0) out.markElementSeparator();
+			//log.info(i);
+			serialize(out, list.get(i));
+		}
+		out.markEndMap();
+	}
+	
 	
 	/**
 	 * Writes an Array type out as output
@@ -308,18 +332,19 @@ public class Serializer {
 		if(log.isDebugEnabled()) {
 			log.debug("writeMap");
 		}
-		out.writeStartObject(null);
-		Set set = map.entrySet();
+		
+		final Set set = map.entrySet();
+		out.writeStartMap(set.size());
 		Iterator it = set.iterator();
 		boolean isBeanMap = (map instanceof BeanMap);
 		while(it.hasNext()){
 			Map.Entry entry = (Map.Entry) it.next();
 			if(isBeanMap && ((String)entry.getKey()).equals("class")) continue;
-			out.writePropertyName(entry.getKey().toString());
+			out.writeItemKey(entry.getKey().toString());
 			serialize(out,entry.getValue());
 			if(it.hasNext()) out.markPropertySeparator();
 		}
-		out.markEndObject();
+		out.markEndMap();
 	}
 	
 	/**
@@ -339,7 +364,6 @@ public class Serializer {
 			BeanMap.Entry entry = (BeanMap.Entry) it.next();
 			if(entry.getKey().toString().equals("class")) continue;
 			out.writePropertyName(entry.getKey().toString());
-			
 			//log.info(entry.getKey().toString()+" = "+entry.getValue());
 			serialize(out,entry.getValue());
 			if(it.hasNext()) out.markPropertySeparator();
