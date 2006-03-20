@@ -48,11 +48,11 @@ public interface Input {
 	void skipElementSeparator();
 	void skipEndArray();
 	
-	int readStartList();
-	int readItemIndex();
+	int readStartMap();
+	String readItemKey();
 	void skipItemSeparator();
 	boolean hasMoreItems();
-	void skipEndList();
+	void skipEndMap();
 	
 	String readStartObject();
 	String readPropertyName();

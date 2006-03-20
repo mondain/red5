@@ -99,7 +99,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 				break;
 			
 			case AMF.TYPE_MIXED_ARRAY:
-				coreType = DataTypes.CORE_LIST;
+				coreType = DataTypes.CORE_MAP;
 				break;
 				
 			case AMF.TYPE_ARRAY:
@@ -161,14 +161,12 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	 */
 	public Number readNumber() {
 		double num = buf.getDouble();
-		//if(num < Byte.MAX_VALUE) 
-		//	return new Byte( (byte) num);
-		//if(num < Short.MAX_VALUE) 
-		//	return new Short( (short) num);
-		//if(num < Integer.MAX_VALUE) 
-		//	return new Integer( (int) num);
-		//else 
-		return new Double(num);
+		if(num == (double) Math.round(num)){
+			if(num < Integer.MAX_VALUE) 
+				return new Integer( (int) num);
+			else 
+				return new Long(Math.round(num));
+		} else return new Double(num);
 	}
 
 	/**
@@ -266,7 +264,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	 * Reads start list
 	 * @return int
 	 */	
-	public int readStartList() {
+	public int readStartMap() {
 		return buf.getInt();
 	}
 
@@ -282,8 +280,8 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	 * Reads the item index
 	 * @return int
 	 */
-	public int readItemIndex() {
-		return Integer.parseInt(getString(buf));
+	public String readItemKey() {
+		return getString(buf);
 	}
 
 	/**
@@ -298,7 +296,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	 * Skips end list
 	 * @return void
 	 */
-	public void skipEndList(){
+	public void skipEndMap(){
 		skipEndObject();
 	}
 	

@@ -77,7 +77,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 			
 			case AMF3.TYPE_ARRAY:
 				// should we map this to list or array?
-				coreType = DataTypes.CORE_LIST;
+				coreType = DataTypes.CORE_ARRAY;
 				break;
 								
 			case AMF3.TYPE_DATE:
@@ -199,7 +199,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	 * Reads start list
 	 * @return int
 	 */	
-	public int readStartList() {
+	public int readStartMap() {
 		return buf.getInt();
 	}
 
@@ -215,8 +215,8 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	 * Reads the item index
 	 * @return int
 	 */
-	public int readItemIndex() {
-		return 0;
+	public String readItemKey() {
+		return "";
 	}
 
 	/**
@@ -231,7 +231,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	 * Skips end list
 	 * @return void
 	 */
-	public void skipEndList(){
+	public void skipEndMap(){
 		skipEndObject();
 	}
 	
