@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.red5.io.flv.impl;
+package org.red5.io.flv.meta;
 /*
  * * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
@@ -27,7 +27,6 @@ package org.red5.io.flv.impl;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import org.red5.io.flv.IMetaData;
 
 /**
  * MetaData Implementation
@@ -36,19 +35,27 @@ import org.red5.io.flv.IMetaData;
  * @author daccattato (daccattato@gmail.com)
  * @version 0.3
  */
-public class MetaData extends HashMap implements IMetaData, Comparable, Serializable {
+public class MetaData extends HashMap implements IMetaData, Serializable {
 	
-	private boolean canSeekToEnd = true;
-	private int videocodecid = 4;
-	private int framerate = 15;
-	private int videodatarate = 400;
-	private int height;
-	private int width = 320;
-	private double duration = 7.347;
+//	private boolean canSeekToEnd = true;
+//	private int videocodecid = 4;
+//	private int framerate = 15;
+//	private int videodatarate = 600;
+//	private int height;
+//	private int width = 320;
+//	private double duration = 7.347;
 	
-	private int timestamp = 0;
+	/**
+	 * serialVersionUID = -5681069577717669925L;
+	 */
+	private static final long serialVersionUID = -5681069577717669925L;
+	
 	private String name = null;
 	
+	/**
+	 * MetaData constructor
+	 * @param string
+	 */
 	public MetaData(String string) {
 		this.name  = string;
 	}
@@ -65,7 +72,6 @@ public class MetaData extends HashMap implements IMetaData, Comparable, Serializ
 	 * @see org.red5.io.flv.MetaData#setCanSeekToEnd(boolean)
 	 */
 	public void setCanSeekToEnd(boolean b) {
-		canSeekToEnd = b;
 		this.put("canSeekToEnd", new Boolean(b));
 	}
 
@@ -81,7 +87,6 @@ public class MetaData extends HashMap implements IMetaData, Comparable, Serializ
 	 * @see org.red5.io.flv.MetaData#setVideoCodecId(int)
 	 */
 	public void setVideoCodecId(int id) {
-		videocodecid = id;
 		this.put("videocodecid", new Integer(id));
 	}
 
@@ -97,7 +102,6 @@ public class MetaData extends HashMap implements IMetaData, Comparable, Serializ
 	 * @see org.red5.io.flv.MetaData#setframeRate(int)
 	 */
 	public void setframeRate(int rate) {
-		framerate = rate;
 		this.put("framerate", new Integer(rate));
 	}
 
@@ -113,16 +117,8 @@ public class MetaData extends HashMap implements IMetaData, Comparable, Serializ
 	 * @see org.red5.io.flv.MetaData#setVideoDataRate(int)
 	 */
 	public void setVideoDataRate(int rate) {
-		videodatarate = rate;
 		this.put("videodatarate", new Integer(rate));
 	}
-
-
-
-	/* (non-Javadoc)
-	 * @see org.red5.io.flv.MetaData#setHeight(int)
-	 */
-	
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getWidth()
@@ -136,7 +132,6 @@ public class MetaData extends HashMap implements IMetaData, Comparable, Serializ
 	 * @see org.red5.io.flv.MetaData#setWidth(int)
 	 */
 	public void setWidth(int w) {
-		width = w;
 		this.put("width", new Integer(w));
 	}
 
@@ -152,40 +147,22 @@ public class MetaData extends HashMap implements IMetaData, Comparable, Serializ
 	 * @see org.red5.io.flv.MetaData#setDuration(int)
 	 */
 	public void setDuration(double d) {
-		duration = d;
 		this.put("duration", new Double(d));
 	}
 
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.MetaData#getHeight()
+	 */
 	public int getHeight() {
 		int height = ((Integer)this.get("height")).intValue();
 		return height;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.red5.io.flv.MetaData#setHeight(int)
+	 */
 	public void setHeight(int h) {
-		this.height = h;
 		this.put("height", new Integer(h));
-	}
-
-	public int compareTo(Object arg0) {		
-		MetaData mdi = (MetaData) arg0;
-		int mdiTime = mdi.getTimestamp();
-		int thisTime = this.getTimestamp();
-		
-		if(mdiTime > thisTime) {
-			return -1;
-		} else if(mdiTime < thisTime) {
-			return 1;
-		}
-		
-		return 0;
-	}
-
-	public int getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(int timestamp) {
-		this.timestamp = timestamp;
 	}
 	
 	public String toString() {

@@ -22,7 +22,7 @@ package org.red5.server.io.test;
  * @author Dominick Accattato (daccattato@gmail.com)
  */
 
-import org.red5.io.flv.impl.MetaData;
+import org.red5.io.flv.meta.MetaData;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
