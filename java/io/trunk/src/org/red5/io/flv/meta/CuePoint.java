@@ -1,4 +1,4 @@
-package org.red5.io.flv.impl;
+package org.red5.io.flv.meta;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -23,15 +23,15 @@ package org.red5.io.flv.impl;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
+import java.io.Serializable;
 import java.util.HashMap;
-import org.red5.io.flv.ICuePoint;
 
 /**
  * @author The Red5 Project (red5@osflash.org)
  * @author daccattato(daccattato@gmail.com)
  * @version 0.3
  */
-public class CuePoint extends HashMap implements ICuePoint {
+public class CuePoint extends HashMap implements ICuePoint, Serializable {
 
 	/**
 	 * SerialVersionUID = -1769771340654996861L;

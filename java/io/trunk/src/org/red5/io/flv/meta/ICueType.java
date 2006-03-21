@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.red5.io.flv;
+package org.red5.io.flv.meta;
 
 /**
  * @author The Red5 Project (red5@osflash.org)

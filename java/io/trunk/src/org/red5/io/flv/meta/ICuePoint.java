@@ -1,4 +1,4 @@
-package org.red5.io.flv;
+package org.red5.io.flv.meta;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5

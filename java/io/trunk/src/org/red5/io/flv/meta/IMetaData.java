@@ -1,4 +1,4 @@
-package org.red5.io.flv;
+package org.red5.io.flv.meta;
 
 import java.util.Map;
 

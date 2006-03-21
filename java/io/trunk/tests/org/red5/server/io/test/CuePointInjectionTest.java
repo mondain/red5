@@ -40,17 +40,16 @@ import java.util.Vector;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.amf.AMF;
 import org.red5.io.amf.Output;
-import org.red5.io.flv.ICueType;
-import org.red5.io.flv.ICuePoint;
 import org.red5.io.flv.IFLV;
 import org.red5.io.flv.IFLVService;
-import org.red5.io.flv.impl.CuePoint;
 import org.red5.io.flv.impl.FLVService;
-import org.red5.io.flv.impl.MetaData;
-import org.red5.io.flv.impl.MetaData1;
 import org.red5.io.flv.IReader;
 import org.red5.io.flv.ITag;
 import org.red5.io.flv.impl.Tag;
+import org.red5.io.flv.meta.CuePoint;
+import org.red5.io.flv.meta.ICuePoint;
+import org.red5.io.flv.meta.ICueType;
+import org.red5.io.flv.meta.MetaData;
 import org.red5.io.flv.IWriter;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
@@ -64,7 +63,7 @@ import junit.framework.TestCase;
  * @author daccattato(daccattato@gmail.com)
  * @version 0.3
  */
-public class MetaDataInjectionTest extends TestCase {
+public class CuePointInjectionTest extends TestCase {
 
 	private IFLVService service;
 	
@@ -82,7 +81,7 @@ public class MetaDataInjectionTest extends TestCase {
 	 * Test MetaData injection
 	 * @throws IOException
 	 */
-	public void testMetaDataInjection() throws IOException {
+	public void testCuePointInjection() throws IOException {
 		File f = new File("tests/test_cue1.flv");
 		
 		if(f.exists()) {			
@@ -148,7 +147,7 @@ public class MetaDataInjectionTest extends TestCase {
 				// cuePointTimeStamp, then inject the tag
 				while(tag.getTimestamp() > cuePointTimeStamp) {
 					
-					injectedTag = (ITag) injectMetaData(ts.first(), tag);
+					injectedTag = (ITag) injectCuePoint(ts.first(), tag);
 					writer.writeTag(injectedTag);					
 					tag.setPreviousTagSize((injectedTag.getBodySize() + 11));
 					
@@ -175,7 +174,7 @@ public class MetaDataInjectionTest extends TestCase {
 	 * @param tag
 	 * @return ITag tag
 	 */
-	private ITag injectMetaData(Object cue, ITag tag) {
+	private ITag injectCuePoint(Object cue, ITag tag) {
 		
 		ICuePoint cp = (CuePoint) cue;
 		Output out = new Output(ByteBuffer.allocate(1000));
@@ -208,7 +207,7 @@ public class MetaDataInjectionTest extends TestCase {
 	 * Test to see if TreeSet is sorting properly
 	 * @return void
 	 */
-	public void testMetaDataOrder() {
+	public void testCuePointOrder() {
 		ICuePoint cue = new CuePoint();
 		cue.setName("cue_1");
 		cue.setTime(0.01);
