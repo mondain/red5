@@ -1,17 +1,53 @@
 package org.red5.server.io.test;
 
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ * 
+ * Copyright © 2006 by respective authors. All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software 
+ * Foundation; either version 2.1 of the License, or (at your option) any later 
+ * version. 
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along 
+ * with this library; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Dominick Accattato (daccattato@gmail.com)
+ * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ */
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.amf.AMF;
 import org.red5.io.amf.Output;
+import org.red5.io.flv.ICueType;
+import org.red5.io.flv.ICuePoint;
 import org.red5.io.flv.IFLV;
 import org.red5.io.flv.IFLVService;
+import org.red5.io.flv.impl.CuePoint;
 import org.red5.io.flv.impl.FLVService;
 import org.red5.io.flv.impl.MetaData;
+import org.red5.io.flv.impl.MetaData1;
 import org.red5.io.flv.IReader;
 import org.red5.io.flv.ITag;
 import org.red5.io.flv.impl.Tag;
@@ -23,6 +59,11 @@ import org.red5.io.utils.IOUtils;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+/**
+ * @author The Red5 Project (red5@osflash.org)
+ * @author daccattato(daccattato@gmail.com)
+ * @version 0.3
+ */
 public class MetaDataInjectionTest extends TestCase {
 
 	private IFLVService service;
@@ -37,9 +78,12 @@ public class MetaDataInjectionTest extends TestCase {
 		service.setDeserializer(new Deserializer());
 	}
 	
-	/*
+	/**
+	 * Test MetaData injection
+	 * @throws IOException
+	 */
 	public void testMetaDataInjection() throws IOException {
-		File f = new File("tests/test_cue3.flv");
+		File f = new File("tests/test_cue1.flv");
 		
 		if(f.exists()) {			
 			f.delete();
@@ -47,129 +91,143 @@ public class MetaDataInjectionTest extends TestCase {
 		
 		// Create new file
 		f.createNewFile();
-		FileOutputStream fos = new FileOutputStream(f);
-		//fos.write((byte)0x01);
-		FLV flv = service.getFLV(fos);
-		Writer writer = flv.writer();
+		
+		// Use service to grab FLV file
+		IFLV flv = service.getFLV(f);
+		
+		// Grab a writer for writing a new FLV
+		IWriter writer = flv.writer();
 		
 		// Create a reader for testing
 		File readfile = new File("tests/test_cue.flv");
-		FileInputStream fis = new FileInputStream(readfile);
-		FLV readflv = service.getFLV(fis);
-		Reader reader = readflv.reader();
+		IFLV readflv = service.getFLV(readfile);
 		
-		writeTagsWithInjection(reader, writer);		
+		// Grab a reader for reading a FLV in
+		IReader reader = readflv.reader();
+		
+		// Inject MetaData
+		writeTagsWithInjection(reader, writer);	
+		
 	}
-	*/
 
-	
+	/**
+	 * Write FLV tags and inject Cue Points
+	 * @param reader
+	 * @param writer
+	 * @throws IOException
+	 */
 	private void writeTagsWithInjection(IReader reader, IWriter writer) throws IOException {
-		ITag tag = null;
+				
+		ICuePoint cp = new CuePoint();
+		cp.setName("cue_1");
+		cp.setTime(0.01);
+		cp.setType(ICueType.EVENT);
 		
-		MetaData mdi1 = new MetaData("mdi1");
-		mdi1.setTimestamp(100);
-		mdi1.put("name", "test1");
-		
-		MetaData mdi2 = new MetaData("mdi2");
-		mdi2.setTimestamp(150);
-		mdi2.put("name", "test2");
-		
-		MetaData mdi3 = new MetaData("mdi3");
-		mdi3.setTimestamp(300);
-		mdi3.put("name", "test3333");
-		
-		MetaData mdi4 = new MetaData("mdi3");
-		mdi4.setTimestamp(300);
-		mdi4.put("name", "test3333");
-		
-		Object o = new Object();
-		
-		// Place in Treeset for sorting
+		ICuePoint cp1 = new CuePoint();
+		cp1.setName("cue_1");
+		cp1.setTime(2.01);
+		cp1.setType(ICueType.EVENT);	
+
+		// Place in TreeSet for sorting
 		TreeSet ts = new TreeSet();
-		ts.add(mdi1);
-		ts.add(mdi2);
-		ts.add(mdi3);
-						
-		System.out.println("ts: " + ts);
-		int tmpTimeStamp = ((MetaData) ts.first()).getTimestamp();
-		Tag injectedTag = null;
+		ts.add(cp);
+		ts.add(cp1);
+		
+		int cuePointTimeStamp = getTimeInMilliseconds(ts.first());		
+		
+		ITag tag = null;
+		ITag injectedTag = null;
+		
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
 			
+			// if there are cuePoints in the TreeSet
 			if(!ts.isEmpty()) {
-				
-				while(tag.getTimestamp() > tmpTimeStamp) {
-					injectedTag = (Tag) injectMetaData(ts.first(), writer, tag);
-					writer.writeTag(injectedTag);
-					System.out.println("BodySize: " + injectedTag.getBodySize());
+	
+				// If the tag has a greater timestamp than the
+				// cuePointTimeStamp, then inject the tag
+				while(tag.getTimestamp() > cuePointTimeStamp) {
 					
+					injectedTag = (ITag) injectMetaData(ts.first(), tag);
+					writer.writeTag(injectedTag);					
 					tag.setPreviousTagSize((injectedTag.getBodySize() + 11));
+					
+					// Advance to the next CuePoint
 					ts.remove(ts.first());
+				
 					if(ts.isEmpty()) {
 						break;						
 					}
-					tmpTimeStamp = ((MetaData) ts.first()).getTimestamp();
-				}
-				
+					
+					cuePointTimeStamp = getTimeInMilliseconds(ts.first());
+				}										
 			}
-			//System.out.println("injectedTag: " + injectedTag);
+			
 			writer.writeTag(tag);
 			
-			//printTag(tag);
 		}
+	}		
+
+	/**
+	 * Injects metadata (Cue Points) into a tag
+	 * @param cue
+	 * @param writer
+	 * @param tag
+	 * @return ITag tag
+	 */
+	private ITag injectMetaData(Object cue, ITag tag) {
 		
-	}
-		
-	private ITag injectMetaData(Object mdi, IWriter writer, ITag tag) {
-		System.out.println("in inject");
-		
-		ITag retTag = null;
-		
-		byte tmpDataType = 0x00;
-		int tmpTimestamp = 0;
-		int tmpBodySize = 0;
-		ByteBuffer tmpBody = null;
-		int tmpPreviousTagSize = 0;
-		
-		ByteBuffer buf = ByteBuffer.allocate(1000);
-		Output out = new Output(buf);
-		Serializer ser = new Serializer();
+		ICuePoint cp = (CuePoint) cue;
+		Output out = new Output(ByteBuffer.allocate(1000));
+		Serializer ser = new Serializer();		
+		ser.serialize(out,"onCuePoint");
+		ser.serialize(out,cp);
 				
-		MetaData tmpMdi = (MetaData) mdi;
+		ByteBuffer tmpBody = out.buf().flip();		
+		int tmpBodySize = out.buf().limit();	
+		int tmpPreviousTagSize = tag.getPreviousTagSize();
+		byte tmpDataType = ((byte)(ITag.TYPE_METADATA));
+		int tmpTimestamp = getTimeInMilliseconds(cp);
+								
+		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody, tmpPreviousTagSize);
 		
-		out.buf().clear();
-		ser.serialize(out, tmpMdi);
-						
-		tmpBody = out.buf().flip();		
-		tmpBodySize = out.buf().limit();	
-		tmpPreviousTagSize = tag.getPreviousTagSize();
-		tmpDataType = ((byte)(ITag.TYPE_METADATA));
-		tmpTimestamp = tmpMdi.getTimestamp();
-
+	}
+	
+	/**
+	 * Returns a timestamp in milliseconds
+	 * @param object
+	 * @return int time
+	 */
+	private int getTimeInMilliseconds(Object object) {
+		ICuePoint cp = (CuePoint) object;		
+		return (int) (cp.getTime() * 1000.00);
 		
-		retTag = new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody, tmpPreviousTagSize);
-		System.out.println("tmpBody: " + tmpBody);
-		System.out.println("tmpBodySize: " + tmpBodySize);
-		System.out.println("tmpDataType: " + tmpDataType);
-		System.out.println("tmpTimestamp: " + tmpTimestamp);
-		
-		return retTag;
 	}
 
+	/**
+	 * Test to see if TreeSet is sorting properly
+	 * @return void
+	 */
 	public void testMetaDataOrder() {
-		MetaData mdi1 = new MetaData("mdi1");
-		mdi1.setTimestamp(100);
+		ICuePoint cue = new CuePoint();
+		cue.setName("cue_1");
+		cue.setTime(0.01);
+		cue.setType(ICueType.EVENT);
 		
-		MetaData mdi2 = new MetaData("mdi2");
-		mdi2.setTimestamp(50);
+		ICuePoint cue1 = new CuePoint();
+		cue1.setName("cue_1");
+		cue1.setTime(2.01);
+		cue1.setType(ICueType.EVENT);
 		
-		MetaData mdi3 = new MetaData("mdi3");
-		mdi3.setTimestamp(0);
+		ICuePoint cue2 = new CuePoint();
+		cue2.setName("cue_1");
+		cue2.setTime(1.01);
+		cue2.setType(ICueType.EVENT);
 		
 		TreeSet ts = new TreeSet();
-		ts.add(mdi1);
-		ts.add(mdi2);
-		ts.add(mdi3);
+		ts.add(cue);
+		ts.add(cue1);
+		ts.add(cue2);
 		
 		System.out.println("ts: " + ts);
 		
