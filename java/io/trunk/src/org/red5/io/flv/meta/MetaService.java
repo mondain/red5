@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.apache.mina.common.ByteBuffer;
@@ -302,12 +304,14 @@ public class MetaService implements IMetaService {
 		this.fos = fos;		
 	}
 
-	public IMetaData readMetaData(ByteBuffer buffer) {
-		
+	public MetaData readMetaData(ByteBuffer buffer) {
+		MetaData retData;
 		Input input = new Input(buffer);	
-		IMetaData metaData = (IMetaData) deserializer.deserialize(input);
-		
-		return metaData;
+		System.out.println("1");
+		String metaData =  (String) deserializer.deserialize(input);
+		System.out.println("2" + metaData);
+		retData = new MetaData();
+		return retData;
 	}
 
 	public IMetaCue[] readMetaCue() {
