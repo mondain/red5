@@ -27,6 +27,7 @@ package org.red5.io.flv.meta;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -215,12 +216,24 @@ public class MetaData extends HashMap implements IMetaData, Serializable {
 	 * Return array of MetaCue
 	 * @return IMetaCue[] metaCue
 	 */
-	public IMetaCue[] getMetaCue() {
-		
+	public MetaCue[] getMetaCue() {
+		IMetaCue ret[] = null;
 		MetaCue cue = (MetaCue) this.get("CuePoints");
-		Set s = cue.entrySet();
+		Set s = cue.keySet();
+		IMetaCue mc;
+		Iterator i = s.iterator();
+		ret = new MetaCue[s.size()];
+		int counter = 0;
+		while(i.hasNext()) {
+			ret[counter++] = (IMetaCue) cue.get(i.next());
+			System.out.println("i" + ret);
+			//break;
+			//i.next();
+		}
 		
-		return (IMetaCue[]) s.toArray();
+		MetaCue m[] = new MetaCue[1];
+		m[0] = new MetaCue();
+		return m;
 	}
 
 }

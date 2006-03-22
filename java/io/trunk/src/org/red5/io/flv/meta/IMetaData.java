@@ -142,5 +142,5 @@ public interface IMetaData extends IMeta {
 	 * Gets the cue points
 	 * @return IMetaCue[]
 	 */
-	public IMetaCue[] getMetaCue();
+	public MetaCue[] getMetaCue();
 }
