@@ -119,29 +119,12 @@ public class MetaService implements IMetaService {
 	 * @see org.red5.io.flv.meta.IMetaService#write()
 	 */
 	public void write(IMetaData meta) throws IOException {
-		// This will all be done before hand
-
-//        IMetaCue metaCue[] = new MetaCue[2];	
-//		  
-//	  	IMetaCue cp = new MetaCue();
-//		cp.setName("cue_1");
-//		cp.setTime(0.01);
-//		cp.setType(ICueType.EVENT);
-//		
-//		IMetaCue cp1 = new MetaCue();
-//		cp1.setName("cue_1");
-//		cp1.setTime(2.01);
-//		cp1.setType(ICueType.EVENT);
-//		
-//		// add cuepoints to array
-//		metaCue[0] = cp;
-//		metaCue[1] = cp1;
-		
-		MetaData md = new MetaData();
-		md.setMetaCue(meta.getMetaCue());
+	
+//		MetaData md = new MetaData();
+//		md.setMetaCue(meta.getMetaCue());
 
 		//this will happen here
-		MetaCue[] metaArr = (MetaCue[]) md.getMetaCue();
+		MetaCue[] metaArr = meta.getMetaCue();
 		
 		Reader reader = new Reader(fis);
 		Writer writer = new Writer(fos);
@@ -157,7 +140,7 @@ public class MetaService implements IMetaService {
 			}			
 		}
 		
-		IMeta mergedMeta = mergeMeta(metaData, md);
+		IMeta mergedMeta = mergeMeta(metaData, meta);
 		ITag injectedTag = injectMetaData(mergedMeta, tag);
 		writer.writeTag(injectedTag);
 		
@@ -211,7 +194,7 @@ public class MetaService implements IMetaService {
 	 * @param md
 	 * @return
 	 */
-	private IMeta mergeMeta(IMetaData metaData, MetaData md) {
+	private IMeta mergeMeta(IMetaData metaData, IMetaData md) {
 		return resolver.resolve(metaData, md);
 	}
 
