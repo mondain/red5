@@ -60,7 +60,22 @@ public class MetaService implements IMetaService {
 	private FileOutputStream fos;
 	private Serializer serializer;
 	private Deserializer deserializer;
+	private Resolver resolver;
 	
+	/**
+	 * @return Returns the resolver.
+	 */
+	public Resolver getResolver() {
+		return resolver;
+	}
+
+	/**
+	 * @param resolver The resolver to set.
+	 */
+	public void setResolver(Resolver resolver) {
+		this.resolver = resolver;
+	}
+
 	/**
 	 * @return Returns the deserializer.
 	 */
@@ -103,27 +118,77 @@ public class MetaService implements IMetaService {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.meta.IMetaService#write()
 	 */
-	public void write(IMetaData meta) {
-
-		FileChannel channel = fos.getChannel();
-		try {
-			mappedFile = channel.map(FileChannel.MapMode.PRIVATE, 0, channel.size());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void write(IMetaData meta) throws IOException {
+		// This will all be done before hand
+        IMetaCue metaCue[] = new MetaCue[2];	
+		  
+	  	IMetaCue cp = new MetaCue();
+		cp.setName("cue_1");
+		cp.setTime(0.01);
+		cp.setType(ICueType.EVENT);
 		
-		out = ByteBuffer.wrap(mappedFile);
+		IMetaCue cp1 = new MetaCue();
+		cp1.setName("cue_1");
+		cp1.setTime(2.01);
+		cp1.setType(ICueType.EVENT);
+		
+		// add cuepoints to array
+		metaCue[0] = cp;
+		metaCue[1] = cp1;
+		
+		MetaData md = new MetaData();
+		md.setMetaCue(metaCue);
 
+		//this will happen here
+		MetaCue[] metaArr = (MetaCue[]) md.getMetaCue();
+		
 		Reader reader = new Reader(fis);
-		IMetaData metaData = null;
+		Writer writer = new Writer(fos);
+		writer.writeHeader();
 		
+		IMetaData metaData = null;
+		ITag tag = null;
 		// Read first tag
 		if(reader.hasMoreTags()) {
-			ITag tag = reader.readTag();
+			 tag = reader.readTag();
 			if(tag.getDataType() == ITag.TYPE_METADATA) {
 				metaData = this.readMetaData(tag.getBody());
 			}			
+		}
+		
+		IMeta mergedMeta = mergeMeta(metaData, md);
+		ITag injectedTag = injectMetaData(mergedMeta, tag);
+		writer.writeTag(injectedTag);
+		
+		int cuePointTimeStamp = getTimeInMilliseconds(metaArr[0]);
+		int counter = 0;
+		while(reader.hasMoreTags()) {
+			tag = reader.readTag();
+	
+			// if there are cuePoints in the TreeSet
+			if(counter < metaArr.length) {
+	
+				// If the tag has a greater timestamp than the
+				// cuePointTimeStamp, then inject the tag
+				while(tag.getTimestamp() > cuePointTimeStamp) {
+					
+					injectedTag = (ITag) injectMetaData(metaArr[0], tag);
+					writer.writeTag(injectedTag);					
+					tag.setPreviousTagSize((injectedTag.getBodySize() + 11));
+					
+					// Advance to the next CuePoint
+					counter++;
+				
+//					if(ts.isEmpty()) {
+//						break;						
+//					}
+					
+					cuePointTimeStamp = getTimeInMilliseconds(metaArr[counter]);
+				}										
+			}
+			
+			writer.writeTag(tag);
+			
 		}
 		
 		// Write out MetaData
@@ -139,82 +204,16 @@ public class MetaService implements IMetaService {
 		}
 	}
 	
-	
-	 
-	  public void write2(IMetaData meta) throws IOException {
-	  		
-	  	IMetaCue cp = new MetaCue();
-		cp.setName("cue_1");
-		cp.setTime(0.01);
-		cp.setType(ICueType.EVENT);
-		
-		IMetaCue cp1 = new MetaCue();
-		cp1.setName("cue_1");
-		cp1.setTime(2.01);
-		cp1.setType(ICueType.EVENT);	
+	/**
+	 * Merges the two Meta objects according to user
+	 * @param metaData
+	 * @param md
+	 * @return
+	 */
+	private IMeta mergeMeta(IMetaData metaData, MetaData md) {
+		return resolver.resolve(metaData, md);
+	}
 
-		// Place in TreeSet for sorting
-		TreeSet ts = new TreeSet();
-		ts.add(cp);
-		ts.add(cp1);
-		
-//		FileChannel channel = fos.getChannel();
-//		try {
-//			mappedFile = channel.map(FileChannel.MapMode.PRIVATE, 0, channel.size());
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		out = ByteBuffer.wrap(mappedFile);
-
-		Reader reader = new Reader(fis);
-		Writer writer = new Writer(fos);
-		
-		IMetaData metaData = null;
-		
-		int cuePointTimeStamp = getTimeInMilliseconds(ts.first());		
-		
-		ITag tag = null;
-		ITag injectedTag = null;
-		
-		
-		while(reader.hasMoreTags()) {
-			tag = reader.readTag();
-			writer.writeHeader();
-			
-			if(tag.getDataType() != Tag.TYPE_METADATA) {
-				metaData = this.readMetaData(tag.getBody());
-				
-			} 
-			
-			// if there are cuePoints in the TreeSet
-			if(!ts.isEmpty()) {
-	
-				// If the tag has a greater timestamp than the
-				// cuePointTimeStamp, then inject the tag
-				while(tag.getTimestamp() > cuePointTimeStamp) {
-					
-					injectedTag = (ITag) injectMetaData(ts.first(), tag);
-					writer.writeTag(injectedTag);					
-					tag.setPreviousTagSize((injectedTag.getBodySize() + 11));
-					
-					// Advance to the next CuePoint
-					ts.remove(ts.first());
-				
-					if(ts.isEmpty()) {
-						break;						
-					}
-					
-					cuePointTimeStamp = getTimeInMilliseconds(ts.first());
-				}										
-			}
-			
-			writer.writeTag(tag);
-			
-		}
-	  }
-	
 	/**
 	 * Injects metadata (Cue Points) into a tag
 	 * @param cue
@@ -222,19 +221,19 @@ public class MetaService implements IMetaService {
 	 * @param tag
 	 * @return ITag tag
 	 */
-	private ITag injectMetaData(Object cue, ITag tag) {
+	private ITag injectMetaData(IMeta meta, ITag tag) {
 		
-		IMetaCue cp = (MetaCue) cue;
+//		IMeta meta = (MetaCue) cue;
 		Output out = new Output(ByteBuffer.allocate(1000));
 		Serializer ser = new Serializer();		
 		ser.serialize(out,"onCuePoint");
-		ser.serialize(out,cp);
+		ser.serialize(out,meta);
 				
 		ByteBuffer tmpBody = out.buf().flip();		
 		int tmpBodySize = out.buf().limit();	
 		int tmpPreviousTagSize = tag.getPreviousTagSize();
 		byte tmpDataType = ((byte)(ITag.TYPE_METADATA));
-		int tmpTimestamp = getTimeInMilliseconds(cp);
+		int tmpTimestamp = getTimeInMilliseconds(meta);
 								
 		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody, tmpPreviousTagSize);
 		
@@ -275,7 +274,12 @@ public class MetaService implements IMetaService {
 	 */
 	public static void main(String[] args) {
 		MetaService service = new MetaService();
-		service.write(new MetaData());
+		try {
+			service.write(new MetaData());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

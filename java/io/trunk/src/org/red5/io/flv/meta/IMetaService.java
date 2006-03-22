@@ -2,6 +2,7 @@ package org.red5.io.flv.meta;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import org.apache.mina.common.ByteBuffer;
 
@@ -56,8 +57,9 @@ public interface IMetaService {
 	 * Initiates writing of the MetaData
 	 * @param meta 
 	 * @return void
+	 * @throws IOException 
 	 */
-	public void write(IMetaData meta);
+	public void write(IMetaData meta) throws IOException;
 	
 	/**
 	 * Writes the MetaData

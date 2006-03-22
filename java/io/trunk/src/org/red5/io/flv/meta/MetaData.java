@@ -25,7 +25,11 @@ package org.red5.io.flv.meta;
  */
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 /**
@@ -172,17 +176,51 @@ public class MetaData extends HashMap implements IMetaData, Serializable {
 	}
 
 	/**
-	 * @return Returns the cuePoints.
+	 * Sets the MetaCue Points
+	 * @param cuePoints The cuePoints to set.
 	 */
-	public IMetaCue[] getCuePoints() {
-		return cuePoints;
+	public void setMetaCue(IMetaCue[] cuePoints) {
+		this.cuePoints = cuePoints;
+		
+		MetaCue cuePointData = new MetaCue();		
+		
+		// Place in TreeSet for sorting
+		TreeSet ts = new TreeSet();	
+		
+		for(int i=0; i<cuePoints.length; i++) {			
+			ts.add(cuePoints[i]);
+		}
+		
+		int j = 0;
+		while(!ts.isEmpty()) {						
+				cuePointData.put(""+j+"", ts.first());
+				ts.remove(ts.first());
+		}
+		
+//		"CuePoints", cuePointData
+//					"0",	MetaCue
+//							name, "test"
+//							type, "event"
+//							time, "0.1"
+//					"1",	MetaCue
+//							name, "test1"
+//							type, "event1"
+//							time, "0.5"
+		
+		this.put("CuePoints", cuePointData);
+		
 	}
 
 	/**
-	 * @param cuePoints The cuePoints to set.
+	 * Return array of MetaCue
+	 * @return IMetaCue[] metaCue
 	 */
-	public void setCuePoints(IMetaCue[] cuePoints) {
-		this.cuePoints = cuePoints;
+	public IMetaCue[] getMetaCue() {
+		
+		MetaCue cue = (MetaCue) this.get("CuePoints");
+		Set s = cue.entrySet();
+		
+		return (IMetaCue[]) s.toArray();
 	}
 
 }
