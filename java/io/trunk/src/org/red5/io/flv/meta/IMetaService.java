@@ -1,5 +1,7 @@
 package org.red5.io.flv.meta;
 
+import java.io.FileInputStream;
+
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
@@ -23,63 +25,49 @@ package org.red5.io.flv.meta;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
-import java.io.IOException;
-import java.util.Map;
 
 /**
- * ICuePoint defines contract methods for use with 
- * cuepoints
+ * IMetaService Defines the MetaData Service API
  * 
  * @author The Red5 Project (red5@osflash.org)
- * @author Dominick Accattato (daccattato@gmail.com)
+ * @author daccattato(daccattato@gmail.com)
  * @version 0.3
  */
-public interface ICuePoint extends Comparable {
+public interface IMetaService {
 	
+	// Get FLV from FLVService
+	// grab a reader from FLV	
+	// Set up CuePoints
+	// Set up MetaData
+	// Pass CuePoint array into MetaData
+	// read in current MetaData if there is MetaData
+	// if there isn't MetaData, write new MetaData
+	// Call writeMetaData method on MetaService
+	// that in turn will write the current metadata
+	// and the cuepoint data
+	// after that, call writeMetaCue()
+	// this will loop through all the tags making
+	// sure that the cuepoints are inserted
 	
 	/**
-	 * Sets the name
-	 * @param String name
+	 * Initiates writing of the MetaData
+	 * @param meta 
 	 * @return void
-	 * 
 	 */
-	public void setName(String name);
+	public void write(IMetaData meta);
 	
 	/**
-	 * Gets the name
-	 * @return String name
-	 * 
+	 * Writes the MetaData
+	 * @return void
 	 */
-	public String getName();
+	public void writeMetaData();
 	
 	/**
-	 * Sets the type
-	 * type can be "event" or "navigation"
-	 * @param String type
-	 * @return void 
-	 *
+	 * Writes the Meta Cue Points
+	 * @return void
 	 */
-	public void setType(String type);
+	public void writeMetaCue();
+
+	public void setInStream(FileInputStream fis);
 	
-	/**
-	 * Gets the type
-	 * @return String type 
-	 *
-	 */
-	public String getType();
-	
-	/**
-	 * Sets the time
-	 * @param double d
-	 * @return void 
-	 *
-	 */
-	public void setTime(double d);
-	
-	/**
-	 * Gets the time
-	 * @return double time 
-	 *
-	 */
-	public double getTime();
 }

@@ -23,7 +23,6 @@ package org.red5.io.flv.meta;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -31,7 +30,7 @@ import java.util.HashMap;
  * @author daccattato(daccattato@gmail.com)
  * @version 0.3
  */
-public class CuePoint extends HashMap implements ICuePoint, Serializable {
+public class MetaCue extends HashMap implements IMetaCue {
 
 	/**
 	 * SerialVersionUID = -1769771340654996861L;
@@ -41,7 +40,7 @@ public class CuePoint extends HashMap implements ICuePoint, Serializable {
 	/**
 	 * CuePoint constructor
 	 */
-	public CuePoint() {
+	public MetaCue() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -89,7 +88,7 @@ public class CuePoint extends HashMap implements ICuePoint, Serializable {
 	}
 
 	public int compareTo(Object arg0) {		
-		CuePoint cp = (CuePoint) arg0;
+		MetaCue cp = (MetaCue) arg0;
 		int cpTime = (int) cp.getTime();
 		int thisTime = (int) this.getTime();
 		

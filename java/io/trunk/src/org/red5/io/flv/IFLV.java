@@ -1,8 +1,11 @@
 package org.red5.io.flv;
 
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
+
+import org.red5.io.flv.meta.IMetaData;
+import org.red5.io.flv.meta.IMetaService;
 
 public interface IFLV {
 
@@ -16,8 +19,15 @@ public interface IFLV {
 	 * Sets the metadata
 	 * @param Map metadata
 	 * @return void
+	 * @throws FileNotFoundException 
 	 */
-	public void setMetaData(Map metadata);
+	public void setMetaData(IMetaData metadata) throws FileNotFoundException;
+	
+	/**
+	 * Sets the MetaService through Spring
+	 * @param IMetaService service
+	 */
+	public void setMetaService(IMetaService service);
 	
 	/**
 	 * Returns a map of the metadata

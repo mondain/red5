@@ -25,6 +25,7 @@ package org.red5.io.flv.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
@@ -36,6 +37,8 @@ import org.red5.io.flv.IFLV;
 import org.red5.io.flv.IReader;
 import org.red5.io.flv.ITag;
 import org.red5.io.flv.IWriter;
+import org.red5.io.flv.meta.IMetaData;
+import org.red5.io.flv.meta.IMetaService;
 
 /**
  * A FLVImpl implements the FLV api
@@ -52,6 +55,8 @@ public class FLV implements IFLV {
         LogFactory.getLog(FLV.class.getName());
 	
 	private File file;
+
+	private IMetaService metaService;
 	
 	public FLV(File file){
 		this.file = file;
@@ -201,5 +206,15 @@ public class FLV implements IFLV {
 	public IWriter writerFromNearestKeyFrame(int seekPoint) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setMetaData(IMetaData meta) throws FileNotFoundException {
+		metaService.setInStream(new FileInputStream(file));
+		metaService.write(meta);
+		
+	}
+
+	public void setMetaService(IMetaService service) {
+		metaService = service;		
 	}
 }
