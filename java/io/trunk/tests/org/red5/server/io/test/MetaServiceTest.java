@@ -21,6 +21,7 @@ import junit.framework.TestCase;
 public class MetaServiceTest extends TestCase {
 
 	private FLVService service;
+	private MetaService metaService;
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -28,6 +29,10 @@ public class MetaServiceTest extends TestCase {
 		service = new FLVService();
 		service.setSerializer(new Serializer());
 		service.setDeserializer(new Deserializer());
+		
+		metaService = new MetaService();
+		metaService.setSerializer(new Serializer());
+		metaService.setDeserializer(new Deserializer());
 	}
 	
 	public void testWrite() throws IOException {
@@ -51,9 +56,8 @@ public class MetaServiceTest extends TestCase {
 		MetaData meta = new MetaData();
 		meta.setMetaCue(metaCue);
 		
-		MetaService metaService = new MetaService();
 		File tmp = new File("tests/CuePointTest.flv");
-		IFLV flv = new FLV(tmp);
+		IFLV flv = service.getFLV(tmp);
 		flv.setMetaService(metaService);
 		flv.setMetaData(meta);
 		

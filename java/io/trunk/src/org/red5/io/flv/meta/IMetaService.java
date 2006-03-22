@@ -78,7 +78,7 @@ public interface IMetaService {
 	 * Read the MetaData
 	 * @return IMetaData metaData
 	 */
-	public IMetaData readMetaData(ByteBuffer buffer);
+	public MetaData readMetaData(ByteBuffer buffer);
 	
 	/**
 	 * Read the Meta Cue Points
