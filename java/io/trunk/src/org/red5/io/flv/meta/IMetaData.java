@@ -1,7 +1,5 @@
 package org.red5.io.flv.meta;
 
-import java.util.Map;
-
 /*
  * * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
@@ -40,7 +38,7 @@ import java.util.Map;
  *  private int width = 320;
  *  private int duration = 7.347;
  */
-public interface IMetaData {
+public interface IMetaData extends IMeta {
 	
 	/**
 	 * Returns a boolean depending on whether the video can

@@ -24,46 +24,32 @@ package org.red5.server.io.test;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
+
+import junit.framework.TestCase;
 
 import org.apache.mina.common.ByteBuffer;
-import org.red5.io.amf.AMF;
 import org.red5.io.amf.Output;
 import org.red5.io.flv.IFLV;
 import org.red5.io.flv.IFLVService;
-import org.red5.io.flv.impl.FLVService;
 import org.red5.io.flv.IReader;
 import org.red5.io.flv.ITag;
+import org.red5.io.flv.IWriter;
+import org.red5.io.flv.impl.FLVService;
 import org.red5.io.flv.impl.Tag;
 import org.red5.io.flv.meta.MetaCue;
 import org.red5.io.flv.meta.IMetaCue;
 import org.red5.io.flv.meta.ICueType;
-import org.red5.io.flv.meta.MetaData;
-import org.red5.io.flv.IWriter;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
-import org.red5.io.utils.IOUtils;
-
-import junit.framework.Assert;
-import junit.framework.TestCase;
 
 /**
  * @author The Red5 Project (red5@osflash.org)
  * @author daccattato(daccattato@gmail.com)
  * @version 0.3
  */
-public class CuePointInjectionTest extends TestCase {
+public class MetaDataInjectionTest extends TestCase {
 
 	private IFLVService service;
 	
@@ -81,7 +67,7 @@ public class CuePointInjectionTest extends TestCase {
 	 * Test MetaData injection
 	 * @throws IOException
 	 */
-	public void testCuePointInjection() throws IOException {
+	public void testMetaDataInjection() throws IOException {
 		File f = new File("tests/test_cue1.flv");
 		
 		if(f.exists()) {			
@@ -140,6 +126,12 @@ public class CuePointInjectionTest extends TestCase {
 		while(reader.hasMoreTags()) {
 			tag = reader.readTag();
 			
+			if(tag.getDataType() != Tag.TYPE_METADATA) {
+				//injectNewMetaData();
+			} else {
+				//in
+			}
+			
 			// if there are cuePoints in the TreeSet
 			if(!ts.isEmpty()) {
 	
@@ -147,7 +139,7 @@ public class CuePointInjectionTest extends TestCase {
 				// cuePointTimeStamp, then inject the tag
 				while(tag.getTimestamp() > cuePointTimeStamp) {
 					
-					injectedTag = (ITag) injectCuePoint(ts.first(), tag);
+					injectedTag = (ITag) injectMetaData(ts.first(), tag);
 					writer.writeTag(injectedTag);					
 					tag.setPreviousTagSize((injectedTag.getBodySize() + 11));
 					
@@ -174,7 +166,7 @@ public class CuePointInjectionTest extends TestCase {
 	 * @param tag
 	 * @return ITag tag
 	 */
-	private ITag injectCuePoint(Object cue, ITag tag) {
+	private ITag injectMetaData(Object cue, ITag tag) {
 		
 		IMetaCue cp = (MetaCue) cue;
 		Output out = new Output(ByteBuffer.allocate(1000));
@@ -201,36 +193,6 @@ public class CuePointInjectionTest extends TestCase {
 		IMetaCue cp = (MetaCue) object;		
 		return (int) (cp.getTime() * 1000.00);
 		
-	}
-
-	/**
-	 * Test to see if TreeSet is sorting properly
-	 * @return void
-	 */
-	public void testCuePointOrder() {
-		IMetaCue cue = new MetaCue();
-		cue.setName("cue_1");
-		cue.setTime(0.01);
-		cue.setType(ICueType.EVENT);
-		
-		IMetaCue cue1 = new MetaCue();
-		cue1.setName("cue_1");
-		cue1.setTime(2.01);
-		cue1.setType(ICueType.EVENT);
-		
-		IMetaCue cue2 = new MetaCue();
-		cue2.setName("cue_1");
-		cue2.setTime(1.01);
-		cue2.setType(ICueType.EVENT);
-		
-		TreeSet ts = new TreeSet();
-		ts.add(cue);
-		ts.add(cue1);
-		ts.add(cue2);
-		
-		System.out.println("ts: " + ts);
-		
-		Assert.assertEquals(true, true);
 	}
 	
 }

@@ -34,30 +34,31 @@ import java.util.HashMap;
  * @author The Red5 Project (red5@osflash.org)
  * @author daccattato (daccattato@gmail.com)
  * @version 0.3
+ * 
+ * Example:
+ * 
+ * //	private boolean canSeekToEnd = true;
+	//	private int videocodecid = 4;
+	//	private int framerate = 15;
+	//	private int videodatarate = 600;
+	//	private int height;
+	//	private int width = 320;
+	//	private double duration = 7.347;
  */
 public class MetaData extends HashMap implements IMetaData, Serializable {
-	
-//	private boolean canSeekToEnd = true;
-//	private int videocodecid = 4;
-//	private int framerate = 15;
-//	private int videodatarate = 600;
-//	private int height;
-//	private int width = 320;
-//	private double duration = 7.347;
-	
+		
 	/**
 	 * serialVersionUID = -5681069577717669925L;
 	 */
 	private static final long serialVersionUID = -5681069577717669925L;
-	
-	private String name = null;
-	
+		
+	IMetaCue cuePoints[] = null;	/** CuePoint array **/
+		
 	/**
 	 * MetaData constructor
-	 * @param string
 	 */
-	public MetaData(String string) {
-		this.name  = string;
+	public MetaData() {
+		
 	}
 
 	/* (non-Javadoc)
@@ -167,8 +168,21 @@ public class MetaData extends HashMap implements IMetaData, Serializable {
 	
 	public String toString() {
 		String ret = "";
-		ret += name;
 		return ret;
+	}
+
+	/**
+	 * @return Returns the cuePoints.
+	 */
+	public IMetaCue[] getCuePoints() {
+		return cuePoints;
+	}
+
+	/**
+	 * @param cuePoints The cuePoints to set.
+	 */
+	public void setCuePoints(IMetaCue[] cuePoints) {
+		this.cuePoints = cuePoints;
 	}
 
 }
