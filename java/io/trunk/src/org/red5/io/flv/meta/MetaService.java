@@ -120,24 +120,25 @@ public class MetaService implements IMetaService {
 	 */
 	public void write(IMetaData meta) throws IOException {
 		// This will all be done before hand
-        IMetaCue metaCue[] = new MetaCue[2];	
-		  
-	  	IMetaCue cp = new MetaCue();
-		cp.setName("cue_1");
-		cp.setTime(0.01);
-		cp.setType(ICueType.EVENT);
-		
-		IMetaCue cp1 = new MetaCue();
-		cp1.setName("cue_1");
-		cp1.setTime(2.01);
-		cp1.setType(ICueType.EVENT);
-		
-		// add cuepoints to array
-		metaCue[0] = cp;
-		metaCue[1] = cp1;
+
+//        IMetaCue metaCue[] = new MetaCue[2];	
+//		  
+//	  	IMetaCue cp = new MetaCue();
+//		cp.setName("cue_1");
+//		cp.setTime(0.01);
+//		cp.setType(ICueType.EVENT);
+//		
+//		IMetaCue cp1 = new MetaCue();
+//		cp1.setName("cue_1");
+//		cp1.setTime(2.01);
+//		cp1.setType(ICueType.EVENT);
+//		
+//		// add cuepoints to array
+//		metaCue[0] = cp;
+//		metaCue[1] = cp1;
 		
 		MetaData md = new MetaData();
-		md.setMetaCue(metaCue);
+		md.setMetaCue(meta.getMetaCue());
 
 		//this will happen here
 		MetaCue[] metaArr = (MetaCue[]) md.getMetaCue();
