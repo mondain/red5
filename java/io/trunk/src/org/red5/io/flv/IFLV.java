@@ -20,8 +20,9 @@ public interface IFLV {
 	 * @param Map metadata
 	 * @return void
 	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	 */
-	public void setMetaData(IMetaData metadata) throws FileNotFoundException;
+	public void setMetaData(IMetaData metadata) throws FileNotFoundException, IOException;
 	
 	/**
 	 * Sets the MetaService through Spring
@@ -32,8 +33,9 @@ public interface IFLV {
 	/**
 	 * Returns a map of the metadata
 	 * @return Map metadata
+	 * @throws FileNotFoundException 
 	 */
-	public Map getMetaData();
+	public IMetaData getMetaData() throws FileNotFoundException;
 	
 	/**
 	 * Returns a boolean stating whether a flv has keyframedata

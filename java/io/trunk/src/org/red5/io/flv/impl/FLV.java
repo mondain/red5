@@ -87,18 +87,10 @@ public class FLV implements IFLV {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.red5.io.flv.FLV#setMetaData(java.util.Map)
-	 */
-	public void setMetaData(Map metadata) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#getMetaData()
 	 */
-	public Map getMetaData() {
-		// TODO Auto-generated method stub
+	public IMetaData getMetaData() throws FileNotFoundException {
+		metaService.setInStream(new FileInputStream(file));
 		return null;
 	}
 
@@ -208,8 +200,10 @@ public class FLV implements IFLV {
 		return null;
 	}
 
-	public void setMetaData(IMetaData meta) throws FileNotFoundException {
+	public void setMetaData(IMetaData meta) throws IOException {
+		File tmpFile = File.createTempFile(file.getName(), null);
 		metaService.setInStream(new FileInputStream(file));
+		metaService.setOutStream(new FileOutputStream(tmpFile));
 		metaService.write(meta);
 		
 	}

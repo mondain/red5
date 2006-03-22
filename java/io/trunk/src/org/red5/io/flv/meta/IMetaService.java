@@ -1,6 +1,9 @@
 package org.red5.io.flv.meta;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
+import org.apache.mina.common.ByteBuffer;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -58,16 +61,31 @@ public interface IMetaService {
 	
 	/**
 	 * Writes the MetaData
+	 * @param IMetaData metaData
 	 * @return void
 	 */
-	public void writeMetaData();
+	public void writeMetaData(IMetaData metaData);
 	
 	/**
 	 * Writes the Meta Cue Points
 	 * @return void
 	 */
 	public void writeMetaCue();
+	
+	/**
+	 * Read the MetaData
+	 * @return IMetaData metaData
+	 */
+	public IMetaData readMetaData(ByteBuffer buffer);
+	
+	/**
+	 * Read the Meta Cue Points
+	 * @return IMetaCue[] metaCue[]
+	 */
+	public IMetaCue[] readMetaCue();
 
 	public void setInStream(FileInputStream fis);
+
+	public void setOutStream(FileOutputStream fos);
 	
 }
