@@ -132,4 +132,15 @@ public interface IMetaData extends IMeta {
 	 */
 	public void setDuration(double d);
 
+	/**
+	 * Sets the cue points
+	 * @param metaCue
+	 */
+	public void setMetaCue(IMetaCue[] metaCue);
+	
+	/**
+	 * Gets the cue points
+	 * @return IMetaCue[]
+	 */
+	public IMetaCue[] getMetaCue();
 }
