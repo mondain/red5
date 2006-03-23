@@ -13,6 +13,7 @@ import org.red5.io.flv.meta.IMetaCue;
 import org.red5.io.flv.meta.MetaCue;
 import org.red5.io.flv.meta.MetaData;
 import org.red5.io.flv.meta.MetaService;
+import org.red5.io.flv.meta.Resolver;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
 
@@ -25,18 +26,42 @@ public class MetaServiceTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		
+				
+		// Create a FLV Service
 		service = new FLVService();
-		service.setSerializer(new Serializer());
-		service.setDeserializer(new Deserializer());
 		
+		// Create a Meta Service
 		metaService = new MetaService();
 		metaService.setSerializer(new Serializer());
 		metaService.setDeserializer(new Deserializer());
+		metaService.setResolver(new Resolver());
 	}
 	
-	public void testWrite() throws IOException {
-        	
+	/**
+	 * Test writing meta data
+	 * @throws IOException
+	 */
+	public void testWrite() throws IOException {		
+		
+		// Get MetaData to embed
+		MetaData meta = createMeta();
+		
+		// Read in a FLV file for reading tags
+		// set the MetaService
+		// set the MetaData
+		File tmp = new File("tests/CuePointTest.flv");
+		IFLV flv = service.getFLV(tmp);
+		flv.setMetaService(metaService);
+		flv.setMetaData(meta);
+		
+	}
+
+	/**
+	 * Create some test Metadata for insertion
+	 * @return MetaData meta
+	 */
+	private MetaData createMeta() {
+		
 		IMetaCue metaCue[] = new MetaCue[2];
 		
 	  	IMetaCue cp = new MetaCue();
@@ -55,11 +80,13 @@ public class MetaServiceTest extends TestCase {
 		
 		MetaData meta = new MetaData();
 		meta.setMetaCue(metaCue);
+		meta.setCanSeekToEnd(true);
+		meta.setDuration(300);
+		meta.setframeRate(15);
+		meta.setHeight(400);
+		meta.setWidth(300);
 		
-		File tmp = new File("tests/CuePointTest.flv");
-		IFLV flv = service.getFLV(tmp);
-		flv.setMetaService(metaService);
-		flv.setMetaData(meta);
+		return meta;
 		
 	}
 	
