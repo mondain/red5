@@ -192,9 +192,11 @@ public class MetaData extends HashMap implements IMetaData, Serializable {
 			ts.add(cuePoints[i]);
 		}
 		
+		
 		int j = 0;
 		while(!ts.isEmpty()) {						
 				cuePointData.put(""+j+"", ts.first());
+				j++;
 				ts.remove(ts.first());
 		}
 		
@@ -208,7 +210,7 @@ public class MetaData extends HashMap implements IMetaData, Serializable {
 //							type, "event1"
 //							time, "0.5"
 		
-		this.put("CuePoints", cuePointData);
+		this.put("cuePoints", cuePointData);
 		
 	}
 
@@ -216,24 +218,19 @@ public class MetaData extends HashMap implements IMetaData, Serializable {
 	 * Return array of MetaCue
 	 * @return IMetaCue[] metaCue
 	 */
-	public MetaCue[] getMetaCue() {
+	public IMetaCue[] getMetaCue() {
 		IMetaCue ret[] = null;
-		MetaCue cue = (MetaCue) this.get("CuePoints");
+		MetaCue cue = (MetaCue) this.get("cuePoints");
 		Set s = cue.keySet();
-		IMetaCue mc;
+
 		Iterator i = s.iterator();
 		ret = new MetaCue[s.size()];
 		int counter = 0;
 		while(i.hasNext()) {
 			ret[counter++] = (IMetaCue) cue.get(i.next());
-			System.out.println("i" + ret);
-			//break;
-			//i.next();
 		}
 		
-		MetaCue m[] = new MetaCue[1];
-		m[0] = new MetaCue();
-		return m;
+		return ret;
 	}
 
 }

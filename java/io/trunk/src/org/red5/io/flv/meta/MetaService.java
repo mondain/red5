@@ -57,8 +57,6 @@ public class MetaService implements IMetaService {
 	FLVService service = null;
 	File file = null;
 	private FileInputStream fis;
-	private MappedByteBuffer mappedFile;
-	private ByteBuffer out;
 	private FileOutputStream fos;
 	private Serializer serializer;
 	private Deserializer deserializer;
@@ -126,8 +124,7 @@ public class MetaService implements IMetaService {
 //		md.setMetaCue(meta.getMetaCue());
 
 		//this will happen here
-		MetaCue[] metaArr = meta.getMetaCue();
-		
+		IMetaCue[] metaArr = meta.getMetaCue();
 		Reader reader = new Reader(fis);
 		Writer writer = new Writer(fos);
 		writer.writeHeader();
@@ -142,8 +139,9 @@ public class MetaService implements IMetaService {
 			}			
 		}
 		
-		IMeta mergedMeta = mergeMeta(metaData, meta);
+		IMetaData mergedMeta = (IMetaData) mergeMeta(metaData, meta);
 		ITag injectedTag = injectMetaData(mergedMeta, tag);
+		System.out.println("tag: \n--------\n" + injectedTag);
 		writer.writeTag(injectedTag);
 		
 		int cuePointTimeStamp = getTimeInMilliseconds(metaArr[0]);
@@ -158,8 +156,10 @@ public class MetaService implements IMetaService {
 				// cuePointTimeStamp, then inject the tag
 				while(tag.getTimestamp() > cuePointTimeStamp) {
 					
-					injectedTag = (ITag) injectMetaData(metaArr[0], tag);
-					writer.writeTag(injectedTag);					
+					injectedTag = (ITag) injectMetaCue(metaArr[0], tag);
+					System.out.println("In tag: \n--------\n" + injectedTag);
+					writer.writeTag(injectedTag);	
+					
 					tag.setPreviousTagSize((injectedTag.getBodySize() + 11));
 					
 					// Advance to the next CuePoint
@@ -173,10 +173,12 @@ public class MetaService implements IMetaService {
 				}										
 			}
 			
+			System.out.println("tag: \n--------\n" + tag);
 			writer.writeTag(tag);
 			
 		}
 		
+		/*
 		// Write out MetaData
 		if(metaData != null) {
 			writeMetaData(metaData);
@@ -188,8 +190,10 @@ public class MetaService implements IMetaService {
 		if(true) {
 			writeMetaCue();
 		}
+		*/
 	}
 	
+
 	/**
 	 * Merges the two Meta objects according to user
 	 * @param metaData
@@ -200,6 +204,23 @@ public class MetaService implements IMetaService {
 		return resolver.resolve(metaData, md);
 	}
 
+	private ITag injectMetaData(IMetaData meta, ITag tag) {
+		
+		Output out = new Output(ByteBuffer.allocate(1000));
+		Serializer ser = new Serializer();		
+		ser.serialize(out,"onMetaData");
+		ser.serialize(out,meta);
+		
+		ByteBuffer tmpBody = out.buf().flip();		
+		int tmpBodySize = out.buf().limit();	
+		int tmpPreviousTagSize = tag.getPreviousTagSize();
+		byte tmpDataType = ((byte)(ITag.TYPE_METADATA));
+		int tmpTimestamp = 0;
+		
+		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody, tmpPreviousTagSize);
+	}
+
+	
 	/**
 	 * Injects metadata (Cue Points) into a tag
 	 * @param cue
@@ -207,7 +228,7 @@ public class MetaService implements IMetaService {
 	 * @param tag
 	 * @return ITag tag
 	 */
-	private ITag injectMetaData(IMeta meta, ITag tag) {
+	private ITag injectMetaCue(IMetaCue meta, ITag tag) {
 		
 //		IMeta meta = (MetaCue) cue;
 		Output out = new Output(ByteBuffer.allocate(1000));
@@ -215,7 +236,7 @@ public class MetaService implements IMetaService {
 		ser.serialize(out,"onCuePoint");
 		ser.serialize(out,meta);
 				
-		ByteBuffer tmpBody = out.buf().flip();		
+		ByteBuffer tmpBody = out.buf().flip();	
 		int tmpBodySize = out.buf().limit();	
 		int tmpPreviousTagSize = tag.getPreviousTagSize();
 		byte tmpDataType = ((byte)(ITag.TYPE_METADATA));
@@ -230,7 +251,7 @@ public class MetaService implements IMetaService {
 	 * @param object
 	 * @return int time
 	 */
-	private int getTimeInMilliseconds(Object object) {
+	private int getTimeInMilliseconds(IMetaCue object) {
 		IMetaCue cp = (MetaCue) object;		
 		return (int) (cp.getTime() * 1000.00);
 		
@@ -251,8 +272,7 @@ public class MetaService implements IMetaService {
 	 * @see org.red5.io.flv.meta.IMetaService#writeMetaCue()
 	 */
 	public void writeMetaCue() {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	/**
@@ -307,9 +327,7 @@ public class MetaService implements IMetaService {
 	public MetaData readMetaData(ByteBuffer buffer) {
 		MetaData retData;
 		Input input = new Input(buffer);	
-		System.out.println("1");
 		String metaData =  (String) deserializer.deserialize(input);
-		System.out.println("2" + metaData);
 		retData = new MetaData();
 		return retData;
 	}
