@@ -2,15 +2,9 @@ package org.red5.io.flv.meta;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeSet;
 
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.amf.Input;
@@ -119,11 +113,7 @@ public class MetaService implements IMetaService {
 	 * @see org.red5.io.flv.meta.IMetaService#write()
 	 */
 	public void write(IMetaData meta) throws IOException {
-	
-//		MetaData md = new MetaData();
-//		md.setMetaCue(meta.getMetaCue());
 
-		//this will happen here
 		IMetaCue[] metaArr = meta.getMetaCue();
 		Reader reader = new Reader(fis);
 		Writer writer = new Writer(fos);
@@ -141,7 +131,7 @@ public class MetaService implements IMetaService {
 		
 		IMetaData mergedMeta = (IMetaData) mergeMeta(metaData, meta);
 		ITag injectedTag = injectMetaData(mergedMeta, tag);
-		System.out.println("tag: \n--------\n" + injectedTag);
+//		System.out.println("tag: \n--------\n" + injectedTag);
 		writer.writeTag(injectedTag);
 		
 		int cuePointTimeStamp = getTimeInMilliseconds(metaArr[0]);
@@ -157,7 +147,7 @@ public class MetaService implements IMetaService {
 				while(tag.getTimestamp() > cuePointTimeStamp) {
 					
 					injectedTag = (ITag) injectMetaCue(metaArr[0], tag);
-					System.out.println("In tag: \n--------\n" + injectedTag);
+//					System.out.println("In tag: \n--------\n" + injectedTag);
 					writer.writeTag(injectedTag);	
 					
 					tag.setPreviousTagSize((injectedTag.getBodySize() + 11));
@@ -173,27 +163,13 @@ public class MetaService implements IMetaService {
 				}										
 			}
 			
-			System.out.println("tag: \n--------\n" + tag);
+//			System.out.println("tag: \n--------\n" + tag);
 			writer.writeTag(tag);
 			
 		}
 		
-		/*
-		// Write out MetaData
-		if(metaData != null) {
-			writeMetaData(metaData);
-		}
-		
-		// Write out CuePoints
-		// might not be needed.. this can all be called
-		// from method above
-		if(true) {
-			writeMetaCue();
-		}
-		*/
 	}
 	
-
 	/**
 	 * Merges the two Meta objects according to user
 	 * @param metaData
@@ -324,12 +300,15 @@ public class MetaService implements IMetaService {
 		this.fos = fos;		
 	}
 
+	// TODO need to fix
 	public MetaData readMetaData(ByteBuffer buffer) {
-		MetaData retData;
+		MetaData retMeta = new MetaData();
 		Input input = new Input(buffer);	
-		String metaData =  (String) deserializer.deserialize(input);
-		retData = new MetaData();
-		return retData;
+		String metaType = (String) deserializer.deserialize(input);
+		Map m = (Map) deserializer.deserialize(input);
+		retMeta.putAll(m);
+		
+		return retMeta;
 	}
 
 	public IMetaCue[] readMetaCue() {
