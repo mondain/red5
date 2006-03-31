@@ -10,7 +10,6 @@ import org.apache.mina.common.ByteBuffer;
 import org.red5.io.amf.Input;
 import org.red5.io.amf.Output;
 import org.red5.io.flv.ITag;
-import org.red5.io.flv.impl.FLVService;
 import org.red5.io.flv.impl.Reader;
 import org.red5.io.flv.impl.Tag;
 import org.red5.io.flv.impl.Writer;
@@ -47,8 +46,7 @@ import org.red5.io.object.Serializer;
  * @version 0.3
  */
 public class MetaService implements IMetaService {
-
-	FLVService service = null;
+	
 	File file = null;
 	private FileInputStream fis;
 	private FileOutputStream fos;
@@ -103,10 +101,6 @@ public class MetaService implements IMetaService {
 	 */
 	public MetaService() {
 		super();
-		
-		service = new FLVService();
-		service.setSerializer(new Serializer());
-		service.setDeserializer(new Deserializer());
 	}
 
 	/* (non-Javadoc)
@@ -146,7 +140,7 @@ public class MetaService implements IMetaService {
 				// cuePointTimeStamp, then inject the tag
 				while(tag.getTimestamp() > cuePointTimeStamp) {
 					
-					injectedTag = (ITag) injectMetaCue(metaArr[0], tag);
+					injectedTag = (ITag) injectMetaCue(metaArr[counter], tag);
 //					System.out.println("In tag: \n--------\n" + injectedTag);
 					writer.writeTag(injectedTag);	
 					
@@ -155,16 +149,18 @@ public class MetaService implements IMetaService {
 					// Advance to the next CuePoint
 					counter++;
 				
-//					if(ts.isEmpty()) {
-//						break;						
-//					}
+					if(counter > (metaArr.length - 1)) {
+						break;						
+					}
 					
 					cuePointTimeStamp = getTimeInMilliseconds(metaArr[counter]);
+					
 				}										
 			}
 			
-//			System.out.println("tag: \n--------\n" + tag);
-			writer.writeTag(tag);
+			if(tag.getDataType() != ITag.TYPE_METADATA) {
+				writer.writeTag(tag);
+			}
 			
 		}
 		
@@ -276,20 +272,6 @@ public class MetaService implements IMetaService {
 	 */
 	public void setFile(File file) {
 		this.file = file;
-	}
-
-	/**
-	 * @return Returns the service.
-	 */
-	public FLVService getService() {
-		return service;
-	}
-
-	/**
-	 * @param service The service to set.
-	 */
-	public void setService(FLVService service) {
-		this.service = service;
 	}
 
 	public void setInStream(FileInputStream fis) {

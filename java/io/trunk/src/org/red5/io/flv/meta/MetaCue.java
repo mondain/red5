@@ -89,8 +89,8 @@ public class MetaCue extends HashMap implements IMetaCue {
 
 	public int compareTo(Object arg0) {		
 		MetaCue cp = (MetaCue) arg0;
-		int cpTime = (int) cp.getTime();
-		int thisTime = (int) this.getTime();
+		double cpTime = cp.getTime();
+		double thisTime = this.getTime();
 		
 		if(cpTime > thisTime) {
 			return -1;
