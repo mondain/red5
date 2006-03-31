@@ -42,14 +42,13 @@ public class MetaServiceTest extends TestCase {
 	 * @throws IOException
 	 */
 	public void testWrite() throws IOException {		
-		
+
 		// Get MetaData to embed
 		MetaData meta = createMeta();
-		
 		// Read in a FLV file for reading tags
 		// set the MetaService
 		// set the MetaData
-		File tmp = new File("tests/CuePointTest.flv");
+		File tmp = new File("tests/test.flv");
 		IFLV flv = service.getFLV(tmp);
 		flv.setMetaService(metaService);
 		flv.setMetaData(meta);
@@ -70,8 +69,8 @@ public class MetaServiceTest extends TestCase {
 		cp.setType(ICueType.EVENT);
 		
 		IMetaCue cp1 = new MetaCue();
-		cp1.setName("cue_1");
-		cp1.setTime(2.01);
+		cp1.setName("cue_2");
+		cp1.setTime(0.03);
 		cp1.setType(ICueType.EVENT);
 		
 		// add cuepoints to array

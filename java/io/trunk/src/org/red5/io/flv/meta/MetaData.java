@@ -188,15 +188,15 @@ public class MetaData extends HashMap implements IMetaData, Serializable {
 		// Place in TreeSet for sorting
 		TreeSet ts = new TreeSet();	
 		
-		for(int i=0; i<cuePoints.length; i++) {			
+		for(int i=0; i<cuePoints.length; i++) {	
 			ts.add(cuePoints[i]);
 		}
-		
 		
 		int j = 0;
 		while(!ts.isEmpty()) {						
 				cuePointData.put(""+j+"", ts.first());
 				j++;
+				
 				ts.remove(ts.first());
 		}
 		
