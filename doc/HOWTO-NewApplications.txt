@@ -178,6 +178,13 @@ the properties of the scope can now be changed to::
     <property name="contextPath" value="${webapp.contextPath}" />
     <property name="virtualHosts" value="${webapp.virtualHosts}" />
 
+The `contextPath` specified in the configuration can be seen as "root" path
+of the scope.  You can add additional elements after the configured path when
+connecting to dynamically create extra scopes.
+
+These extra scopes all use the same handler but have their own properties,
+shared objects and live streams.
+
 
 Handlers
 --------------------------
