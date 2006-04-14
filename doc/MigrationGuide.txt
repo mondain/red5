@@ -1,0 +1,101 @@
+--------------------------------------
+ Migration guide from FCS/FMS to Red5
+--------------------------------------
+
+:author: Joachim Bauch
+:contact: jojo@struktur.de
+
+.. contents::
+
+Preface
+==========================
+This document describes API differences between the Macromedia Flash
+Communication Server / Flash Media Server 2 and Red5.  It aims at helping
+migrate existing applications to Red5.
+
+
+Application callbacks
+==========================
+When implementing serverside applications, one of the most important
+functionalities is to get notified about clients that connect or disconnect
+and to be informed about the creation of new instances of the application.
+
+
+Interface IScopeHandler
+--------------------------
+Red5 specifies these actions in the interface IScopeHandler_.  See the API
+documentation for further details.
+
+
+Class ApplicationAdapter
+--------------------------
+As some methods may be called multiple times for one request (e.g. `connect`
+will be called once for every scope in the tree the client connects to),
+the class ApplicationAdapter_ defines additional methods.
+
+You can also use the ApplicationAdapter_ to check for streams, shared objects,
+or subscribe them.
+
+See the API documentation for further details.
+
+
+Calls to client methods
+==========================
+To call methods from your Red5 application on the client, you will first need
+a reference to the current connection object::
+
+    import org.red5.server.api.IConnection;
+    import org.red5.server.api.Red5;
+    import org.red5.server.api.service.IServiceCapableConnection;
+    ...
+    IConnection conn = Red5.getConnectionLocal();
+
+If the connection implements the IServiceCapableConnection_ interface, it
+supports calling methods on the other end::
+
+    if (conn instanceof IServiceCapableConnection)
+        ((IServiceCapableConnection) conn).invoke("the_method", new Object[]{"One", 1});
+
+
+If you need the result of the method call, you must provide a class that
+implements the IPendingServiceCallback_ interface::
+
+    import org.red5.server.api.service.IPendingService;
+    import org.red5.server.api.service.IPendingServiceCallback;
+    
+    class MyCallback implements IPendingServiceCallback {
+    
+        public void resultReceived(IPendingServiceCall call) { 
+            // Do something with "call.getResult()"
+        }
+    }
+
+The method call looks now like this::
+
+    if (conn instanceof IServiceCapableConnection)
+        ((IServiceCapableConnection) conn).invoke("the_method", new Object[]{"One", 1}, new MyCallback());
+
+Of course you can implement this interface in your application and pass a
+reference to the application instance.
+
+
+SharedObjects
+==========================
+TODO: How can shared objects be accessed from an application?
+
+
+Streams
+==========================
+TODO: How can streams be accessed from an application?
+
+
+Periodic events
+==========================
+TODO: How to setup periodic events?
+
+
+
+.. _IScopeHandler: http://dl.fancycode.com/red5/api/org/red5/server/api/IScopeHandler.html
+.. _ApplicationAdapter: http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html
+.. _IServiceCapableConnection: http://dl.fancycode.com/red5/api/org/red5/server/api/service/IServiceCapableConnection.html
+.. _IPendingServiceCallback: http://dl.fancycode.com/red5/api/org/red5/server/api/service/IPendingServiceCallback.html
