@@ -30,7 +30,7 @@ RegisterService=&Register as service
 StartService=&Start service
 JavaSetup=Java Setup
 JavaHome=Java Home
-JavaHomeDesc=Red5 needs a Java Runtime Environment (JRE) 1.4 or 1.5 to work properly.
+JavaHomeDesc=Red5 needs a Java Runtime Environment (JRE) 1.5 to work properly.
 JavaHomeInfo=Enter the path to your Java installation.
 InvalidJavaHome=The path you selected is invalid. Please make sure a java.exe exists inside the "bin" directory.
 MainFiles=Main files
@@ -60,7 +60,6 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; Flags: unchecked
 ; Application files
 Source: "{#root_dir}\red5.jar"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#root_dir}\conf\*"; DestDir: "{app}\conf"; Excludes: "red5.properties"; Flags: onlyifdoesntexist recursesubdirs
-Source: "{#root_dir}\hosts\*"; DestDir: "{app}\hosts"; Flags: onlyifdoesntexist recursesubdirs
 Source: "{#root_dir}\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
 Source: "{#root_dir}\swf\DEV_Deploy\*"; DestDir: "{app}\swf"; Flags: ignoreversion recursesubdirs
 Source: "{#root_dir}\webapps\*"; DestDir: "{app}\webapps"; Flags: onlyifdoesntexist recursesubdirs
@@ -92,6 +91,7 @@ Name: "{app}\logs"
 [Icons]
 Name: "{group}\Red5"; Filename: "{app}\bin\Red5.bat"
 Name: "{group}\Readme"; Filename: "{app}\doc\readme.html"
+Name: "{group}\API Documentation"; Filename: "{app}\doc\api\index.html"
 Name: "{group}\Eclipse Setup"; Filename: "{app}\doc\eclipsesetup.html"
 Name: "{group}\FAQ (PDF)"; Filename: "{app}\doc\Frequently Asked Questions.pdf"
 Name: "{group}\FAQ (Word)"; Filename: "{app}\doc\Frequently Asked Questions.doc"
@@ -132,10 +132,6 @@ var
 function InitializeSetup(): Boolean;
 begin
   Result := False;
-  // Check Java 1.4 installation
-  if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment\1.4', 'JavaHome', JavaHome) then
-    JavaHome := '';
-
   // Check Java 1.5 installation
   if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment\1.5', 'JavaHome', JavaHome) then
     JavaHome := '';
