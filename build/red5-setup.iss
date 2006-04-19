@@ -215,7 +215,7 @@ begin
   AddService(ServicesPage, X, 0, '{cm:RTMPT}', '8088', EnableRTMPT, PortRTMPT);
   
   AddService(ServicesPage, 0, Pos + 16, '{cm:Remoting}', '5080', EnableRemoting, PortRemoting);
-  Pos := AddService(ServicesPage, X, Pos + 16, '{cm:HTTP}', '8080', EnableHTTP, PortHTTP);
+  Pos := AddService(ServicesPage, X, Pos + 16, '{cm:HTTP}', '5080', EnableHTTP, PortHTTP);
   
   Static := TNewStaticText.Create(ServicesPage);
   Static.Parent := ServicesPage.Surface;
