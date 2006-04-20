@@ -64,6 +64,8 @@ Source: "{#root_dir}\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recurses
 Source: "{#root_dir}\swf\DEV_Deploy\*"; DestDir: "{app}\swf"; Flags: ignoreversion recursesubdirs
 Source: "{#root_dir}\webapps\*"; DestDir: "{app}\webapps"; Flags: onlyifdoesntexist recursesubdirs
 Source: "{#root_dir}\doc\*"; DestDir: "{app}\doc"; Flags: ignoreversion
+Source: "{#root_dir}\doc\api\*"; DestDir: "{app}\doc\api"; Flags: ignoreversion recursesubdirs
+Source: "{#root_dir}\doc\templates\*"; DestDir: "{app}\doc\templates"; Flags: ignoreversion recursesubdirs
 Source: "{#root_dir}\doc\licenseInfo\*"; DestDir: "{app}\doc\licenseInfo"; Flags: ignoreversion recursesubdirs
 
 ; Files required for windows service / wrapped start
