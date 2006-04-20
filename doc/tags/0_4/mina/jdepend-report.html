@@ -1,0 +1,2111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head><title>MINA - JDepend Source Code Analysis</title><style type="text/css" media="all">
+          @import url("./style/maven-base.css");
+          
+			    @import url("./style/maven-theme.css");</style><link rel="stylesheet" href="./style/print.css" type="text/css" media="print"></link><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"></meta><style type="text/css">.jdepend td ul, .jdepend td ul li { margin:0; padding:0; list-style-type: none; }</style></head><body class="jdepend"><div id="banner"><a href="http://directory.apache.org/" id="projectLogo"><img alt="MINA" src="http://directory.apache.org/images/apache-directory-logo.png"></img></a><div class="clear"><hr></hr></div></div><div id="breadcrumbs"><div class="xleft">
+                	Last published: 21 October 2005
+                  | Doc for 0.8.0</div><div class="xright">
+        
+        <a href="http://directory.apache.org/" class="externalLink" title="External Link">Directory</a>
+      
+        
+          
+            <span class="separator">|</span>
+          
+        
+        <a href="http://directory.apache.org/subprojects/apacheds/" class="externalLink" title="External Link">ApacheDS</a>
+      
+        
+          
+            <span class="separator">|</span>
+          
+        
+        <a href="http://directory.apache.org/subprojects/ldap.html" class="externalLink" title="External Link">LDAP</a>
+      
+        
+          
+            <span class="separator">|</span>
+          
+        
+        <a href="http://directory.apache.org/subprojects/naming/" class="externalLink" title="External Link">Naming</a>
+      
+        
+          
+            <span class="separator">|</span>
+          
+        
+        <a href="http://directory.apache.org/subprojects/asn1/" class="externalLink" title="External Link">ASN.1</a>
+      
+        
+          
+            <span class="separator">|</span>
+          
+        
+        <a href="http://directory.apache.org/subprojects/" class="externalLink" title="External Link">Kerberos</a>
+      
+        
+          
+            <span class="separator">|</span>
+          
+        
+        <a href="http://directory.apache.org/subprojects/authx/" class="externalLink" title="External Link">AuthX</a>
+      
+        
+          
+            <span class="separator">|</span>
+          
+        
+        <a href="http://directory.apache.org/subprojects/network/" class="externalLink" title="External Link">MINA</a>
+      
+        
+          
+            <span class="separator">|</span>
+          
+        
+        <a href="http://directory.apache.org/subprojects/providers.html" class="externalLink" title="External Link">Protocols</a>
+      </div><div class="clear"><hr></hr></div></div><div id="leftColumn"><div id="navcolumn"><div id="menuMINA"><h5>MINA</h5><ul><li class="none"><a href="index.html">Overview</a></li><li class="none"><a href="features.html">Features</a></li><li class="none"><a href="testimonials.html">Testimonials</a></li><li class="none"><a href="getting_started.html">Getting Started</a></li><li class="none"><a href="http://svn.apache.org/repository/directory-network/" class="externalLink" title="External Link">Downloads</a></li><li class="none"><a href="faq.html">F.A.Q</a></li><li class="none"><a href="roadmap.html">Roadmap</a></li><li class="none"><a href="http://issues.apache.org/jira/browse/DIRMINA?report=com.atlassian.jira.plugin.system.project:changelog-panel&amp;subset=-1" class="externalLink" title="External Link">Changes</a></li><li class="none"><a href="history.html">History</a></li></ul></div><div id="menuMINA_Community"><h5>MINA Community</h5><ul><li class="none"><a href="mail-lists.html">Mailing List</a></li><li class="none"><a href="http://issues.apache.org/jira/browse/DIRMINA" class="externalLink" title="External Link">Issue Tracker</a></li><li class="none"><a href="http://wiki.apache.org/directory/MinaHome" class="externalLink" title="External Link">Wiki Pages</a></li></ul></div><div id="menuMINA_Examples"><h5>MINA Examples</h5><ul><li class="none"><a href="apidocs-examples/index.html">JavaDocs</a></li><li class="none"><a href="xref-examples/index.html">Source code</a></li></ul></div><div id="menuMINA_References"><h5>MINA References</h5><ul><li class="none"><a href="apidocs/index.html">JavaDocs</a></li><li class="none"><a href="xref/index.html">Source code</a></li><li class="none"><a href="http://svn.apache.org/viewcvs.cgi/directory/network/branches/0.8/?root=Apache-SVN" class="externalLink" title="External Link">Source code (SVN)</a></li><li class="none"><a href="http://wiki.apache.org/directory/MinaHome" class="externalLink" title="External Link">Wiki Pages</a></li></ul></div><div id="menuApacheCon_US_2005"><h5>ApacheCon US 2005</h5><ul><li class="none"><a href="http://www.apachecon.com/" class="externalLink" title="External Link"><img title="ApacheCon US 2005" style="border: 1px" src="http://apache.org/images/ac2005us_white_184x80.jpg" alt="ApacheCon US 2005"></img></a></li></ul></div><div id="menuProject_Documentation"><h5>Project Documentation</h5><ul><li class="none"><a href="index.html">About MINA</a></li><li class="collapsed"><a href="project-info.html">Project Info</a></li><li class="expanded"><a href="maven-reports.html">Project Reports</a><ul><li class="none"><a href="license.html">Project License</a></li><li class="none"><a href="apidocs/index.html" class="newWindow" title="New Window" target="_blank">JavaDocs</a></li><li class="none"><a href="javadoc.html">JavaDoc Report</a></li><li class="none"><a href="javadoc-warnings-report.html">JavaDoc Warnings Report</a></li><li class="none"><a href="apidocs-examples/index.html" class="newWindow" title="New Window" target="_blank">Example JavaDocs</a></li><li class="none"><a href="xref/index.html" class="newWindow" title="New Window" target="_blank">Source Xref</a></li><li class="none"><a href="xref-test/index.html" class="newWindow" title="New Window" target="_blank">Test Xref</a></li><li class="none"><a href="xref-examples/index.html" class="newWindow" title="New Window" target="_blank">Examples Xref</a></li><li class="none"><a href="junit-report.html">Unit Tests</a></li><li class="none"><a href="emma/index.html">Emma Coverage</a></li><li class="none"><strong><a href="jdepend-report.html">Metrics</a></strong></li><li class="none"><a href="simian-report.html">Simian Report</a></li><li class="none"><a href="task-list.html">Task List</a></li><li class="none"><a href="faq.html">FAQs</a></li></ul></li><li class="none"><a href="http://maven.apache.org/development-process.html" class="externalLink" title="External Link">Development Process</a></li></ul></div></div></div><div id="bodyColumn"><div class="contentBox"><div class="section"><a name="Metric_Results"></a><h2>Metric Results</h2><p>[
+        <a href="#Summary">summary</a>] [
+        <a href="#Packages">packages</a>] [
+        <a href="#Cycles">cycles</a>] [
+        <a href="#Explanations">explanations</a>]</p><p>The following document contains the results of a
+        <a href="http://www.clarkware.com/software/JDepend.html" class="externalLink" title="External Link">JDepend</a>metric analysis. The various metrics are defined at the bottom of this document.</p></div><div class="section"><a name="Summary"></a><h2>Summary</h2><p>[
+        <a href="#Summary">summary</a>] [
+        <a href="#Packages">packages</a>] [
+        <a href="#Cycles">cycles</a>] [
+        <a href="#Explanations">explanations</a>]</p><table class="bodyTable"><thead>
+          <tr class="b"><th title="Package">Package</th><th style="text-align:right">
+              <acronym title="Total Classes">TC</acronym>
+            </th><th style="text-align:right">
+              <acronym title="Abstract Classes">AC</acronym>
+            </th><th style="text-align:right">
+              <acronym title="Concrete Classes">CC</acronym>
+            </th><th style="text-align:right">
+              <acronym title="Afferent Couplings">AC</acronym>
+            </th><th style="text-align:right">
+              <acronym title="Efferent Couplings">EC</acronym>
+            </th><th style="text-align:right">
+              <acronym title="Abstractness">A</acronym>
+            </th><th style="text-align:right">
+              <acronym title="Instability">I</acronym>
+            </th><th style="text-align:right">
+              <acronym title="Distance">D</acronym>
+            </th></tr>
+        </thead><tbody>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_common">org.apache.mina.common</a>
+            </td><td style="text-align:right">14</td><td style="text-align:right">7</td><td style="text-align:right">7</td><td style="text-align:right">19</td><td style="text-align:right">8</td><td style="text-align:right">0.5</td><td style="text-align:right">30%</td><td style="text-align:right">20%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_examples_echoserver">org.apache.mina.examples.echoserver</a>
+            </td><td style="text-align:right">2</td><td style="text-align:right">0</td><td style="text-align:right">2</td><td style="text-align:right">0</td><td style="text-align:right">9</td><td style="text-align:right">0</td><td style="text-align:right">100%</td><td style="text-align:right">0%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_examples_echoserver_ssl">org.apache.mina.examples.echoserver.ssl</a>
+            </td><td style="text-align:right">5</td><td style="text-align:right">0</td><td style="text-align:right">5</td><td style="text-align:right">2</td><td style="text-align:right">7</td><td style="text-align:right">0</td><td style="text-align:right">78%</td><td style="text-align:right">22%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_examples_httpserver">org.apache.mina.examples.httpserver</a>
+            </td><td style="text-align:right">3</td><td style="text-align:right">0</td><td style="text-align:right">3</td><td style="text-align:right">0</td><td style="text-align:right">9</td><td style="text-align:right">0</td><td style="text-align:right">100%</td><td style="text-align:right">0%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_examples_netcat">org.apache.mina.examples.netcat</a>
+            </td><td style="text-align:right">2</td><td style="text-align:right">0</td><td style="text-align:right">2</td><td style="text-align:right">0</td><td style="text-align:right">6</td><td style="text-align:right">0</td><td style="text-align:right">100%</td><td style="text-align:right">0%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_examples_reverser">org.apache.mina.examples.reverser</a>
+            </td><td style="text-align:right">6</td><td style="text-align:right">0</td><td style="text-align:right">6</td><td style="text-align:right">0</td><td style="text-align:right">6</td><td style="text-align:right">0</td><td style="text-align:right">100%</td><td style="text-align:right">0%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+            </td><td style="text-align:right">6</td><td style="text-align:right">0</td><td style="text-align:right">6</td><td style="text-align:right">0</td><td style="text-align:right">14</td><td style="text-align:right">0</td><td style="text-align:right">100%</td><td style="text-align:right">0%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_examples_sumup_codec">org.apache.mina.examples.sumup.codec</a>
+            </td><td style="text-align:right">8</td><td style="text-align:right">2</td><td style="text-align:right">6</td><td style="text-align:right">1</td><td style="text-align:right">6</td><td style="text-align:right">0.25</td><td style="text-align:right">86%</td><td style="text-align:right">11%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_examples_sumup_message">org.apache.mina.examples.sumup.message</a>
+            </td><td style="text-align:right">3</td><td style="text-align:right">1</td><td style="text-align:right">2</td><td style="text-align:right">2</td><td style="text-align:right">1</td><td style="text-align:right">0.33</td><td style="text-align:right">33%</td><td style="text-align:right">33%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_examples_tennis">org.apache.mina.examples.tennis</a>
+            </td><td style="text-align:right">5</td><td style="text-align:right">0</td><td style="text-align:right">5</td><td style="text-align:right">0</td><td style="text-align:right">6</td><td style="text-align:right">0</td><td style="text-align:right">100%</td><td style="text-align:right">0%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_io">org.apache.mina.io</a>
+            </td><td style="text-align:right">19</td><td style="text-align:right">10</td><td style="text-align:right">9</td><td style="text-align:right">11</td><td style="text-align:right">6</td><td style="text-align:right">0.53</td><td style="text-align:right">35%</td><td style="text-align:right">12%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_io_datagram">org.apache.mina.io.datagram</a>
+            </td><td style="text-align:right">13</td><td style="text-align:right">1</td><td style="text-align:right">12</td><td style="text-align:right">2</td><td style="text-align:right">8</td><td style="text-align:right">0.08</td><td style="text-align:right">80%</td><td style="text-align:right">12%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_io_filter">org.apache.mina.io.filter</a>
+            </td><td style="text-align:right">7</td><td style="text-align:right">0</td><td style="text-align:right">7</td><td style="text-align:right">4</td><td style="text-align:right">10</td><td style="text-align:right">0</td><td style="text-align:right">71%</td><td style="text-align:right">29%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_io_handler">org.apache.mina.io.handler</a>
+            </td><td style="text-align:right">4</td><td style="text-align:right">1</td><td style="text-align:right">3</td><td style="text-align:right">1</td><td style="text-align:right">6</td><td style="text-align:right">0.25</td><td style="text-align:right">86%</td><td style="text-align:right">11%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_io_socket">org.apache.mina.io.socket</a>
+            </td><td style="text-align:right">14</td><td style="text-align:right">0</td><td style="text-align:right">14</td><td style="text-align:right">5</td><td style="text-align:right">8</td><td style="text-align:right">0</td><td style="text-align:right">62%</td><td style="text-align:right">38%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+            </td><td style="text-align:right">27</td><td style="text-align:right">16</td><td style="text-align:right">11</td><td style="text-align:right">11</td><td style="text-align:right">6</td><td style="text-align:right">0.59</td><td style="text-align:right">35%</td><td style="text-align:right">5%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_protocol_codec">org.apache.mina.protocol.codec</a>
+            </td><td style="text-align:right">14</td><td style="text-align:right">5</td><td style="text-align:right">9</td><td style="text-align:right">1</td><td style="text-align:right">4</td><td style="text-align:right">0.36</td><td style="text-align:right">80%</td><td style="text-align:right">16%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_protocol_filter">org.apache.mina.protocol.filter</a>
+            </td><td style="text-align:right">2</td><td style="text-align:right">0</td><td style="text-align:right">2</td><td style="text-align:right">3</td><td style="text-align:right">4</td><td style="text-align:right">0</td><td style="text-align:right">57%</td><td style="text-align:right">43%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_protocol_handler">org.apache.mina.protocol.handler</a>
+            </td><td style="text-align:right">4</td><td style="text-align:right">1</td><td style="text-align:right">3</td><td style="text-align:right">0</td><td style="text-align:right">3</td><td style="text-align:right">0.25</td><td style="text-align:right">100%</td><td style="text-align:right">25%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_protocol_io">org.apache.mina.protocol.io</a>
+            </td><td style="text-align:right">6</td><td style="text-align:right">0</td><td style="text-align:right">6</td><td style="text-align:right">2</td><td style="text-align:right">8</td><td style="text-align:right">0</td><td style="text-align:right">80%</td><td style="text-align:right">20%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_protocol_vmpipe">org.apache.mina.protocol.vmpipe</a>
+            </td><td style="text-align:right">13</td><td style="text-align:right">0</td><td style="text-align:right">13</td><td style="text-align:right">2</td><td style="text-align:right">7</td><td style="text-align:right">0</td><td style="text-align:right">78%</td><td style="text-align:right">22%</td></tr>
+          <tr class="b"><td>
+              <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+            </td><td style="text-align:right">3</td><td style="text-align:right">1</td><td style="text-align:right">2</td><td style="text-align:right">5</td><td style="text-align:right">13</td><td style="text-align:right">0.33</td><td style="text-align:right">72%</td><td style="text-align:right">6%</td></tr>
+          <tr class="a"><td>
+              <a href="#org_apache_mina_util">org.apache.mina.util</a>
+            </td><td style="text-align:right">15</td><td style="text-align:right">2</td><td style="text-align:right">13</td><td style="text-align:right">10</td><td style="text-align:right">10</td><td style="text-align:right">0.13</td><td style="text-align:right">50%</td><td style="text-align:right">37%</td></tr>
+        </tbody></table></div><div class="section"><a name="Packages"></a><h2>Packages</h2><p>[
+        <a href="#Summary">summary</a>] [
+        <a href="#Packages">packages</a>] [
+        <a href="#Cycles">cycles</a>] [
+        <a href="#Explanations">explanations</a>]</p><div class="subsection"><a name="org_apache_mina_common"></a><h3>org.apache.mina.common</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>19</td><td>8</td><td>50%</td><td>30%</td><td>20%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/common/BaseSession.html">BaseSession</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/BaseSessionConfig.html">BaseSessionConfig</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/ByteBuffer.html">ByteBuffer</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/ExceptionMonitor.html">ExceptionMonitor</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/Session.html">Session</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/SessionConfig.html">SessionConfig</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/SessionManager.html">SessionManager</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/common/BaseSessionManager.html">BaseSessionManager</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/ByteBuffer.html">ByteBuffer$DefaultByteBuffer</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/ByteBufferHexDumper.html">ByteBufferHexDumper</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/ByteBufferProxy.html">ByteBufferProxy</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/DefaultExceptionMonitor.html">DefaultExceptionMonitor</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/IdleStatus.html">IdleStatus</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/common/TransportType.html">TransportType</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_echoserver">org.apache.mina.examples.echoserver</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_httpserver">org.apache.mina.examples.httpserver</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_netcat">org.apache.mina.examples.netcat</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_reverser">org.apache.mina.examples.reverser</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup_codec">org.apache.mina.examples.sumup.codec</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_tennis">org.apache.mina.examples.tennis</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_datagram">org.apache.mina.io.datagram</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_filter">org.apache.mina.io.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_handler">org.apache.mina.io.handler</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_socket">org.apache.mina.io.socket</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_codec">org.apache.mina.protocol.codec</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_filter">org.apache.mina.protocol.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_io">org.apache.mina.protocol.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_vmpipe">org.apache.mina.protocol.vmpipe</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_nio">java.nio</a>
+                  </li>
+                  <li>
+                    <a href="#java_nio_charset">java.nio.charset</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_slf4j">org.slf4j</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_examples_echoserver"></a><h3>org.apache.mina.examples.echoserver</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>0</td><td>9</td><td>0%</td><td>100%</td><td>0%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/echoserver/EchoProtocolHandler.html">EchoProtocolHandler</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/echoserver/Main.html">Main</a>
+                  </li>
+                </ul>
+              </td><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_echoserver_ssl">org.apache.mina.examples.echoserver.ssl</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_filter">org.apache.mina.io.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_socket">org.apache.mina.io.socket</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                  <li>
+                    <a href="#org_slf4j">org.slf4j</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_examples_echoserver_ssl"></a><h3>org.apache.mina.examples.echoserver.ssl</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>2</td><td>7</td><td>0%</td><td>78%</td><td>22%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/echoserver/ssl/BogusSSLContextFactory.html">BogusSSLContextFactory</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/echoserver/ssl/BogusTrustManagerFactory.html">BogusTrustManagerFactory</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/echoserver/ssl/BogusTrustManagerFactory.html">BogusTrustManagerFactory$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/echoserver/ssl/SSLServerSocketFactory.html">SSLServerSocketFactory</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/echoserver/ssl/SSLSocketFactory.html">SSLSocketFactory</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_echoserver">org.apache.mina.examples.echoserver</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_httpserver">org.apache.mina.examples.httpserver</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_security">java.security</a>
+                  </li>
+                  <li>
+                    <a href="#java_security_cert">java.security.cert</a>
+                  </li>
+                  <li>
+                    <a href="#javax_net">javax.net</a>
+                  </li>
+                  <li>
+                    <a href="#javax_net_ssl">javax.net.ssl</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_examples_httpserver"></a><h3>org.apache.mina.examples.httpserver</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>0</td><td>9</td><td>0%</td><td>100%</td><td>0%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/httpserver/HttpProtocolHandler.html">HttpProtocolHandler</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/httpserver/HttpProtocolHandler.html">HttpProtocolHandler$Worker</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/httpserver/Main.html">Main</a>
+                  </li>
+                </ul>
+              </td><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_echoserver_ssl">org.apache.mina.examples.echoserver.ssl</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_filter">org.apache.mina.io.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_handler">org.apache.mina.io.handler</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_examples_netcat"></a><h3>org.apache.mina.examples.netcat</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>0</td><td>6</td><td>0%</td><td>100%</td><td>0%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/netcat/Main.html">Main</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/netcat/NetCatProtocolHandler.html">NetCatProtocolHandler</a>
+                  </li>
+                </ul>
+              </td><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_socket">org.apache.mina.io.socket</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_examples_reverser"></a><h3>org.apache.mina.examples.reverser</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>0</td><td>6</td><td>0%</td><td>100%</td><td>0%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/reverser/Main.html">Main</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/reverser/ReverseProtocolHandler.html">ReverseProtocolHandler</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/reverser/ReverseProtocolProvider.html">ReverseProtocolProvider</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/reverser/ReverseProtocolProvider.html">ReverseProtocolProvider$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/reverser/TextLineDecoder.html">TextLineDecoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/reverser/TextLineEncoder.html">TextLineEncoder</a>
+                  </li>
+                </ul>
+              </td><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_filter">org.apache.mina.protocol.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_examples_sumup"></a><h3>org.apache.mina.examples.sumup</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>0</td><td>14</td><td>0%</td><td>100%</td><td>0%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/Client.html">Client</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/ClientProtocolProvider.html">ClientProtocolProvider</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/ClientSessionHandler.html">ClientSessionHandler</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/Server.html">Server</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/ServerProtocolProvider.html">ServerProtocolProvider</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/ServerSessionHandler.html">ServerSessionHandler</a>
+                  </li>
+                </ul>
+              </td><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup_codec">org.apache.mina.examples.sumup.codec</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup_message">org.apache.mina.examples.sumup.message</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_filter">org.apache.mina.io.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_socket">org.apache.mina.io.socket</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_filter">org.apache.mina.protocol.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_io">org.apache.mina.protocol.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_examples_sumup_codec"></a><h3>org.apache.mina.examples.sumup.codec</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>1</td><td>6</td><td>25%</td><td>86%</td><td>11%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/codec/AbstractMessageDecoder.html">AbstractMessageDecoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/codec/AbstractMessageEncoder.html">AbstractMessageEncoder</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/codec/AddMessageDecoder.html">AddMessageDecoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/codec/AddMessageEncoder.html">AddMessageEncoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/codec/Constants.html">Constants</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/codec/ResultMessageDecoder.html">ResultMessageDecoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/codec/ResultMessageEncoder.html">ResultMessageEncoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/codec/SumUpProtocolCodecFactory.html">SumUpProtocolCodecFactory</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup_message">org.apache.mina.examples.sumup.message</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_codec">org.apache.mina.protocol.codec</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_examples_sumup_message"></a><h3>org.apache.mina.examples.sumup.message</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>2</td><td>1</td><td>33%</td><td>33%</td><td>33%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/message/AbstractMessage.html">AbstractMessage</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/message/AddMessage.html">AddMessage</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/sumup/message/ResultMessage.html">ResultMessage</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup_codec">org.apache.mina.examples.sumup.codec</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_examples_tennis"></a><h3>org.apache.mina.examples.tennis</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>0</td><td>6</td><td>0%</td><td>100%</td><td>0%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/tennis/Main.html">Main</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/tennis/TennisBall.html">TennisBall</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/tennis/TennisPlayer.html">TennisPlayer</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/tennis/TennisPlayer.html">TennisPlayer$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/examples/tennis/TennisPlayer.html">TennisPlayer$TennisPlayerHandler</a>
+                  </li>
+                </ul>
+              </td><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_vmpipe">org.apache.mina.protocol.vmpipe</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_io"></a><h3>org.apache.mina.io</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>11</td><td>6</td><td>53%</td><td>35%</td><td>12%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/io/AbstractIoFilterChain.html">AbstractIoFilterChain</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoAcceptor.html">IoAcceptor</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoConnector.html">IoConnector</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoFilter.html">IoFilter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoFilter.html">IoFilter$NextFilter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoFilterChain.html">IoFilterChain</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoHandler.html">IoHandler</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoSession.html">IoSession</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoSessionManager.html">IoSessionManager</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoSessionManagerFilterChain.html">IoSessionManagerFilterChain</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/io/AbstractIoFilterChain.html">AbstractIoFilterChain$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/AbstractIoFilterChain.html">AbstractIoFilterChain$2</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/AbstractIoFilterChain.html">AbstractIoFilterChain$Entry</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/AbstractIoFilterChain.html">AbstractIoFilterChain$Entry$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoFilterAdapter.html">IoFilterAdapter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoHandlerAdapter.html">IoHandlerAdapter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoSessionFilterChain.html">IoSessionFilterChain</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/IoSessionManagerFilterChain.html">IoSessionManagerFilterChain$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/WriteTimeoutException.html">WriteTimeoutException</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_echoserver">org.apache.mina.examples.echoserver</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_httpserver">org.apache.mina.examples.httpserver</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_netcat">org.apache.mina.examples.netcat</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_datagram">org.apache.mina.io.datagram</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_filter">org.apache.mina.io.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_handler">org.apache.mina.io.handler</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_socket">org.apache.mina.io.socket</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_io">org.apache.mina.protocol.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_io_datagram"></a><h3>org.apache.mina.io.datagram</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>2</td><td>8</td><td>8%</td><td>80%</td><td>12%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramSessionManager.html">DatagramSessionManager</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramAcceptor.html">DatagramAcceptor</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramAcceptor.html">DatagramAcceptor$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramAcceptor.html">DatagramAcceptor$CancellationRequest</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramAcceptor.html">DatagramAcceptor$RegistrationRequest</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramAcceptor.html">DatagramAcceptor$Worker</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramConnector.html">DatagramConnector</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramConnector.html">DatagramConnector$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramConnector.html">DatagramConnector$RegistrationRequest</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramConnector.html">DatagramConnector$Worker</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramSession.html">DatagramSession</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramSessionConfig.html">DatagramSessionConfig</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/datagram/DatagramSessionManagerFilterChain.html">DatagramSessionManagerFilterChain</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_nio_channels">java.nio.channels</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_io_filter"></a><h3>org.apache.mina.io.filter</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>4</td><td>10</td><td>0%</td><td>71%</td><td>29%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/io/filter/BlacklistFilter.html">BlacklistFilter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/filter/IoLoggingFilter.html">IoLoggingFilter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/filter/IoThreadPoolFilter.html">IoThreadPoolFilter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/filter/SSLByteBufferPool.html">SSLByteBufferPool</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/filter/SSLFilter.html">SSLFilter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/filter/SSLFilter.html">SSLFilter$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/filter/SSLHandler.html">SSLHandler</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_echoserver">org.apache.mina.examples.echoserver</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_httpserver">org.apache.mina.examples.httpserver</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_nio">java.nio</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#javax_net_ssl">javax.net.ssl</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_slf4j">org.slf4j</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_io_handler"></a><h3>org.apache.mina.io.handler</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>1</td><td>6</td><td>25%</td><td>86%</td><td>11%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/io/handler/StreamIoHandler.html">StreamIoHandler</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/io/handler/StreamIoHandler.html">StreamIoHandler$PipedInputStream</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/handler/StreamIoHandler.html">StreamIoHandler$ServiceOutputStream</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/handler/StreamIoHandler.html">StreamIoHandler$StreamIoException</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_httpserver">org.apache.mina.examples.httpserver</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_nio">java.nio</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_io_socket"></a><h3>org.apache.mina.io.socket</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>5</td><td>8</td><td>0%</td><td>62%</td><td>38%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketAcceptor.html">SocketAcceptor</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketAcceptor.html">SocketAcceptor$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketAcceptor.html">SocketAcceptor$CancellationRequest</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketAcceptor.html">SocketAcceptor$RegistrationRequest</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketAcceptor.html">SocketAcceptor$Worker</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketConnector.html">SocketConnector</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketConnector.html">SocketConnector$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketConnector.html">SocketConnector$ConnectionRequest</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketConnector.html">SocketConnector$Worker</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketIoProcessor.html">SocketIoProcessor</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketIoProcessor.html">SocketIoProcessor$Worker</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketSession.html">SocketSession</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketSessionConfig.html">SocketSessionConfig</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/io/socket/SocketSessionManagerFilterChain.html">SocketSessionManagerFilterChain</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_echoserver">org.apache.mina.examples.echoserver</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_netcat">org.apache.mina.examples.netcat</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_nio_channels">java.nio.channels</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_protocol"></a><h3>org.apache.mina.protocol</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>11</td><td>6</td><td>59%</td><td>35%</td><td>5%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/AbstractProtocolFilterChain.html">AbstractProtocolFilterChain</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolAcceptor.html">ProtocolAcceptor</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolCodecFactory.html">ProtocolCodecFactory</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolConnector.html">ProtocolConnector</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolDecoder.html">ProtocolDecoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolDecoderOutput.html">ProtocolDecoderOutput</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolEncoder.html">ProtocolEncoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolEncoderOutput.html">ProtocolEncoderOutput</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolFilter.html">ProtocolFilter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolFilter.html">ProtocolFilter$NextFilter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolFilterChain.html">ProtocolFilterChain</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolHandler.html">ProtocolHandler</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolProvider.html">ProtocolProvider</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolSession.html">ProtocolSession</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolSessionManager.html">ProtocolSessionManager</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolSessionManagerFilterChain.html">ProtocolSessionManagerFilterChain</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/AbstractProtocolFilterChain.html">AbstractProtocolFilterChain$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/AbstractProtocolFilterChain.html">AbstractProtocolFilterChain$2</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/AbstractProtocolFilterChain.html">AbstractProtocolFilterChain$Entry</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/AbstractProtocolFilterChain.html">AbstractProtocolFilterChain$Entry$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolFilterAdapter.html">ProtocolFilterAdapter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolHandlerAdapter.html">ProtocolHandlerAdapter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolSessionFilterChain.html">ProtocolSessionFilterChain</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolSessionManagerFilterChain.html">ProtocolSessionManagerFilterChain$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/ProtocolViolationException.html">ProtocolViolationException</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/SimpleProtocolDecoderOutput.html">SimpleProtocolDecoderOutput</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/SimpleProtocolEncoderOutput.html">SimpleProtocolEncoderOutput</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_reverser">org.apache.mina.examples.reverser</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup_codec">org.apache.mina.examples.sumup.codec</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_tennis">org.apache.mina.examples.tennis</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_codec">org.apache.mina.protocol.codec</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_filter">org.apache.mina.protocol.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_handler">org.apache.mina.protocol.handler</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_io">org.apache.mina.protocol.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_vmpipe">org.apache.mina.protocol.vmpipe</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_protocol_codec"></a><h3>org.apache.mina.protocol.codec</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>1</td><td>4</td><td>36%</td><td>80%</td><td>16%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/CumulativeProtocolDecoder.html">CumulativeProtocolDecoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/MessageDecoder.html">MessageDecoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/MessageDecoderFactory.html">MessageDecoderFactory</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/MessageEncoder.html">MessageEncoder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/MessageEncoderFactory.html">MessageEncoderFactory</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/DemuxingProtocolCodecFactory.html">DemuxingProtocolCodecFactory</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/DemuxingProtocolCodecFactory.html">DemuxingProtocolCodecFactory$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/DemuxingProtocolCodecFactory.html">DemuxingProtocolCodecFactory$DefaultConstructorMessageDecoderFactory</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/DemuxingProtocolCodecFactory.html">DemuxingProtocolCodecFactory$DefaultConstructorMessageEncoderFactory</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/DemuxingProtocolCodecFactory.html">DemuxingProtocolCodecFactory$ProtocolDecoderImpl</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/DemuxingProtocolCodecFactory.html">DemuxingProtocolCodecFactory$ProtocolEncoderImpl</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/DemuxingProtocolCodecFactory.html">DemuxingProtocolCodecFactory$SingletonMessageDecoderFactory</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/DemuxingProtocolCodecFactory.html">DemuxingProtocolCodecFactory$SingletonMessageEncoderFactory</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/codec/MessageDecoderResult.html">MessageDecoderResult</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup_codec">org.apache.mina.examples.sumup.codec</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_protocol_filter"></a><h3>org.apache.mina.protocol.filter</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>3</td><td>4</td><td>0%</td><td>57%</td><td>43%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/filter/ProtocolLoggingFilter.html">ProtocolLoggingFilter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/filter/ProtocolThreadPoolFilter.html">ProtocolThreadPoolFilter</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_reverser">org.apache.mina.examples.reverser</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_protocol_handler"></a><h3>org.apache.mina.protocol.handler</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>0</td><td>3</td><td>25%</td><td>100%</td><td>25%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/handler/MessageHandler.html">MessageHandler</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/handler/DemuxingProtocolHandler.html">DemuxingProtocolHandler</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/handler/MessageHandler.html">MessageHandler$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/handler/UnknownMessageTypeException.html">UnknownMessageTypeException</a>
+                  </li>
+                </ul>
+              </td><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_protocol_io"></a><h3>org.apache.mina.protocol.io</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>2</td><td>8</td><td>0%</td><td>80%</td><td>20%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/io/IoAdapter.html">IoAdapter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/io/IoAdapter.html">IoAdapter$SessionHandlerAdapter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/io/IoProtocolAcceptor.html">IoProtocolAcceptor</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/io/IoProtocolConnector.html">IoProtocolConnector</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/io/IoProtocolSession.html">IoProtocolSession</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/io/IoProtocolSessionManagerFilterChain.html">IoProtocolSessionManagerFilterChain</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_protocol_vmpipe"></a><h3>org.apache.mina.protocol.vmpipe</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>2</td><td>7</td><td>0%</td><td>78%</td><td>22%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <em>None</em>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/AnonymousVmPipeAddress.html">AnonymousVmPipeAddress</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeAcceptor.html">VmPipeAcceptor</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeAcceptor.html">VmPipeAcceptor$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeAcceptor.html">VmPipeAcceptor$Entry</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeAddress.html">VmPipeAddress</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeConnector.html">VmPipeConnector</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeFilter.html">VmPipeFilter</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeIdleStatusChecker.html">VmPipeIdleStatusChecker</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeIdleStatusChecker.html">VmPipeIdleStatusChecker$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeIdleStatusChecker.html">VmPipeIdleStatusChecker$Worker</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeSession.html">VmPipeSession</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeSessionConfig.html">VmPipeSessionConfig</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/protocol/vmpipe/VmPipeSessionManagerFilterChain.html">VmPipeSessionManagerFilterChain</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_tennis">org.apache.mina.examples.tennis</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_registry">org.apache.mina.registry</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_util">org.apache.mina.util</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_registry"></a><h3>org.apache.mina.registry</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>5</td><td>13</td><td>33%</td><td>72%</td><td>6%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/registry/ServiceRegistry.html">ServiceRegistry</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/registry/Service.html">Service</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/registry/SimpleServiceRegistry.html">SimpleServiceRegistry</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_examples_echoserver">org.apache.mina.examples.echoserver</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_httpserver">org.apache.mina.examples.httpserver</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_reverser">org.apache.mina.examples.reverser</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_tennis">org.apache.mina.examples.tennis</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_datagram">org.apache.mina.io.datagram</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_filter">org.apache.mina.io.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_socket">org.apache.mina.io.socket</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_filter">org.apache.mina.protocol.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_io">org.apache.mina.protocol.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_vmpipe">org.apache.mina.protocol.vmpipe</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div><div class="subsection"><a name="org_apache_mina_util"></a><h3>org.apache.mina.util</h3><table class="bodyTable"><thead>
+            <tr class="b"><th>Afferent Couplings</th><th>Efferent Couplings</th><th>Abstractness</th><th>Instability</th><th>Distance</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>10</td><td>10</td><td>13%</td><td>50%</td><td>37%</td></tr>
+          </tbody></table><table class="bodyTable"><thead>
+            <tr class="b"><th>Abstract Classes</th><th>Concrete Classes</th><th>Used by Packages</th><th>Uses Packages</th></tr>
+          </thead><tbody>
+            <tr class="a"><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/util/BaseThreadPool.html">BaseThreadPool</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/ThreadPool.html">ThreadPool</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="xref/org/apache/mina/util/AvailablePortFinder.html">AvailablePortFinder</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/BaseThreadPool.html">BaseThreadPool$1</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/BaseThreadPool.html">BaseThreadPool$SessionBuffer</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/BaseThreadPool.html">BaseThreadPool$Worker</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/BlockingQueue.html">BlockingQueue</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/BlockingSet.html">BlockingSet</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/Event.html">Event</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/EventType.html">EventType</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/ExceptionUtil.html">ExceptionUtil</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/Queue.html">Queue</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/SessionLog.html">SessionLog</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/SessionUtil.html">SessionUtil</a>
+                  </li>
+                  <li>
+                    <a href="xref/org/apache/mina/util/Stack.html">Stack</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_examples_sumup">org.apache.mina.examples.sumup</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_datagram">org.apache.mina.io.datagram</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_filter">org.apache.mina.io.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_socket">org.apache.mina.io.socket</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_filter">org.apache.mina.protocol.filter</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_io">org.apache.mina.protocol.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol_vmpipe">org.apache.mina.protocol.vmpipe</a>
+                  </li>
+                </ul>
+              </td><td>
+                <ul>
+                  <li>
+                    <a href="#java_io">java.io</a>
+                  </li>
+                  <li>
+                    <a href="#java_lang">java.lang</a>
+                  </li>
+                  <li>
+                    <a href="#java_net">java.net</a>
+                  </li>
+                  <li>
+                    <a href="#java_util">java.util</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_common">org.apache.mina.common</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io">org.apache.mina.io</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_datagram">org.apache.mina.io.datagram</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_io_socket">org.apache.mina.io.socket</a>
+                  </li>
+                  <li>
+                    <a href="#org_apache_mina_protocol">org.apache.mina.protocol</a>
+                  </li>
+                  <li>
+                    <a href="#org_slf4j">org.slf4j</a>
+                  </li>
+                </ul>
+              </td></tr>
+          </tbody></table></div></div><div class="section"><a name="Cycles"></a><h2>Cycles</h2><p>[
+        <a href="#Summary">summary</a>] [
+        <a href="#Packages">packages</a>] [
+        <a href="#Cycles">cycles</a>] [
+        <a href="#Explanations">explanations</a>]</p><table class="bodyTable"><thead>
+          <tr class="b"><th>Package</th><th>Cyclic Dependencies</th></tr>
+        </thead><tbody>
+          <tr class="a"><td>org.apache.mina.common</td><td>
+              <ul>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="b"><td>org.apache.mina.examples.echoserver</td><td>
+              <ul>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="a"><td>org.apache.mina.examples.httpserver</td><td>
+              <ul>
+                <li>org.apache.mina.io.handler</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="b"><td>org.apache.mina.examples.netcat</td><td>
+              <ul>
+                <li>org.apache.mina.io.socket</li>
+                <li>org.apache.mina.io</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="a"><td>org.apache.mina.examples.reverser</td><td>
+              <ul>
+                <li>org.apache.mina.protocol</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="b"><td>org.apache.mina.examples.sumup</td><td>
+              <ul>
+                <li>org.apache.mina.protocol</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="a"><td>org.apache.mina.examples.sumup.codec</td><td>
+              <ul>
+                <li>org.apache.mina.protocol</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="b"><td>org.apache.mina.examples.tennis</td><td>
+              <ul>
+                <li>org.apache.mina.protocol</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="a"><td>org.apache.mina.io</td><td>
+              <ul>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="b"><td>org.apache.mina.io.datagram</td><td>
+              <ul>
+                <li>org.apache.mina.io</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="a"><td>org.apache.mina.io.filter</td><td>
+              <ul>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="b"><td>org.apache.mina.io.handler</td><td>
+              <ul>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="a"><td>org.apache.mina.io.socket</td><td>
+              <ul>
+                <li>org.apache.mina.io</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="b"><td>org.apache.mina.protocol</td><td>
+              <ul>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="a"><td>org.apache.mina.protocol.codec</td><td>
+              <ul>
+                <li>org.apache.mina.protocol</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="b"><td>org.apache.mina.protocol.filter</td><td>
+              <ul>
+                <li>org.apache.mina.protocol</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="a"><td>org.apache.mina.protocol.handler</td><td>
+              <ul>
+                <li>org.apache.mina.protocol</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="b"><td>org.apache.mina.protocol.io</td><td>
+              <ul>
+                <li>org.apache.mina.protocol</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="a"><td>org.apache.mina.protocol.vmpipe</td><td>
+              <ul>
+                <li>org.apache.mina.protocol</li>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="b"><td>org.apache.mina.registry</td><td>
+              <ul>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+                <li>org.apache.mina.common</li>
+              </ul>
+            </td></tr>
+          <tr class="a"><td>org.apache.mina.util</td><td>
+              <ul>
+                <li>org.apache.mina.common</li>
+                <li>org.apache.mina.util</li>
+              </ul>
+            </td></tr>
+        </tbody></table></div><div class="section"><a name="Explanations"></a><h2>Explanations</h2><p>[
+        <a href="#Summary">summary</a>] [
+        <a href="#Packages">packages</a>] [
+        <a href="#Cycles">cycles</a>] [
+        <a href="#Explanations">explanations</a>]</p><p>The following explanations are for quick reference and are lifted directly from the original
+        <a href="http://www.clarkware.com/software/JDepend.html" class="externalLink" title="External Link">JDepend documentation</a>.</p><table class="bodyTable"><thead>
+          <tr class="b"><th>Term</th><th>Description</th></tr>
+        </thead><tbody>
+          <tr class="a"><td>Number of Classes</td><td>The number of concrete and abstract classes (and interfaces) in the package is an indicator of the extensibility of the package.</td></tr>
+          <tr class="b"><td>Afferent Couplings</td><td>The number of other packages that depend upon classes within the package is an indicator of the package's responsibility.</td></tr>
+          <tr class="a"><td>Efferent Couplings</td><td>The number of other packages that the classes in the package depend upon is an indicator of the package's independence.</td></tr>
+          <tr class="b"><td>Abstractness</td><td>The ratio of the number of abstract classes (and interfaces) in the analyzed package to the total number of classes in the analyzed package. The range for this metric is 0 to 1, with A=0 indicating a completely concrete package and A=1 indicating a completely abstract package.</td></tr>
+          <tr class="a"><td>Instability</td><td>The ratio of efferent coupling (Ce) to total coupling (Ce / (Ce + Ca)). This metric is an indicator of the package's resilience to change. The range for this metric is 0 to 1, with I=0 indicating a completely stable package and I=1 indicating a completely instable package.</td></tr>
+          <tr class="b"><td>Distance</td><td>The perpendicular distance of a package from the idealized line A + I = 1. This metric is an indicator of the package's balance between abstractness and stability. A package squarely on the main sequence is optimally balanced with respect to its abstractness and stability. Ideal packages are either completely abstract and stable (x=0, y=1) or completely concrete and instable (x=1, y=0). The range for this metric is 0 to 1, with D=0 indicating a package that is coincident with the main sequence and D=1 indicating a package that is as far from the main sequence as possible.</td></tr>
+          <tr class="a"><td>Cycles</td><td>Packages participating in a package dependency cycle are in a deadly embrace with respect to reusability and their release cycle. Package dependency cycles can be easily identified by reviewing the textual reports of dependency cycles. Once these dependency cycles have been identified with JDepend, they can be broken by employing various object-oriented techniques.</td></tr>
+        </tbody></table></div></div></div><div class="clear"><hr></hr></div><div id="footer"><div class="xright">© 2004-2005, </div><div class="clear"><hr></hr></div></div></body></html>
