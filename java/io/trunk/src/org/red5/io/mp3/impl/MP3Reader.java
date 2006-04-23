@@ -37,6 +37,25 @@ public class MP3Reader implements IReader {
 		}
 		mappedFile.order(ByteOrder.BIG_ENDIAN);
 		in = ByteBuffer.wrap(mappedFile);
+		if (in.limit() > 4)
+			searchNextFrame();
+	}
+	
+	/**
+	 * Search for next frame sync.
+	 */
+	public void searchNextFrame() {
+		while (in.limit() > 0) {
+			int ch = (int) in.get() & 0xff;
+			if (ch != 0xff)
+				continue;
+			
+			if ((in.get() & 0xe0) == 0xe0) {
+				// Found it
+				in.position(in.position()-2);
+				return;
+			}
+		}
 	}
 	
 	public IFLV getFLV() {
@@ -58,13 +77,20 @@ public class MP3Reader implements IReader {
 	}
 
 	public ITag readTag() {
-		MP3Header header;
-		try {
-			header = new MP3Header(in.getInt());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+		MP3Header header = null;
+		while (header == null && in.limit() > 4) {
+			try {
+				header = new MP3Header(in.getInt());
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
+			} catch (Exception e) {
+				searchNextFrame();
+			}
 		}
+		
+		if (header == null)
+			return null;
 		
 		int frameSize = header.frameSize();
 		tag = new Tag(ITag.TYPE_AUDIO, (int) currentTime, frameSize + 1 + (header.isProtected() ? 2 : 0), null, prevSize);
