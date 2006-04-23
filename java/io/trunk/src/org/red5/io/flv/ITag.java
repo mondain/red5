@@ -45,7 +45,7 @@ public interface ITag {
 	
 	public static final byte MASK_SOUND_SIZE = 0x02;
 	public static final byte FLAG_SIZE_8_BIT = 0x00;
-	public static final byte FLAG_SIZE_16_BIT = 0x02;
+	public static final byte FLAG_SIZE_16_BIT = 0x01;
 	
 	public static final byte MASK_SOUND_RATE = 0x0C;
 	public static final byte FLAG_RATE_5_5_KHZ = 0x00;
