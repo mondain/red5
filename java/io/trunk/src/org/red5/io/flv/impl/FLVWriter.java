@@ -184,6 +184,10 @@ public class FLVWriter implements ITagWriter {
 	 * @see org.red5.io.flv.Writer#close()
 	 */
 	public void close() {
+		if (out != null) {
+			out.release();
+			out = null;
+		}
 		try {
 			channel.close();
 			fos.close();
