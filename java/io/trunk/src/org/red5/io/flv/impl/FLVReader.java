@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.IStreamableFile;
+import org.red5.io.ITag;
+import org.red5.io.ITagReader;
 import org.red5.io.flv.FLVHeader;
-import org.red5.io.flv.IFLV;
 import org.red5.io.flv.IKeyFrameDataAnalyzer;
-import org.red5.io.flv.IReader;
-import org.red5.io.flv.ITag;
 import org.red5.io.flv.IKeyFrameDataAnalyzer.KeyFrameMeta;
 import org.red5.io.utils.IOUtils;
 
@@ -50,7 +50,7 @@ import org.red5.io.utils.IOUtils;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class Reader implements IReader, IKeyFrameDataAnalyzer {
+public class FLVReader implements ITagReader, IKeyFrameDataAnalyzer {
 	
 	private FileInputStream fis = null;
 	private FLVHeader header = null;
@@ -59,7 +59,7 @@ public class Reader implements IReader, IKeyFrameDataAnalyzer {
 	private ByteBuffer in = null;
 	private ITag tag = null;
 	
-	public Reader(FileInputStream f) {
+	public FLVReader(FileInputStream f) {
 		this.fis = f;
 		channel = fis.getChannel();
 		try {
@@ -85,7 +85,7 @@ public class Reader implements IReader, IKeyFrameDataAnalyzer {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Reader#getFLV()
 	 */
-	public IFLV getFLV() {
+	public IStreamableFile getFile() {
 		// TODO Auto-generated method stub
 		// TODO wondering if we need to have a reference
 		return null;

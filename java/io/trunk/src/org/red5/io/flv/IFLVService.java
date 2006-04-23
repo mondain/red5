@@ -23,12 +23,7 @@ package org.red5.io.flv;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
+import org.red5.io.IStreamableFileService;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
 
@@ -41,7 +36,7 @@ import org.red5.io.object.Serializer;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public interface IFLVService {
+public interface IFLVService extends IStreamableFileService {
 
 	/**
 	 * Sets the serializer
@@ -54,12 +49,5 @@ public interface IFLVService {
 	 * @param deserializer
 	 */
 	public void setDeserializer(Deserializer deserializer);
-	
-	/**
-	 * Returns a FLV object based on the File parameter
-	 * @param file
-	 */
-	public IFLV getFLV(File file) throws IOException;
-
 
 }

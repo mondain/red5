@@ -1,7 +1,6 @@
 package org.red5.io.mp3;
 
-import java.io.IOException;
-import org.red5.io.flv.IReader;
+import org.red5.io.IStreamableFile;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -30,15 +29,8 @@ import org.red5.io.flv.IReader;
  * @author Joachim Bauch (jojo@struktur.de)
  */
 
-public interface IMP3 {
+public interface IMP3 extends IStreamableFile {
 
 	// TODO: add more methods
-	
-	/**
-	 * Returns a Reader to parse and read the MP3 file.
-	 * 
-	 * @return reader object
-	 */
-	public IReader reader() throws IOException;
 	
 }

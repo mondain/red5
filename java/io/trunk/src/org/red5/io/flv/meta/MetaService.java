@@ -9,10 +9,10 @@ import java.util.Map;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.amf.Input;
 import org.red5.io.amf.Output;
-import org.red5.io.flv.ITag;
-import org.red5.io.flv.impl.Reader;
+import org.red5.io.ITag;
+import org.red5.io.flv.impl.FLVReader;
+import org.red5.io.flv.impl.FLVWriter;
 import org.red5.io.flv.impl.Tag;
-import org.red5.io.flv.impl.Writer;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
 
@@ -109,8 +109,8 @@ public class MetaService implements IMetaService {
 	public void write(IMetaData meta) throws IOException {
 
 		IMetaCue[] metaArr = meta.getMetaCue();
-		Reader reader = new Reader(fis);
-		Writer writer = new Writer(fos);
+		FLVReader reader = new FLVReader(fis);
+		FLVWriter writer = new FLVWriter(fos);
 		writer.writeHeader();
 		
 		IMetaData metaData = null;
