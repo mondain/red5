@@ -137,8 +137,13 @@ public class Reader implements IReader, IKeyFrameDataAnalyzer {
 	 */
 	synchronized public void close() {
 		mappedFile.clear();
+		if (in != null) {
+			in.release();
+			in = null;
+		}
 		try {
 			channel.close();
+			fis.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

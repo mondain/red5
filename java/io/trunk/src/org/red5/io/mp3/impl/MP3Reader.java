@@ -129,12 +129,17 @@ public class MP3Reader implements IReader {
 
 	public void close() {
 		mappedFile.clear();
+		if (in != null) {
+			in.release();
+			in = null;
+		}
 		try {
+			fis.close();
 			channel.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}
 	}
 
 	public void decodeHeader() {
