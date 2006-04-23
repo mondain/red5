@@ -24,7 +24,7 @@ package org.red5.io.flv.impl;
  */
 
 import org.apache.mina.common.ByteBuffer;
-import org.red5.io.flv.ITag;
+import org.red5.io.ITag;
 
 /**
  * A Tag represents the contents or payload of a FLV file

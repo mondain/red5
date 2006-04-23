@@ -30,6 +30,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.red5.io.IStreamableFile;
 import org.red5.io.flv.IFLV;
 import org.red5.io.flv.IFLVService;
 import org.red5.io.object.Deserializer;
@@ -47,6 +48,14 @@ import org.red5.io.object.Serializer;
 public class FLVService implements IFLVService {
 	private Serializer serializer;
 	private Deserializer deserializer;
+	
+	public String getPrefix() {
+		return "flv";
+	}
+	
+	public boolean canHandle(File fp) {
+		return (fp.isFile() && fp.getAbsolutePath().toLowerCase().endsWith(".flv"));
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLVService#setSerializer(org.red5.io.object.Serializer)
@@ -67,8 +76,8 @@ public class FLVService implements IFLVService {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
 	 */
-	public IFLV getFLV(File file) throws IOException {
-		IFLV flv = new FLV(file); 
+	public IStreamableFile getStreamableFile(File file) throws IOException {
+		IStreamableFile flv = new FLV(file); 
 		return flv;
 	}
 	

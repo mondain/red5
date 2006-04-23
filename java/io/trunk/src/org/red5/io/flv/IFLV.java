@@ -4,10 +4,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
+import org.red5.io.IStreamableFile;
+import org.red5.io.ITagReader;
+import org.red5.io.ITagWriter;
 import org.red5.io.flv.meta.IMetaData;
 import org.red5.io.flv.meta.IMetaService;
 
-public interface IFLV {
+public interface IFLV extends IStreamableFile {
 
 	/**
 	 * Returns a boolean stating whether the flv has metadata
@@ -72,35 +75,17 @@ public interface IFLV {
 	public void flushHeaders() throws IOException;
 	
 	/**
-	 * Returns a Reader to parse and read the flv file
-	 * @return Reader reader
-	 */
-	public IReader reader() throws IOException;
-	
-	/**
 	 * Returns a Reader closest to the nearest keyframe
 	 * @param int seekPoint
 	 * @return Reader reader
 	 */
-	public IReader readerFromNearestKeyFrame(int seekPoint);
-	
-	/**
-	 * Returns a Writer
-	 * @return Writer writer
-	 */
-	public IWriter writer() throws IOException;
-
-	/**
-	 * Returns a Writer which is setup to append to flv
-	 * @return Writer writer
-	 */
-	public IWriter append() throws IOException;
+	public ITagReader readerFromNearestKeyFrame(int seekPoint);
 	
 	/**
 	 * Returns a Writer based on the nearest key frame
 	 * @param int seekPoint
 	 * @return Writer writer
 	 */
-	public IWriter writerFromNearestKeyFrame(int seekPoint);
+	public ITagWriter writerFromNearestKeyFrame(int seekPoint);
 	
 }

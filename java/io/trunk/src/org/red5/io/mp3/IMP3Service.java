@@ -1,7 +1,6 @@
 package org.red5.io.mp3;
 
-import java.io.File;
-import java.io.IOException;
+import org.red5.io.IStreamableFileService;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -30,15 +29,8 @@ import java.io.IOException;
  * @author Joachim Bauch (jojo@struktur.de)
  */
 
-public interface IMP3Service {
+public interface IMP3Service extends IStreamableFileService {
 
 	// TODO: add more methods
-	
-	/**
-	 * Returns a MP3 object based on the File parameter
-	 * 
-	 * @param file
-	 */
-	public IMP3 getMP3(File file) throws IOException;
 	
 }

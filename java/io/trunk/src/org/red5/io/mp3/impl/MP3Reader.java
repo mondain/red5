@@ -9,12 +9,12 @@ import java.nio.channels.FileChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
-import org.red5.io.flv.IFLV;
-import org.red5.io.flv.IReader;
-import org.red5.io.flv.ITag;
+import org.red5.io.IStreamableFile;
+import org.red5.io.ITag;
+import org.red5.io.ITagReader;
 import org.red5.io.flv.impl.Tag;
 
-public class MP3Reader implements IReader {
+public class MP3Reader implements ITagReader {
 
 	protected static Log log =
         LogFactory.getLog(MP3Reader.class.getName());
@@ -58,7 +58,7 @@ public class MP3Reader implements IReader {
 		}
 	}
 	
-	public IFLV getFLV() {
+	public IStreamableFile getFile() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -149,9 +149,5 @@ public class MP3Reader implements IReader {
 		in.position((int) pos);
 	}
 
-	public KeyFrameMeta analyzeKeyFrames() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

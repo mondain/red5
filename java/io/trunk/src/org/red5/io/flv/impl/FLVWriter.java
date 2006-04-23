@@ -28,9 +28,10 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.IStreamableFile;
+import org.red5.io.ITag;
+import org.red5.io.ITagWriter;
 import org.red5.io.flv.IFLV;
-import org.red5.io.flv.ITag;
-import org.red5.io.flv.IWriter;
 import org.red5.io.utils.IOUtils;
 
 import java.nio.MappedByteBuffer;
@@ -45,7 +46,7 @@ import java.nio.channels.WritableByteChannel;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class Writer implements IWriter {
+public class FLVWriter implements ITagWriter {
 	
 	private FileOutputStream fos = null;
 	private WritableByteChannel channel;
@@ -57,7 +58,7 @@ public class Writer implements IWriter {
 	private long bytesWritten = 0;
 	private int offset = 0;
 	
-	public Writer(FileOutputStream fos){
+	public FLVWriter(FileOutputStream fos){
 		this(fos,null);
 	}
 	
@@ -65,7 +66,7 @@ public class Writer implements IWriter {
 	 * WriterImpl Constructor
 	 * @param fos 
 	 */
-	public Writer(FileOutputStream fos, ITag lastTag) {
+	public FLVWriter(FileOutputStream fos, ITag lastTag) {
 		this.fos = fos;
 		this.lastTag = lastTag;
 		if(lastTag !=null) offset=lastTag.getTimestamp();
@@ -108,7 +109,7 @@ public class Writer implements IWriter {
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Writer#getFLV()
 	 */
-	public IFLV getFLV() {
+	public IStreamableFile getFile() {
 		return flv;
 	}
 	

@@ -1,4 +1,4 @@
-package org.red5.io.flv;
+package org.red5.io;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -26,7 +26,7 @@ package org.red5.io.flv;
 import org.apache.mina.common.ByteBuffer;
 
 /**
- * A Tag represents the contents or payload of a FLV file
+ * A Tag represents the contents or payload of a streamable file.
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (daccattato@gmail.com)
