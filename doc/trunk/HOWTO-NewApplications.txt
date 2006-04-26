@@ -2,8 +2,11 @@
  HOWTO create new applications in Red5
 ---------------------------------------
 
-:author: Joachim Bauch
-:contact: jojo@struktur.de
+:Author: Joachim Bauch
+:Contact: jojo@struktur.de
+:Date: $Date$
+:Revision: $Revision$
+:Id: $Id$
 
 .. contents::
 
