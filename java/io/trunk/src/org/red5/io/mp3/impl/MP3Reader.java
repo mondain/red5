@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,8 +16,10 @@ import org.red5.io.IStreamableFile;
 import org.red5.io.ITag;
 import org.red5.io.ITagReader;
 import org.red5.io.flv.impl.Tag;
+import org.red5.io.flv.IKeyFrameDataAnalyzer;
+import org.red5.io.flv.IKeyFrameDataAnalyzer.KeyFrameMeta;
 
-public class MP3Reader implements ITagReader {
+public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 
 	protected static Log log =
         LogFactory.getLog(MP3Reader.class.getName());
@@ -26,6 +31,8 @@ public class MP3Reader implements ITagReader {
 	private ITag tag = null;
 	private int prevSize = 0;
 	private double currentTime = 0;
+	private KeyFrameMeta frameMeta = null;
+	private HashMap<Integer,Double> posTimeMap = null;
 	
 	public MP3Reader(FileInputStream stream) {
 		fis = stream;
@@ -45,7 +52,7 @@ public class MP3Reader implements ITagReader {
 	 * Search for next frame sync.
 	 */
 	public void searchNextFrame() {
-		while (in.limit() > 0) {
+		while (in.remaining() > 1) {
 			int ch = (int) in.get() & 0xff;
 			if (ch != 0xff)
 				continue;
@@ -76,9 +83,9 @@ public class MP3Reader implements ITagReader {
 		return in.remaining() > 4;
 	}
 
-	public ITag readTag() {
+	public synchronized ITag readTag() {
 		MP3Header header = null;
-		while (header == null && in.limit() > 4) {
+		while (header == null && in.remaining() > 4) {
 			try {
 				header = new MP3Header(in.getInt());
 			} catch (IOException e) {
@@ -128,6 +135,8 @@ public class MP3Reader implements ITagReader {
 	}
 
 	public void close() {
+		if (posTimeMap != null)
+			posTimeMap.clear();
 		mappedFile.clear();
 		if (in != null) {
 			in.release();
@@ -147,7 +156,64 @@ public class MP3Reader implements ITagReader {
 
 	public void position(long pos) {
 		in.position((int) pos);
+		// Advance to next frame
+		searchNextFrame();
+		// Make sure we can resolve file positions to timestamps
+		analyzeKeyFrames();
+		Double time = posTimeMap.get(in.position());
+		if (time != null)
+			currentTime = time.doubleValue();
+		else
+			// Unknown frame position - this should never happen
+			currentTime = 0;
 	}
 
+	public synchronized KeyFrameMeta analyzeKeyFrames() {
+		if (frameMeta != null)
+			return frameMeta;
+		
+		List<Integer> positionList = new ArrayList<Integer>();
+		List<Double> timestampList = new ArrayList<Double>();
+		int origPos = in.position();
+		in.position(0);
+		searchNextFrame();
+		double time = 0;
+		while (this.hasMoreTags()) {
+			MP3Header header = null;
+			while (header == null && in.remaining() > 4) {
+				try {
+					header = new MP3Header(in.getInt());
+				} catch (IOException e) {
+					e.printStackTrace();
+					break;
+				} catch (Exception e) {
+					searchNextFrame();
+				}
+			}
+			
+			if (header == null)
+				// No more tags
+				break;
+			
+			int pos = in.position() - 4;
+			positionList.add(new Integer(pos));
+			timestampList.add(new Double(time));
+			time += header.frameDuration();
+			in.position(pos + header.frameSize() + (header.isProtected() ? 2 : 0));
+		}
+		// restore the pos
+		in.position(origPos);
+		
+		posTimeMap = new HashMap<Integer,Double>();
+		frameMeta = new KeyFrameMeta();
+		frameMeta.positions = new int[positionList.size()];
+		frameMeta.timestamps = new int[timestampList.size()];
+		for (int i = 0; i < frameMeta.positions.length; i++) {
+			frameMeta.positions[i] = positionList.get(i).intValue();
+			frameMeta.timestamps[i] = timestampList.get(i).intValue();
+			posTimeMap.put(positionList.get(i), timestampList.get(i));
+		}
+		return frameMeta;
+	}
 
 }
