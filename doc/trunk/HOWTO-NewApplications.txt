@@ -206,6 +206,13 @@ The bean for a scope handler is configured by::
 
 The `id` attribute is referenced by the scope definition above.
 
+If you don't need any special server-side logic, you can use the default
+application handler provided by Red5::
+
+    <bean id="web.handler" 
+          class="org.red5.server.adapter.ApplicationAdapter" 
+          singleton="true" />
+
 
 Sample handler
 ==========================
