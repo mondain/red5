@@ -4,6 +4,9 @@
 
 :author: Joachim Bauch
 :contact: jojo@struktur.de
+:Date: $Date$
+:Revision: $Revision$
+:Id: $Id$
 
 .. contents::
 
