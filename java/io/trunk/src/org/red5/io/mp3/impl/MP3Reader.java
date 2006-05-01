@@ -100,8 +100,8 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 			return null;
 		
 		int frameSize = header.frameSize();
-		tag = new Tag(ITag.TYPE_AUDIO, (int) currentTime, frameSize + 1 + (header.isProtected() ? 2 : 0), null, prevSize);
-		prevSize = frameSize + 1 + (header.isProtected() ? 2 : 0);
+		tag = new Tag(ITag.TYPE_AUDIO, (int) currentTime, frameSize + 1, null, prevSize);
+		prevSize = frameSize + 1;
 		currentTime += header.frameDuration();
 		ByteBuffer body = ByteBuffer.allocate(tag.getBodySize());
 		byte tagType = (ITag.FLAG_FORMAT_MP3 << 4) | (ITag.FLAG_SIZE_16_BIT << 1);
@@ -122,8 +122,6 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		body.put(tagType);
 		final int limit = in.limit();
 		body.putInt(header.getData());
-		if (header.isProtected())
-			body.putShort(in.getShort());
 		in.limit(in.position()+frameSize-4);
 		body.put(in);
 		body.flip();
