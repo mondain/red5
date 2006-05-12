@@ -15,6 +15,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.red5.io.IStreamableFile;
 import org.red5.io.ITag;
 import org.red5.io.ITagReader;
+import org.red5.io.amf.Output;
 import org.red5.io.flv.impl.Tag;
 import org.red5.io.flv.IKeyFrameDataAnalyzer;
 import org.red5.io.flv.IKeyFrameDataAnalyzer.KeyFrameMeta;
@@ -33,6 +34,9 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 	private double currentTime = 0;
 	private KeyFrameMeta frameMeta = null;
 	private HashMap<Integer,Double> posTimeMap = null;
+	private int dataRate = 0;
+	private boolean firstFrame;
+	private ITag fileMeta;
 	
 	public MP3Reader(FileInputStream stream) {
 		fis = stream;
@@ -44,8 +48,36 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		}
 		mappedFile.order(ByteOrder.BIG_ENDIAN);
 		in = ByteBuffer.wrap(mappedFile);
-		if (in.limit() > 4)
+		analyzeKeyFrames();
+		firstFrame = true;
+		fileMeta = createFileMeta();
+		if (in.remaining() > 4)
 			searchNextFrame();
+	}
+	
+	private ITag createFileMeta() {
+		// Create tag for onMetaData event
+		ByteBuffer buf = ByteBuffer.allocate(1024);
+		buf.setAutoExpand(true);
+		Output out = new Output(buf);
+		out.writeString("onMetaData");
+		out.writeStartMap(3);
+		out.writePropertyName("duration");
+		out.writeNumber(frameMeta.timestamps[frameMeta.timestamps.length-1] / 1000.0);
+		out.writePropertyName("audiocodecid");
+		out.writeNumber(ITag.FLAG_FORMAT_MP3);
+		if (dataRate > 0) {
+			out.writePropertyName("audiodatarate");
+			out.writeNumber(dataRate);
+		}
+		out.writePropertyName("canSeekToEnd");
+		out.writeBoolean(true);
+		out.markEndMap();
+		buf.flip();
+		
+		ITag result = new Tag(ITag.TYPE_METADATA, 0, buf.limit(), null, prevSize);
+		result.setBody(buf);
+		return result;
 	}
 	
 	/**
@@ -84,6 +116,12 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 	}
 
 	public synchronized ITag readTag() {
+		if (firstFrame) {
+			// Return file metadata as first tag.
+			firstFrame = false;
+			return fileMeta;
+		}
+		
 		MP3Header header = null;
 		while (header == null && in.remaining() > 4) {
 			try {
@@ -172,6 +210,9 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		
 		List<Integer> positionList = new ArrayList<Integer>();
 		List<Double> timestampList = new ArrayList<Double>();
+		dataRate = 0;
+		long rate = 0;
+		int count = 0;
 		int origPos = in.position();
 		in.position(0);
 		searchNextFrame();
@@ -196,12 +237,15 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 			int pos = in.position() - 4;
 			positionList.add(new Integer(pos));
 			timestampList.add(new Double(time));
+			rate += header.getBitRate() / 1000;
 			time += header.frameDuration();
-			in.position(pos + header.frameSize() + (header.isProtected() ? 2 : 0));
+			in.position(pos + header.frameSize());
+			count++;
 		}
 		// restore the pos
 		in.position(origPos);
 		
+		dataRate = (int) (rate / count);
 		posTimeMap = new HashMap<Integer,Double>();
 		frameMeta = new KeyFrameMeta();
 		frameMeta.positions = new int[positionList.size()];
