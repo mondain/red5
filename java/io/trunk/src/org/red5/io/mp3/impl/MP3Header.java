@@ -159,7 +159,12 @@ public class MP3Header {
 		case 2:
 		case 1:
 			// Layer 2 and 3
-			return 144 * getBitRate() / getSampleRate() + (paddingBit ? 1 : 0);
+			if (audioVersionId == 3)
+				// MPEG 1
+				return 144 * getBitRate() / getSampleRate() + (paddingBit ? 1 : 0);
+			else
+				// MPEG 2 or 2.5
+				return 72 * getBitRate() / getSampleRate() + (paddingBit ? 1 : 0);
 			
 		default:
 			// Unknown
