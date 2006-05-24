@@ -16,6 +16,9 @@ This document describes API differences between the Macromedia Flash
 Communication Server / Flash Media Server 2 and Red5.  It aims at helping
 migrate existing applications to Red5.
 
+If you don't have an application in Red5 yet, please read the tutorial about
+`howto create new applications`__ first.
+
 
 Application callbacks
 ==========================
@@ -36,10 +39,33 @@ As some methods may be called multiple times for one request (e.g. `connect`
 will be called once for every scope in the tree the client connects to),
 the class ApplicationAdapter_ defines additional methods.
 
-You can also use the ApplicationAdapter_ to check for streams, shared objects,
-or subscribe them.
+This class usually is used as base class for new applications.
 
-See the API documentation for further details.
+Here is a short overview of methods of the FCS / FMS `application` class and
+their corresponding methods of ApplicationAdapter_ in Red5:
+
+=============== ===============
+FCS / FMS       Red5
+=============== ===============
+onAppStart      appStart
+                roomStart
+onAppStop       appStop
+                roomStop
+onConnect       appConnect
+                roomConnect
+                appJoin
+                roomJoin
+onDisconnect    appDisconnect
+                roomDisconnect
+                appLeave
+                roomLeave
+=============== ===============
+
+The `app*` methods are called for the main application, the `room*` methods
+are called for rooms (i.e. instances) of the application.
+
+You can also also use the ApplicationAdapter_ to check for streams, shared
+objects, or subscribe them.  See the API documentation for further details.
 
 
 Calls to client methods
@@ -84,7 +110,100 @@ reference to the application instance.
 
 SharedObjects
 ==========================
-TODO: How can shared objects be accessed from an application?
+The methods to access shared objects from an application are specified in the
+interface ISharedObjectService_.
+
+When dealing with shared objects in serverside scripts, special care must be
+taken about the scope they are created in.
+
+To create a new shared object when a room is created, you can override the
+method `roomStart` in your application::
+
+  import org.red5.server.adapter.ApplicationAdapter;
+  import org.red5.server.api.IScope;
+  import org.red5.server.api.so.ISharedObject;
+  
+  public class SampleApplication extends ApplicationAdapter {
+  
+    public boolean roomStart(IScope room) {
+      if (!super.roomStart(room))
+        return false;
+        
+      createSharedObject(room, "sampleSO", true);
+      ISharedObject so = getSharedObject(room, "sampleSO");
+      
+      // Now you could do something with the shared object...
+      
+      return true;		
+    }
+    
+  }
+
+Now everytime a first user connects to a room of a application, e.g. through
+`rtmp://server/application/room1`, a shared object `sampleSO` is created by
+the server.
+
+If a shared object should be created for connections to the main application,
+e.g. `rtmp://server/application`, the same must be done in the method
+`appStart`.
+
+For further informations about the possible methods a shared object provides
+please refer to the api documentation of the interface ISharedObject_.
+
+
+To get notified about changes of the shared object, a handler must implement
+the interface ISharedObjectListener_::
+
+  import org.red5.server.api.so.ISharedObject;
+  import org.red5.server.api.so.ISharedObjectListener;
+
+  public class SampleSharedObjectListener implements ISharedObjectListener {
+
+    public void onSharedObjectUpdate(ISharedObject so, String key, Object value) {
+      // The attribute <key> of the shared object <so> was changed to <value>
+    }
+
+    public void onSharedObjectDelete(ISharedObject so, String key) {
+      // The attribute <key> of the shared object <so> was deleted
+    }
+
+    public void onSharedObjectSend(ISharedObject so, String method, List params) {
+      // The handler <method> of the shared object <so> was called with the
+      // parameters <params>
+    }
+    
+    // Other methods as described in the interface...
+  }
+
+
+Additionally, the handler must get registered at the shared object::
+
+  ISharedObject so = getSharedObject(scope, "sampleSO");
+  so.addSharedObjectListener(new SampleSharedObjectListener())
+
+
+A shared object can be changed by the server as well::
+
+  ISharedObject so = getSharedObject(scope, "sampleSO");
+  so.setAttribute("fullname", "Sample user");
+
+Here all subscribed clients as well as the registered handlers are notified
+about the new / changed attribute.
+
+
+If multiple actions on a shared object should be combined in one update
+event to the subscribed clients, the methods `beginUpdate` and `endUpdate`
+must be used::
+
+  ISharedObject so = getSharedObject(scope, "sampleSO");
+  so.beginUpdate();
+  so.setAttribute("One", "1");
+  so.setAttribute("Two", "2");
+  so.removeAttribute("Three");
+  so.endUpdate();
+
+The serverside handlers will receive their update notifications through
+separate method calls as without the `beginUpdate` and `endUpdate`.
 
 
 Streams
@@ -98,7 +217,11 @@ TODO: How to setup periodic events?
 
 
 
+__ HOWTO-NewApplications.txt
 .. _IScopeHandler: http://dl.fancycode.com/red5/api/org/red5/server/api/IScopeHandler.html
 .. _ApplicationAdapter: http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html
 .. _IServiceCapableConnection: http://dl.fancycode.com/red5/api/org/red5/server/api/service/IServiceCapableConnection.html
 .. _IPendingServiceCallback: http://dl.fancycode.com/red5/api/org/red5/server/api/service/IPendingServiceCallback.html
+.. _ISharedObjectService: http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectService.html
+.. _ISharedObject: http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObject.html
+.. _ISharedObjectListener: http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectListener.html
