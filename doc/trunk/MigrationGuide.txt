@@ -206,6 +206,83 @@ The serverside handlers will receive their update notifications through
 separate method calls as without the `beginUpdate` and `endUpdate`.
 
 
+Persistence
+==========================
+Persistence is used so properties of objects can be used even after the server
+has been restarted.  In FCS / FMS usually local shared objects on the
+serverside are used for this.
+
+Red5 allows arbitrary objects to be persistent, all they need to do is
+implement the interface IPersistable_.  Basically these objects have a `type`,
+a `path`, a `name` (all strings) and know how to serialize and deserialize
+themselves.
+
+Here is a sample of serialization and deserialization::
+
+  import java.io.IOException;
+  import org.red5.io.object.Input;
+  import org.red5.io.object.Output;
+  import org.red5.server.api.persistence.IPersistable;
+  
+  class MyPersistentObject implements IPersistable {
+
+    // Attribute that will be made persistent
+    private String data = "My persistent value";
+
+    void serialize(Output output) throws IOException {
+      // Save the objects's data.
+      output.writeString(data);
+    }
+	
+    void deserialize(Input input) throws IOException {
+      // Load the object's data.
+      data = input.readString();
+    }
+    
+    // Other methods as described in the interface...
+  }
+
+
+To save or load this object, the following code can be used::
+
+  import org.red5.server.adapter.ApplicationAdapter;
+  import org.red5.server.api.IScope;
+  import org.red5.server.api.Red5;
+  import org.red5.server.api.persistence.IPersistenceStore;
+  
+  class MyApplication extends ApplicationAdapter {
+  
+    private void saveObject(MyPersistentObject object) {
+      // Get current scope.
+      IScope scope = Red5.getConnectionLocal().getScope();
+      // Save object in current scope.
+      scope.getStore().save(object);
+    }
+  
+    private void loadObject(MyPersistentObject object) {
+      // Get current scope.
+      IScope scope = Red5.getConnectionLocal().getScope();
+      // Load object from current scope.
+      scope.getStore().load(object);
+    }
+    
+  }
+
+
+If no custom objects are required for an application, but data must be stored
+for future reuse, it can be added to the IScope_ through the interface
+IAttributeStore_.  In scopes, all attributes that don't start with
+`IPersistable.TRANSIENT_PREFIX` are persistent.
+
+The backend that is used to store objects is configurable.  By default
+persistence in memory and in the filesystem is available.
+
+When using filesystem persistence for every object a file is created in
+"webapps/<app>/persistence/<type>/<path>/<name>.red5", e.g. for a shared
+object "theSO" in the connection to "rtmp://server/myApp/room1" a file at
+"webapps/myApp/persistence/SharedObject/room1/theSO.red5" would be created.
+
+
 Streams
 ==========================
 TODO: How can streams be accessed from an application?
@@ -225,3 +302,6 @@ __ HOWTO-NewApplications.txt
 .. _ISharedObjectService: http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectService.html
 .. _ISharedObject: http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObject.html
 .. _ISharedObjectListener: http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectListener.html
+.. _IPersistable: http://dl.fancycode.com/red5/api/org/red5/server/api/persistence/IPersistable.html
+.. _IScope: http://dl.fancycode.com/red5/api/org/red5/server/api/IScope.html
+.. _IAttributeStore: http://dl.fancycode.com/red5/api/org/red5/server/api/IAttributeStore.html
