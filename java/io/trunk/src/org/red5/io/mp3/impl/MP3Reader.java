@@ -112,7 +112,29 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 	}
 
 	public boolean hasMoreTags() {
-		return in.remaining() > 4;
+		MP3Header header = null;
+		while (header == null && in.remaining() > 4) {
+			try {
+				header = new MP3Header(in.getInt());
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
+			} catch (Exception e) {
+				searchNextFrame();
+			}
+		}
+		
+		if (header == null)
+			return false;
+		
+		if (in.position() + header.frameSize() - 4 > in.limit()) {
+			// Last frame is incomplete
+			in.position(in.limit());
+			return false;
+		}
+		
+		in.position(in.position() - 4);
+		return true;
 	}
 
 	public synchronized ITag readTag() {
@@ -138,6 +160,12 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 			return null;
 		
 		int frameSize = header.frameSize();
+		if (in.position() + frameSize - 4 > in.limit()) {
+			// Last frame is incomplete
+			in.position(in.limit());
+			return null;
+		}
+		
 		tag = new Tag(ITag.TYPE_AUDIO, (int) currentTime, frameSize + 1, null, prevSize);
 		prevSize = frameSize + 1;
 		currentTime += header.frameDuration();
@@ -235,6 +263,10 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 				break;
 			
 			int pos = in.position() - 4;
+			if (pos + header.frameSize() > in.limit())
+				// Last frame is incomplete
+				break;
+			
 			positionList.add(new Integer(pos));
 			timestampList.add(new Double(time));
 			rate += header.getBitRate() / 1000;
