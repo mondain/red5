@@ -4,6 +4,29 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
+Red5 0.5    (unreleased)
+------------------------
+New features:
+- refactored streaming code
+- refactored scope services
+- enabled subscopes
+- added dynamic "onMetaData" for mp3 streams
+- added persistence for scopes and shared objects
+- added support for simple "directory-only" applications
+- added remoting client support
+- arbitrary objects can be registered as service handlers
+- IClientRegistry can be customized for each scope
+
+Bugfixes:
+- mp3 files that have their protection bit set
+- mp3 files encoded MPEG 2, Layer III (Trac #15)
+- mp3 files with incomplete last frame
+- shared objects bugfixes (Trac #11, Trac #22)
+- application handlers were not called on disconnect
+- IConnection.close() now closes connection (Trac #19)
+- connecting to non-existent applications returns correct error now
+
+
 Red5 0.4.1  (2006-05-01)
 ------------------------
 - mp3 audio streams
@@ -14,6 +37,7 @@ Red5 0.4.1  (2006-05-01)
 - connection strings without hostname supported (Trac #8)
 - Flash7 version of the videoconference sample added
 
+
 Red5 0.4    (2006-04-20)
 ------------------------
 - public server-side api
@@ -22,10 +46,12 @@ Red5 0.4    (2006-04-20)
 - metadata api
 - basic samples and documentation
 
+
 Red5 0.3    (2006-02-21)
 ------------------------
 - live streams
 - shared objects
+
 
 Red5 0.2    (2005-10-21)
 ------------------------
