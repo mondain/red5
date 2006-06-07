@@ -70,7 +70,7 @@ objects, or subscribe them.  See the API documentation for further details.
 
 Accepting / rejecting clients
 -----------------------------
-FCS / FMS provide the methods `acceptConnection` and `rejectConnection´ to
+FCS / FMS provide the methods `acceptConnection` and `rejectConnection` to
 accept and reject new clients.  To allow clients to connect, no special
 action is required by Red5 applications, the `*Connect` methods just need
 to return `true` in this case.
