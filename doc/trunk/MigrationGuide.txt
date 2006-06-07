@@ -68,6 +68,19 @@ You can also also use the ApplicationAdapter_ to check for streams, shared
 objects, or subscribe them.  See the API documentation for further details.
 
 
+Accepting / rejecting clients
+-----------------------------
+FCS / FMS provide the methods `acceptConnection` and `rejectConnection´ to
+accept and reject new clients.  To allow clients to connect, no special
+action is required by Red5 applications, the `*Connect` methods just need
+to return `true` in this case.
+
+If a client should not be allowed to connect, the method `rejectClient`
+can be called which is implemented by the ApplicationAdapter_ class. Any
+parameter passed to `rejectClient` is available as the `application`
+property of the status object that is returned to the caller.
+
+
 Calls to client methods
 ==========================
 To call methods from your Red5 application on the client, you will first need
