@@ -334,7 +334,9 @@ public class Serializer {
 		}
 		
 		final Set set = map.entrySet();
-		out.writeStartMap(set.size());
+		// NOTE: we encode maps as objects so the flash client
+		//       can access the entries through attributes
+		out.writeStartObject(null);
 		Iterator it = set.iterator();
 		boolean isBeanMap = (map instanceof BeanMap);
 		while(it.hasNext()){
