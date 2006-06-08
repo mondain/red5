@@ -16,15 +16,21 @@ New features:
 - added remoting client support
 - arbitrary objects can be registered as service handlers
 - IClientRegistry can be customized for each scope
+- WEB-INF directories are added to the classpath (Trac #27)
+- clients can be rejected with a custom error message
 
 Bugfixes:
 - mp3 files that have their protection bit set
 - mp3 files encoded MPEG 2, Layer III (Trac #15)
 - mp3 files with incomplete last frame
-- shared objects bugfixes (Trac #11, Trac #22)
+- shared objects bugfixes (Trac #11, #22, #25)
 - application handlers were not called on disconnect
 - IConnection.close() now closes connection (Trac #19)
 - connecting to non-existent applications returns correct error now
+- Jetty correctly runs on all virtual hosts (Trac #26)
+- Map objects are serialized correctly
+- methods could be invoked with converted parameters before invoking them
+  with the original parameters
 
 
 Red5 0.4.1  (2006-05-01)
