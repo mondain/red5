@@ -81,6 +81,70 @@ parameter passed to `rejectClient` is available as the `application`
 property of the status object that is returned to the caller.
 
 
+Additional handlers
+==========================
+For many applications, existing classes containing application logic that
+is not related to Red5 are required to be reused.  In order to make them
+available for clients connecting through RTMP, these classes need to be
+registered as handlers in Red5.
+
+There are currently two ways to register these handlers:
+ 1. By adding them to the configuration files.
+ 2. By registering them manually from the application code.
+
+The handlers can be executed by clients with code similar to this::
+
+    nc = new NetConnection();
+    nc.connect("rtmp://localhost/myapp");
+    nc.call("handler.method", nc, "Hello world!");
+
+If a handler is requested, Red5 always looks it up in the custom scope
+handlers before checking the handlers that have been set up in the context
+through the configuration file.
+
+
+Handlers in configuration files
+-------------------------------
+This method is best suited for handlers that are common to all scopes the
+application runs in and that don't need to change during the lifetime of
+an application.
+
+To register the class `com.fancycode.red5.HandlerSample` as handler `sample`,
+the following bean needs to be added to `WEB-INF/red5-web.xml`::
+
+    <bean id="sample.service" 
+          class="com.fancycode.red5.HandlerSample" 
+          singleton="true" />
+
+Note that the id of the bean is constructed as the name of the handler
+(here `sample`) and the keyword `service`.
+
+
+Handlers from application code
+------------------------------
+All applications that use handlers which are different for the various
+scopes or want to change handlers, need a way to register them from the
+serverside code.  These handlers always override the handlers configured in
+`red5-web.xml`.  The methods required for registration are described in the
+interface IServiceHandlerProvider_ which is implemented by
+ApplicationAdapter_.
+
+The same class as above can be registered using this code::
+
+    public boolean appStart(IScope app) {
+        if (!super.appStart(scope))
+            return false;
+        
+        Object handler = new com.fancycode.red5.HandlerSample();
+        registerServiceHandler(app, "sample", handler);
+        return true;
+    }
+
+Note that in this example, only the application scope has the `sample`
+handler but not the subscopes!  If the handler should be available in the
+rooms as well, it must be registered in `roomStart` for the room scopes.
+
+
 Calls to client methods
 ==========================
 To call methods from your Red5 application on the client, you will first need
@@ -318,3 +382,4 @@ __ HOWTO-NewApplications.txt
 .. _IPersistable: http://dl.fancycode.com/red5/api/org/red5/server/api/persistence/IPersistable.html
 .. _IScope: http://dl.fancycode.com/red5/api/org/red5/server/api/IScope.html
 .. _IAttributeStore: http://dl.fancycode.com/red5/api/org/red5/server/api/IAttributeStore.html
+.. _IServiceHandlerProvider: http://dl.fancycode.com/red5/api/org/red5/server/api/service/IServiceHandlerProvider.html
