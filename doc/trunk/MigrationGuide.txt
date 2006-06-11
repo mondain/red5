@@ -401,9 +401,6 @@ The id that is returned by `addScheduledJob` can be used later to stop
 execution of the registered job::
 
     public void roomStop(IScope room) {
-        if (!super.roomStart(room))
-            return false;
-        
         String id = (String) room.getAttribute("MyJobId");
         removeScheduledJob(id);
         super.roomStop(room);
