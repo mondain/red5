@@ -228,8 +228,10 @@ For further informations about the possible methods a shared object provides
 please refer to the api documentation of the interface ISharedObject_.
 
 
-To get notified about changes of the shared object, a handler must implement
-the interface ISharedObjectListener_::
+Serverside change listeners
+---------------------------
+To get notified about changes of the shared object similar to `onSync` in
+FCS / FMS, a listener must implement the interface ISharedObjectListener_::
 
   import org.red5.server.api.so.ISharedObject;
   import org.red5.server.api.so.ISharedObjectListener;
@@ -253,12 +255,14 @@ the interface ISharedObjectListener_::
   }
 
 
-Additionally, the handler must get registered at the shared object::
+Additionally, the listener must get registered at the shared object::
 
   ISharedObject so = getSharedObject(scope, "sampleSO");
   so.addSharedObjectListener(new SampleSharedObjectListener())
 
 
+Changing from application code
+------------------------------
 A shared object can be changed by the server as well::
 
   ISharedObject so = getSharedObject(scope, "sampleSO");
@@ -279,8 +283,36 @@ must be used::
   so.removeAttribute("Three");
   so.endUpdate();
 
-The serverside handlers will receive their update notifications through
+The serverside listeners will receive their update notifications through
 separate method calls as without the `beginUpdate` and `endUpdate`.
+
+
+SharedObject event handlers
+----------------------------
+Calls to shared object handlers through `remote_so.send(<handler>, <args>)`
+from a Flash client or the corresponding serverside call can be mapped to
+methods in Red5.  Therefore a handler must get registered through a method
+of the ISharedObjectHandlerProvider_ interface similar to the application
+handlers::
+
+  class MySharedObjectHandler {
+  
+      public void myMethod(String arg1) {
+          // Now do something
+      }
+      
+  }
+
+  ...
+  ISharedObject so = getSharedObject(scope, "sampleSO");
+  so.registerServiceHandler(new MySharedObjectHandler());
+
+Handlers with a given name can be registered as well::
+
+  ISharedObject so = getSharedObject(scope, "sampleSO");
+  so.registerServiceHandler("one.two", new MySharedObjectHandler());
+
+Here, the method could be called through `one.to.myMethod`.
 
 
 Persistence
@@ -427,3 +459,4 @@ __ HOWTO-NewApplications.txt
 .. _IServiceHandlerProvider: http://dl.fancycode.com/red5/api/org/red5/server/api/service/IServiceHandlerProvider.html
 .. _ISchedulingService: http://dl.fancycode.com/red5/api/org/red5/server/api/scheduling/ISchedulingService.html
 .. _IScheduledJob: http://dl.fancycode.com/red5/api/org/red5/server/api/scheduling/IScheduledJob.html
+.. _ISharedObjectHandlerProvider: http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectHandlerProvider.html
