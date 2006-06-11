@@ -136,7 +136,7 @@ The same class as above can be registered using this code::
             return false;
         
         Object handler = new com.fancycode.red5.HandlerSample();
-        registerServiceHandler(app, "sample", handler);
+        app.registerServiceHandler("sample", handler);
         return true;
     }
 
