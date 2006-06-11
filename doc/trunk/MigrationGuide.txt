@@ -203,15 +203,15 @@ method `roomStart` in your application::
   public class SampleApplication extends ApplicationAdapter {
   
     public boolean roomStart(IScope room) {
-      if (!super.roomStart(room))
-        return false;
+        if (!super.roomStart(room))
+            return false;
         
-      createSharedObject(room, "sampleSO", true);
-      ISharedObject so = getSharedObject(room, "sampleSO");
+        createSharedObject(room, "sampleSO", true);
+        ISharedObject so = getSharedObject(room, "sampleSO");
       
-      // Now you could do something with the shared object...
+        // Now you could do something with the shared object...
       
-      return true;		
+        return true;		
     }
     
   }
@@ -237,16 +237,16 @@ the interface ISharedObjectListener_::
   public class SampleSharedObjectListener implements ISharedObjectListener {
 
     public void onSharedObjectUpdate(ISharedObject so, String key, Object value) {
-      // The attribute <key> of the shared object <so> was changed to <value>
+        // The attribute <key> of the shared object <so> was changed to <value>
     }
 
     public void onSharedObjectDelete(ISharedObject so, String key) {
-      // The attribute <key> of the shared object <so> was deleted
+        // The attribute <key> of the shared object <so> was deleted
     }
 
     public void onSharedObjectSend(ISharedObject so, String method, List params) {
-      // The handler <method> of the shared object <so> was called with the
-      // parameters <params>
+        // The handler <method> of the shared object <so> was called with the
+        // parameters <params>
     }
     
     // Other methods as described in the interface...
@@ -307,13 +307,13 @@ Here is a sample of serialization and deserialization::
     private String data = "My persistent value";
 
     void serialize(Output output) throws IOException {
-      // Save the objects's data.
-      output.writeString(data);
+        // Save the objects's data.
+        output.writeString(data);
     }
 	
     void deserialize(Input input) throws IOException {
-      // Load the object's data.
-      data = input.readString();
+        // Load the object's data.
+        data = input.readString();
     }
     
     // Other methods as described in the interface...
@@ -330,17 +330,17 @@ To save or load this object, the following code can be used::
   class MyApplication extends ApplicationAdapter {
   
     private void saveObject(MyPersistentObject object) {
-      // Get current scope.
-      IScope scope = Red5.getConnectionLocal().getScope();
-      // Save object in current scope.
-      scope.getStore().save(object);
+        // Get current scope.
+        IScope scope = Red5.getConnectionLocal().getScope();
+        // Save object in current scope.
+        scope.getStore().save(object);
     }
   
     private void loadObject(MyPersistentObject object) {
-      // Get current scope.
-      IScope scope = Red5.getConnectionLocal().getScope();
-      // Load object from current scope.
-      scope.getStore().load(object);
+        // Get current scope.
+        IScope scope = Red5.getConnectionLocal().getScope();
+        // Load object from current scope.
+        scope.getStore().load(object);
     }
     
   }
@@ -360,14 +360,59 @@ object "theSO" in the connection to "rtmp://server/myApp/room1" a file at
 "webapps/myApp/persistence/SharedObject/room1/theSO.red5" would be created.
 
 
+Periodic events
+==========================
+Applications that need to perform tasks regularly can use the `setInterval`
+in FCS / FMS to schedule methods for periodic execution.
+
+Red5 provides a scheduling service (ISchedulingService_) that is implemented
+by ApplicationAdapter_ like most other services.  The service can register
+an object (which needs to implement the IScheduledJob_ interface) whose
+`execute` method is called in a given interval.
+
+To register an object, code like this can be used::
+
+  import org.red5.server.api.IScope;
+  import org.red5.server.api.IScheduledJob;
+  import org.red5.server.api.ISchedulingService;
+  import org.red5.server.adapter.ApplicationAdapter;
+  
+  class MyJob implements IScheduledJob {
+  
+    public void execute(ISchedulingService service) {
+        // Do something
+    }
+  }
+
+  public class SampleApplication extends ApplicationAdapter {
+  
+    public boolean roomStart(IScope room) {
+        if (!super.roomStart(room))
+            return false;
+        
+        // Schedule invokation of job every 10 seconds.
+        String id = addScheduledJob(10000, new MyJob());
+        room.setAttribute("MyJobId", id);
+        return true;		
+    }
+  }
+  
+The id that is returned by `addScheduledJob` can be used later to stop
+execution of the registered job::
+
+    public void roomStop(IScope room) {
+        if (!super.roomStart(room))
+            return false;
+        
+        String id = (String) room.getAttribute("MyJobId");
+        removeScheduledJob(id);
+        super.roomStop(room);
+    }
+
+
 Streams
 ==========================
 TODO: How can streams be accessed from an application?
-
-
-Periodic events
-==========================
-TODO: How to setup periodic events?
 
 
 
@@ -383,3 +428,5 @@ __ HOWTO-NewApplications.txt
 .. _IScope: http://dl.fancycode.com/red5/api/org/red5/server/api/IScope.html
 .. _IAttributeStore: http://dl.fancycode.com/red5/api/org/red5/server/api/IAttributeStore.html
 .. _IServiceHandlerProvider: http://dl.fancycode.com/red5/api/org/red5/server/api/service/IServiceHandlerProvider.html
+.. _ISchedulingService: http://dl.fancycode.com/red5/api/org/red5/server/api/scheduling/ISchedulingService.html
+.. _IScheduledJob: http://dl.fancycode.com/red5/api/org/red5/server/api/scheduling/IScheduledJob.html
