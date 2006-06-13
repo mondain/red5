@@ -295,6 +295,8 @@ methods in Red5.  Therefore a handler must get registered through a method
 of the ISharedObjectHandlerProvider_ interface similar to the application
 handlers::
 
+  package com.fancycode.red5;
+
   class MySharedObjectHandler {
   
       public void myMethod(String arg1) {
@@ -312,7 +314,16 @@ Handlers with a given name can be registered as well::
   ISharedObject so = getSharedObject(scope, "sampleSO");
   so.registerServiceHandler("one.two", new MySharedObjectHandler());
 
-Here, the method could be called through `one.to.myMethod`.
+Here, the method could be called through `one.two.myMethod`.
+
+Another way to define event handlers for SharedObjects is to add them to the
+`red5-web.xml` similar to the file-based application handlers.  The beans
+must have a name of `<SharedObjectName>.<DottedServiceName>.soservice`, so
+the above example could also be defined with::
+
+    <bean id="sampleSO.one.two.soservice" 
+          class="com.fancycode.red5.MySharedObjectHandler" 
+          singleton="true" />
 
 
 Persistence
