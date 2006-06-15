@@ -151,7 +151,10 @@ public class Serializer {
 	 */
 	protected void writeList(Output out, List list){
 		// if its a small list, write it as an array
-		if(list.size() < 100 ) writeListAsArray(out, list);
+		if(list.size() < 100 ) {
+			writeListAsArray(out, list);
+			return;
+		}
 		// else we should check for lots of null values,
 		// if there are over 80% then its probably best to do it as a map
 		int size = list.size();
@@ -183,7 +186,7 @@ public class Serializer {
 			//log.info(i);
 			serialize(out, list.get(i));
 		}
-		out.markEndMap();
+		out.markEndArray();
 	}
 	
 	
