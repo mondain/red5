@@ -31,6 +31,7 @@ Bugfixes:
 - Map objects are serialized correctly
 - methods could be invoked with converted parameters before invoking them
   with the original parameters
+- support invoking methods with "null" as parameter (Trac #29)
 
 
 Red5 0.4.1  (2006-05-01)
