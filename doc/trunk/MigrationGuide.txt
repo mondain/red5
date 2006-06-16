@@ -507,6 +507,10 @@ By default, a timeout of 30 seconds will be used per call, this can be
 changed by passing a second parameter to the constructor defining the maximum
 timeout in milliseconds.
 
+The remoting headers `AppendToGatewayUrl`, `ReplaceGatewayUrl` and
+`RequestPersistentHeader` are handled automatically by the Red5 remoting
+client.
+
 
 Streams
 ==========================
