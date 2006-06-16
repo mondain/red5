@@ -450,6 +450,64 @@ execution of the registered job::
     }
 
 
+Remoting
+==========================
+Remoting can be used by non-rtmp clients to invoke methods in Red5.  Another
+possibility is to call methods from Red5 to other servers that provide a
+remoting service.
+
+
+Remoting server
+--------------------------
+Services that should be available for clients need to be registered the same
+way as additional application handlers are registered.  See above for details.
+
+To enable remoting support for an application, the following section must be
+added to the `WEB-INF/web.xml` file::
+
+  <servlet>
+    <servlet-name>gateway</servlet-name>
+    <servlet-class>org.red5.server.net.servlet.AMFGatewayServlet</servlet-class>
+  </servlet>
+    
+  <servlet-mapping>
+    <servlet-name>gateway</servlet-name>
+    <url-pattern>/gateway/*</url-pattern>
+  </servlet-mapping>
+
+The path specified in the `<url-pattern>` tag (here `gateway`) can be used
+by the remoting client as connection url.  If this example would have been
+specified for an application `myApp`, the URL would be::
+
+  http://localhost:5080/myApp/gateway
+
+Methods invoked through this connection will be executed in the context of
+the application scope.  If the methods should be executed in subscopes, the
+path to the subscopes must be added to the URL like::
+
+  http://localhost:5080/myApp/gateway/room1/room2
+
+
+Remoting client
+--------------------------
+The class RemotingClient_ defines all methods that are required to call
+methods through the remoting protocol.  Currently, Red5 only supports
+synchronous calls to other remoting services.
+
+The following code serves as example about how to use the remoting client::
+
+  import org.red5.server.net.remoting.RemotingClient;
+  
+  RemotingClient client = new RemotingClient("http://server/path/to/service);
+  Object[] args = new Object[]{"Hello world!"};
+  Object result = client.invokeMethod("service.remotingMethod", args);
+  // Now do something with the result
+
+By default, a timeout of 30 seconds will be used per call, this can be
+changed by passing a second parameter to the constructor defining the maximum
+timeout in milliseconds.
+
+
 Streams
 ==========================
 TODO: How can streams be accessed from an application?
@@ -471,3 +529,4 @@ __ HOWTO-NewApplications.txt
 .. _ISchedulingService: http://dl.fancycode.com/red5/api/org/red5/server/api/scheduling/ISchedulingService.html
 .. _IScheduledJob: http://dl.fancycode.com/red5/api/org/red5/server/api/scheduling/IScheduledJob.html
 .. _ISharedObjectHandlerProvider: http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectHandlerProvider.html
+.. _RemotingClient: http://dl.fancycode.com/red5/api/org/red5/server/net/remoting/RemotingClient.html
