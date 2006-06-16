@@ -32,6 +32,7 @@ Bugfixes:
 - methods could be invoked with converted parameters before invoking them
   with the original parameters
 - support invoking methods with "null" as parameter (Trac #29)
+- directories for recorded files are created if they don't exist (Trac #20)
 
 
 Red5 0.4.1  (2006-05-01)
