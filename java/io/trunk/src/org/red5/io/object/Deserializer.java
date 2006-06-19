@@ -197,10 +197,17 @@ public class Deserializer {
 			if(log.isDebugEnabled()) {
 				log.debug("read class object");
 			}
-			Object instance = newInstance(className);
-			if(instance!=null) {
-				return readBean(in, instance);
-			} // else fall through
+			Object instance;
+			if (className.equals("RecordSet"))
+				return new RecordSet(in);
+			else if (className.equals("RecordSetPage"))
+				return new RecordSetPage(in);
+			else {
+				instance = newInstance(className);
+				if (instance!=null) {
+					return readBean(in, instance);
+				} // else fall through
+			}
 		} 
 		return readSimpleObject(in);
 	}
