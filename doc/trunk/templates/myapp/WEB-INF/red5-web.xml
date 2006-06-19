@@ -23,4 +23,9 @@
 	    class="the.path.to.my.Application" 
 		singleton="true" />
 
+    <!-- this will support calling methods through "myhandler.<methodName>" -->
+	<bean id="myhandler.service" 
+	    class="the.path.to.my.ServiceHandler" 
+		singleton="true" />
+
 </beans>
