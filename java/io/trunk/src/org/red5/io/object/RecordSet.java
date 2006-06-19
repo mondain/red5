@@ -22,6 +22,7 @@ package org.red5.io.object;
 
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,22 +58,31 @@ public class RecordSet {
 	
 	public RecordSet(Input input) {
 		Deserializer deserializer = new Deserializer();
-		Object data = deserializer.deserialize(input);
-		if (!(data instanceof Map))
-			throw new RuntimeException("Map expected but got " + data);
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		String key = input.readPropertyName();
+		Object value = deserializer.deserialize(input);
+		input.skipEndObject();
+		dataMap.put(key, value);
 		
-		Map<String, Object> dataMap = (Map<String, Object>) data;
-		totalCount = (Integer) dataMap.get("totalCount");
-		List<List<Object>> initialData = (List<List<Object>>) dataMap.get("initialData");
-		cursor = (Integer) dataMap.get("cursor");
-		serviceName = (String) dataMap.get("serviceName");
-		columns = (List<String>) dataMap.get("columNames");
-		version = (Integer) dataMap.get("version");
-		id = dataMap.get("id");
+		Map<String, Object> serverInfo = (Map<String, Object>) dataMap.get("serverinfo");
+		if (serverInfo == null)
+			// This is right according to the specs on osflash.org
+			serverInfo = (Map<String, Object>) dataMap.get("serverInfo");
+		
+		if (!(serverInfo instanceof Map))
+			throw new RuntimeException("Expected Map but got " + serverInfo);
+		
+		totalCount = (Integer) serverInfo.get("totalCount");
+		List<List<Object>> initialData = (List<List<Object>>) serverInfo.get("initialData");
+		cursor = (Integer) serverInfo.get("cursor");
+		serviceName = (String) serverInfo.get("serviceName");
+		columns = (List<String>) serverInfo.get("columNames");
+		version = (Integer) serverInfo.get("version");
+		id = serverInfo.get("id");
 		
 		this.data = new ArrayList<List<Object>>(totalCount);
-		for (int i=0; i<cursor; i++)
-			this.data.set(i, initialData.get(i));
+		for (int i=0; i<initialData.size(); i++)
+			this.data.add(i+cursor-1, initialData.get(i));
 	}
 
 	/**
@@ -172,7 +182,7 @@ public class RecordSet {
 		
 		// Store received items
 		for (int i=0; i<count; i++)
-			this.data.set(start+i, data.get(i));
+			this.data.add(start+i, data.get(i));
 	}
 	
 	/**
