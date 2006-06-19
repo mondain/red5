@@ -13,7 +13,8 @@ New features:
 - added dynamic "onMetaData" for mp3 streams
 - added persistence for scopes and shared objects
 - added support for simple "directory-only" applications
-- added remoting client support
+- added remoting client support (sync / async)
+- added deserializer for RecordSet remoting results
 - arbitrary objects can be registered as service handlers
 - IClientRegistry can be customized for each scope
 - WEB-INF directories are added to the classpath (Trac #27)
