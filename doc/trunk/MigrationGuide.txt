@@ -193,8 +193,10 @@ a reference to the current connection object::
 If the connection implements the IServiceCapableConnection_ interface, it
 supports calling methods on the other end::
 
-    if (conn instanceof IServiceCapableConnection)
-        ((IServiceCapableConnection) conn).invoke("the_method", new Object[]{"One", 1});
+    if (conn instanceof IServiceCapableConnection) {
+        IServiceCapableConnection sc = (IServiceCapableConnection) conn;
+        sc.invoke("the_method", new Object[]{"One", 1});
+    }
 
 
 If you need the result of the method call, you must provide a class that
@@ -212,8 +214,10 @@ implements the IPendingServiceCallback_ interface::
 
 The method call looks now like this::
 
-    if (conn instanceof IServiceCapableConnection)
-        ((IServiceCapableConnection) conn).invoke("the_method", new Object[]{"One", 1}, new MyCallback());
+    if (conn instanceof IServiceCapableConnection) {
+        IServiceCapableConnection sc = (IServiceCapableConnection) conn;
+        sc.invoke("the_method", new Object[]{"One", 1}, new MyCallback());
+    }
 
 Of course you can implement this interface in your application and pass a
 reference to the application instance.
@@ -270,19 +274,23 @@ FCS / FMS, a listener must implement the interface ISharedObjectListener_::
   import org.red5.server.api.so.ISharedObject;
   import org.red5.server.api.so.ISharedObjectListener;
 
-  public class SampleSharedObjectListener implements ISharedObjectListener {
+  public class SampleSharedObjectListener
+         implements ISharedObjectListener {
 
-    public void onSharedObjectUpdate(ISharedObject so, String key, Object value) {
-        // The attribute <key> of the shared object <so> was changed to <value>
+    public void onSharedObjectUpdate(ISharedObject so,
+                                     String key, Object value) {
+        // The attribute <key> of the shared object <so>
+        // was changed to <value>.
     }
 
     public void onSharedObjectDelete(ISharedObject so, String key) {
-        // The attribute <key> of the shared object <so> was deleted
+        // The attribute <key> of the shared object <so> was deleted.
     }
 
-    public void onSharedObjectSend(ISharedObject so, String method, List params) {
-        // The handler <method> of the shared object <so> was called with the
-        // parameters <params>
+    public void onSharedObjectSend(ISharedObject so,
+                                   String method, List params) {
+        // The handler <method> of the shared object <so> was called
+        // with the parameters <params>.
     }
     
     // Other methods as described in the interface...
@@ -501,7 +509,9 @@ added to the `WEB-INF/web.xml` file::
 
   <servlet>
     <servlet-name>gateway</servlet-name>
-    <servlet-class>org.red5.server.net.servlet.AMFGatewayServlet</servlet-class>
+    <servlet-class>
+        org.red5.server.net.servlet.AMFGatewayServlet
+    </servlet-class>
   </servlet>
     
   <servlet-mapping>
@@ -531,7 +541,8 @@ The following code serves as example about how to use the remoting client::
 
   import org.red5.server.net.remoting.RemotingClient;
   
-  RemotingClient client = new RemotingClient("http://server/path/to/service");
+  String url = "http://server/path/to/service";
+  RemotingClient client = new RemotingClient(url);
   Object[] args = new Object[]{"Hello world!"};
   Object result = client.invokeMethod("service.remotingMethod", args);
   // Now do something with the result
@@ -565,9 +576,11 @@ must be passed as additional parameter::
     }
   }
   
-  RemotingClient client = new RemotingClient("http://server/path/to/service");
+  String url = "http://server/path/to/service";
+  RemotingClient client = new RemotingClient(url);
   Object[] args = new Object[]{"Hello world!"};
-  client.invokeMethod("service.remotingMethod", args, new CallbackHandler());
+  IRemotingCallback callback = new CallbackHandler();
+  client.invokeMethod("service.remotingMethod", args, callback);
 
 
 Streams
