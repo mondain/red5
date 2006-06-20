@@ -59,10 +59,12 @@ public class RecordSet {
 	public RecordSet(Input input) {
 		Deserializer deserializer = new Deserializer();
 		Map<String, Object> dataMap = new HashMap<String, Object>();
-		String key = input.readPropertyName();
-		Object value = deserializer.deserialize(input);
+		while (input.hasMoreProperties()) {
+			String key = input.readPropertyName();
+			Object value = deserializer.deserialize(input);
+			dataMap.put(key, value);
+		}
 		input.skipEndObject();
-		dataMap.put(key, value);
 		
 		Map<String, Object> serverInfo = (Map<String, Object>) dataMap.get("serverinfo");
 		if (serverInfo == null)
