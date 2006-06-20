@@ -81,6 +81,40 @@ parameter passed to `rejectClient` is available as the `application`
 property of the status object that is returned to the caller.
 
 
+Current connection and client
+=============================
+Red5 supports two different ways to access the current connection from an
+invoked method.  The connection can  be used to get the active client and
+the scope he is connected to.  The first possibility uses the "magic" Red5_
+object::
+
+  import org.red5.server.api.IClient;
+  import org.red5.server.api.IConnection;
+  import org.red5.server.api.IScope;
+  import org.red5.server.api.Red5;
+
+  public void whoami() {
+      IConnection conn = Red5.getConnectionLocal();
+      IClient client = conn.getClient();
+      IScope scope = conn.getScope();
+      // ...
+  }
+
+The second possiblity requires the method to be defined with an argument of
+type IConnection_ as implicit first parameter which is automatically added
+by Red5 when a client calls the method::
+
+  import org.red5.server.api.IClient;
+  import org.red5.server.api.IConnection;
+  import org.red5.server.api.IScope;
+
+  public void whoami(IConnection conn) {
+      IClient client = conn.getClient();
+      IScope scope = conn.getScope();
+      // ...
+  }
+
+
 Additional handlers
 ==========================
 For many applications, existing classes containing application logic that
@@ -491,8 +525,7 @@ path to the subscopes must be added to the URL like::
 Remoting client
 --------------------------
 The class RemotingClient_ defines all methods that are required to call
-methods through the remoting protocol.  Currently, Red5 only supports
-synchronous calls to other remoting services.
+methods through the remoting protocol.
 
 The following code serves as example about how to use the remoting client::
 
@@ -510,6 +543,31 @@ timeout in milliseconds.
 The remoting headers `AppendToGatewayUrl`, `ReplaceGatewayUrl` and
 `RequestPersistentHeader` are handled automatically by the Red5 remoting
 client.
+
+Some methods may take a rather long time on the called server to complete,
+so it's better to perform the call asynchronously.  Therefore an object that
+implements the interface IRemotingCallback_ must be passed as additional
+parameter::
+
+  import org.red5.server.net.remoting.RemotingClient;
+  import org.red5.server.net.remoting.IRemotingCallback;
+  
+  public class CallbackHandler implements IRemotingCallback {
+  
+    void errorReceived(RemotingClient client, String method,
+                       Object[] params, Throwable error) {
+        // An error occurred while performing the remoting call.
+    }
+    
+    void resultReceived(RemotingClient client, String method,
+                        Object[] params, Object result) {
+        // The result was received from the server
+    }
+  }
+  
+  RemotingClient client = new RemotingClient("http://server/path/to/service);
+  Object[] args = new Object[]{"Hello world!"};
+  client.invokeMethod("service.remotingMethod", args, new CallbackHandler());
 
 
 Streams
@@ -534,3 +592,6 @@ __ HOWTO-NewApplications.txt
 .. _IScheduledJob: http://dl.fancycode.com/red5/api/org/red5/server/api/scheduling/IScheduledJob.html
 .. _ISharedObjectHandlerProvider: http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectHandlerProvider.html
 .. _RemotingClient: http://dl.fancycode.com/red5/api/org/red5/server/net/remoting/RemotingClient.html
+.. _Red5: http://dl.fancycode.com/red5/api/org/red5/server/api/Red5.html
+.. _IConnection: http://dl.fancycode.com/red5/api/org/red5/server/api/IConnection.html
+.. _IRemotingCallback: http://dl.fancycode.com/red5/api/org/red5/server/net/remoting/IRemotingCallback.html
