@@ -531,7 +531,7 @@ The following code serves as example about how to use the remoting client::
 
   import org.red5.server.net.remoting.RemotingClient;
   
-  RemotingClient client = new RemotingClient("http://server/path/to/service);
+  RemotingClient client = new RemotingClient("http://server/path/to/service");
   Object[] args = new Object[]{"Hello world!"};
   Object result = client.invokeMethod("service.remotingMethod", args);
   // Now do something with the result
@@ -544,10 +544,10 @@ The remoting headers `AppendToGatewayUrl`, `ReplaceGatewayUrl` and
 `RequestPersistentHeader` are handled automatically by the Red5 remoting
 client.
 
-Some methods may take a rather long time on the called server to complete,
-so it's better to perform the call asynchronously.  Therefore an object that
-implements the interface IRemotingCallback_ must be passed as additional
-parameter::
+Some methods may take a rather long time on the called server to complete, so
+it's better to perform the call asynchronously to avoid blocking a thread in
+Red5.  Therefore an object that implements the interface IRemotingCallback_
+must be passed as additional parameter::
 
   import org.red5.server.net.remoting.RemotingClient;
   import org.red5.server.net.remoting.IRemotingCallback;
@@ -561,11 +561,11 @@ parameter::
     
     void resultReceived(RemotingClient client, String method,
                         Object[] params, Object result) {
-        // The result was received from the server
+        // The result was received from the server.
     }
   }
   
-  RemotingClient client = new RemotingClient("http://server/path/to/service);
+  RemotingClient client = new RemotingClient("http://server/path/to/service");
   Object[] args = new Object[]{"Hello world!"};
   client.invokeMethod("service.remotingMethod", args, new CallbackHandler());
 
