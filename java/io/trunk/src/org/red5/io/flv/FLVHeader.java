@@ -81,7 +81,7 @@ public class FLVHeader {
 		String ret = "";
 		//ret += "SIGNATURE: \t" + getSIGNATURE() + "\n";
 		//ret += "SIGNATURE: \t\t" + new String(signature) + "\n";  
-		ret += "VERSION: \t\t" + ((byte) getVersion()) + "\n";
+		ret += "VERSION: \t\t" + getVersion() + "\n";
 		ret += "TYPE FLAGS VIDEO: \t" + getFlagVideo() + "\n";
 		ret += "TYPE FLAGS AUDIO: \t" + getFlagAudio() + "\n";
 		ret += "DATA OFFSET: \t\t" + getDataOffset() + "\n";
@@ -121,8 +121,8 @@ public class FLVHeader {
 	 * @return void
 	 */
 	public void setTypeFlags(byte typeFlags) {
-		flagVideo = (((typeFlags << 7) >> 7) > 0x00) ? true : false;
-		flagAudio = (((typeFlags << 5) >> 7) > 0x00) ? true : false;
+		flagVideo = (((typeFlags << 7) >> 7) > 0x00);
+		flagAudio = (((typeFlags << 5) >> 7) > 0x00);
 	}
 	
 	/**
