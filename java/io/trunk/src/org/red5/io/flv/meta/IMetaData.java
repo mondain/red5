@@ -38,7 +38,7 @@ package org.red5.io.flv.meta;
  *  private int width = 320;
  *  private int duration = 7.347;
  */
-public interface IMetaData extends IMeta {
+public interface IMetaData<K,V> extends IMeta {
 	
 	/**
 	 * Returns a boolean depending on whether the video can

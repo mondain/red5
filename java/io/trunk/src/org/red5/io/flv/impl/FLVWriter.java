@@ -23,10 +23,8 @@ package org.red5.io.flv.impl;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteOrder;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.IStreamableFile;
 import org.red5.io.ITag;
@@ -34,42 +32,44 @@ import org.red5.io.ITagWriter;
 import org.red5.io.flv.IFLV;
 import org.red5.io.utils.IOUtils;
 
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 
 /**
  * A Writer is used to write the contents of a FLV file
- * 
+ *
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
 public class FLVWriter implements ITagWriter {
-	
+
+	private static Log log = LogFactory.getLog(FLVWriter.class.getName());
 	private FileOutputStream fos = null;
 	private WritableByteChannel channel;
-	private MappedByteBuffer mappedFile;
+	//private MappedByteBuffer mappedFile;
 	private ByteBuffer out;
 	private ITag lastTag = null;
-	
+
 	private IFLV flv = null;
 	private long bytesWritten = 0;
 	private int offset = 0;
-	
-	public FLVWriter(FileOutputStream fos){
-		this(fos,null);
+
+	public FLVWriter(FileOutputStream fos) {
+		this(fos, null);
 	}
-	
+
 	/**
 	 * WriterImpl Constructor
-	 * @param fos 
+	 *
+	 * @param fos
 	 */
 	public FLVWriter(FileOutputStream fos, ITag lastTag) {
 		this.fos = fos;
 		this.lastTag = lastTag;
-		if(lastTag !=null) offset=lastTag.getTimestamp();
+		if (lastTag != null) offset = lastTag.getTimestamp();
 		channel = this.fos.getChannel();
 		out = ByteBuffer.allocate(1024);
 		out.setAutoExpand(true);
@@ -77,33 +77,33 @@ public class FLVWriter implements ITagWriter {
 
 	/**
 	 * Writes the header bytes
-	 * @throws IOException 
 	 *
+	 * @throws IOException
 	 */
 	public void writeHeader() throws IOException {
-		// TODO Auto-generated method stub
-		
-		out.put((byte)0x46);
-		out.put((byte)0x4C);
-		out.put((byte)0x56);
-		
+
+
+		out.put((byte) 0x46);
+		out.put((byte) 0x4C);
+		out.put((byte) 0x56);
+
 		// Write version
-		out.put((byte)0x01);
-		
+		out.put((byte) 0x01);
+
 		// For testing purposes write video only
 		// TODO CHANGE
 		// out.put((byte)0x08);
 		// NOTE (luke): I looked at the docs on the wiki and it says it should be 0x05 for audio and video
 		// I think its safe to assume it will be both
-		out.put((byte)0x05);
-		
+		out.put((byte) 0x05);
+
 		// Data Offset
 		out.putInt(0x09);
-		
+
 		out.flip();
-		
+
 		channel.write(out.buf());
-	
+
 	}
 
 	/* (non-Javadoc)
@@ -112,10 +112,10 @@ public class FLVWriter implements ITagWriter {
 	public IStreamableFile getFile() {
 		return flv;
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see org.red5.io.flv.Writer#setFLV()
-	 */
+		 * @see org.red5.io.flv.Writer#setFLV()
+		 */
 	public void setFLV(IFLV flv) {
 		this.flv = flv;
 	}
@@ -124,7 +124,6 @@ public class FLVWriter implements ITagWriter {
 	 * @see org.red5.io.flv.Writer#getOffset()
 	 */
 	public int getOffset() {
-		// TODO Auto-generated method stub
 		return offset;
 	}
 
@@ -136,7 +135,7 @@ public class FLVWriter implements ITagWriter {
 	 * @see org.red5.io.flv.Writer#getBytesWritten()
 	 */
 	public long getBytesWritten() {
-		return bytesWritten; 
+		return bytesWritten;
 	}
 
 	/* (non-Javadoc)
@@ -146,18 +145,18 @@ public class FLVWriter implements ITagWriter {
 		// PreviousTagSize
 		//out = out.reset();
 		out.clear();
-		
+
 		out.putInt((lastTag == null) ? 0 : (lastTag.getBodySize() + 11));
-		
+
 		// Data Type
-		out.put((byte)(tag.getDataType()));
-		
+		out.put(tag.getDataType());
+
 		// Body Size
 		IOUtils.writeMediumInt(out, tag.getBodySize());
-		
+
 		// Timestamp
 		IOUtils.writeMediumInt(out, tag.getTimestamp() + offset);
-		
+
 		// Reserved
 		out.putInt(0x00);
 
@@ -166,9 +165,9 @@ public class FLVWriter implements ITagWriter {
 
 		ByteBuffer bodyBuf = tag.getBody();
 		bytesWritten += channel.write(bodyBuf.buf());
-		
+
 		lastTag = tag;
-		
+
 		return false;
 	}
 
@@ -176,7 +175,7 @@ public class FLVWriter implements ITagWriter {
 	 * @see org.red5.io.flv.Writer#writeTag(byte, java.nio.ByteBuffer)
 	 */
 	public boolean writeTag(byte type, ByteBuffer data) throws IOException {
-		// TODO Auto-generated method stub
+		// TODO
 		return false;
 	}
 
@@ -192,14 +191,13 @@ public class FLVWriter implements ITagWriter {
 			channel.close();
 			fos.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("FLVWriter :: close ::>\n", e);
 		}
 
 	}
 
 	public boolean writeStream(byte[] b) {
-		// TODO Auto-generated method stub
+		// TODO
 		return false;
 	}
 

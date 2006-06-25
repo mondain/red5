@@ -140,7 +140,7 @@ public class MetaService implements IMetaService {
 				// cuePointTimeStamp, then inject the tag
 				while(tag.getTimestamp() > cuePointTimeStamp) {
 					
-					injectedTag = (ITag) injectMetaCue(metaArr[counter], tag);
+					injectedTag = injectMetaCue(metaArr[counter], tag);
 //					System.out.println("In tag: \n--------\n" + injectedTag);
 					writer.writeTag(injectedTag);	
 					
@@ -186,7 +186,7 @@ public class MetaService implements IMetaService {
 		ByteBuffer tmpBody = out.buf().flip();		
 		int tmpBodySize = out.buf().limit();	
 		int tmpPreviousTagSize = tag.getPreviousTagSize();
-		byte tmpDataType = ((byte)(ITag.TYPE_METADATA));
+		byte tmpDataType = ITag.TYPE_METADATA;
 		int tmpTimestamp = 0;
 		
 		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody, tmpPreviousTagSize);
@@ -195,8 +195,7 @@ public class MetaService implements IMetaService {
 	
 	/**
 	 * Injects metadata (Cue Points) into a tag
-	 * @param cue
-	 * @param writer
+	 * @param meta
 	 * @param tag
 	 * @return ITag tag
 	 */
@@ -211,7 +210,7 @@ public class MetaService implements IMetaService {
 		ByteBuffer tmpBody = out.buf().flip();	
 		int tmpBodySize = out.buf().limit();	
 		int tmpPreviousTagSize = tag.getPreviousTagSize();
-		byte tmpDataType = ((byte)(ITag.TYPE_METADATA));
+		byte tmpDataType = ITag.TYPE_METADATA;
 		int tmpTimestamp = getTimeInMilliseconds(meta);
 								
 		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody, tmpPreviousTagSize);
@@ -220,12 +219,11 @@ public class MetaService implements IMetaService {
 	
 	/**
 	 * Returns a timestamp in milliseconds
-	 * @param object
+	 * @param metaCue
 	 * @return int time
 	 */
-	private int getTimeInMilliseconds(IMetaCue object) {
-		IMetaCue cp = (MetaCue) object;		
-		return (int) (cp.getTime() * 1000.00);
+	private int getTimeInMilliseconds(IMetaCue metaCue) {
+		return (int) (metaCue.getTime() * 1000.00);
 		
 	}
 
@@ -247,18 +245,6 @@ public class MetaService implements IMetaService {
 		
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		MetaService service = new MetaService();
-		try {
-			service.write(new MetaData());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * @return Returns the file.

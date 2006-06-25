@@ -30,7 +30,7 @@ import java.util.HashMap;
  * @author daccattato(daccattato@gmail.com)
  * @version 0.3
  */
-public class MetaCue extends HashMap implements IMetaCue {
+public class MetaCue<K,V> extends HashMap<String, Object> implements IMetaCue {
 
 	/**
 	 * SerialVersionUID = -1769771340654996861L;
@@ -41,8 +41,7 @@ public class MetaCue extends HashMap implements IMetaCue {
 	 * CuePoint constructor
 	 */
 	public MetaCue() {
-		super();
-		// TODO Auto-generated constructor stub
+
 	}
 
 	/* (non-Javadoc)
@@ -77,14 +76,14 @@ public class MetaCue extends HashMap implements IMetaCue {
 	 * @see org.red5.io.flv.ICuePoint#setTime(double)
 	 */
 	public void setTime(double d) {
-		this.put("time", new Double(d));
+		this.put("time", d);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.ICuePoint#getTime()
 	 */
 	public double getTime() {
-		return ((Double) this.get("time")).doubleValue();
+		return (Double) this.get("time");
 	}
 
 	public int compareTo(Object arg0) {		
@@ -99,5 +98,10 @@ public class MetaCue extends HashMap implements IMetaCue {
 		}
 		
 		return 0;
+	}
+
+
+	public String toString() {
+		return "MetaCue{"+this+"}";
 	}
 }

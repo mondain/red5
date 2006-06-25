@@ -61,7 +61,7 @@ public class FLVService implements IFLVService {
 	 * @see org.red5.io.flv.FLVService#setSerializer(org.red5.io.object.Serializer)
 	 */
 	public void setSerializer(Serializer serializer) {
-		// TODO Auto-generated method stub
+		this.serializer = serializer;
 
 	}
 
@@ -69,7 +69,7 @@ public class FLVService implements IFLVService {
 	 * @see org.red5.io.flv.FLVService#setDeserializer(org.red5.io.object.Deserializer)
 	 */
 	public void setDeserializer(Deserializer deserializer) {
-		// TODO Auto-generated method stub
+		this.deserializer = deserializer;
 
 	}
 
@@ -77,8 +77,15 @@ public class FLVService implements IFLVService {
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
 	 */
 	public IStreamableFile getStreamableFile(File file) throws IOException {
-		IStreamableFile flv = new FLV(file); 
-		return flv;
+		return new FLV(file);
 	}
-	
+
+
+	public Serializer getSerializer() {
+		return serializer;
+	}
+
+	public Deserializer getDeserializer() {
+		return deserializer;
+	}
 }

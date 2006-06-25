@@ -25,179 +25,162 @@ package org.red5.io.flv.meta;
  */
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 
 /**
  * MetaData Implementation
- * 
+ *
  * @author The Red5 Project (red5@osflash.org)
  * @author daccattato (daccattato@gmail.com)
  * @version 0.3
- * 
- * Example:
- * 
- * //	private boolean canSeekToEnd = true;
-	//	private int videocodecid = 4;
-	//	private int framerate = 15;
-	//	private int videodatarate = 600;
-	//	private int height;
-	//	private int width = 320;
-	//	private double duration = 7.347;
+ *
+ *          Example:
+ *
+ *          //	private boolean canSeekToEnd = true;
+ *          //	private int videocodecid = 4;
+ *          //	private int framerate = 15;
+ *          //	private int videodatarate = 600;
+ *          //	private int height;
+ *          //	private int width = 320;
+ *          //	private double duration = 7.347;
  */
-public class MetaData extends HashMap implements IMetaData, Serializable {
-		
-	/**
-	 * serialVersionUID = -5681069577717669925L;
-	 */
+public class MetaData<K, V> extends HashMap<String, Object> implements IMetaData, Serializable {
+
+	/** serialVersionUID = -5681069577717669925L; */
 	private static final long serialVersionUID = -5681069577717669925L;
-		
+
 	IMetaCue cuePoints[] = null;	/** CuePoint array **/
-		
-	/**
-	 * MetaData constructor
-	 */
+
+	/** MetaData constructor */
 	public MetaData() {
-		
+
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getCanSeekToEnd()
 	 */
 	public boolean getCanSeekToEnd() {
-		boolean canSeekToEnd = ((Boolean)this.get("canSeekToEnd")).booleanValue();
-		return canSeekToEnd;
+		return (Boolean) this.get("canSeekToEnd");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setCanSeekToEnd(boolean)
 	 */
 	public void setCanSeekToEnd(boolean b) {
-		this.put("canSeekToEnd", new Boolean(b));
+		this.put("canSeekToEnd", b);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getVideoCodecId()
 	 */
 	public int getVideoCodecId() {
-		int videocodecid = ((Integer)this.get("videocodecid")).intValue();
-		return videocodecid;
+		return (Integer) this.get("videocodecid");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setVideoCodecId(int)
 	 */
 	public void setVideoCodecId(int id) {
-		this.put("videocodecid", new Integer(id));
+		this.put("videocodecid", id);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getframeRate()
 	 */
 	public int getframeRate() {
-		int framerate = ((Integer)this.get("framerate")).intValue();
-		return framerate;
+		return (Integer) this.get("framerate");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setframeRate(int)
 	 */
 	public void setframeRate(int rate) {
-		this.put("framerate", new Integer(rate));
+		this.put("framerate", rate);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getVideoDataRate()
 	 */
 	public int getVideoDataRate() {
-		int videodatarate = ((Integer)this.get("videodatarate")).intValue();
-		return videodatarate;
+		return (Integer) this.get("videodatarate");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setVideoDataRate(int)
 	 */
 	public void setVideoDataRate(int rate) {
-		this.put("videodatarate", new Integer(rate));
+		this.put("videodatarate", rate);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getWidth()
 	 */
 	public int getWidth() {
-		int width = ((Integer)this.get("width")).intValue();
-		return width;
+		return (Integer) this.get("width");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setWidth(int)
 	 */
 	public void setWidth(int w) {
-		this.put("width", new Integer(w));
+		this.put("width", w);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getDuration()
 	 */
 	public double getDuration() {
-		double duration = ((Double)this.get("duration")).doubleValue();
-		return duration;
+		return (Double) this.get("duration");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setDuration(int)
 	 */
 	public void setDuration(double d) {
-		this.put("duration", new Double(d));
+		this.put("duration", d);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#getHeight()
 	 */
 	public int getHeight() {
-		int height = ((Integer)this.get("height")).intValue();
-		return height;
+		return (Integer) this.get("height");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.MetaData#setHeight(int)
 	 */
 	public void setHeight(int h) {
-		this.put("height", new Integer(h));
+		this.put("height", h);
 	}
-	
-	public String toString() {
-		String ret = "";
-		return ret;
-	}
+
 
 	/**
 	 * Sets the MetaCue Points
+	 *
 	 * @param cuePoints The cuePoints to set.
 	 */
 	public void setMetaCue(IMetaCue[] cuePoints) {
 		this.cuePoints = cuePoints;
-		
-		MetaCue cuePointData = new MetaCue();		
-		
+
+		MetaCue<String, Object> cuePointData = new MetaCue<String, Object>();
+
 		// Place in TreeSet for sorting
-		TreeSet ts = new TreeSet();	
-		
-		for(int i=0; i<cuePoints.length; i++) {	
+		TreeSet<IMetaCue> ts = new TreeSet<IMetaCue>();
+
+		for (int i = 0; i < cuePoints.length; i++) {
 			ts.add(cuePoints[i]);
 		}
-		
+
 		int j = 0;
-		while(!ts.isEmpty()) {						
-				cuePointData.put(""+j+"", ts.first());
-				j++;
-				
-				ts.remove(ts.first());
+		while (!ts.isEmpty()) {
+			cuePointData.put(String.valueOf(j), ts.first());
+			j++;
+
+			ts.remove(ts.first());
 		}
-		
+
 //		"CuePoints", cuePointData
 //					"0",	MetaCue
 //							name, "test"
@@ -207,28 +190,35 @@ public class MetaData extends HashMap implements IMetaData, Serializable {
 //							name, "test1"
 //							type, "event1"
 //							time, "0.5"
-		
+
 		this.put("cuePoints", cuePointData);
-		
+
 	}
 
 	/**
 	 * Return array of MetaCue
+	 *
 	 * @return IMetaCue[] metaCue
 	 */
 	public IMetaCue[] getMetaCue() {
-		IMetaCue ret[] = null;
+		IMetaCue ret[];
 		MetaCue cue = (MetaCue) this.get("cuePoints");
 		Set s = cue.keySet();
 
 		Iterator i = s.iterator();
 		ret = new MetaCue[s.size()];
 		int counter = 0;
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			ret[counter++] = (IMetaCue) cue.get(i.next());
 		}
-		
+
 		return ret;
 	}
 
+
+	public String toString() {
+		return "MetaData{" +
+				"cuePoints=" + (cuePoints == null ? null : Arrays.asList(cuePoints)) +
+				'}';
+	}
 }
