@@ -23,15 +23,16 @@ package org.red5.io.object;
  */
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.BeanMap;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.logging.Log;
@@ -320,9 +321,10 @@ public class Serializer {
 	 * @return
 	 */
 	protected boolean writeObjectType(Output out, Object obj){		
-		if(obj instanceof Map) 
+		if (obj instanceof Map) 
 			writeMap(out, (Map) obj);
-		else writeBean(out, obj);
+		else
+			writeObject(out, obj);
 		return true;
 	}
 	
@@ -353,26 +355,38 @@ public class Serializer {
 	}
 	
 	/**
-	 * Writes a bean to the output
+	 * Writes an arbitrary object to the output.
 	 * @param out
 	 * @param bean
 	 */
-	public void writeBean(Output out, Object bean){
+	public void writeObject(Output out, Object object){
 		if(log.isDebugEnabled()) {
-			log.debug("writeBean");
+			log.debug("writeObject");
 		}
-		out.writeStartObject(bean.getClass().getName());
-		BeanMap beanMap = new BeanMap(bean);
-		Set set = beanMap.entrySet();
-		Iterator it = set.iterator();
-		while(it.hasNext()){
-			BeanMap.Entry entry = (BeanMap.Entry) it.next();
-			if(entry.getKey().toString().equals("class")) continue;
-			out.writePropertyName(entry.getKey().toString());
-			//log.info(entry.getKey().toString()+" = "+entry.getValue());
-			serialize(out,entry.getValue());
-			if(it.hasNext()) out.markPropertySeparator();
+		out.writeStartObject(object.getClass().getName());
+		
+		// Get public field values
+		Map<String, Object> values = new HashMap<String, Object>();
+		for (Field field: object.getClass().getFields()) {
+			Object value;
+			try {
+				value = field.get(object);
+			} catch (IllegalAccessException err) {
+				continue;
+			}
+			values.put(field.getName(), value);
 		}
+		
+		// Output public values
+		Iterator<Map.Entry<String, Object>> it = values.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, Object> entry = it.next();
+			out.writePropertyName(entry.getKey());
+			serialize(out, entry.getValue());
+			if (it.hasNext())
+				out.markPropertySeparator();
+		}
+		
 		out.markEndObject();
 	}
 	
