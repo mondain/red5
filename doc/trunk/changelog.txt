@@ -9,6 +9,7 @@ Red5 0.5    (unreleased)
 New features:
 - refactored streaming code
 - refactored scope services
+- refactored rtmp message de-/encoding
 - enabled subscopes
 - added dynamic "onMetaData" for mp3 streams
 - added persistence for scopes and shared objects
@@ -35,6 +36,9 @@ Bugfixes:
 - support invoking methods with "null" as parameter (Trac #29)
 - directories for recorded files are created if they don't exist (Trac #20)
 - "pause(java.lang.Object, int)" was reversed for streams (Trac #16)
+- serialization of arbitrary objects uses reflect api to access fields,
+  fixes various problems with inner classes and internal objects like
+  IConnection / IClient
 
 
 Red5 0.4.1  (2006-05-01)
