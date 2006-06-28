@@ -323,7 +323,7 @@ public class Serializer {
 	protected boolean writeObjectType(Output out, Object obj){		
 		if (obj instanceof Map) 
 			writeMap(out, (Map) obj);
-		else
+		else if (!writeBean(out, obj))
 			writeObject(out, obj);
 		return true;
 	}
@@ -352,6 +352,37 @@ public class Serializer {
 			if(it.hasNext()) out.markPropertySeparator();
 		}
 		out.markEndMap();
+	}
+	
+	/**
+	 * Write object as bean to the output.
+	 * 
+	 * @param out
+	 * @param bean
+	 */
+	public boolean writeBean(Output out, Object bean) {
+		BeanMap beanMap = new BeanMap(bean);
+		Set set = beanMap.entrySet();
+		if ((set.size() == 0) || (set.size() == 1 && beanMap.containsKey("class")))
+			// BeanMap is empty or can only access "class" attribute, skip it
+			return false;
+		
+		out.writeStartObject(bean.getClass().getName());
+		Iterator it = set.iterator();
+		while (it.hasNext()){
+			BeanMap.Entry entry = (BeanMap.Entry) it.next();
+			if (entry.getKey().toString().equals("class"))
+				continue;
+			
+			out.writePropertyName(entry.getKey().toString());
+			//log.info(entry.getKey().toString()+" = "+entry.getValue());
+			serialize(out,entry.getValue());
+			if (it.hasNext())
+				out.markPropertySeparator();
+		}
+		
+		out.markEndObject();
+		return true;
 	}
 	
 	/**
