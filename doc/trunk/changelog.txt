@@ -39,6 +39,7 @@ Bugfixes:
 - serialization of arbitrary objects uses reflect api to access fields,
   fixes various problems with inner classes and internal objects like
   IConnection / IClient
+- invalid stream ids are handled in "deleteStream" (Trac #21)
 
 
 Red5 0.4.1  (2006-05-01)
