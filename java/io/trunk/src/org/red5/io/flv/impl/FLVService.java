@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.red5.io.BaseStreamableFileService;
 import org.red5.io.IStreamableFile;
 import org.red5.io.flv.IFLV;
 import org.red5.io.flv.IFLVService;
@@ -39,7 +40,7 @@ import org.red5.io.object.Serializer;
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
-public class FLVService implements IFLVService {
+public class FLVService extends BaseStreamableFileService implements IFLVService {
 	private Serializer serializer;
 	private Deserializer deserializer;
 	
@@ -47,8 +48,8 @@ public class FLVService implements IFLVService {
 		return "flv";
 	}
 	
-	public boolean canHandle(File fp) {
-		return (fp.isFile() && fp.getAbsolutePath().toLowerCase().endsWith(".flv"));
+	public String getExtension() {
+		return ".flv";
 	}
 	
 	/* (non-Javadoc)
