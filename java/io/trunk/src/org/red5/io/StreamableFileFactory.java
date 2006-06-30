@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.Set;
 import java.util.HashSet;
 
-public class StreamableFileFactory {
+public class StreamableFileFactory implements IStreamableFileFactory {
 
 	private Set<IStreamableFileService> services = new HashSet<IStreamableFileService>();
 	
@@ -41,4 +41,7 @@ public class StreamableFileFactory {
 		return null;
 	}
 	
+	public Set<IStreamableFileService> getServices() {
+		return services;
+	}
 }
