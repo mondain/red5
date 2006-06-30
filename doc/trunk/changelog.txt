@@ -40,6 +40,7 @@ Bugfixes:
   fixes various problems with inner classes and internal objects like
   IConnection / IClient
 - invalid stream ids are handled in "deleteStream" (Trac #21)
+- stream name prefixes and names without extensions supported (Trac #28)
 
 
 Red5 0.4.1  (2006-05-01)
