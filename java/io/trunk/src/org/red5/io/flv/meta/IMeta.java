@@ -20,7 +20,6 @@ package org.red5.io.flv.meta;
  */
 
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * IMeta is a Marker Interface

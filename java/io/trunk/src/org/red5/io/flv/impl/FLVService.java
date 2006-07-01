@@ -20,14 +20,10 @@ package org.red5.io.flv.impl;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.red5.io.BaseStreamableFileService;
 import org.red5.io.IStreamableFile;
-import org.red5.io.flv.IFLV;
 import org.red5.io.flv.IFLVService;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;

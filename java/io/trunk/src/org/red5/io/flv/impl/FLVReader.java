@@ -19,18 +19,6 @@ package org.red5.io.flv.impl;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.mina.common.ByteBuffer;
-import org.red5.io.IoConstants;
-import org.red5.io.IStreamableFile;
-import org.red5.io.ITag;
-import org.red5.io.ITagReader;
-import org.red5.io.amf.Output;
-import org.red5.io.flv.FLVHeader;
-import org.red5.io.flv.IKeyFrameDataAnalyzer;
-import org.red5.io.utils.IOUtils;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -38,6 +26,18 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.mina.common.ByteBuffer;
+import org.red5.io.IStreamableFile;
+import org.red5.io.ITag;
+import org.red5.io.ITagReader;
+import org.red5.io.IoConstants;
+import org.red5.io.amf.Output;
+import org.red5.io.flv.FLVHeader;
+import org.red5.io.flv.IKeyFrameDataAnalyzer;
+import org.red5.io.utils.IOUtils;
 
 /**
  * A Reader is used to read the contents of a FLV file

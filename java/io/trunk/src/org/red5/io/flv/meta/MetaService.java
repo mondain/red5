@@ -26,9 +26,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.ITag;
 import org.red5.io.amf.Input;
 import org.red5.io.amf.Output;
-import org.red5.io.ITag;
 import org.red5.io.flv.impl.FLVReader;
 import org.red5.io.flv.impl.FLVWriter;
 import org.red5.io.flv.impl.Tag;
