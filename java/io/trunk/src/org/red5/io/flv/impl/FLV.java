@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.red5.io.ITag;
 import org.red5.io.ITagReader;
 import org.red5.io.ITagWriter;
-import org.red5.io.amf.Input;
 import org.red5.io.flv.IFLV;
 import org.red5.io.flv.meta.IMetaData;
 import org.red5.io.flv.meta.IMetaService;

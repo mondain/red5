@@ -20,7 +20,11 @@ package org.red5.io.flv.meta;
  */
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * MetaData Implementation
