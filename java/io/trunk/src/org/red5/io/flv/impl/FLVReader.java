@@ -22,9 +22,11 @@ package org.red5.io.flv.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.IoConstants;
 import org.red5.io.IStreamableFile;
 import org.red5.io.ITag;
 import org.red5.io.ITagReader;
+import org.red5.io.amf.Output;
 import org.red5.io.flv.FLVHeader;
 import org.red5.io.flv.IKeyFrameDataAnalyzer;
 import org.red5.io.utils.IOUtils;
@@ -44,16 +46,32 @@ import java.util.List;
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
-public class FLVReader implements ITagReader, IKeyFrameDataAnalyzer {
+public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer {
 
 	private static Log log = LogFactory.getLog(FLVReader.class.getName());
 	private FileInputStream fis = null;
 	private FileChannel channel = null;
 	private MappedByteBuffer mappedFile = null;
+	private KeyFrameMeta keyframeMeta = null;
 	private ByteBuffer in = null;
+	/** Set to true to generate metadata automatically before the first tag. */
+	private boolean generateMetadata = false;
+	/** Position of first video tag. */
+	private int firstVideoTag = -1;
+	/** Position of first audio tag. */
+	private int firstAudioTag = -1;
+	/** Current tag. */
+	private int tagPosition = 0;
+	/** Duration in milliseconds. */
+	private long duration = 0;
 
 	public FLVReader(FileInputStream f) {
+		this(f, false);
+	}
+	
+	public FLVReader(FileInputStream f, boolean generateMetadata) {
 		this.fis = f;
+		this.generateMetadata = generateMetadata;
 		channel = fis.getChannel();
 		try {
 			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
@@ -105,12 +123,59 @@ public class FLVReader implements ITagReader, IKeyFrameDataAnalyzer {
 		return in.remaining() > 4;
 	}
 
+	private ITag createFileMeta() {
+		// Create tag for onMetaData event
+		ByteBuffer buf = ByteBuffer.allocate(1024);
+		buf.setAutoExpand(true);
+		Output out = new Output(buf);
+		out.writeString("onMetaData");
+		out.writeStartMap(3);
+		out.writePropertyName("duration");
+		out.writeNumber(duration / 1000.0);
+		if (firstVideoTag != -1) {
+			int old = in.position();
+			in.position(firstVideoTag);
+			readTagHeader();
+			byte frametype = in.get();
+			out.writePropertyName("videocodecid");
+			out.writeNumber(frametype & MASK_VIDEO_CODEC);
+			in.position(old);
+		}
+		if (firstAudioTag != -1) {
+			int old = in.position();
+			in.position(firstAudioTag);
+			readTagHeader();
+			byte frametype = in.get();
+			out.writePropertyName("audiocodecid");
+			out.writeNumber((frametype & MASK_SOUND_FORMAT) >> 4);
+			in.position(old);
+		}
+		out.writePropertyName("canSeekToEnd");
+		out.writeBoolean(true);
+		out.markEndMap();
+		buf.flip();
+
+		ITag result = new Tag(ITag.TYPE_METADATA, 0, buf.limit(), null, 0);
+		result.setBody(buf);
+		return result;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.Reader#readTag()
 	 */
 	synchronized public ITag readTag() {
+		int oldPos = in.position();
 		ITag tag = readTagHeader();
 
+		if (tagPosition == 0 && tag.getDataType() != TYPE_METADATA && generateMetadata) {
+			// Generate initial metadata automatically
+			in.position(oldPos);
+			KeyFrameMeta meta = analyzeKeyFrames();
+			tagPosition++;
+			if (meta != null)
+				return createFileMeta();
+		}
+		
 		ByteBuffer body = ByteBuffer.allocate(tag.getBodySize());
 		final int limit = in.limit();
 		in.limit(in.position() + tag.getBodySize());
@@ -119,7 +184,7 @@ public class FLVReader implements ITagReader, IKeyFrameDataAnalyzer {
 		in.limit(limit);
 
 		tag.setBody(body);
-
+		tagPosition++;
 		return tag;
 	}
 
@@ -142,6 +207,9 @@ public class FLVReader implements ITagReader, IKeyFrameDataAnalyzer {
 	}
 
 	synchronized public KeyFrameMeta analyzeKeyFrames() {
+		if (keyframeMeta != null)
+			return keyframeMeta;
+		
 		List<Integer> positionList = new ArrayList<Integer>();
 		List<Integer> timestampList = new ArrayList<Integer>();
 		int origPos = in.position();
@@ -150,29 +218,37 @@ public class FLVReader implements ITagReader, IKeyFrameDataAnalyzer {
 		while (this.hasMoreTags()) {
 			int pos = in.position();
 			ITag tmpTag = this.readTagHeader();
+			duration = tmpTag.getTimestamp();
 			if (tmpTag.getDataType() == ITag.TYPE_VIDEO) {
+				if (firstVideoTag == -1)
+					firstVideoTag = pos;
+				
 				// Grab Frame type
 				byte frametype = in.get();
-				if ((frametype & 0xf0) == 0x10) {
+				if (((frametype & MASK_VIDEO_FRAMETYPE) >> 4) == FLAG_FRAMETYPE_KEYFRAME) {
 					positionList.add(pos);
 					timestampList.add(tmpTag.getTimestamp());
 				}
+				
+			} else if (tmpTag.getDataType() == ITag.TYPE_AUDIO) {
+				if (firstAudioTag == -1)
+					firstAudioTag = pos;
 			}
 			in.position(pos + tmpTag.getBodySize() + 15);
 		}
 		// restore the pos
 		in.position(origPos);
 
-		KeyFrameMeta meta = new KeyFrameMeta();
-		meta.positions = new int[positionList.size()];
-		meta.timestamps = new int[timestampList.size()];
-		for (int i = 0; i < meta.positions.length; i++) {
-			meta.positions[i] = positionList.get(i);
+		keyframeMeta = new KeyFrameMeta();
+		keyframeMeta.positions = new int[positionList.size()];
+		keyframeMeta.timestamps = new int[timestampList.size()];
+		for (int i = 0; i < keyframeMeta.positions.length; i++) {
+			keyframeMeta.positions[i] = positionList.get(i);
 		}
-		for (int i = 0; i < meta.timestamps.length; i++) {
-			meta.timestamps[i] = timestampList.get(i);
+		for (int i = 0; i < keyframeMeta.timestamps.length; i++) {
+			keyframeMeta.timestamps[i] = timestampList.get(i);
 		}
-		return meta;
+		return keyframeMeta;
 	}
 
 	synchronized public void position(long pos) {
