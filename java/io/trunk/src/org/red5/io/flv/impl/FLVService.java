@@ -43,6 +43,7 @@ import org.red5.io.object.Serializer;
 public class FLVService extends BaseStreamableFileService implements IFLVService {
 	private Serializer serializer;
 	private Deserializer deserializer;
+	private boolean generateMetadata = false;
 	
 	public String getPrefix() {
 		return "flv";
@@ -72,9 +73,13 @@ public class FLVService extends BaseStreamableFileService implements IFLVService
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
 	 */
 	public IStreamableFile getStreamableFile(File file) throws IOException {
-		return new FLV(file);
+		return new FLV(file, generateMetadata);
 	}
 
+	public void setGenerateMetadata(boolean generate) {
+		generateMetadata = generate;
+	}
+	
 
 	public Serializer getSerializer() {
 		return serializer;

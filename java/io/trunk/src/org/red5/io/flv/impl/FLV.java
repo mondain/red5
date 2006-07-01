@@ -50,29 +50,19 @@ public class FLV implements IFLV {
         LogFactory.getLog(FLV.class.getName());
 	
 	private File file;
+	private boolean generateMetadata;
 
 	private IMetaService metaService;
 	
 	public FLV(File file){
-		this.file = file;
+		this(file, false);
 	}
 	
-	/*
-	private FileInputStream fis;
-	private FileOutputStream fos;
-	public FLVImpl(FileInputStream f) {
-		this.fis = f;
+	public FLV(File file, boolean generateMetadata) {
+		this.file = file;
+		this.generateMetadata = generateMetadata;
 	}
-
-	public FLVImpl() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public FLVImpl(FileOutputStream f) {
-		this.fos = f;
-	}
-	*/
-
+	
 	/* (non-Javadoc)
 	 * @see org.red5.io.flv.FLV#hasMetaData()
 	 */
@@ -138,7 +128,7 @@ public class FLV implements IFLV {
 			file.createNewFile();
 		}
 		log.info("File size: "+file.length());
-		FLVReader reader = new FLVReader(new FileInputStream(file));
+		FLVReader reader = new FLVReader(new FileInputStream(file), generateMetadata);
 		return reader;
 	}
 
