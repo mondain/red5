@@ -20,6 +20,8 @@ New features:
 - IClientRegistry can be customized for each scope
 - WEB-INF directories are added to the classpath (Trac #27)
 - clients can be rejected with a custom error message
+- basic "onMetaData" is generated dynamically for .flv files without any
+  meta data (Trac #23)
 
 Bugfixes:
 - mp3 files that have their protection bit set
