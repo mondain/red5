@@ -50,12 +50,12 @@ public class IOUtils {
 	}
 	
 	public static int readUnsignedMediumInt(ByteBuffer in) {
-		byte[] bytes = new byte[3];
-		in.get(bytes);
+		//byte[] bytes = new byte[3];
+		//in.get(bytes);
 		int val = 0;
-		val += (bytes[0] & 0xFF) * 256 * 256;
-		val += (bytes[1] & 0xFF) * 256;
-		val += (bytes[2] & 0xFF);
+		val += (in.get() & 0xFF) * 256 * 256;
+		val += (in.get() & 0xFF) * 256;
+		val += (in.get() & 0xFF);
 		return val;
 	}
 	
