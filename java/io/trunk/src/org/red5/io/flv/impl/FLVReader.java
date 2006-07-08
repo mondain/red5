@@ -75,6 +75,9 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		channel = fis.getChannel();
 		try {
 			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+			// Should the file be loaded into memory.
+			// It would be nice if we could load busy files into memory and share them.
+			//mappedFile.load();
 		} catch (IOException e) {
 			log.error("FLVReader :: FLVReader ::>\n"  , e);
 		}
