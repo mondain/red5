@@ -1,3 +1,8 @@
+#ifexist "isxdl.iss"
+#include "isxdl.iss"
+#define DOWNLOAD_SAMPLES
+#endif
+
 #ifndef build_dir
 #define build_dir "."
 #endif
@@ -47,6 +52,9 @@ PortWithDefault=port (default %1)
 PortWithNumber=port %1
 LimitService=You can limit a service to a single IP address by using the format "<ip>:<port>", e.g. "127.0.0.1:1935". If no ip is specified, the service will listen on all available interfaces.
 AdminUsernamePassword=To access the administration interface, use "admin" as username and "admin" as password when prompted for login credentials.
+#ifdef DOWNLOAD_SAMPLES
+DownloadSampleStreams=Download sample streams
+#endif
 
 [Components]
 Name: "main"; Description: "{cm:MainFiles}"; Types: full compact custom; Flags: fixed
@@ -56,6 +64,9 @@ Name: "flash_source"; Description: "{cm:FlashSources}"; Types: full
 [Tasks]
 Name: "service"; Description: "{cm:RegisterService}"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; Flags: unchecked
+#ifdef DOWNLOAD_SAMPLES
+Name: "sample_streams"; Description: "{cm:DownloadSampleStreams}"
+#endif
 
 [Files]
 ; Application files
@@ -64,7 +75,11 @@ Source: "{#root_dir}\red5.jar"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#root_dir}\conf\*"; DestDir: "{app}\conf"; Excludes: "red5.properties"; Flags: onlyifdoesntexist recursesubdirs
 Source: "{#root_dir}\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
 Source: "{#root_dir}\swf\DEV_Deploy\*"; DestDir: "{app}\swf"; Flags: ignoreversion recursesubdirs
+#ifdef DOWNLOAD_SAMPLES
+Source: "{#root_dir}\webapps\*"; DestDir: "{app}\webapps"; Excludes: "oflaDemo\streams\*.flv,oflaDemo\streams\*.mp3"; Flags: onlyifdoesntexist recursesubdirs
+#else
 Source: "{#root_dir}\webapps\*"; DestDir: "{app}\webapps"; Flags: onlyifdoesntexist recursesubdirs
+#endif
 Source: "{#root_dir}\doc\*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs
 
 ; Files required for windows service / wrapped start
@@ -122,6 +137,11 @@ Filename: "{app}\bin\UninstallRed5-NT.bat"; Tasks: service; Flags: runhidden;
 Type: dirifempty; Name: "{app}\logs"
 
 [Code]
+#ifdef DOWNLOAD_SAMPLES
+const
+  STREAM_DOWNLOAD_URL = 'http://dl.fancycode.com/red5/sample_streams/';
+#endif
+
 var
   JavaHome: String;
   JavaHomePage: TInputDirWizardPage;
@@ -250,6 +270,42 @@ begin
   Result := FileExists(Path + 'bin\java.exe');
 end;
 
+#ifdef DOWNLOAD_SAMPLES
+procedure AddDownloadFile(Name: String);
+var
+  Filename: String;
+begin
+  FileName := ExpandConstant('{app}\webapps\oflaDemo\streams\' + Name);
+  if (FileExists(FileName)) then
+    // File already exists
+    exit;
+
+  isxdl_AddFile(STREAM_DOWNLOAD_URL + Name, FileName);
+end;
+
+function DownloadFiles(): Boolean;
+var
+  Wnd: Integer;
+  Tasks: String;
+begin
+  Wnd := StrToInt(ExpandConstant('{wizardhwnd}'));
+  Tasks := WizardSelectedTasks(False);
+  isxdl_ClearFiles();
+
+  if Pos('sample_streams', Tasks) > 0 then begin
+    if not FileExists(ExpandConstant('{app}\webapps\oflaDemo\streams')) then
+      ForceDirectories(ExpandConstant('{app}\webapps\oflaDemo\streams'));
+
+    AddDownloadFile('CoolDown_JohnGrden.mp3');
+    AddDownloadFile('OFLA_PROMO.flv');
+    AddDownloadFile('on2_flash8_w_audio.flv');
+    AddDownloadFile('TomSawyer_4.12.2006_JohnGrden.mp3');
+  end;
+
+  Result := (isxdl_DownloadFiles(Wnd) <> 0);
+end;
+#endif
+
 function NextButtonClick(CurPage: Integer): Boolean;
 begin
   Result := True;
@@ -332,6 +388,9 @@ var
   Host, Port: String;
 begin
   if (CurStep = ssPostInstall) then begin
+#ifdef DOWNLOAD_SAMPLES
+    DownloadFiles();
+#endif
     Filename := ExpandConstant('{app}\conf\red5.properties');
     if FileExists(Filename) then
       exit;
