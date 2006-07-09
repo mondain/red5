@@ -104,7 +104,7 @@ wrapper.ntservice.name=Red5
 wrapper.ntservice.displayname=Red5
 
 # Description of the service
-wrapper.ntservice.description=Red5
+wrapper.ntservice.description=Red5 Open Source Flash Server
 
 # Service dependencies.  Add dependencies as needed starting from 1
 wrapper.ntservice.dependency.1=
