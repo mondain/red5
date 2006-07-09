@@ -28,7 +28,7 @@ public interface ITagWriter {
 	/**
 	 * Return the file that is written.
 	 * 
-	 * @return
+	 * @return the file to be written
 	 */
 	public IStreamableFile getFile();
 	
@@ -78,7 +78,6 @@ public interface ITagWriter {
 	
 	/**
 	 * Closes a Writer
-	 * @return void
 	 */
 	public void close();
 

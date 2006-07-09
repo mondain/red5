@@ -24,7 +24,7 @@ public interface ITagReader {
 	/**
 	 * Return the file that is loaded.
 	 * 
-	 * @return
+	 * @return the file to be loaded
 	 */
 	public IStreamableFile getFile();
 	

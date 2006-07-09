@@ -148,7 +148,7 @@ public class HexDump {
     * Method toBinaryString
     *
     * @param ba
-    * @return
+    * @return the binary representation of the byte array
     */
    public static String toBinaryString(byte[] ba) {
       return byteArrayToBinaryString(ba);
@@ -158,7 +158,7 @@ public class HexDump {
     * Method toBinaryString
     *
     * @param b
-    * @return
+    * @return the binary representation of the byte
     */
    public static String toBinaryString(byte b) {
 
@@ -173,7 +173,7 @@ public class HexDump {
     * Method toBinaryString
     *
     * @param s
-    * @return
+    * @return the binary representation of the short
     */
    public static String toBinaryString(short s) {
       return toBinaryString(toByteArray(s));
@@ -183,7 +183,7 @@ public class HexDump {
     * Method toBinaryString
     *
     * @param i
-    * @return
+    * @return the binary representation of the int
     */
    public static String toBinaryString(int i) {
       return toBinaryString(toByteArray(i));
@@ -193,7 +193,7 @@ public class HexDump {
     * Method toBinaryString
     *
     * @param l
-    * @return
+    * @return the binary representation of the long
     */
    public static String toBinaryString(long l) {
       return toBinaryString(toByteArray(l));
@@ -203,7 +203,7 @@ public class HexDump {
     * Method toByteArray
     *
     * @param s
-    * @return
+    * @return the short as array of bytes
     */
    public static final byte[] toByteArray(short s) {
 
@@ -219,7 +219,7 @@ public class HexDump {
     * Method toByteArray
     *
     * @param i
-    * @return
+    * @return the int as array of bytes
     */
    public static final byte[] toByteArray(int i) {
 
@@ -237,7 +237,7 @@ public class HexDump {
     * Method toByteArray
     *
     * @param l
-    * @return
+    * @return the long as array of bytes
     */
    public static final byte[] toByteArray(long l) {
 
@@ -336,7 +336,7 @@ public class HexDump {
     * Method toHexString
     *
     * @param b
-    * @return
+    * @return the hexadecimal representation of the byte
     */
    public static String toHexString(byte b) {
 
@@ -361,7 +361,7 @@ public class HexDump {
     * Method toHexString
     *
     * @param i
-    * @return
+    * @return the hexadecimal representation of the int
     */
    public static String toHexString(int i) {
       return toHexString(toByteArray(i));
@@ -371,7 +371,7 @@ public class HexDump {
     * Method toHexString
     *
     * @param l
-    * @return
+    * @return the hexadecimal representation of the long
     */
    public static String toHexString(long l) {
       return toHexString(toByteArray(l));
@@ -381,7 +381,7 @@ public class HexDump {
     * Method toString
     *
     * @param ba
-    * @return
+    * @return the byte array as string
     */
    public static String toString(byte[] ba) {
       return new String(ba).toString();
@@ -391,7 +391,7 @@ public class HexDump {
     * Method toString
     *
     * @param b
-    * @return
+    * @return the byte as string
     */
    public static String toString(byte b) {
 
@@ -437,7 +437,7 @@ public class HexDump {
     * Converts readable hex-String to byteArray
     *
     * @param strA
-    * @return
+    * @return the hexadecimal string as byte array
     */
    public static byte[] hexStringToByteArray(String strA) {
       ByteArrayOutputStream result = new ByteArrayOutputStream();

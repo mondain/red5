@@ -39,8 +39,7 @@ public interface IFLV extends IStreamableFile {
 	
 	/**
 	 * Sets the metadata
-	 * @param Map metadata
-	 * @return void
+	 * @param metadata
 	 * @throws FileNotFoundException 
 	 * @throws IOException 
 	 */
@@ -48,13 +47,13 @@ public interface IFLV extends IStreamableFile {
 	
 	/**
 	 * Sets the MetaService through Spring
-	 * @param IMetaService service
+	 * @param service
 	 */
 	public void setMetaService(IMetaService service);
 	
 	/**
 	 * Returns a map of the metadata
-	 * @return Map metadata
+	 * @return metadata
 	 * @throws FileNotFoundException 
 	 */
 	public IMetaData getMetaData() throws FileNotFoundException;
@@ -67,14 +66,13 @@ public interface IFLV extends IStreamableFile {
 	
 	/**
 	 * Sets the keyframe data of a flv file
-	 * @param Map keyframedata
-	 * @return void
+	 * @param keyframedata
 	 */
 	public void setKeyFrameData(Map keyframedata);
 	
 	/**
 	 * Gets the keyframe data
-	 * @return Map keyframedata
+	 * @return keyframedata
 	 */
 	public Map getKeyFrameData();
 	
@@ -82,28 +80,26 @@ public interface IFLV extends IStreamableFile {
 	 * Refreshes the headers.  Usually used after data is
 	 * added to the flv file
 	 * @throws IOException
-	 * @return void
 	 */
 	public void refreshHeaders() throws IOException;
 	
 	/**
 	 * Flushes Header
 	 * @throws IOException
-	 * @return void
 	 */
 	public void flushHeaders() throws IOException;
 	
 	/**
 	 * Returns a Reader closest to the nearest keyframe
-	 * @param int seekPoint
-	 * @return Reader reader
+	 * @param seekPoint
+	 * @return reader
 	 */
 	public ITagReader readerFromNearestKeyFrame(int seekPoint);
 	
 	/**
 	 * Returns a Writer based on the nearest key frame
-	 * @param int seekPoint
-	 * @return Writer writer
+	 * @param seekPoint
+	 * @return writer
 	 */
 	public ITagWriter writerFromNearestKeyFrame(int seekPoint);
 	

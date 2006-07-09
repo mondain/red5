@@ -51,27 +51,24 @@ public interface IMetaService {
 	/**
 	 * Initiates writing of the MetaData
 	 * @param meta 
-	 * @return void
 	 * @throws IOException 
 	 */
 	public void write(IMetaData meta) throws IOException;
 	
 	/**
 	 * Writes the MetaData
-	 * @param IMetaData metaData
-	 * @return void
+	 * @param metaData
 	 */
 	public void writeMetaData(IMetaData metaData);
 	
 	/**
 	 * Writes the Meta Cue Points
-	 * @return void
 	 */
 	public void writeMetaCue();
 	
 	/**
 	 * Read the MetaData
-	 * @return IMetaData metaData
+	 * @return metaData
 	 */
 	public MetaData readMetaData(ByteBuffer buffer);
 	

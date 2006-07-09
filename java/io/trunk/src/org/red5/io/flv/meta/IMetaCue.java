@@ -31,15 +31,14 @@ public interface IMetaCue extends IMeta, Comparable {
 	
 	/**
 	 * Sets the name
-	 * @param String name
-	 * @return void
+	 * @param name
 	 * 
 	 */
 	public void setName(String name);
 	
 	/**
 	 * Gets the name
-	 * @return String name
+	 * @return name
 	 * 
 	 */
 	public String getName();
@@ -47,30 +46,28 @@ public interface IMetaCue extends IMeta, Comparable {
 	/**
 	 * Sets the type
 	 * type can be "event" or "navigation"
-	 * @param String type
-	 * @return void 
+	 * @param type
 	 *
 	 */
 	public void setType(String type);
 	
 	/**
 	 * Gets the type
-	 * @return String type 
+	 * @return type 
 	 *
 	 */
 	public String getType();
 	
 	/**
 	 * Sets the time
-	 * @param double d
-	 * @return void 
+	 * @param d
 	 *
 	 */
 	public void setTime(double d);
 	
 	/**
 	 * Gets the time
-	 * @return double time 
+	 * @return time 
 	 *
 	 */
 	public double getTime();

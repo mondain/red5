@@ -164,7 +164,7 @@ public class Deserializer {
 	/**
 	 * Reads the input as xml and returns an object
 	 * @param in
-	 * @return
+	 * @return the xml document
 	 */
 	protected Object readXML(Input in){
 		final String xmlString = in.readString();

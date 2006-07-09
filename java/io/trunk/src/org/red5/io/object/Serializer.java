@@ -192,7 +192,7 @@ public class Serializer {
 	 * Arrays, Collections, etc
 	 * @param out
 	 * @param arrType
-	 * @return
+	 * @return <code>true</code> if the object has been written, otherwise <code>false</code>
 	 */
 	protected boolean writeArrayType(Output out, Object arrType){
 		if(log.isDebugEnabled()) {
@@ -314,7 +314,7 @@ public class Serializer {
 	 * Writes an object to the output
 	 * @param out
 	 * @param obj
-	 * @return
+	 * @return <code>true</code> if the object has been written, otherwise <code>false</code>
 	 */
 	protected boolean writeObjectType(Output out, Object obj){		
 		if (obj instanceof Map) 
@@ -384,7 +384,7 @@ public class Serializer {
 	/**
 	 * Writes an arbitrary object to the output.
 	 * @param out
-	 * @param bean
+	 * @param object
 	 */
 	public void writeObject(Output out, Object object){
 		if(log.isDebugEnabled()) {
@@ -431,7 +431,7 @@ public class Serializer {
 	 * Writes a custom data type to the output
 	 * @param out
 	 * @param obj
-	 * @return
+	 * @return <code>true</code> if the object has been written, otherwise <code>false</code>
 	 */
 	protected boolean writeCustomType(Output out, Object obj){
 		if(out.isCustom(obj)){
