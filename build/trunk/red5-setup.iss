@@ -42,10 +42,11 @@ RedServicesSetupInfo=Select the network services you want to enable in your Red5
 RTMP=RTMP
 RTMPT=RTMPT
 HTTP=HTTP servlet engine
-Remoting=Remoting
+Debug=Debug proxy
 PortWithDefault=port (default %1)
 PortWithNumber=port %1
 LimitService=You can limit a service to a single IP address by using the format "<ip>:<port>", e.g. "127.0.0.1:1935". If no ip is specified, the service will listen on all available interfaces.
+AdminUsernamePassword=To access the administration interface, use "admin" as username and "admin" as password when prompted for login credentials.
 
 [Components]
 Name: "main"; Description: "{cm:MainFiles}"; Types: full compact custom; Flags: fixed
@@ -58,6 +59,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; Flags: unchecked
 
 [Files]
 ; Application files
+Source: "{#root_dir}\license.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#root_dir}\red5.jar"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#root_dir}\conf\*"; DestDir: "{app}\conf"; Excludes: "red5.properties"; Flags: onlyifdoesntexist recursesubdirs
 Source: "{#root_dir}\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
@@ -96,9 +98,14 @@ Name: "{group}\FAQ (PDF)"; Filename: "{app}\doc\Frequently Asked Questions.pdf"
 Name: "{group}\FAQ (Word)"; Filename: "{app}\doc\Frequently Asked Questions.doc"
 Name: "{group}\FAQ (Flash)"; Filename: "{app}\doc\Frequently Asked Questions.swf"
 Name: "{group}\HOWTO create new applications"; Filename: "{app}\doc\HOWTO-NewApplications.txt"
+Name: "{group}\Red5 migration guide"; Filename: "{app}\doc\MigrationGuide.txt"
 Name: "{group}\RTMPT Specification"; Filename: "{app}\doc\SPEC-RTMPT.txt"
 Name: "{group}\License"; Filename: "{app}\doc\licenseInfo\Red5LicenseInfo.txt"
 Name: "{group}\Team"; Filename: "{app}\doc\licenseInfo\team.txt"
+Name: "{group}\Mailing list"; Filename: "http://osflash.org/mailman/listinfo/red5_osflash.org"
+Name: "{group}\Administration Interface"; Filename: "{code:GetAdminUrl}"
+Name: "{group}\Welcome page"; Filename: "{code:GetWelcomeUrl}"
+
 Name: "{group}\{cm:UninstallProgram,Red5}"; Filename: "{uninstallexe}"
 Name: "{userdesktop}\Red5"; Filename: "{app}\bin\Red5.bat"; Tasks: desktopicon
 
@@ -125,8 +132,8 @@ var
   PortRTMPT: TEdit;
   EnableHTTP: TCheckBox;
   PortHTTP: TEdit;
-  EnableRemoting: TCheckBox;
-  PortRemoting: TEdit;
+  EnableDebug: TCheckBox;
+  PortDebug: TEdit;
 
 function InitializeSetup(): Boolean;
 begin
@@ -213,9 +220,9 @@ begin
   Pos := AddService(ServicesPage, 0, 0, '{cm:RTMP}', '1935', EnableRTMP, PortRTMP);
   AddService(ServicesPage, X, 0, '{cm:RTMPT}', '8088', EnableRTMPT, PortRTMPT);
   
-  AddService(ServicesPage, 0, Pos + 16, '{cm:Remoting}', '5080', EnableRemoting, PortRemoting);
-  Pos := AddService(ServicesPage, X, Pos + 16, '{cm:HTTP}', '5080', EnableHTTP, PortHTTP);
-  
+  AddService(ServicesPage, 0, Pos + 16, '{cm:HTTP}', '5080', EnableHTTP, PortHTTP);
+  Pos := AddService(ServicesPage, X, Pos + 16, '{cm:Debug}', '1936', EnableDebug, PortDebug);
+
   Static := TNewStaticText.Create(ServicesPage);
   Static.Parent := ServicesPage.Surface;
   Static.Left := 0;
@@ -225,6 +232,16 @@ begin
   Static.AutoSize := False;
   Static.WordWrap := True;
   Static.Caption := ExpandConstant('{cm:LimitService}');
+
+  Static := TNewStaticText.Create(ServicesPage);
+  Static.Parent := ServicesPage.Surface;
+  Static.Left := 0;
+  Static.Top := Pos + 64;
+  Static.Width := ServicesPage.SurfaceWidth;
+  Static.Height := Static.Height * 3;
+  Static.AutoSize := False;
+  Static.WordWrap := True;
+  Static.Caption := ExpandConstant('{cm:AdminUsernamePassword}');
 end;
 
 function IsValidJavaHome(Path: String): Boolean;
@@ -265,10 +282,10 @@ begin
     Result := Result + Space + ExpandConstant('{cm:RTMP}') + ' ' + ExpandConstant('{cm:PortWithNumber,'+PortRTMP.Text+'}') + NewLine;
   if (EnableRTMPT.Checked) then
     Result := Result + Space + ExpandConstant('{cm:RTMPT}') + ' ' + ExpandConstant('{cm:PortWithNumber,'+PortRTMPT.Text+'}') + NewLine;
-  if (EnableRemoting.Checked) then
-    Result := Result + Space + ExpandConstant('{cm:Remoting}') + ' ' + ExpandConstant('{cm:PortWithNumber,'+PortRemoting.Text+'}') + NewLine;
   if (EnableHTTP.Checked) then
     Result := Result + Space + ExpandConstant('{cm:HTTP}') + ' ' + ExpandConstant('{cm:PortWithNumber,'+PortHTTP.Text+'}') + NewLine;
+  if (EnableDebug.Checked) then
+    Result := Result + Space + ExpandConstant('{cm:Debug}') + ' ' + ExpandConstant('{cm:PortWithNumber,'+PortDebug.Text+'}') + NewLine;
 end;
 
 procedure UpdateWrapperConf(Filename: String);
@@ -323,14 +340,38 @@ begin
     SaveStringToFile(Filename, Format('rtmp.host_port = %s', [PortRTMP.Text]) + #13#10, False);
     
     SplitHostPort(PortHTTP, Host, Port);
-    SaveStringToFile(Filename, Format('remoting.host_port = :%s', [Port]) + #13#10, True);
-    
-    SplitHostPort(PortHTTP, Host, Port);
     SaveStringToFile(Filename, Format('http.host = %s', [Host]) + #13#10, True);
     SaveStringToFile(Filename, Format('http.port = %s', [Port]) + #13#10, True);
     
     SplitHostPort(PortRTMPT, Host, Port);
     SaveStringToFile(Filename, Format('rtmpt.host = %s', [Host]) + #13#10, True);
     SaveStringToFile(Filename, Format('rtmpt.port = %s', [Port]) + #13#10, True);
+    
+    SaveStringToFile(Filename, Format('debug_proxy.host_port = %s', [PortDebug.Text]) + #13#10, True);
+    SplitHostPort(PortHTTP, Host, Port);
+    if (Host = '') or (Host = '0.0.0.0') then
+      Host := '127.0.0.1';
+    SaveStringToFile(Filename, Format('proxy_forward.host_port = %s:%s', [Host, Port]) + #13#10, True);
   end;
 end;
+
+function GetAdminUrl(Default: String): String;
+var
+  Host, Port: String;
+begin
+  SplitHostPort(PortHTTP, Host, Port);
+  if (Host = '') or (Host = '0.0.0.0') then
+    Host := '127.0.0.1';
+  Result := Format('http://%s:%s/admin', [Host, Port]);
+end;
+
+function GetWelcomeUrl(Default: String): String;
+var
+  Host, Port: String;
+begin
+  SplitHostPort(PortHTTP, Host, Port);
+  if (Host = '') or (Host = '0.0.0.0') then
+    Host := '127.0.0.1';
+  Result := Format('http://%s:%s/', [Host, Port]);
+end;
+

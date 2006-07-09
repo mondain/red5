@@ -6,8 +6,8 @@ import os, sys
 from time import strftime
 
 # defaults
-ANT_CMD  = r'D:\Temp\apache-ant-1.6.5\bin\ant.bat'
-INNO_CMD = r'C:\Programme\InnoSe~2\ISCC.exe'
+ANT_CMD  = r'D:\Develop\osflash\apache-ant-1.6.5\bin\ant'
+INNO_CMD = r'C:\Programme\InnoSe~1\ISCC.exe'
 VERSION  = strftime('%Y%m%d')
 
 def error(msg):
@@ -29,11 +29,35 @@ class Builder:
         self.ant_cmd = ant_cmd
         self.build_root = os.path.abspath(os.path.split(__file__)[0])
 
+    def prepareWrapperConf(self, src, dst):
+        fp = file(dst, 'wb')
+        jars = [x for x in os.listdir(os.path.join(self.build_root, '..', 'dist', 'lib')) if x.lower().endswith('.jar')]
+        added = False
+        for line in file(src, 'rb').readlines():
+            if not line.startswith('wrapper.java.classpath.'):
+                fp.write(line)
+                continue
+            
+            if added:
+                # skip line, setting will get overwritten
+                continue
+            
+            fp.write('wrapper.java.classpath.1=../lib/wrapper.jar\n')
+            fp.write('wrapper.java.classpath.2=../conf\n')
+            fp.write('wrapper.java.classpath.3=../lib/red5.jar\n')
+            for idx, filename in enumerate(jars):
+                fp.write('wrapper.java.classpath.%d=../lib/%s\n' % (idx+4, filename))
+            added = True
+
     def build(self, platform='windows'):
         log('Building from %s' % self.build_root)
         # prepare "dist" directory
         red5_root = os.path.abspath(os.path.join(self.build_root, '..', 'dist'))
         self.compile(self.ant_cmd, os.path.join(red5_root, '..', 'build.xml'), 'installerdist')
+        
+        # setup .jar files to wrapper.conf
+        self.prepareWrapperConf(os.path.join(self.build_root, 'conf', 'wrapper.conf.in'), 
+                                os.path.join(self.build_root, 'conf', 'wrapper.conf'))
         
         # build installer
         dest = os.getcwd()
