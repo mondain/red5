@@ -44,7 +44,7 @@ import org.w3c.dom.Document;
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
-public class Serializer {
+public class Serializer implements SerializerOpts {
 
 	// Initialize Logging
 	protected static Log log =
@@ -363,7 +363,11 @@ public class Serializer {
 			// BeanMap is empty or can only access "class" attribute, skip it
 			return false;
 		
-		out.writeStartObject(bean.getClass().getName());
+		if(isOptEnabled(bean, SerializerOption.SerializeClassName)){
+			out.writeStartObject(bean.getClass().getName());
+		} else {
+			out.writeStartObject(null);
+		}
 		Iterator it = set.iterator();
 		while (it.hasNext()){
 			BeanMap.Entry entry = (BeanMap.Entry) it.next();
@@ -390,7 +394,11 @@ public class Serializer {
 		if(log.isDebugEnabled()) {
 			log.debug("writeObject");
 		}
-		out.writeStartObject(object.getClass().getName());
+		if(isOptEnabled(object, SerializerOption.SerializeClassName)){
+			out.writeStartObject(object.getClass().getName());
+		} else {
+			out.writeStartObject(null);
+		}
 		
 		// Get public field values
 		Map<String, Object> values = new HashMap<String, Object>();
@@ -438,6 +446,27 @@ public class Serializer {
 			out.writeCustom(obj);
 			return true;
 		} else return false;
+	}
+
+	public boolean isOptEnabled(Object obj, SerializerOption opt){
+		if(obj != null){
+			if(obj instanceof SerializerOpts){
+				SerializerOpts opts = (SerializerOpts) obj;
+				Flag flag = opts.getSerializerOption(opt);
+				if(flag != Flag.Default) 
+					return (flag == Flag.Enabled);
+			}
+		}
+		return getSerializerOption(opt) == Flag.Enabled;
+	}
+	
+	public Flag getSerializerOption(SerializerOption opt) {
+		// We can now return defaults
+		switch(opt){
+		case SerializeClassName:
+			return Flag.Enabled;
+		}
+		return Flag.Disabled;
 	}
 
 }
