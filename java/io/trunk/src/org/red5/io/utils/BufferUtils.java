@@ -33,7 +33,6 @@ public class BufferUtils {
 	 * Writes a Medium Int to the output buffer
 	 * @param out
 	 * @param value
-	 * @return void
 	 */
 	public static void writeMediumInt(ByteBuffer out, int value) {
 		byte[] bytes = new byte[3];

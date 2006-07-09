@@ -253,8 +253,6 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 
 	/**
 	 * Skips item seperator
-	 *
-	 * @return void
 	 */
 	public void skipItemSeparator() {
 		// SKIP
@@ -262,8 +260,6 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 
 	/**
 	 * Skips end list
-	 *
-	 * @return void
 	 */
 	public void skipEndMap() {
 		skipEndObject();
@@ -300,8 +296,6 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 
 	/**
 	 * Skips property seperator
-	 *
-	 * @return void
 	 */
 	public void skipPropertySeparator() {
 		// SKIP
@@ -309,8 +303,6 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 
 	/**
 	 * Skips end object
-	 *
-	 * @return void
 	 */
 	public void skipEndObject() {
 		// skip two marker bytes
@@ -351,8 +343,6 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 
 	/**
 	 * Resets map
-	 *
-	 * @return void
 	 */
 	public void reset() {
 		this.clearReferences();

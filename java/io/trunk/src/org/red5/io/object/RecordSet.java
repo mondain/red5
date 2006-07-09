@@ -129,7 +129,7 @@ public class RecordSet {
 	/**
 	 * Return a list containing the names of the columns in the recordset.
 	 * 
-	 * @return
+	 * @return column names
 	 */
 	public List<String> getColumnNames() {
 		return Collections.unmodifiableList(columns);
@@ -203,7 +203,7 @@ public class RecordSet {
 	/**
 	 * Get the total number of items.
 	 * 
-	 * @return
+	 * @return number of items
 	 */
 	public int getLength() {
 		return totalCount;
@@ -212,7 +212,7 @@ public class RecordSet {
 	/**
 	 * Get the number of items already received from the server.
 	 * 
-	 * @return
+	 * @return number of received items
 	 */
 	public int getNumberAvailable() {
 		int result = 0;
@@ -225,7 +225,7 @@ public class RecordSet {
 	/**
 	 * Check if all items are available on the client. 
 	 * 
-	 * @return
+	 * @return number of available items
 	 */
 	public boolean isFullyPopulated() {
 		return getNumberAvailable() == getLength();

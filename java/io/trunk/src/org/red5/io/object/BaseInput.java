@@ -37,7 +37,6 @@ public class BaseInput {
 	/**
 	 * Store an object into a map
 	 * @param obj
-	 * @return void
 	 */
 	public void storeReference(Object obj){
 		refMap.put(new Short(refId++),obj);
@@ -45,7 +44,6 @@ public class BaseInput {
 	
 	/**
 	 * Clears the map
-	 * @return void
 	 */
 	public void clearReferences(){
 		refMap.clear();

@@ -113,7 +113,6 @@ public class FLVHeader {
 	/**
 	 * Sets the type flags on whether this data is audio or video
 	 * @param typeFlags
-	 * @return void
 	 */
 	public void setTypeFlags(byte typeFlags) {
 		flagVideo = (((typeFlags << 7) >> 7) > 0x00);
@@ -131,7 +130,6 @@ public class FLVHeader {
 	/**
 	 * Sets the FlagReserved01 which is a datatype specified in the Flash Specification
 	 * @param flagReserved01
-	 * @return void
 	 */
 	public void setFlagReserved01(byte flagReserved01) {
 		this.flagReserved01 = flagReserved01;
@@ -148,7 +146,6 @@ public class FLVHeader {
 	/**
 	 * Sets the Flag Reserved02 which is a datatype specified in the Flash Specification
 	 * @param flagReserved02
-	 * @return void
 	 */
 	public void setFlagReserved02(byte flagReserved02) {
 		this.flagReserved02 = flagReserved02;
@@ -165,7 +162,6 @@ public class FLVHeader {
 	/**
 	 * Sets the audioflag on whether this data contains audio
 	 * @param type_flags_video
-	 * @return void
 	 */
 	public void setFlagVideo(boolean type_flags_video) {
 		flagVideo = type_flags_video;

@@ -39,92 +39,85 @@ public interface IMetaData<K,V> extends IMeta {
 	/**
 	 * Returns a boolean depending on whether the video can
 	 * seek to end
-	 * @return boolean canSeekToEnd
+	 * @return canSeekToEnd
 	 */
 	public boolean getCanSeekToEnd();
 	
 	/**
 	 * Sets whether a video can seek to end
 	 * @param b
-	 * @return void
 	 */
 	public void setCanSeekToEnd(boolean b);
 	
 	/**
 	 * Returns the video codec id
-	 * @return int videocodecid
+	 * @return videocodecid
 	 */
 	public int getVideoCodecId();
 	
 	/**
 	 * Sets the video codec id
 	 * @param id
-	 * @return void
 	 */
 	public void setVideoCodecId(int id);
 	
 	/**
 	 * Returns the framerate
-	 * @return int framerate
+	 * @return framerate
 	 */
 	public int getframeRate();
 	
 	/**
 	 * Sets the framerate
 	 * @param rate
-	 * @return void
 	 */
 	public void setframeRate(int rate);
 	
 	/**
 	 * Returns the videodatarate
-	 * @return int framerate
+	 * @return framerate
 	 */
 	public int getVideoDataRate();
 	
 	/**
 	 * Sets the videodatarate
 	 * @param rate
-	 * @return void
 	 */
 	public void setVideoDataRate(int rate);
 	
 	/**
 	 * Returns the height
-	 * @return int height
+	 * @return height
 	 */
 	public int getHeight();
 	
 	/**
 	 * Sets the height
 	 * @param h height
-	 * @return void
 	 */
 	public void setHeight(int h);
 	
 	/**
 	 * Returns the width
-	 * @return int width
+	 * @return width
 	 */
 	public int getWidth();
 	
 	/**
 	 * Sets the width
 	 * @param w width
-	 * @return void
 	 */
 	public void setWidth(int w);
 	
 	/**
 	 * Returns the duration
-	 * @return double duration
+	 * @return duration
 	 */
 	public double getDuration();
 	
 	/**
 	 * Sets the duration
 	 * @param d duration
-	 * @return void
 	 */
 	public void setDuration(double d);
 
