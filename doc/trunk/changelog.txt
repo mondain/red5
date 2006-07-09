@@ -4,13 +4,15 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
-Red5 0.5    (unreleased)
+Red5 0.5rc1 (unreleased)
 ------------------------
 New features:
 - refactored streaming code
 - refactored scope services
 - refactored rtmp message de-/encoding
 - enabled subscopes
+- bandwidth control for on-demand streams
+- experimental support for serverside streams
 - added dynamic "onMetaData" for mp3 streams
 - added persistence for scopes and shared objects
 - added support for simple "directory-only" applications
