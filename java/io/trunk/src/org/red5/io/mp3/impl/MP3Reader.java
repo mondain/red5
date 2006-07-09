@@ -55,6 +55,7 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 	private int dataRate = 0;
 	private boolean firstFrame;
 	private ITag fileMeta;
+    private long duration = 0;
 
 	public MP3Reader(FileInputStream stream) {
 		fis = stream;
@@ -125,6 +126,10 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 
 	public long getBytesRead() {
 		return in.position();
+	}
+	
+	public long getDuration(){
+		return duration;
 	}
 
 	public boolean hasMoreTags() {
@@ -257,9 +262,9 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		long rate = 0;
 		int count = 0;
 		int origPos = in.position();
+		double time = 0;
 		in.position(0);
 		searchNextFrame();
-		double time = 0;
 		while (this.hasMoreTags()) {
 			MP3Header header = null;
 			while (header == null && in.remaining() > 4) {
@@ -302,6 +307,7 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 			frameMeta.timestamps[i] = timestampList.get(i).intValue();
 			posTimeMap.put(positionList.get(i), timestampList.get(i));
 		}
+		duration = (long) time;
 		return frameMeta;
 	}
 

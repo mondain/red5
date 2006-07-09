@@ -75,6 +75,7 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		channel = fis.getChannel();
 		try {
 			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+			
 			// Should the file be loaded into memory.
 			// It would be nice if we could load busy files into memory and share them.
 			//mappedFile.load();
@@ -84,6 +85,7 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		mappedFile.order(ByteOrder.BIG_ENDIAN);
 		in = ByteBuffer.wrap(mappedFile);
 		if (in.remaining() >= 9) decodeHeader();
+		keyframeMeta = analyzeKeyFrames();
 	}
 
 	public void decodeHeader() {
@@ -117,6 +119,10 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 	 */
 	synchronized public long getBytesRead() {
 		return in.position();
+	}
+
+	synchronized public long getDuration() {
+		return duration;
 	}
 
 	/* (non-Javadoc)

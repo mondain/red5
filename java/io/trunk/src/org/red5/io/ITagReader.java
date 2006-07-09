@@ -41,6 +41,11 @@ public interface ITagReader {
 	public long getBytesRead();
 	
 	/**
+	 * Return length in seconds
+	 */
+	public long getDuration();
+	
+	/**
 	 * Decode the header of the stream;
 	 *
 	 */
