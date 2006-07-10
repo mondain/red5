@@ -1,0 +1,80 @@
+Red5 Changelog
+==============
+
+This file contains informations about the changes between the different
+versions of Red5.
+
+Red5 0.5rc1 (2006-07-11)
+------------------------
+New features:
+- refactored streaming code
+- refactored scope services
+- refactored rtmp message de-/encoding
+- enabled subscopes
+- bandwidth control for on-demand streams
+- experimental support for serverside streams
+- added dynamic "onMetaData" for mp3 streams
+- added persistence for scopes and shared objects
+- added support for simple "directory-only" applications
+- added remoting client support (sync / async)
+- added deserializer for RecordSet remoting results
+- arbitrary objects can be registered as service handlers
+- IClientRegistry can be customized for each scope
+- WEB-INF directories are added to the classpath (Trac #27)
+- clients can be rejected with a custom error message
+- basic "onMetaData" is generated dynamically for .flv files without any
+  meta data (Trac #23)
+
+Bugfixes:
+- mp3 files that have their protection bit set
+- mp3 files encoded MPEG 2, Layer III (Trac #15)
+- mp3 files with incomplete last frame
+- shared objects bugfixes (Trac #11, #22, #25)
+- application handlers were not called on disconnect
+- IConnection.close() now closes connection (Trac #19)
+- connecting to non-existent applications returns correct error now
+- Jetty correctly runs on all virtual hosts (Trac #26)
+- Map objects are serialized correctly
+- methods could be invoked with converted parameters before invoking them
+  with the original parameters
+- support invoking methods with "null" as parameter (Trac #29)
+- directories for recorded files are created if they don't exist (Trac #20)
+- "pause(java.lang.Object, int)" was reversed for streams (Trac #16)
+- serialization of arbitrary objects uses reflect api to access fields,
+  fixes various problems with inner classes and internal objects like
+  IConnection / IClient
+- invalid stream ids are handled in "deleteStream" (Trac #21)
+- stream name prefixes and names without extensions supported (Trac #28)
+
+
+Red5 0.4.1  (2006-05-01)
+------------------------
+- mp3 audio streams
+- "seek" and "pause" for on-demand streams (Trac #4)
+- "Address already in use" fixed after restart (Trac #5)
+- bugfixes for shared objects (Trac #6)
+- bugfixes for videoconference sample (Trac #7)
+- connection strings without hostname supported (Trac #8)
+- Flash7 version of the videoconference sample added
+
+
+Red5 0.4    (2006-04-20)
+------------------------
+- public server-side api
+- amf remoting
+- rtmpt
+- metadata api
+- basic samples and documentation
+
+
+Red5 0.3    (2006-02-21)
+------------------------
+- live streams
+- shared objects
+
+
+Red5 0.2    (2005-10-21)
+------------------------
+- first public release
+- video streams
+- echo service
