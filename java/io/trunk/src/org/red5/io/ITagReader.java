@@ -52,8 +52,8 @@ public interface ITagReader {
 	public void decodeHeader();
 	
 	/**
-	 * Move the reader pointer to pos
-	 * @param pos Position to move to
+	 * Move the reader pointer to given position in file.
+	 * @param pos File position to move to
 	 */
 	public void position(long pos);
 	

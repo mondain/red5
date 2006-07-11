@@ -9,6 +9,7 @@ Red5 0.5    (unreleased)
 Bugfixes:
 - only the same instances are serialized as references (Trac #58)
 - re-added JSP support in manifest file of red5.jar (Trac #59)
+- "tagPosition" is updated in FLVReader when seeking (Trac #55)
 
 
 Red5 0.5rc1 (2006-07-11)
