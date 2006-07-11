@@ -4,6 +4,12 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
+Red5 0.5    (unreleased)
+------------------------
+Bugfixes:
+- only the same instances are serialized as references (Trac #58)
+
+
 Red5 0.5rc1 (2006-07-11)
 ------------------------
 New features:

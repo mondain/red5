@@ -31,7 +31,30 @@ import java.util.Map;
  */
 public class BaseOutput {
 
-	protected Map refMap;
+	class IdentityWrapper {
+		
+		Object object;
+		
+		public IdentityWrapper(Object object) {
+			this.object = object;
+		}
+		
+		@Override
+		public int hashCode() {
+			return System.identityHashCode(object);
+		}
+		
+		@Override
+		public boolean equals(Object object) {
+			if (object instanceof IdentityWrapper)
+				return ((IdentityWrapper) object).object == this.object;
+			
+			return false;
+		}
+	
+	}
+	
+	protected Map<IdentityWrapper, Short> refMap;
 	protected short refId = 0;
 	
 	/**
@@ -39,7 +62,7 @@ public class BaseOutput {
 	 *
 	 */
 	protected BaseOutput(){
-		refMap = new HashMap();
+		refMap = new HashMap<IdentityWrapper, Short>();
 	}
 	
 	/**
@@ -47,7 +70,7 @@ public class BaseOutput {
 	 * @param obj
 	 */
 	public void storeReference(Object obj){
-		refMap.put(obj,new Short(refId++));
+		refMap.put(new IdentityWrapper(obj), new Short(refId++));
 	}
 	
 	/**
@@ -57,10 +80,7 @@ public class BaseOutput {
 	 * @return boolean
 	 */
 	public boolean hasReference(Object obj){
-		//System.out.println("obj"+obj);
-		//System.out.println("simpletest"+obj.hashCode());
-		//System.out.println("has reference?"+refMap.containsKey(obj));
-		return refMap.containsKey(obj);
+		return refMap.containsKey(new IdentityWrapper(obj));
 	}
 	
 	/**
@@ -77,7 +97,7 @@ public class BaseOutput {
 	 * @return short
 	 */
 	protected short getReferenceId(Object obj){
-		return ((Short) refMap.get(obj)).shortValue();
+		return refMap.get(new IdentityWrapper(obj)).shortValue();
 	}
 
 }
