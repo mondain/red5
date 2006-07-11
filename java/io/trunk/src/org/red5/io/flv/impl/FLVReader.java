@@ -26,6 +26,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,6 +65,10 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 	private int tagPosition = 0;
 	/** Duration in milliseconds. */
 	private long duration = 0;
+	/** Mapping between file position and timestamp in ms. */
+	private HashMap<Long, Long> posTimeMap = null;
+	/** Mapping between file position and tag number. */
+	private HashMap<Long, Integer> posTagMap = null;
 
 	public FLVReader(FileInputStream f) {
 		this(f, false);
@@ -224,8 +229,11 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		int origPos = in.position();
 		// point to the first tag
 		in.position(9);
+		posTagMap = new HashMap<Long, Integer>();
+		int idx = 0;
 		while (this.hasMoreTags()) {
 			int pos = in.position();
+			posTagMap.put((long) pos, idx++);
 			ITag tmpTag = this.readTagHeader();
 			duration = tmpTag.getTimestamp();
 			if (tmpTag.getDataType() == ITag.TYPE_VIDEO) {
@@ -249,20 +257,29 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		in.position(origPos);
 
 		keyframeMeta = new KeyFrameMeta();
+		posTimeMap = new HashMap<Long, Long>();
 		keyframeMeta.positions = new int[positionList.size()];
 		keyframeMeta.timestamps = new int[timestampList.size()];
 		for (int i = 0; i < keyframeMeta.positions.length; i++) {
 			keyframeMeta.positions[i] = positionList.get(i);
-		}
-		for (int i = 0; i < keyframeMeta.timestamps.length; i++) {
 			keyframeMeta.timestamps[i] = timestampList.get(i);
+			posTimeMap.put((long) positionList.get(i), (long) timestampList.get(i));
 		}
 		return keyframeMeta;
 	}
 
 	synchronized public void position(long pos) {
 		// FIXME what if file size is larger than 2G?
+		// TODO: adjust position to point to nearest keyframe
 		in.position((int) pos);
+		// Make sure we have informations about the keyframes.
+		analyzeKeyFrames();
+		// Update the current tag number
+		Integer tag = posTagMap.get(pos);
+		if (tag == null)
+			return;
+		
+		tagPosition = tag;
 	}
 
 	/**
