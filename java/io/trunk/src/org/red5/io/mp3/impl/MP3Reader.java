@@ -70,10 +70,36 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		analyzeKeyFrames();
 		firstFrame = true;
 		fileMeta = createFileMeta();
-		if (in.remaining() > 4)
+		if (in.remaining() > 4) {
 			searchNextFrame();
+			int pos = in.position();
+			MP3Header header = readHeader();
+			in.position(pos);
+			if (header != null)
+				checkValidHeader(header);
+			else
+				throw new RuntimeException("No initial header found.");
+		}
 	}
 
+	/**
+	 * Check if the file can be played back with Flash. 
+	 * @param header
+	 */
+	private void checkValidHeader(MP3Header header) {
+		switch (header.getSampleRate()) {
+		case 44100:
+		case 22050:
+		case 11025:
+		case 5513:
+			// Supported sample rate
+			break;
+			
+		default:
+			throw new RuntimeException("Unsupported sample rate: " + header.getSampleRate());
+		}
+	}
+	
 	private ITag createFileMeta() {
 		// Create tag for onMetaData event
 		ByteBuffer buf = ByteBuffer.allocate(1024);
@@ -158,13 +184,7 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		return true;
 	}
 
-	public synchronized ITag readTag() {
-		if (firstFrame) {
-			// Return file metadata as first tag.
-			firstFrame = false;
-			return fileMeta;
-		}
-
+	private MP3Header readHeader() {
 		MP3Header header = null;
 		while (header == null && in.remaining() > 4) {
 			try {
@@ -176,7 +196,17 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 				searchNextFrame();
 			}
 		}
+		return header;
+	}
+	
+	public synchronized ITag readTag() {
+		if (firstFrame) {
+			// Return file metadata as first tag.
+			firstFrame = false;
+			return fileMeta;
+		}
 
+		MP3Header header = readHeader();
 		if (header == null)
 			return null;
 
@@ -266,18 +296,7 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		in.position(0);
 		searchNextFrame();
 		while (this.hasMoreTags()) {
-			MP3Header header = null;
-			while (header == null && in.remaining() > 4) {
-				try {
-					header = new MP3Header(in.getInt());
-				} catch (IOException e) {
-					log.error("MP3Reader :: analyzeKeyFrames ::>\n", e);
-					break;
-				} catch (Exception e) {
-					searchNextFrame();
-				}
-			}
-
+			MP3Header header = readHeader();
 			if (header == null)
 				// No more tags
 				break;
