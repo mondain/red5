@@ -38,7 +38,8 @@ d_start() {
 #
 d_stop() {
 	start-stop-daemon --stop --quiet --pidfile $PIDFILE \
-		--name java 
+		--name java
+        rm -f $PIDFILE 
 }
 
 #
