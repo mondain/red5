@@ -15,6 +15,8 @@ Bugfixes:
 - "tagPosition" is updated in FLVReader when seeking (Trac #55)
 - automatic subscopes of the host scope are disabled so only connections
   to existing applications are possible
+- running "ant" after setup keeps wrapper configuration (Trac #76)
+- mp3 files with unsupported sample rates are detected (Trac #66)
 
 
 Red5 0.5rc1 (2006-07-11)
