@@ -83,8 +83,8 @@ Source: "{#root_dir}\webapps\*"; DestDir: "{app}\webapps"; Flags: onlyifdoesntex
 Source: "{#root_dir}\doc\*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs
 
 ; Files required for windows service / wrapped start
-Source: "{#build_dir}\bin\*.bat"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source: "{#build_dir}\bin\wrapper.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source: "{#build_dir}\bin\*.bat"; DestDir: "{app}\wrapper"; Flags: ignoreversion
+Source: "{#build_dir}\bin\wrapper.exe"; DestDir: "{app}\wrapper"; Flags: ignoreversion
 Source: "{#build_dir}\conf\wrapper.conf"; DestDir: "{app}\conf"; Flags: ignoreversion; AfterInstall: UpdateWrapperConf('{app}\conf\wrapper.conf')
 Source: "{#build_dir}\lib\wrapper.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#build_dir}\lib\wrapper.jar"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -105,7 +105,7 @@ Source: "{#root_dir}\swf\DEV_Source\*"; DestDir: "{app}\swf"; Flags: ignoreversi
 Name: "{app}\logs"
 
 [Icons]
-Name: "{group}\Red5"; Filename: "{app}\bin\Red5.bat"
+Name: "{group}\Red5"; Filename: "{app}\wrapper\Red5.bat"
 Name: "{group}\Readme"; Filename: "{app}\doc\readme.html"
 Name: "{group}\API Documentation"; Filename: "{app}\doc\api\index.html"
 Name: "{group}\Eclipse Setup"; Filename: "{app}\doc\eclipsesetup.html"
@@ -122,16 +122,16 @@ Name: "{group}\Administration Interface"; Filename: "{code:GetAdminUrl}"
 Name: "{group}\Welcome page"; Filename: "{code:GetWelcomeUrl}"
 
 Name: "{group}\{cm:UninstallProgram,Red5}"; Filename: "{uninstallexe}"
-Name: "{userdesktop}\Red5"; Filename: "{app}\bin\Red5.bat"; Tasks: desktopicon
+Name: "{userdesktop}\Red5"; Filename: "{app}\wrapper\Red5.bat"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\bin\InstallRed5-NT.bat"; Tasks: service; Flags: runhidden;
-Filename: "{app}\bin\StartRed5-NT.bat"; Description: "{cm:StartService}"; Tasks: service; Flags: postinstall runhidden;
-Filename: "{app}\bin\Red5.bat"; Description: "{cm:LaunchProgram,Red5}"; Tasks: not service; Flags: nowait postinstall skipifsilent
+Filename: "{app}\wrapper\InstallRed5-NT.bat"; Tasks: service; Flags: runhidden;
+Filename: "{app}\wrapper\StartRed5-NT.bat"; Description: "{cm:StartService}"; Tasks: service; Flags: postinstall runhidden;
+Filename: "{app}\wrapper\Red5.bat"; Description: "{cm:LaunchProgram,Red5}"; Tasks: not service; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
-Filename: "{app}\bin\StopRed5-NT.bat"; Tasks: service; Flags: runhidden;
-Filename: "{app}\bin\UninstallRed5-NT.bat"; Tasks: service; Flags: runhidden;
+Filename: "{app}\wrapper\StopRed5-NT.bat"; Tasks: service; Flags: runhidden;
+Filename: "{app}\wrapper\UninstallRed5-NT.bat"; Tasks: service; Flags: runhidden;
 
 [UninstallDelete]
 Type: dirifempty; Name: "{app}\logs"

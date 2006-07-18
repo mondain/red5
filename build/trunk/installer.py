@@ -44,9 +44,10 @@ class Builder:
             
             fp.write('wrapper.java.classpath.1=../lib/wrapper.jar\n')
             fp.write('wrapper.java.classpath.2=../conf\n')
-            fp.write('wrapper.java.classpath.3=../lib/red5.jar\n')
+            fp.write('wrapper.java.classpath.3=../bin\n')
+            fp.write('wrapper.java.classpath.4=../lib/red5.jar\n')
             for idx, filename in enumerate(jars):
-                fp.write('wrapper.java.classpath.%d=../lib/%s\n' % (idx+4, filename))
+                fp.write('wrapper.java.classpath.%d=../lib/%s\n' % (idx+5, filename))
             added = True
 
     def build(self, platform='windows'):
