@@ -18,6 +18,7 @@ Bugfixes:
 - running "ant" after setup keeps wrapper configuration (Trac #76)
 - mp3 files with unsupported sample rates are detected (Trac #66)
 - timestamps of recorded .flv files were wrong sometimes (Trac #78)
+- stream types could be reused leading to a ClassCastException (Trac #84)
 
 
 Red5 0.5rc1 (2006-07-11)
