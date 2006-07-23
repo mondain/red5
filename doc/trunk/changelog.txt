@@ -8,6 +8,7 @@ Red5 0.5    (unreleased)
 ------------------------
 New features:
 - frame dropping for live streams depending on available bandwidth
+- added "receiveAudio", "receiveVideo" and "send" for streams
 
 Bugfixes:
 - only the same instances are serialized as references (Trac #58)
