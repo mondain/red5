@@ -10,6 +10,8 @@ New features:
 - frame dropping for live streams depending on available bandwidth
 - added "receiveAudio", "receiveVideo" and "send" for streams
 - destination of recorded streams can be customized (Trac #73)
+- VOD stream flow control adapts bandwidth based on buffer time (Trac #63)
+- up-/downstream bandwidth can be specified
 
 Bugfixes:
 - only the same instances are serialized as references (Trac #58)
