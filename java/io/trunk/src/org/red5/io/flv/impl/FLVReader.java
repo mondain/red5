@@ -192,13 +192,17 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		
 		ByteBuffer body = ByteBuffer.allocate(tag.getBodySize());
 		final int limit = in.limit();
-		in.limit(in.position() + tag.getBodySize());
-		body.put(in);
-		body.flip();
-		in.limit(limit);
-
-		tag.setBody(body);
-		tagPosition++;
+		// XXX Paul: this assists in 'properly' handling damaged FLV files		
+		int newPosition = in.position() + tag.getBodySize();
+		if (newPosition < limit) {
+			in.limit(newPosition);
+			body.put(in);
+			body.flip();
+			in.limit(limit);
+	
+			tag.setBody(body);
+			tagPosition++;
+		}
 		return tag;
 	}
 
@@ -251,7 +255,23 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 				if (firstAudioTag == -1)
 					firstAudioTag = pos;
 			}
-			in.position(pos + tmpTag.getBodySize() + 15);
+			// XXX Paul: this 'properly' handles damaged FLV files - as far as duration/size is concerned
+			int newPosition = (pos + tmpTag.getBodySize() + 15);
+			//log.debug("---->" + in.remaining() + " limit=" + in.limit() + " new pos=" + newPosition);
+			if (newPosition >= in.limit()) {
+				log.info("New position exceeds limit");
+				if (log.isDebugEnabled()) {
+					log.debug("-----");
+					log.debug("Keyframe analysis");
+					log.debug(" data type=" + tmpTag.getDataType() + " bodysize=" + tmpTag.getBodySize());
+					log.debug(" remaining=" + in.remaining() + " limit=" + in.limit() + " new pos=" + newPosition);
+					log.debug(" pos=" + pos);
+					log.debug("-----");
+				}
+				break;
+			} else {
+				in.position(newPosition);
+			}
 		}
 		// restore the pos
 		in.position(origPos);
