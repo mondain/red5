@@ -4,7 +4,7 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
-Red5 0.5    (unreleased)
+Red5 0.5    (2006-07-25)
 ------------------------
 New features:
 - frame dropping for live streams depending on available bandwidth
@@ -24,6 +24,7 @@ Bugfixes:
 - timestamps of recorded .flv files were wrong sometimes (Trac #78)
 - stream types could be reused leading to a ClassCastException (Trac #84)
 - "ns.pause" working if no flag given (Trac #67)
+- a keyframe is sent for paused streams when seeking
 
 
 Red5 0.5rc1 (2006-07-11)
