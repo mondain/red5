@@ -384,7 +384,7 @@ public class HexDump {
     * @return the byte array as string
     */
    public static String toString(byte[] ba) {
-      return new String(ba).toString();
+      return new String(ba);
    }
 
    /**
@@ -399,7 +399,7 @@ public class HexDump {
 
       ba[0] = b;
 
-      return new String(ba).toString();
+      return new String(ba);
    }
 
    /**
