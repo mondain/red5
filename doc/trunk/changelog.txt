@@ -4,6 +4,12 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
+Red5 0.6    (unreleased)
+------------------------
+Bugfixes:
+- last frames aren't lost when reading .flv files (Trac #90)
+
+
 Red5 0.5    (2006-07-25)
 ------------------------
 New features:

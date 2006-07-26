@@ -194,7 +194,7 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		final int limit = in.limit();
 		// XXX Paul: this assists in 'properly' handling damaged FLV files		
 		int newPosition = in.position() + tag.getBodySize();
-		if (newPosition < limit) {
+		if (newPosition <= limit) {
 			in.limit(newPosition);
 			body.put(in);
 			body.flip();
