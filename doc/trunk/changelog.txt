@@ -9,6 +9,7 @@ Red5 0.6    (unreleased)
 Bugfixes:
 - last frames aren't lost when reading .flv files (Trac #90)
 - FileConsumer acted on all consumer pipe events (Trac #92)
+- improved timestamps of live streams to be more in sync with FMS (Trac #93)
 
 
 Red5 0.5    (2006-07-25)
