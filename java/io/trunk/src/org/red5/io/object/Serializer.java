@@ -149,7 +149,7 @@ public class Serializer implements SerializerOpts {
 	protected void writeList(Output out, List list){
 		// if its a small list, write it as an array
 		if(list.size() < 100 ) {
-			writeListAsArray(out, list);
+			writeListAsMap(out, list);
 			return;
 		}
 		// else we should check for lots of null values,

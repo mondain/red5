@@ -22,6 +22,7 @@ package org.red5.io.object;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -82,7 +83,7 @@ public class Deserializer {
 				result = readArray(in);
 				break;
 			case DataTypes.CORE_MAP:
-				result = readMap(in);
+				result = readMixedArray(in);
 				break;
 			case DataTypes.CORE_XML:
 				result = readXML(in);
@@ -126,11 +127,11 @@ public class Deserializer {
 	}
 	
 	/**
-	 * Reads the input and returns a Map
+	 * Reads the input and returns a List.
 	 * @param in
 	 * @return List
 	 */
-	protected Map readMap(Input in){
+	protected List readMixedArray(Input in){
 		if(log.isDebugEnabled()) {
 			log.debug("read map");
 		}
@@ -138,12 +139,15 @@ public class Deserializer {
 		int size = in.readStartMap();
 		
 		if(log.isDebugEnabled()) {
-			log.debug("Read start map: "+size);
+			log.debug("Read start mixed array: "+size);
 		}
 		
-		final HashMap map = new HashMap();
+		final List result = new ArrayList(size);
+		// Initialize array with null values
+		for (int i=0; i<size; i++)
+			result.add(null);
 			
-		in.storeReference(map);
+		in.storeReference(result);
 		while(in.hasMoreItems()){
 			String key = in.readItemKey();
 			if(log.isDebugEnabled()) {
@@ -153,12 +157,12 @@ public class Deserializer {
 			if(log.isDebugEnabled()) {
 				log.debug("item: "+item);
 			}
-			map.put(key, item);
+			result.set(Integer.parseInt(key), item);
 			if(in.hasMoreItems()) 
 				in.skipItemSeparator();
 		}
 		in.skipEndMap();
-		return map;
+		return result;
 	}
 	
 	/**
