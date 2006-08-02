@@ -13,6 +13,8 @@ Bugfixes:
 - FileConsumer modified position of incoming messages (Trac #91)
 - Events should support reference counting (Trac #103)
 - ServerStream playback jerky (Trac #77)
+- "NetStream.send" events are properly recorded
+
 
 Red5 0.5    (2006-07-25)
 ------------------------
