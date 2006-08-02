@@ -12,7 +12,7 @@ Bugfixes:
 - improved timestamps of live streams to be more in sync with FMS (Trac #93)
 - FileConsumer modified position of incoming messages (Trac #91)
 - Events should support reference counting (Trac #103)
-
+- ServerStream playback jerky (Trac #77)
 
 Red5 0.5    (2006-07-25)
 ------------------------
