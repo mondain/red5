@@ -184,8 +184,12 @@ public class MP3Header {
 			
 		case 2:
 		case 1:
-			// Layer 2 and 3
-			return 1152 / (getSampleRate() * 0.001);
+			if (audioVersionId == 3)
+				// MPEG 1, Layer 2 and 3
+				return 1152 / (getSampleRate() * 0.001);
+			else
+				// MPEG 2 or 2.5, Layer 2 and 3
+				return 576 / (getSampleRate() * 0.001);
 			
 		default:
 			// Unknown
