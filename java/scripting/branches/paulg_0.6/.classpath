@@ -23,5 +23,12 @@
 	<classpathentry kind="lib" path="lib/spring-core.jar"/>
 	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_2.jar"/>
 	<classpathentry kind="lib" path="lib/bsh-2.0b4.jar"/>
+	<classpathentry kind="lib" path="lib/jacl.jar"/>
+	<classpathentry kind="lib" path="lib/jacl-engine.jar"/>
+	<classpathentry kind="lib" path="lib/judo.jar"/>
+	<classpathentry kind="lib" path="lib/judo-engine.jar"/>
+	<classpathentry kind="lib" path="lib/ognl-2.6.9.jar"/>
+	<classpathentry kind="lib" path="lib/ognl-engine.jar"/>
+	<classpathentry kind="lib" path="lib/tcljava.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
