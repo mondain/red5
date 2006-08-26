@@ -19,7 +19,8 @@
 package org.red5.server.script;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
@@ -107,39 +108,10 @@ public class ScriptObjectContext implements ApplicationContextAware, ResourceLoa
 	 */
 	public static void main(String[] args) {
 
-		//Javascript
-		ScriptEngine jsEngine = mgr.getEngineByName("javascript");
-		try {
-			jsEngine.eval("print('Javascript - Hello, world!\\n')");
-		} catch (ScriptException ex) {
-			ex.printStackTrace();
-		}
+		Map<String, ScriptEngineFactory> engineFactories = new HashMap<String, ScriptEngineFactory>(7);
 		
-		//Ruby
-		ScriptEngine rbEngine = mgr.getEngineByName("ruby");
-		try {
-			rbEngine.eval("puts 'Ruby - Hello, world!'");
-		} catch (ScriptException ex) {
-			ex.printStackTrace();
-		}
-
-		//Python
-		ScriptEngine pyEngine = mgr.getEngineByName("python");
-		try {
-			pyEngine.eval("print \"Python - Hello, world!\"");
-		} catch (ScriptException ex) {
-			ex.printStackTrace();
-		}		
-		
-		//Groovy
-		ScriptEngine gvyEngine = mgr.getEngineByName("groovy");
-		try {
-			gvyEngine.eval("println  \"Groovy - Hello, world!\"");
-		} catch (ScriptException ex) {
-			ex.printStackTrace();
-		}		
-		
-		List<ScriptEngineFactory> factories = mgr.getEngineFactories();
+		//List<ScriptEngineFactory> factories = mgr.getEngineFactories(); //jdk6 style
+		ScriptEngineFactory[] factories = mgr.getEngineFactories();
 		for (ScriptEngineFactory factory : factories) {
 			System.out.println("ScriptEngineFactory Info");
 			String engName = factory.getEngineName();
@@ -147,12 +119,58 @@ public class ScriptObjectContext implements ApplicationContextAware, ResourceLoa
 			String langName = factory.getLanguageName();
 			String langVersion = factory.getLanguageVersion();
 			System.out.printf("\tScript Engine: %s (%s)\n", engName, engVersion);
-			List<String> engNames = factory.getNames();
+			System.out.printf("\tLanguage: %s (%s)\n", langName, langVersion);
+			
+			engineFactories.put(engName, factory);
+			
+			//List<String> engNames = factory.getNames(); //jdk6 style
+			String[] engNames = factory.getNames();
 			for (String name : engNames) {
 				System.out.printf("\tEngine Alias: %s\n", name);
 			}
-			System.out.printf("\tLanguage: %s (%s)\n", langName, langVersion);
+			String[] ext = factory.getExtensions();
+			for (String name : ext) {
+				System.out.printf("\tExtension: %s\n", name);
+			}
+			System.out.println(" ------------------------------- ");
+		}		
+		
+		//Javascript
+		//ScriptEngine jsEngine = engineFactories.get("Mozilla Rhino").getScriptEngine();
+			//mgr.getEngineByExtension("js"); //mgr.getEngineByName("rhino"); 
+		ScriptEngine jsEngine = mgr.getEngineByName("javascript");
+		try {
+			jsEngine.eval("print(\"Javascript - Hello, world!\\n\")");
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
+		
+		//Ruby
+		ScriptEngine rbEngine = mgr.getEngineByName("ruby");
+		//ScriptEngine rbEngine = engineFactories.get("jruby").getScriptEngine(); //mgr.getEngineByName("ruby");
+		try {
+			rbEngine.eval("puts 'Ruby - Hello, world!'");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}		
+
+		//Python
+		ScriptEngine pyEngine = mgr.getEngineByName("python");
+		try {
+			pyEngine.eval("print \"Python - Hello, world!\"");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}		
+		
+		//Groovy
+		ScriptEngine gvyEngine = mgr.getEngineByName("groovy");
+		try {
+			gvyEngine.eval("println  \"Groovy - Hello, world!\"");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}		
+		
+
 	}
 	
 	

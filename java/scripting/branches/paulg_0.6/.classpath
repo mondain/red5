@@ -2,9 +2,7 @@
 <classpath>
 	<classpathentry excluding=".svn/*" kind="src" path="src"/>
 	<classpathentry excluding=".svn/*" kind="src" path="test"/>
-	<classpathentry kind="lib" path="lib/groovy-engine.jar"/>
 	<classpathentry kind="lib" path="lib/groovy-all-1.0-JSR-06.jar"/>
-	<classpathentry kind="lib" path="lib/jruby-engine.jar"/>
 	<classpathentry kind="lib" path="lib/jruby.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/js.jar"/>
@@ -15,20 +13,16 @@
 	<classpathentry kind="lib" path="lib/naming-factory.jar"/>
 	<classpathentry kind="lib" path="lib/naming-resources.jar"/>
 	<classpathentry kind="lib" path="lib/jython.jar"/>
-	<classpathentry kind="lib" path="lib/jython-engine.jar"/>
-	<classpathentry kind="lib" path="lib/javascript-engine.jar"/>
-	<classpathentry kind="lib" path="lib/jsr223-compatility.jar"/>
 	<classpathentry kind="lib" path="lib/spring-beans.jar"/>
 	<classpathentry kind="lib" path="lib/spring-context.jar"/>
 	<classpathentry kind="lib" path="lib/spring-core.jar"/>
 	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_2.jar"/>
 	<classpathentry kind="lib" path="lib/bsh-2.0b4.jar"/>
 	<classpathentry kind="lib" path="lib/jacl.jar"/>
-	<classpathentry kind="lib" path="lib/jacl-engine.jar"/>
 	<classpathentry kind="lib" path="lib/judo.jar"/>
-	<classpathentry kind="lib" path="lib/judo-engine.jar"/>
 	<classpathentry kind="lib" path="lib/ognl-2.6.9.jar"/>
-	<classpathentry kind="lib" path="lib/ognl-engine.jar"/>
 	<classpathentry kind="lib" path="lib/tcljava.jar"/>
+	<classpathentry kind="lib" path="lib/asm-1.4.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scripting_engines"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
