@@ -16,6 +16,7 @@ Bugfixes:
 - "NetStream.send" events are properly recorded
 - reusing streams works (Trac #123)
 - fixed NPE if no bandwidth settings are available (Trac #129)
+- "close" can be called on RTMPT connections multiple times (Trac #166)
 
 
 Red5 0.5    (2006-07-25)
