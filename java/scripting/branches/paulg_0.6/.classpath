@@ -2,27 +2,36 @@
 <classpath>
 	<classpathentry excluding=".svn/*" kind="src" path="src"/>
 	<classpathentry excluding=".svn/*" kind="src" path="test"/>
-	<classpathentry kind="lib" path="lib/groovy-all-1.0-JSR-06.jar"/>
-	<classpathentry kind="lib" path="lib/jruby.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/js.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-log4j12.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-simple-1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils.jar"/>
 	<classpathentry kind="lib" path="lib/naming-factory.jar"/>
 	<classpathentry kind="lib" path="lib/naming-resources.jar"/>
-	<classpathentry kind="lib" path="lib/jython.jar"/>
 	<classpathentry kind="lib" path="lib/spring-beans.jar"/>
 	<classpathentry kind="lib" path="lib/spring-context.jar"/>
 	<classpathentry kind="lib" path="lib/spring-core.jar"/>
 	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_2.jar"/>
+	<classpathentry kind="lib" path="lib/asm-1.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/bsh-2.0b4.jar"/>
+	<classpathentry kind="lib" path="lib/groovy-all-1.0-JSR-06.jar"/>
 	<classpathentry kind="lib" path="lib/jacl.jar"/>
+	<classpathentry kind="lib" path="lib/jruby.jar"/>
 	<classpathentry kind="lib" path="lib/judo.jar"/>
+	<classpathentry kind="lib" path="lib/jython.jar"/>
 	<classpathentry kind="lib" path="lib/ognl-2.6.9.jar"/>
 	<classpathentry kind="lib" path="lib/tcljava.jar"/>
-	<classpathentry kind="lib" path="lib/asm-1.4.1.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/scripting_engines"/>
+	<classpathentry kind="lib" path="lib/jsr-223-1.0-pr.jar"/>
+	<classpathentry kind="lib" path="lib/commons-jexl-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jaskell-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jawk_ex.0_14.jar"/>
+	<classpathentry kind="lib" path="lib/jawk.0_14.jar"/>
+	<classpathentry kind="lib" path="lib/jfunutil.jar"/>
+	<classpathentry kind="lib" path="lib/jparsec.jar"/>
+	<classpathentry kind="lib" path="lib/js.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/xbean.jar"/>
+	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

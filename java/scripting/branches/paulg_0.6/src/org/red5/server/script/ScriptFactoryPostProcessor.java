@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.red5.server.script.support;
+package org.red5.server.script;
 
 import java.beans.PropertyDescriptor;
 
@@ -24,8 +24,6 @@ import net.sf.cglib.proxy.InterfaceMaker;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.red5.server.script.ScriptFactory;
-import org.red5.server.script.ScriptSource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValue;
