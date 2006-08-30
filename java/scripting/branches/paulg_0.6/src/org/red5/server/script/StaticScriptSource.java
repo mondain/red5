@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.red5.server.script.support;
+package org.red5.server.script;
 
-import org.red5.server.script.ScriptSource;
 import org.springframework.util.Assert;
 
 /**

@@ -22,9 +22,6 @@ import javax.script.ScriptEngineFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.ScriptableObject;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -96,8 +93,8 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements App
 	// Setup methods
 
 	protected void setupScriptScope() {
-		Context ctx = Context.enter();
-		ScriptableObject scope = ScriptRuntime.getGlobal(ctx);
+		////Context ctx = Context.enter();
+		////ScriptableObject scope = ScriptRuntime.getGlobal(ctx);
 		//ScriptableObject.putProperty(scope, "spark", Context.javaToJS(spark, scope));
 		//JavaScriptScopeThreadLocal.setScope(scope);
 	}
@@ -218,7 +215,7 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements App
 				return bean;
 			// otherwise check the script object
 			ScriptSource script = null;
-			if (factory != null) {
+			if (factory != null) { 
 				//script = factory.lookupScript(bean);
 				//script = factory.getScriptEngine().get(bean);
 			}

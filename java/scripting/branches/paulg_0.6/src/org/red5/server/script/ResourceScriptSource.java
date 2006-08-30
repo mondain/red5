@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.red5.server.script.support;
+package org.red5.server.script;
 
 import java.io.File;
 import java.io.FileReader;
@@ -24,7 +24,6 @@ import java.io.Reader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.red5.server.script.ScriptSource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
