@@ -25,5 +25,5 @@ OGNL is available for download at http://www.ognl.org/. We have built and
 tested with OGNL 2.6.9.
 
 This is JSR-223 script engine for the Rhino / Javascript / ECMA language. Rhino is available for 
-download at http://rhino.mozilla.org/. We have built and tested Groovy 
-version 1.6 R2.
+download at http://rhino.mozilla.org/. We have built and tested Rhino 
+version 1.6 R3.

@@ -184,16 +184,66 @@ public class ScriptEngineTest
 	}
 
 	// PHP
+//	@Test
+//	public void testPHPHelloWorld()
+//	{
+//		//have to add php lib to java env
+//		//java.library.path 
+//		//System.setProperty("java.library.path", "C:\\PHP;" + System.getProperty("java.library.path"));
+//		ScriptEngine pEngine = mgr.getEngineByName("php");
+//		try
+//		{
+//			pEngine.eval("<? echo 'PHP - Hello World'; ?>");
+//		}
+//		catch (Exception ex)
+//		{
+//			assertFalse(true);
+//			ex.printStackTrace();
+//		}
+//	}	
+	
+//	@Test
+//	public void testE4X()
+//	{
+//		// Javascript
+//		ScriptEngine jsEngine = mgr.getEngineByName("rhino");
+//		try
+//		{
+//			System.out.println("Engine: " + jsEngine.getClass().getName());
+//			jsEngine.eval(new FileReader("samples/E4X/e4x_example.js"));
+//		}
+//		catch (Exception ex)
+//		{
+//			assertFalse(true);
+//			ex.printStackTrace();
+//		}
+//	}
+
 	@Test
-	public void testPHPHelloWorld()
+	public void testRubyApplication()
 	{
-		//have to add php lib to java env
-		//java.library.path 
-		//System.setProperty("java.library.path", "C:\\PHP;" + System.getProperty("java.library.path"));
-		ScriptEngine pEngine = mgr.getEngineByName("php");
+		ScriptEngine rbEngine = mgr.getEngineByName("ruby");
+		try
+		{	
+			rbEngine.eval(new FileReader("samples/application.rb"));
+			rbEngine.eval("def ap = Application.new");
+			rbEngine.eval("puts ap.toString");
+		}
+		catch (Exception ex)
+		{
+			assertFalse(true);
+			ex.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testJavascriptApplication()
+	{
+		ScriptEngine jsEngine = mgr.getEngineByName("rhino");
 		try
 		{
-			pEngine.eval("<? echo 'PHP - Hello World'; ?>");
+			jsEngine.eval(new FileReader("samples/application.js"));
+			//jsEngine.eval("var ap = new Application();print(ap.toString());");
 		}
 		catch (Exception ex)
 		{
@@ -203,38 +253,21 @@ public class ScriptEngineTest
 	}	
 	
 	@Test
-	public void testE4X()
+	public void testGroovyApplication()
 	{
-		// Javascript
-		ScriptEngine jsEngine = mgr.getEngineByName("rhino");
+		ScriptEngine gvyEngine = mgr.getEngineByName("groovy");
 		try
 		{
-			System.out.println("Engine: " + jsEngine.getClass().getName());
-			jsEngine.eval(new FileReader("samples/E4X/e4x_example.js"));
+			gvyEngine.eval(new FileReader("samples/application.groovy"));
+			gvyEngine.eval("def ap = new Application();println ap.toString();");
 		}
 		catch (Exception ex)
 		{
 			assertFalse(true);
 			ex.printStackTrace();
 		}
-	}
-
-	@Test
-	public void testRubySwing()
-	{
-		ScriptEngine rbEngine = mgr.getEngineByName("ruby");
-		try
-		{
-			System.out.println("Engine: " + rbEngine.getClass().getName());
-			rbEngine.eval(new FileReader("samples/ex.rb"));
-		}
-		catch (Exception ex)
-		{
-			assertFalse(true);
-			ex.printStackTrace();
-		}
-	}
-
+	}	
+	
 	@Test
 	public void testEngines()
 	{
