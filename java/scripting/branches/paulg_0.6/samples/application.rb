@@ -1,48 +1,47 @@
+# JRuby - style
 require 'java'
-
 module RedFive
-	include_class 'org.red5.server.api.IConnection'
-	include_class 'org.red5.server.api.IScope'
-	include_class 'org.red5.server.api.stream.IPlayItem'
-	include_class 'org.red5.server.api.stream.IServerStream'
-	include_class 'org.red5.server.api.stream.IStreamCapableConnection'
-	include_class 'org.red5.server.api.stream.support.SimpleBandwidthConfigure'
-	include_class 'org.red5.server.api.stream.support.SimplePlayItem'
-	include_class 'org.red5.server.api.stream.support.StreamUtils'
+    include_package "org.red5.server.api"
+	include_package "org.red5.server.api.stream"
+	include_package "org.red5.server.api.stream.support"
+	include_package "org.red5.server.adapter"
+	include_package "org.red5.server.stream"
 end
-
-include_class 'org.red5.server.adapter.ApplicationAdapter'
+#include_class "org.red5.server.adapter.ApplicationAdapter"
 
 #
-# application.js - a translation into JavaScript of the olfa demo application, a red5 example.
+# application.js - a translation into Ruby of the olfa demo application, a red5 example.
 #
 # @author Paul Gregoire
 #
-class Application < ApplicationAdapter
+class Application < RedFive::ApplicationAdapter
 
-	attr_reader :appScope, :serverStream
+    attr_reader :appScope, :serverStream
 	attr_writer :appScope, :serverStream
 	 
 	def initialize
-		super
-		puts "Initializing ruby application"
+	   #call super to init the superclass, in this case a Java class
+	   super
+	   puts "Initializing ruby application"
 	end
 
 	def appStart(app)
-		puts "Ruby appStart"
+        puts "Ruby appStart"
 		@appScope = app
 		return true
 	end
 
 	def appConnect(conn, params) 
 		puts "Ruby appConnect"
-		super.measureBandwidth(conn)
-		if conn.kind_of?(RedFive::IStreamCapableConnection)
+		measureBandwidth(conn)
+		puts "Ruby appConnect 2"
+		if conn.instance_of?(RedFive::IStreamCapableConnection)
+		    puts "Got stream capable connection"
 			streamConn = conn
 			sbc = RedFive::SimpleBandwidthConfigure.new
-			sbc.setMaxBurst(8*1024*1024)
-			sbc.setBurst(8*1024*1024)
-			sbc.setOverallBandwidth(2*1024*1024)
+			sbc.setMaxBurst(8388608)
+			sbc.setBurst(8388608)
+			sbc.setOverallBandwidth(8388608)
 			streamConn.setBandwidthConfigure(sbc)
 		end
 		return super.appConnect(conn, params)
@@ -61,3 +60,11 @@ class Application < ApplicationAdapter
 	end
 
 end
+
+puts "Ruby application"
+a = Application.new
+puts "Application started?", a.appStart(nil)
+a.appConnect(nil, nil)
+
+#aa = RedFive::ApplicationAdapter.new
+#puts aa.appStart(nil)

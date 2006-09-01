@@ -22,7 +22,7 @@ function Application() {
 	var serverStream;
 
 	with(javaNames) {
-
+		//has-a instead of is-a until i figure out extends in JS
 		var adapter = new ApplicationAdapter();
 	
 		//public boolean appStart(IScope app) 
@@ -69,8 +69,9 @@ print('Javascript Application for olfa demo instanced');
 
 with (javaNames) {
     try {
-    	var supr = new Application();
-    	print('testing js app: ' + supr.appStart(null));
+    	var ap = new Application();
+    	print('Testing js app: ' + ap.appStart(null));
+    	ap.appConnect(null, null);
     } catch(e) {
     	print('Exception: ' + e);
     }
