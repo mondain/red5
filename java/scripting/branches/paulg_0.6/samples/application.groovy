@@ -30,9 +30,9 @@ public class Application extends ApplicationAdapter {
 		if (conn instanceof IStreamCapableConnection)  {
 			def streamConn = conn
 			def sbc = new SimpleBandwidthConfigure()
-			sbc.setMaxBurst(8*1024*1024)
-			sbc.setBurst(8*1024*1024)
-			sbc.setOverallBandwidth(2*1024*1024)
+			sbc.setMaxBurst(8388608)
+			sbc.setBurst(8388608)
+			sbc.setOverallBandwidth(8388608)
 			streamConn.setBandwidthConfigure(sbc)
 		}
 		return super.appConnect(conn, params)
