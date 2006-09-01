@@ -31,7 +31,7 @@ public class ScriptEngineTest
 		ScriptEngine jsEngine = mgr.getEngineByName("rhino");
 		try
 		{
-			jsEngine.eval("print('Javascript - Hello, world!\\n')");
+			jsEngine.eval("print('Javascript - Hello, world!')");
 		}
 		catch (Exception ex)
 		{
@@ -112,10 +112,9 @@ public class ScriptEngineTest
 		try
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.append("module Hello where\n");
-			sb.append("hello::String\n");
-			sb.append("hello = \"Haskell - Hello World!\"");
-
+			sb.append("module Hello where ");
+			sb.append("hello::String ");
+			sb.append("hello = 'Haskell - Hello World!'");
 			hkEngine.eval(sb.toString());
 		}
 		catch (Exception ex)
@@ -135,7 +134,6 @@ public class ScriptEngineTest
 			StringBuilder sb = new StringBuilder();
 			sb.append("#!/usr/local/bin/tclsh\n");
 			sb.append("puts \"Tcl - Hello World!\"");
-
 			tEngine.eval(sb.toString());
 		}
 		catch (Exception ex)
@@ -153,11 +151,7 @@ public class ScriptEngineTest
 		try
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.append("BEGIN {\n");
-			sb.append("  print \"Awk - Hello World!\"\n");
-			sb.append("}");
-			sb.append("END");
-
+			sb.append("BEGIN { print 'Awk - Hello World!' } END");
 			aEngine.eval(sb.toString());
 		}
 		catch (Exception ex)
@@ -174,7 +168,8 @@ public class ScriptEngineTest
 		ScriptEngine eEngine = mgr.getEngineByName("rhino");
 		try
 		{
-			eEngine.eval("var doc = '<mydocument><item>E4X - </item><item>Hello</item><item>World!</item></mydocument>';print doc;");
+			eEngine.eval("var d = <d><item>Hello</item><item>World!</item></d>;");
+			eEngine.eval("print 'E4X - ' + d..item;");
 		}
 		catch (Exception ex)
 		{
@@ -226,8 +221,6 @@ public class ScriptEngineTest
 		try
 		{	
 			rbEngine.eval(new FileReader("samples/application.rb"));
-			rbEngine.eval("def ap = Application.new");
-			rbEngine.eval("puts ap.toString");
 		}
 		catch (Exception ex)
 		{
@@ -272,34 +265,28 @@ public class ScriptEngineTest
 	public void testEngines()
 	{
 		Map<String, ScriptEngineFactory> engineFactories = new HashMap<String, ScriptEngineFactory>(7);
-
-		// List<ScriptEngineFactory> factories = mgr.getEngineFactories(); //jdk6
-		// style
 		ScriptEngineFactory[] factories = mgr.getEngineFactories();
 		for (ScriptEngineFactory factory : factories)
 		{
-			System.out.println("ScriptEngineFactory Info");
+			System.out.println("\n--------------------------------------------------------------");
 			String engName = factory.getEngineName();
 			String engVersion = factory.getEngineVersion();
 			String langName = factory.getLanguageName();
 			String langVersion = factory.getLanguageVersion();
-			System.out.printf("\tScript Engine: %s (%s)\n", engName, engVersion);
-			System.out.printf("\tLanguage: %s (%s)\n", langName, langVersion);
-
+			System.out.printf("Script Engine: %s (%s) Language: %s (%s)", engName, engVersion, langName, langVersion);
 			engineFactories.put(engName, factory);
-
-			// List<String> engNames = factory.getNames(); //jdk6 style
 			String[] engNames = factory.getNames();
+			System.out.print("\nEngine Alias(es):");
 			for (String name : engNames)
 			{
-				System.out.printf("\tEngine Alias: %s\n", name);
+				System.out.printf("%s ", name);
 			}
 			String[] ext = factory.getExtensions();
+			System.out.printf("\nExtension: ");
 			for (String name : ext)
 			{
-				System.out.printf("\tExtension: %s\n", name);
+				System.out.printf("%s ", name);
 			}
-			System.out.println(" ------------------------------- ");
 		}
 
 	}
