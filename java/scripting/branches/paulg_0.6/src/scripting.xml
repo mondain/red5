@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+
+	<bean class="org.red5.server.script.ScriptFactoryPostProcessor" />
 	
 	<!-- Then we load the scripting context, with the common as parent --> 
 	<bean id="red5.scripting" class="org.red5.server.script.ScriptObjectContext"
@@ -8,4 +10,20 @@
 		<property name="parentContext" ref="red5.common" />
 	</bean>
 	
+	<bean id="jsApplication" class="">
+		<constructor-arg value="classpath:/applications/main.js" />
+	</bean>
+
+<!-- 
+	<bean id="groovyApplication" class="">
+		<constructor-arg value="classpath:/applications/main.groovy" />
+	</bean>
+ -->
+ 
+<!-- 
+	<bean id="rubyApplication" class="">
+		<constructor-arg value="classpath:/applications/main.rb" />
+	</bean>
+ -->
+ 	
 </beans>

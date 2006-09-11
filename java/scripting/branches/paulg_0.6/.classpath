@@ -33,5 +33,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/xbean.jar"/>
 	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/red5_server_sandbox"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -41,7 +41,7 @@ class Application < RedFive::ApplicationAdapter
 			sbc = RedFive::SimpleBandwidthConfigure.new
 			sbc.setMaxBurst(8388608)
 			sbc.setBurst(8388608)
-			sbc.setOverallBandwidth(8388608)
+			sbc.setOverallBandwidth(2097152)
 			streamConn.setBandwidthConfigure(sbc)
 		end
 		return super.appConnect(conn, params)
@@ -61,10 +61,12 @@ class Application < RedFive::ApplicationAdapter
 
 end
 
-puts "Ruby application"
+puts "Ruby application BEGIN"
 a = Application.new
 puts "Application started?", a.appStart(nil)
 a.appConnect(nil, nil)
 
 #aa = RedFive::ApplicationAdapter.new
 #puts aa.appStart(nil)
+puts "Ruby application END"
+

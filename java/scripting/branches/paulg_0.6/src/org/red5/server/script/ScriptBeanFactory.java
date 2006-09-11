@@ -184,8 +184,7 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements App
 		return getBean(name, null, null);
 	}
 
-	public Object getBean(String name, Class requiredType)
-			throws BeansException {
+	public Object getBean(String name, Class requiredType) throws BeansException {
 		return getBean(name, requiredType, null);
 	}
 
@@ -204,8 +203,7 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements App
 		return getBean(name, null, args);
 	}
 
-	public Object getBean(String name, Class requiredType, Object[] args)
-			throws BeansException {
+	public Object getBean(String name, Class requiredType, Object[] args) throws BeansException {
 		setupScriptScope();
 		Object bean = null;
 		if (containsBean(name)) {
@@ -224,8 +222,9 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements App
 			} else {
 				return bean;
 			}
-		} else
+		} else {
 			registerScriptBeanDefinition(name);
+		}
 		return super.getBean(name, requiredType, args); 
 	}
 
