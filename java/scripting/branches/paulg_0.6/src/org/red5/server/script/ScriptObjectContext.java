@@ -112,7 +112,8 @@ public class ScriptObjectContext implements ApplicationContextAware, ResourceLoa
 		ScriptEngine jsEngine = mgr.getEngineByName("rhino");
 		try {
 			System.out.println("Engine: " + jsEngine.getClass().getName());
-			jsEngine.eval(new FileReader("D:/tmp/red5/java/scripting/branches/paulg_0.6/samples/E4X/e4x_example.js"));
+			//jsEngine.eval(new FileReader("D:/tmp/red5/java/scripting/branches/paulg_0.6/samples/E4X/e4x_example.js"));
+			jsEngine.eval(new FileReader("D:/tmp/red5/java/scripting/branches/paulg_0.6/samples/application2.js"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

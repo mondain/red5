@@ -39,9 +39,9 @@ function Application() {
 			if (conn == typeof(IStreamCapableConnection)) {
 				var streamConn = conn;
 				var sbc = new SimpleBandwidthConfigure();
-				sbc.setMaxBurst(8*1024*1024);
-				sbc.setBurst(8*1024*1024);
-				sbc.setOverallBandwidth(2*1024*1024);
+				sbc.setMaxBurst(8388608);
+				sbc.setBurst(8388608);
+				sbc.setOverallBandwidth(2097152);
 				streamConn.setBandwidthConfigure(sbc);
 			}
 			return adapter.appConnect(conn, params);
