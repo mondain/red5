@@ -18,6 +18,7 @@ Bugfixes:
 - fixed NPE if no bandwidth settings are available (Trac #129)
 - "close" can be called on RTMPT connections multiple times (Trac #166)
 - fixed synchronizing problem with clients publishing repeatedly (Trac #124)
+- RTMPT connections can be closed from the serverside (Trac #179)
 
 
 Red5 0.5    (2006-07-25)
