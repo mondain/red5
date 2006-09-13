@@ -3,11 +3,13 @@
 <beans>
 
 	<bean class="org.red5.server.script.ScriptFactoryPostProcessor" />
+	<bean id="script.manager" class="javax.script.ScriptEngineManager" singleton="true" />
 	
 	<!-- Then we load the scripting context, with the common as parent --> 
 	<bean id="red5.scripting" class="org.red5.server.script.ScriptObjectContext"
 		init-method="init">
 		<property name="parentContext" ref="red5.common" />
+		<property name="scriptManager" ref="script.manager" />
 	</bean>
 	
 	<bean id="jsApplication" class="">

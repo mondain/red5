@@ -73,7 +73,7 @@ Application.prototype.appDisconnect = function (conn) {
 };
 	
 Application.prototype.toString = function () {
-    return 'Javascript toString ' + this.superClass.toString();
+    return 'Javascript toString ' + this.superClass.toString() + '\nTime: ' + currentTime;
 };
 
 print('Javascript application BEGIN');
