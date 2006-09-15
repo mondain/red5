@@ -39,41 +39,33 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-
 /**
  * Script object model
  * 
  * @author Luke Hubbard <luke@codegent.com>
  * @author Paul Gregoire <mondain@gmail.com>
  */
-public class ScriptObjectContext implements ApplicationContextAware, ResourceLoader, ResourcePatternResolver {
- 
-	protected static Log log = LogFactory.getLog(ScriptObjectContext.class.getName());
-	//Configurations for the scripting context
-	//protected String config = "classpath:/scripting.xml";	
-	//
+public class ScriptObjectContext implements ApplicationContextAware,
+		ResourceLoader, ResourcePatternResolver {
+
+	protected static Log log = LogFactory.getLog(ScriptObjectContext.class
+			.getName());
+
 	private ApplicationContext parentContext;
+
 	private ApplicationContext appCtx;
+
 	//ScriptEngine manager
 	private static ScriptEngineManager scriptManager;
-	
+
 	public void init() {
 		log.info("Loading scripting");
-		//load up our configs
-//		try {
-//			getApplicationContext().getResource(config).getInputStream();
-//		} catch (Exception e) {
-//			log.error("Error loading scripting configuration", e);
-//			//local load
-//			//D:\tmp\red5\java\scripting\branches\paulg_0.6\src/scripting.xml")
-//		}
-		
-	}	
-	
+	}
+
 	public void setParentContext(ApplicationContext parentContext) {
 		this.parentContext = parentContext;
 	}
-	
+
 	public ScriptEngineManager getScriptManager() {
 		return scriptManager;
 	}
@@ -82,35 +74,36 @@ public class ScriptObjectContext implements ApplicationContextAware, ResourceLoa
 		ScriptObjectContext.scriptManager = scriptManager;
 	}
 
-	public ListableBeanFactory getBeans(){
+	public ListableBeanFactory getBeans() {
 		return appCtx;
 	}
-	
-	public ApplicationContext getApplicationContext(){
+
+	public ApplicationContext getApplicationContext() {
 		return appCtx;
 	}
-	
-	public void setApplicationContext(ApplicationContext appCtx){
+
+	public void setApplicationContext(ApplicationContext appCtx) {
+		log.debug("App context for scripts: " + appCtx.getClass().getName());
 		this.appCtx = appCtx;
-	}	
-	
+	}
+
 	/*
-	public ListableBeanFactory getScripts(){
-		return getScriptBeanFactory();
-	}
-	
-	public ListableBeanFactory getScriptBeanFactory(){
+	 public ListableBeanFactory getScripts(){
+	 return getScriptBeanFactory();
+	 }
+	 
+	 public ListableBeanFactory getScriptBeanFactory(){
+	 return appCtx;
+	 }*/
+
+	public MessageSource getMessageSource() {
 		return appCtx;
-	}*/
-	
-	public MessageSource getMessageSource(){
-		return appCtx;
 	}
-	
+
 	public Resource getResource(String path) {
 		return appCtx.getResource(path);
 	}
-	
+
 	public Resource[] getResources(String pattern) throws IOException {
 		return appCtx.getResources(pattern);
 	}
@@ -128,29 +121,71 @@ public class ScriptObjectContext implements ApplicationContextAware, ResourceLoa
 
 		//Javascript
 		ScriptEngine jsEngine = scriptManager.getEngineByName("rhino");
-		//jsEngine.getFactory();
+		jsEngine.put(ScriptEngine.FILENAME, "soc_test.js");
+
 		try {
-			System.out.println("Engine: " + jsEngine.getClass().getName());
+			System.out.println("Engine: " + jsEngine.getClass().getName()
+					+ "\n" + jsEngine.getFactory().getEngineVersion());
 			//jsEngine.eval(new FileReader("D:/tmp/red5/java/scripting/branches/paulg_0.6/samples/E4X/e4x_example.js"));
 			//jsEngine.eval(new FileReader("D:/tmp/red5/java/scripting/branches/paulg_0.6/samples/application2.js"));
-			//ScriptContext ctx = jsEngine.getContext();
+			//ScriptContext cx = jsEngine.getContext();
 
-			Compilable eng = (Compilable) jsEngine;	
-			CompiledScript scr = eng.compile(new FileReader("D:/tmp/red5/java/scripting/branches/paulg_0.6/samples/application2.js"));
+			// Setup Contect and ClassLoader
+			//Context.enter();
+			//Context cx = Context.getCurrentContext();
+			//ScriptableObject scope = ScriptRuntime.getGlobal(cx);			
+			//ScriptableObject scope = ScriptRuntime.getGlobal((Context) cx);			
+
+			//			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+			//			
+			//			GeneratedClassLoader gcl = ctx.createClassLoader(cl);
+			//			
+			//			CompilerEnvirons ce = new CompilerEnvirons();
+
+			//ce.setAllowMemberExprAsFunctionName(false)
+			//ctx.hasFeature(Context.FEATURE_DYNAMIC_SCOPE);
+			//			ce.initFromContext(ctx);
+			//			ce.setXmlAvailable(true);
+			//			ce.setOptimizationLevel(9);
+			//			
+			//			ClassCompiler cc = new ClassCompiler(ce);
+			//			cc.setTargetExtends(getExtends());
+			//			cc.setTargetImplements(getInterfaces());
+			//
+			//			Object[] generated = null;
+			//			generated = cc.compileToClassFiles(js, this.getLocation(), 0, getTempClassName());
+			//			addGeneratedToClassLoader(gcl, generated);			
+
+			// load the script class 
+			//			clazz = ((ClassLoader) gcl).loadClass((String)generated[2]);
+			//			Script script = (Script) clazz.newInstance();
+
+			// execute the script saving the resulting scope
+			// this is a bit like calling the constuctor on an object
+			// the scope contains the resulting object
+			//			Scriptable result = (Scriptable) script.exec(ctx, scope);			
 
 			//set engine scope namespace
 			Namespace n = new SimpleNamespace();
-			jsEngine.setNamespace(n, ScriptContext.ENGINE_SCOPE);			
-			
+			jsEngine.setNamespace(n, ScriptContext.ENGINE_SCOPE);
+
+			n.put("log", log);
 			n.put("currentTime", new Long(System.currentTimeMillis()));
-			scr.eval();			
-			
+
+			Compilable eng = (Compilable) jsEngine;
+			CompiledScript scr = eng.compile(new FileReader(
+					"samples/application2.js"));
+
+			//jsEngine.eval(new FileReader("samples/application2.js"));
+
+			scr.eval();
+
+			//Context.exit();
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	
 
 	}
-	
-	
+
 }

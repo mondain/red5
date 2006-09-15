@@ -16,23 +16,17 @@
 
 package org.red5.server.script.rhino;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.List;
+import javax.script.Namespace;
+import javax.script.ScriptContext;
+import javax.script.SimpleNamespace;
 
-import org.jruby.IRuby;
-import org.jruby.Ruby;
-import org.jruby.RubyNil;
-import org.jruby.ast.ClassNode;
-import org.jruby.ast.Colon2Node;
-import org.jruby.ast.NewlineNode;
-import org.jruby.ast.Node;
+import net.sf.cglib.core.NamingPolicy;
+import net.sf.cglib.core.Predicate;
+
 import org.jruby.exceptions.JumpException;
-import org.jruby.javasupport.JavaUtil;
-import org.jruby.runtime.builtin.IRubyObject;
 import org.red5.server.script.ScriptCompilationException;
-import org.springframework.util.ClassUtils;
+
+import com.sun.script.javascript.RhinoScriptEngine;
 
 /**
  * Utility methods for handling Rhino / Javascript objects.
@@ -42,109 +36,259 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class RhinoScriptUtils {
 
+	protected Class extendsClass = Object.class;
+
+	protected String id;
+
 	/**
 	 * Create a new Rhino-scripted object from the given script source.
 	 * @param scriptSource the script source text
 	 * @param interfaces the interfaces that the scripted Java object
 	 * is supposed to implement
 	 * @return the scripted Java object
-	 * @throws JumpException in case of JRuby parsing failure
+	 * @throws JumpException in case of Rhino parsing failure
 	 */
-	public static Object createJRubyObject(String scriptSource, Class[] interfaces) throws JumpException {
-		IRuby ruby = Ruby.getDefaultInstance();
-
-		Node scriptRootNode = ruby.parse(scriptSource, "");
-		IRubyObject rubyObject = ruby.eval(scriptRootNode);
-
-		if (rubyObject instanceof RubyNil) {
-			String className = findClassName(scriptRootNode);
-			rubyObject = ruby.evalScript("\n" + className + ".new");
+	public static Object createRhinoObject(String scriptSource,
+			Class[] interfaces) throws ScriptCompilationException {
+		RhinoScriptEngine engine = new RhinoScriptEngine();
+		//String className = findClassName(scriptSource);
+		Class clazz = null;
+		//Script rhinoObject = (Script) rhino.eval("\n" + className + ".new");
+		try {
+			//ScriptEngine engine = scriptContext.getScriptManager().getEngineByExtension(".js");
+			//set engine scope namespace
+			Namespace n = new SimpleNamespace();
+			engine.setNamespace(n, ScriptContext.ENGINE_SCOPE);
+			//add the logger to the script
+			n.put("log", RhinoScriptFactory.log);
+			clazz = (Class) engine.eval(scriptSource);
+			//rhinoObject = clazz.newInstance();
+			//System.out.println("Result of compiled script: " + compiled.eval());
+		} catch (Exception ex) {
+			throw new ScriptCompilationException(
+					"Could not compile Rhino script: " + scriptSource, ex);
 		}
-
-		// still null?
-		if (rubyObject instanceof RubyNil) {
-			throw new ScriptCompilationException("Compilation of JRuby script returned '" + rubyObject + "'");
+		if (null == clazz) {
+			throw new ScriptCompilationException(
+					"Compilation of Rhino script returned " + clazz.getName());
 		}
-		return Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(),
-						interfaces, new RubyObjectInvocationHandler(rubyObject, ruby));
+		return engine.getInterface(clazz);
 	}
 
-
-    /**
-	 * Given the root {@link Node} in a Rhino AST will locate the name of the class defined
-	 * by that AST.
-	 * @throws IllegalArgumentException if no class is defined by the supplied AST.
+	/*
+	 private static String findClassName(String source) {
+	 String result = null;
+	 try {
+	 Pattern regex = Pattern.compile("function ([\\w]+)[.\\(\\) ]+[\\s|{]\\s",
+	 Pattern.CANON_EQ);
+	 Matcher matcher = regex.matcher(source);
+	 if (matcher.find()) {
+	 result = matcher.group();
+	 } 
+	 } catch (PatternSyntaxException ex) {
+	 // Syntax error in the regular expression
+	 }
+	 return result;
+	 }
 	 */
-	private static String findClassName(Node rootNode) {
-		ClassNode classNode = findClassNode(rootNode);
-		if (classNode == null) {
-			throw new IllegalArgumentException("Unable to determine class name for root node '" + rootNode + "'");
-		}
-		Colon2Node node = (Colon2Node) classNode.getCPath();
-		return node.getName();
+
+	/*	
+	 protected Object createObject(InputStream is) throws IOException, BeansException {
+	 // clearInterfaces();
+	 Class clazz = null;
+	 try {
+	 // Get the JavaScript into a String
+	 String js = "";
+	 
+	 if(isInline()) js = inlineScriptBody();
+	 else js = getAsString(is);
+
+	 // Setup Contect and ClassLoader
+	 Context ctx = Context.enter();
+	 
+	 //ctx.initStandardObjects();
+	 
+	 ClassLoader cl = Thread.currentThread().getContextClassLoader();
+	 
+	 GeneratedClassLoader gcl = ctx.createClassLoader(cl);
+	 
+	 CompilerEnvirons ce = new CompilerEnvirons();
+	 
+	 //ce.setAllowMemberExprAsFunctionName(false)
+	 //ctx.hasFeature(Context.FEATURE_DYNAMIC_SCOPE);
+	 ce.initFromContext(ctx);
+	 ce.setXmlAvailable(true);
+	 ce.setOptimizationLevel(9);
+	 
+	 ClassCompiler cc = new ClassCompiler(ce);
+	 cc.setTargetExtends(getExtends());
+	 cc.setTargetImplements(getInterfaces());
+
+	 Object[] generated = cc.compileToClassFiles(js, this.getLocation(),	0, getTempClassName());
+	 addGeneratedToClassLoader(gcl, generated);
+	 
+	 // get the scope;
+	 ScriptableObject scope = JavaScriptScopeThreadLocal.getScope();
+	 if(scope==null) scope = ScriptRuntime.getGlobal(ctx);
+	 
+	 // add a log object to the scope
+	 ScriptableObject.putProperty(scope, "log", Context.javaToJS(LogFactory.getLog(getClassName()), scope));
+	 
+	 // load the script class 
+	 clazz = ((ClassLoader) gcl).loadClass((String)generated[2]);
+	 Script script = (Script) clazz.newInstance();
+
+	 // execute the script saving the resulting scope
+	 // this is a bit like calling the constuctor on an object
+	 // the scope contains the resulting object
+	 Scriptable result = (Scriptable) script.exec(ctx, scope);
+	 
+	 cc.setTargetExtends(getExtends());
+	 
+	 if(log.isDebugEnabled())
+	 log.debug("Target extends: "+cc.getTargetExtends());
+	 
+	 if(meta.getImplements().length>0){
+	 String[] interfaces = meta.getImplements();
+	 for(int i=0; i<interfaces.length; i++){
+	 addInterface(cl.loadClass(interfaces[i]));
+	 }
+	 }
+	 
+	 if(meta.getMethodNames().length>0){
+	 
+	 Class publicInterface;
+	 
+	 try{
+	 publicInterface = cl.loadClass(getPublicInterfaceName());
+	 }
+	 catch(ClassNotFoundException ex){
+	 InterfaceMaker interfaceMaker = new InterfaceMaker();
+	 interfaceMaker.setClassLoader(cl);
+	 NamingPolicy namingPolicy = new InterfaceNamingPolicy(getPublicInterfaceName());
+	 interfaceMaker.setNamingPolicy(namingPolicy);
+	 String[] methodNames = meta.getMethodNames();
+	 Type[] noEx = new Type[0];
+	 for(int i=0; i<methodNames.length; i++){
+	 String descriptor = meta.getMethodDescriptor(methodNames[i]);
+	 if(log.isDebugEnabled())
+	 log.debug("Method descriptor: "+descriptor);
+	 interfaceMaker.add(TypeUtils.parseSignature(descriptor),noEx);
+	 }
+	 publicInterface = interfaceMaker.create();
+	 }				
+	 
+	 if(log.isDebugEnabled())
+	 log.debug("Generated public interface " + publicInterface.getName());
+	 
+	 addInterface(publicInterface);
+	 
+	 }
+	 
+	 cc.setTargetImplements(getInterfaces());
+	 
+	 try {
+	 
+	 generated = cc.compileToClassFiles(js, this.getLocation(),
+	 0, getClassName());
+	 
+	 addGeneratedToClassLoader(gcl, generated);
+	 
+	 clazz = ((ClassLoader) gcl).loadClass(getClassName());
+	 if(log.isDebugEnabled())
+	 log.debug("Loaded javascript class " + clazz);
+	 }
+	 catch(NoClassDefFoundError ncex){
+	 throw new BeanCreationException("Class not found", ncex);
+	 }
+	 
+	 // Call the constructor passing in the scope object
+	 Constructor cstr = clazz.getConstructor(new Class[]{Scriptable.class});
+	 Object instance = cstr.newInstance(new Object[]{scope});
+
+	 JavaScriptScopeThreadLocal.setScope(scope);
+	 
+	 Context.exit();
+	 return instance;
+
+	 } catch (RuntimeException rex){ 
+	 throw new BeanCreationException("Runtime exception", rex);
+	 } catch (Exception ex) {
+	 throw new BeanCreationException("Error instantiating" + clazz, ex);
+	 }
+	 }
+	 */
+
+	public void setExtends(Class extendsClass) {
+		this.extendsClass = extendsClass;
+	}
+
+	public Class getExtends() {
+		return this.extendsClass;
 	}
 
 	/**
-	 * Finds the first {@link ClassNode} under the supplied {@link Node}. Returns
-	 * '<code>null</code>' if no {@link ClassNode} is found.
+	 * @param gcl
+	 * @param generated
+	 * /
+	 private void addGeneratedToClassLoader(GeneratedClassLoader gcl, Object[] generated) {
+	 for (int i = 0; i < generated.length; i += 2) {
+	 String name = (String) generated[i];
+	 byte[] code = (byte[]) generated[i + 1];
+	 gcl.defineClass(name, code);
+	 }
+	 }
+
+	 private void setClassName(String className){
+	 this.className = className + '_' + id;
+	 }
+	 
+	 private String getClassName(){
+	 if(className!=null) return className;
+	 else if(isInline()) return getInlineClassName();
+	 else return getSafeClassName(getLocation());
+	 }
+	 
+	 private String getInlineClassName(){
+	 return "InlineJS__"+id;
+	 }
+	 
+	 private String getTempClassName(){
+	 return "TempJS__"+id;
+	 }
+
+	 private String getPublicInterfaceName(){
+	 return getClassName()+"_Pub";
+	 }
+
+	 public String getSafeClassName(String unsafe){
+	 if(unsafe.toLowerCase().endsWith(".js")) 
+	 unsafe = unsafe.substring(0, unsafe.length()-3);
+	 unsafe = unsafe.replace('/', '.');
+	 unsafe = unsafe.replace('-', '_');
+	 unsafe = unsafe.replace(' ', '_');
+	 if(unsafe.startsWith(".")) 
+	 unsafe = unsafe.substring(1);
+	 return unsafe + "_" + id;
+	 }
 	 */
-	private static ClassNode findClassNode(Node node) {
-		if (node instanceof ClassNode) {
-			return (ClassNode) node;
-		}
-		List children = node.childNodes();
-		for (int i = 0; i < children.size(); i++) {
-			Node child = (Node) children.get(i);
-			if (child instanceof ClassNode) {
-				return (ClassNode) child;
-			}
-			else if (child instanceof NewlineNode) {
-				NewlineNode nn = (NewlineNode) child;
-				Node found = findClassNode(nn.getNextNode());
-				if (found instanceof ClassNode) {
-					return (ClassNode) found;
-				}
-			}
+
+	class InterfaceNamingPolicy implements NamingPolicy {
+
+		private String interfaceName;
+
+		public InterfaceNamingPolicy(String interfaceName) {
+			this.interfaceName = interfaceName;
 		}
 
-		for (int i = 0; i < children.size(); i++) {
-			Node child = (Node) children.get(i);
-			Node found = findClassNode(child);
-			if (found instanceof ClassNode) {
-				return (ClassNode) child;
-			}
+		/* (non-Javadoc)
+		 * @see net.sf.cglib.core.NamingPolicy#getClassName(java.lang.String, java.lang.String, java.lang.Object, net.sf.cglib.core.Predicate)
+		 */
+		public String getClassName(String arg0, String arg1, Object arg2,
+				Predicate arg3) {
+			return interfaceName;
 		}
-		return null;
+
 	}
-
-
-	/**
-	 * InvocationHandler that invokes a Rhino script method.
-	 */
-	private static class RubyObjectInvocationHandler implements InvocationHandler {
-
-		private final IRubyObject rubyObject;
-
-		private final IRuby ruby;
-
-		public RubyObjectInvocationHandler(IRubyObject rubyObject, IRuby ruby) {
-			this.rubyObject = rubyObject;
-			this.ruby = ruby;
-		}
-
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			IRubyObject[] rubyArgs = convertToRuby(args);
-			IRubyObject result = this.rubyObject.callMethod(method.getName(), rubyArgs);
-			return JavaUtil.convertRubyToJava(result);
-		}
-
-		private IRubyObject[] convertToRuby(Object[] javaArgs) {
-			if (javaArgs == null || javaArgs.length == 0) {
-				return new IRubyObject[0];
-			}
-			return JavaUtil.convertJavaArrayToRuby(this.ruby, javaArgs);
-		}
-	}
-
 
 }

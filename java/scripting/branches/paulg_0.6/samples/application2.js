@@ -3,7 +3,7 @@
  *
  * @author Paul Gregoire
  */
-
+ 
 var javaNames = JavaImporter();
 
 javaNames.importPackage(Packages.org.red5.server.adapter);
@@ -73,11 +73,13 @@ Application.prototype.appDisconnect = function (conn) {
 };
 	
 Application.prototype.toString = function () {
-    return 'Javascript toString ' + this.superClass.toString() + '\nTime: ' + currentTime;
+    return 'Javascript toString ' + this.superClass.toString();
 };
 
 print('Javascript application BEGIN');
-	
+		
+log.info('hello world');
+		
 try {
 	var ap = new Application();
 	///
@@ -92,6 +94,7 @@ try {
 	ap.measureBandwidth();
 	ap.getStreamLength('temp.flv');
 } catch(e) {
+	log.error(e);
 	print('Script - Exception: ' + e);
 }
 
