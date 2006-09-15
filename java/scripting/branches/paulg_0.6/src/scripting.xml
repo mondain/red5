@@ -2,30 +2,32 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-	<bean class="org.red5.server.script.ScriptFactoryPostProcessor" />
 	<bean id="script.manager" class="javax.script.ScriptEngineManager" singleton="true" />
+
+	<bean class="org.red5.server.script.ScriptFactoryPostProcessor" />
 	
 	<!-- Then we load the scripting context, with the common as parent --> 
 	<bean id="red5.scripting" class="org.red5.server.script.ScriptObjectContext"
 		init-method="init">
-		<property name="parentContext" ref="red5.common" />
 		<property name="scriptManager" ref="script.manager" />
 	</bean>
 	
-	<bean id="jsApplication" class="">
-		<constructor-arg value="classpath:/applications/main.js" />
+	<bean id="jsApplication" class="org.red5.server.script.rhino.RhinoScriptFactory">
+		<constructor-arg value="classpath:applications/main.js" />
 	</bean>
-
 <!-- 
-	<bean id="groovyApplication" class="">
+	<bean id="groovyApplication" class="org.springframework.core.io.ClassPathResource">
 		<constructor-arg value="classpath:/applications/main.groovy" />
 	</bean>
- -->
- 
-<!-- 
-	<bean id="rubyApplication" class="">
+
+	<bean id="rubyApplication" class="org.springframework.core.io.ClassPathResource">
 		<constructor-arg value="classpath:/applications/main.rb" />
 	</bean>
  -->
- 	
+ 
+	<bean id="scriptApplication" class="org.red5.server.script.ResourceScriptSource">
+		<constructor-arg ref="jsApplication" />
+	</bean>
+
+	
 </beans>
