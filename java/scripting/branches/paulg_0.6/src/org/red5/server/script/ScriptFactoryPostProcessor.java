@@ -117,8 +117,9 @@ import org.springframework.util.StringUtils;
  * @author Rick Evans
  * @since 2.0
  */
-public class ScriptFactoryPostProcessor
-		implements InstantiationAwareBeanPostProcessor, BeanFactoryAware, ResourceLoaderAware, DisposableBean {
+public class ScriptFactoryPostProcessor implements
+		InstantiationAwareBeanPostProcessor, BeanFactoryAware,
+		ResourceLoaderAware, DisposableBean {
 
 	/**
 	 * The {@link org.springframework.core.io.Resource}-style prefix that denotes
@@ -132,7 +133,6 @@ public class ScriptFactoryPostProcessor
 
 	private static final String SCRIPTED_OBJECT_NAME_PREFIX = "scriptedObject.";
 
-
 	/** Logger available to subclasses */
 	protected final Log logger = LogFactory.getLog(getClass());
 
@@ -145,7 +145,8 @@ public class ScriptFactoryPostProcessor
 	public void setBeanFactory(BeanFactory beanFactory) {
 		if (!(beanFactory instanceof AbstractBeanFactory)) {
 			throw new IllegalStateException(
-					"ScriptFactoryPostProcessor must run in AbstractBeanFactory, not in " + beanFactory);
+					"ScriptFactoryPostProcessor must run in AbstractBeanFactory, not in "
+							+ beanFactory);
 		}
 		this.beanFactory = (AbstractBeanFactory) beanFactory;
 
@@ -160,8 +161,8 @@ public class ScriptFactoryPostProcessor
 		this.resourceLoader = resourceLoader;
 	}
 
-
-	public Object postProcessBeforeInstantiation(Class beanClass, String beanName) {
+	public Object postProcessBeforeInstantiation(Class beanClass,
+			String beanName) {
 		// We only apply special treatment to ScriptFactory implementations here.
 		if (!ScriptFactory.class.isAssignableFrom(beanClass)) {
 			return null;
@@ -170,30 +171,38 @@ public class ScriptFactoryPostProcessor
 		String scriptedObjectBeanName = SCRIPTED_OBJECT_NAME_PREFIX + beanName;
 
 		// Avoid recreation of the script bean definition in case of a prototype.
-		if (!this.scriptBeanFactory.containsBeanDefinition(scriptedObjectBeanName)) {
-			RootBeanDefinition bd = this.beanFactory.getMergedBeanDefinition(beanName);
+		if (!this.scriptBeanFactory
+				.containsBeanDefinition(scriptedObjectBeanName)) {
+			RootBeanDefinition bd = this.beanFactory
+					.getMergedBeanDefinition(beanName);
 
-			String scriptFactoryBeanName = SCRIPT_FACTORY_NAME_PREFIX + beanName;
+			String scriptFactoryBeanName = SCRIPT_FACTORY_NAME_PREFIX
+					+ beanName;
 			this.scriptBeanFactory.registerBeanDefinition(
-					scriptFactoryBeanName, createScriptFactoryBeanDefinition(bd));
-			ScriptFactory scriptFactory =
-					(ScriptFactory) this.scriptBeanFactory.getBean(scriptFactoryBeanName, ScriptFactory.class);
-			ScriptSource scriptSource =
-					convertToScriptSource(scriptFactory.getScriptSourceLocator(), this.resourceLoader);
+					scriptFactoryBeanName,
+					createScriptFactoryBeanDefinition(bd));
+			ScriptFactory scriptFactory = (ScriptFactory) this.scriptBeanFactory
+					.getBean(scriptFactoryBeanName, ScriptFactory.class);
+			ScriptSource scriptSource = convertToScriptSource(scriptFactory
+					.getScriptSourceLocator(), this.resourceLoader);
 			Class[] interfaces = scriptFactory.getScriptInterfaces();
 
-			if (scriptFactory.requiresConfigInterface() && !bd.getPropertyValues().isEmpty()) {
-				PropertyValue[] pvs = bd.getPropertyValues().getPropertyValues();
+			if (scriptFactory.requiresConfigInterface()
+					&& !bd.getPropertyValues().isEmpty()) {
+				PropertyValue[] pvs = bd.getPropertyValues()
+						.getPropertyValues();
 				Class configInterface = createConfigInterface(pvs, interfaces);
-				interfaces = (Class[]) ObjectUtils.addObjectToArray(interfaces, configInterface);
+				interfaces = (Class[]) ObjectUtils.addObjectToArray(interfaces,
+						configInterface);
 			}
 
 			RootBeanDefinition objectBd = createScriptedObjectBeanDefinition(
 					bd, scriptFactoryBeanName, scriptSource, interfaces);
 
-			this.scriptBeanFactory.registerBeanDefinition(scriptedObjectBeanName, objectBd);
+			this.scriptBeanFactory.registerBeanDefinition(
+					scriptedObjectBeanName, objectBd);
 
-        }
+		}
 
 		return this.scriptBeanFactory.getBean(scriptedObjectBeanName);
 	}
@@ -206,9 +215,11 @@ public class ScriptFactoryPostProcessor
 	 * @return the extracted ScriptFactory bean definition
 	 * @see org.springframework.scripting.ScriptFactory
 	 */
-	protected RootBeanDefinition createScriptFactoryBeanDefinition(RootBeanDefinition bd) {
+	protected RootBeanDefinition createScriptFactoryBeanDefinition(
+			RootBeanDefinition bd) {
 		RootBeanDefinition scriptBd = new RootBeanDefinition(bd.getBeanClass());
-		scriptBd.getConstructorArgumentValues().addArgumentValues(bd.getConstructorArgumentValues());
+		scriptBd.getConstructorArgumentValues().addArgumentValues(
+				bd.getConstructorArgumentValues());
 		return scriptBd;
 	}
 
@@ -221,12 +232,14 @@ public class ScriptFactoryPostProcessor
 	 * @param resourceLoader the ResourceLoader to use (if necessary)
 	 * @return the ScriptSource instance
 	 */
-	protected ScriptSource convertToScriptSource(String scriptSourceLocator, ResourceLoader resourceLoader) {
+	protected ScriptSource convertToScriptSource(String scriptSourceLocator,
+			ResourceLoader resourceLoader) {
 		if (scriptSourceLocator.startsWith(INLINE_SCRIPT_PREFIX)) {
-			return new StaticScriptSource(scriptSourceLocator.substring(INLINE_SCRIPT_PREFIX.length()));
-		}
-		else {
-			return new ResourceScriptSource(resourceLoader.getResource(scriptSourceLocator));
+			return new StaticScriptSource(scriptSourceLocator
+					.substring(INLINE_SCRIPT_PREFIX.length()));
+		} else {
+			return new ResourceScriptSource(resourceLoader
+					.getResource(scriptSourceLocator));
 		}
 	}
 
@@ -241,14 +254,16 @@ public class ScriptFactoryPostProcessor
 	 * @see net.sf.cglib.proxy.InterfaceMaker
 	 * @see org.springframework.beans.BeanUtils#findPropertyType
 	 */
-	protected Class createConfigInterface(PropertyValue[] pvs, Class[] interfaces) {
+	protected Class createConfigInterface(PropertyValue[] pvs,
+			Class[] interfaces) {
 		Assert.notEmpty(pvs, "Property values must not be empty");
 		InterfaceMaker maker = new InterfaceMaker();
 		for (int i = 0; i < pvs.length; i++) {
 			String propertyName = pvs[i].getName();
 			Class propertyType = findPropertyType(propertyName, interfaces);
 			String setterName = "set" + StringUtils.capitalize(propertyName);
-			Signature signature = new Signature(setterName, Type.VOID_TYPE, new Type[] {Type.getType(propertyType)});
+			Signature signature = new Signature(setterName, Type.VOID_TYPE,
+					new Type[] { Type.getType(propertyType) });
 			maker.add(signature, new Type[0]);
 		}
 		return maker.create();
@@ -263,15 +278,18 @@ public class ScriptFactoryPostProcessor
 	 * @see org.springframework.scripting.ScriptFactory#getScriptedObject
 	 */
 	protected RootBeanDefinition createScriptedObjectBeanDefinition(
-			RootBeanDefinition bd, String scriptFactoryBeanName, ScriptSource scriptSource, Class[] interfaces) {
+			RootBeanDefinition bd, String scriptFactoryBeanName,
+			ScriptSource scriptSource, Class[] interfaces) {
 
 		RootBeanDefinition objectBd = new RootBeanDefinition(bd);
 		objectBd.setBeanClass(null);
 		objectBd.setFactoryBeanName(scriptFactoryBeanName);
 		objectBd.setFactoryMethodName("getScriptedObject");
 		objectBd.getConstructorArgumentValues().clear();
-		objectBd.getConstructorArgumentValues().addIndexedArgumentValue(0, scriptSource);
-		objectBd.getConstructorArgumentValues().addIndexedArgumentValue(1, interfaces);
+		objectBd.getConstructorArgumentValues().addIndexedArgumentValue(0,
+				scriptSource);
+		objectBd.getConstructorArgumentValues().addIndexedArgumentValue(1,
+				interfaces);
 		return objectBd;
 	}
 
@@ -281,7 +299,7 @@ public class ScriptFactoryPostProcessor
 	public void destroy() {
 		this.scriptBeanFactory.destroySingletons();
 	}
-	
+
 	/**
 	 * Determine the bean property type for the given property from the
 	 * given classes/interfaces, if possible.
@@ -292,10 +310,12 @@ public class ScriptFactoryPostProcessor
 	 * @param beanClasses the classes to check against
 	 * @return the property type, or <code>Object.class</code> as fallback
 	 */
-	public static Class findPropertyType(String propertyName, Class[] beanClasses) {
+	public static Class findPropertyType(String propertyName,
+			Class[] beanClasses) {
 		if (beanClasses != null) {
 			for (int i = 0; i < beanClasses.length; i++) {
-				PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(beanClasses[i], propertyName);
+				PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(
+						beanClasses[i], propertyName);
 				if (pd != null) {
 					return pd.getPropertyType();
 				}
@@ -309,14 +329,16 @@ public class ScriptFactoryPostProcessor
 			//spring 2.0 feature
 			//this.scriptBeanFactory.setAllowBeanDefinitionOverriding(((DefaultListableBeanFactory) otherFactory).isAllowBeanDefinitionOverriding());
 		}
-	}	
-	
-	public Object postProcessAfterInitialization(Object arg0, String arg1) throws BeansException {
+	}
+
+	public Object postProcessAfterInitialization(Object arg0, String arg1)
+			throws BeansException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Object postProcessBeforeInitialization(Object arg0, String arg1) throws BeansException {
+	public Object postProcessBeforeInitialization(Object arg0, String arg1)
+			throws BeansException {
 		// TODO Auto-generated method stub
 		return null;
 	}

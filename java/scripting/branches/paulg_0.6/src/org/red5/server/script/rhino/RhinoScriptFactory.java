@@ -18,9 +18,11 @@ package org.red5.server.script.rhino;
 
 import java.io.IOException;
 
-import org.jruby.exceptions.JumpException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.red5.server.script.ScriptCompilationException;
 import org.red5.server.script.ScriptFactory;
+import org.red5.server.script.ScriptObjectContext;
 import org.red5.server.script.ScriptSource;
 import org.springframework.util.Assert;
 
@@ -41,17 +43,20 @@ import org.springframework.util.Assert;
  */
 public class RhinoScriptFactory implements ScriptFactory {
 
+	static Log log = LogFactory.getLog(RhinoScriptFactory.class.getName());
+
 	private final String scriptSourceLocator;
 
 	private final Class[] scriptInterfaces;
 
+	private ScriptObjectContext scriptContext;
 
 	public RhinoScriptFactory(String scriptSourceLocator) {
 		Assert.hasText(scriptSourceLocator);
 		this.scriptSourceLocator = scriptSourceLocator;
 		this.scriptInterfaces = null;
-	}	
-	
+	}
+
 	/**
 	 * Create a new RhinoScriptFactory for the given script source.
 	 * @param scriptSourceLocator a locator that points to the source of the script.
@@ -62,13 +67,21 @@ public class RhinoScriptFactory implements ScriptFactory {
 	 * or the supplied <code>scriptSourceLocator</code> argument is composed wholly of whitespace;
 	 * or if the supplied <code>scriptInterfaces</code> argument array has no elements
 	 */
-	public RhinoScriptFactory(String scriptSourceLocator, Class[] scriptInterfaces) {
+	public RhinoScriptFactory(String scriptSourceLocator,
+			Class[] scriptInterfaces) {
 		Assert.hasText(scriptSourceLocator);
 		Assert.notEmpty(scriptInterfaces);
 		this.scriptSourceLocator = scriptSourceLocator;
 		this.scriptInterfaces = scriptInterfaces;
 	}
 
+	public ScriptObjectContext getScriptContext() {
+		return scriptContext;
+	}
+
+	public void setScriptContext(ScriptObjectContext scriptContext) {
+		this.scriptContext = scriptContext;
+	}
 
 	public String getScriptSourceLocator() {
 		return this.scriptSourceLocator;
@@ -79,24 +92,26 @@ public class RhinoScriptFactory implements ScriptFactory {
 	}
 
 	/**
-	 * Rhino scripts do require a config interface.
-	 * @return <code>true</code> always
+	 * Rhino scripts do not require a config interface.
+	 * @return <code>false</code> always
 	 */
 	public boolean requiresConfigInterface() {
-		return true;
+		return false;
 	}
 
 	/**
 	 * Load and parse the Rhino script via RhinoScriptUtils.
 	 * @see RhinoScriptUtils#createRhinoObject(String, Class[])
 	 */
-	public Object getScriptedObject(ScriptSource actualScriptSource, Class[] actualInterfaces)
-			throws IOException, ScriptCompilationException {
+	public Object getScriptedObject(ScriptSource actualScriptSource,
+			Class[] actualInterfaces) throws IOException,
+			ScriptCompilationException {
 		try {
-			return RhinoScriptUtils.createJRubyObject(actualScriptSource.getScriptAsString(), actualInterfaces);
-		}
-		catch (JumpException ex) {
-			throw new ScriptCompilationException("Could not compile Rhino script: " + actualScriptSource, ex);
+			return RhinoScriptUtils.createRhinoObject(actualScriptSource
+					.getScriptAsString(), actualInterfaces);
+		} catch (Exception ex) {
+			throw new ScriptCompilationException(
+					"Could not compile Rhino script: " + actualScriptSource, ex);
 		}
 	}
 

@@ -35,13 +35,12 @@ import org.springframework.core.io.Resource;
  * @author Luke Hubbard <luke@codegent.com>
  * @author Paul Gregoire <mondain@gmail.com>
  */
-public class ScriptBeanFactory extends DefaultListableBeanFactory implements ApplicationContextAware {
+public class ScriptBeanFactory extends DefaultListableBeanFactory implements
+		ApplicationContextAware {
 
 	private static final Log log = LogFactory.getLog(ScriptBeanFactory.class);
 
-	protected static String FILE_PATTERN = "*.js";
-
-	protected String path = "WEB-INF/services/";
+	protected String path = "WEB-INF/applications/";
 
 	protected boolean lazyLoading = false;
 
@@ -50,13 +49,12 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements App
 	protected ApplicationContext appCtx;
 
 	protected ScriptEngineFactory factory;
-	
+
 	public ScriptBeanFactory() {
 		super();
 	}
 
 	// Public setters
-
 	public void setApplicationContext(ApplicationContext appCtx) {
 		this.appCtx = appCtx;
 	}
@@ -84,54 +82,32 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements App
 	// Init method
 
 	public void startup() throws Exception {
-		setupScriptScope();
-		//setupJavaScriptFactory();
-		if (!isLazyLoading())
+		if (!isLazyLoading()) {
 			initScripts();
+		}
 	}
 
 	// Setup methods
-
-	protected void setupScriptScope() {
-		////Context ctx = Context.enter();
-		////ScriptableObject scope = ScriptRuntime.getGlobal(ctx);
-		//ScriptableObject.putProperty(scope, "spark", Context.javaToJS(spark, scope));
-		//JavaScriptScopeThreadLocal.setScope(scope);
-	}
-
-//	protected void setupJavaScriptFactory() {
-//		try {
-//			AbstractBeanDefinition bd = BeanDefinitionReaderUtils
-//					.createBeanDefinition(JavaScriptFactory.class.getName(),
-//							null, null, null, getClassLoader());
-//			bd.setSingleton(true);
-//			bd.setBeanClass(JavaScriptFactory.class);
-//			registerBeanDefinition("jsFactory", bd);
-//			factory = (JavaScriptFactory) super
-//					.getBean("jsFactory", null, null);
-//			factory.setResourceLoader(appCtx);
-//		} catch (Exception ex) {
-//			log.error("Error creating js factory", ex);
-//		}
-//	}
-
 	protected void initScripts() throws Exception {
-		Resource[] res = appCtx.getResources(path + FILE_PATTERN);
-		if (res == null || res.length == 0) {
-			log.info("No scripts found in location: " + path + FILE_PATTERN);
-		} else {
-			for (int i = 0; i < res.length; i++) {
-				Resource resource = res[i];
-				String name = resource.getFilename();
-				Object bean = null;
-				log.info("Loading script for first time: " + name);
-				try {
-					bean = getBean(name);
-				} catch (Exception ex) {
-					log.error("Error creating script: " + name, ex);
-				}
-				if (bean == null) {
-					log.error("Script bean is null: " + name);
+		String[] exts = factory.getExtensions();
+		for (String ext : exts) {
+			Resource[] res = appCtx.getResources(path + ext);
+			if (res == null || res.length == 0) {
+				log.info("No scripts found in location: " + path + ext);
+			} else {
+				for (int i = 0; i < res.length; i++) {
+					Resource resource = res[i];
+					String name = resource.getFilename();
+					Object bean = null;
+					log.info("Loading script for first time: " + name);
+					try {
+						bean = getBean(name);
+					} catch (Exception ex) {
+						log.error("Error creating script: " + name, ex);
+					}
+					if (bean == null) {
+						log.error("Script bean is null: " + name);
+					}
 				}
 			}
 		}
@@ -184,7 +160,8 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements App
 		return getBean(name, null, null);
 	}
 
-	public Object getBean(String name, Class requiredType) throws BeansException {
+	public Object getBean(String name, Class requiredType)
+			throws BeansException {
 		return getBean(name, requiredType, null);
 	}
 
@@ -203,17 +180,19 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements App
 		return getBean(name, null, args);
 	}
 
-	public Object getBean(String name, Class requiredType, Object[] args) throws BeansException {
-		setupScriptScope();
+	public Object getBean(String name, Class requiredType, Object[] args)
+			throws BeansException {
+//		setupScriptScope();
 		Object bean = null;
 		if (containsBean(name)) {
 			bean = super.getBean(name, requiredType, args);
 			// if production mode, dont check for reload
-			if (productionMode)
+			if (productionMode) {
 				return bean;
+			}
 			// otherwise check the script object
 			ScriptSource script = null;
-			if (factory != null) { 
+			if (factory != null) {
 				//script = factory.lookupScript(bean);
 				//script = factory.getScriptEngine().get(bean);
 			}
@@ -225,7 +204,7 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements App
 		} else {
 			registerScriptBeanDefinition(name);
 		}
-		return super.getBean(name, requiredType, args); 
+		return super.getBean(name, requiredType, args);
 	}
 
 }
