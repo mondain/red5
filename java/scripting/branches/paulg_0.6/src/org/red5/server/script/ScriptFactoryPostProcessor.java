@@ -306,7 +306,8 @@ public class ScriptFactoryPostProcessor
 
 	public void copyConfigurationFrom(ConfigurableBeanFactory otherFactory) {
 		if (otherFactory instanceof DefaultListableBeanFactory) {
-			this.scriptBeanFactory.setAllowBeanDefinitionOverriding(((DefaultListableBeanFactory) otherFactory).isAllowBeanDefinitionOverriding());
+			//spring 2.0 feature
+			//this.scriptBeanFactory.setAllowBeanDefinitionOverriding(((DefaultListableBeanFactory) otherFactory).isAllowBeanDefinitionOverriding());
 		}
 	}	
 	

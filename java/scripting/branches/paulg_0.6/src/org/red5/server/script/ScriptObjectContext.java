@@ -47,10 +47,10 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  * @author Paul Gregoire <mondain@gmail.com>
  */
 public class ScriptObjectContext implements ApplicationContextAware, ResourceLoader, ResourcePatternResolver {
-
+ 
 	protected static Log log = LogFactory.getLog(ScriptObjectContext.class.getName());
 	//Configurations for the scripting context
-	protected String config = "classpath:/scripting.xml";	
+	//protected String config = "classpath:/scripting.xml";	
 	//
 	private ApplicationContext parentContext;
 	private ApplicationContext appCtx;
@@ -60,13 +60,13 @@ public class ScriptObjectContext implements ApplicationContextAware, ResourceLoa
 	public void init() {
 		log.info("Loading scripting");
 		//load up our configs
-		try {
-			getApplicationContext().getResource(config).getInputStream();
-		} catch (Exception e) {
-			log.error("Error loading scripting configuration", e);
-			//local load
-			//D:\tmp\red5\java\scripting\branches\paulg_0.6\src/scripting.xml")
-		}
+//		try {
+//			getApplicationContext().getResource(config).getInputStream();
+//		} catch (Exception e) {
+//			log.error("Error loading scripting configuration", e);
+//			//local load
+//			//D:\tmp\red5\java\scripting\branches\paulg_0.6\src/scripting.xml")
+//		}
 		
 	}	
 	
@@ -74,11 +74,11 @@ public class ScriptObjectContext implements ApplicationContextAware, ResourceLoa
 		this.parentContext = parentContext;
 	}
 	
-	public static ScriptEngineManager getScriptManager() {
+	public ScriptEngineManager getScriptManager() {
 		return scriptManager;
 	}
 
-	public static void setScriptManager(ScriptEngineManager scriptManager) {
+	public void setScriptManager(ScriptEngineManager scriptManager) {
 		ScriptObjectContext.scriptManager = scriptManager;
 	}
 
