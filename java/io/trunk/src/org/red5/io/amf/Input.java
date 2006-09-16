@@ -61,11 +61,13 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	 */
 	public byte readDataType() {
 		
-		if(buf==null){
+		if (buf != null) {
+			//XXX Paul: prevent an NPE here by returning the current data type
+			//when there is a null buffer
+		    currentDataType = buf.get();
+		} else {
 			log.error("Why is buf null?");
 		}
-		
-		currentDataType = buf.get();
 		
 		byte coreType;
 		
