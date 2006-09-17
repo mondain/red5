@@ -82,6 +82,7 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements
 	// Init method
 
 	public void startup() throws Exception {
+		log.debug("Starting up...");
 		if (!isLazyLoading()) {
 			initScripts();
 		}
@@ -89,6 +90,7 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements
 
 	// Setup methods
 	protected void initScripts() throws Exception {
+		log.debug("Initializing scripts...");
 		String[] exts = factory.getExtensions();
 		for (String ext : exts) {
 			Resource[] res = appCtx.getResources(path + ext);
@@ -130,7 +132,7 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements
 			AbstractBeanDefinition bd = BeanDefinitionReaderUtils
 					.createBeanDefinition(null, null, cargs, null, this
 							.getClassLoader());
-			bd.setFactoryBeanName("jsFactory");
+			bd.setFactoryBeanName(factory.getLanguageName() + "Factory");
 			bd.setFactoryMethodName("create");
 			bd.setSingleton(true);
 			registerBeanDefinition(beanName, bd);
@@ -182,7 +184,9 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements
 
 	public Object getBean(String name, Class requiredType, Object[] args)
 			throws BeansException {
-//		setupScriptScope();
+		log.debug("getBean - name: " + name + " type: "
+				+ requiredType.getName());
+		// setupScriptScope();
 		Object bean = null;
 		if (containsBean(name)) {
 			bean = super.getBean(name, requiredType, args);
@@ -193,8 +197,8 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements
 			// otherwise check the script object
 			ScriptSource script = null;
 			if (factory != null) {
-				//script = factory.lookupScript(bean);
-				//script = factory.getScriptEngine().get(bean);
+				// script = factory.lookupScript(bean);
+				// script = factory.getScriptEngine().get(bean);
 			}
 			if (script != null && script.isModified()) {
 				registerScriptBeanDefinition(name);
@@ -205,6 +209,14 @@ public class ScriptBeanFactory extends DefaultListableBeanFactory implements
 			registerScriptBeanDefinition(name);
 		}
 		return super.getBean(name, requiredType, args);
+	}
+
+	public ScriptEngineFactory getFactory() {
+		return factory;
+	}
+
+	public void setFactory(ScriptEngineFactory factory) {
+		this.factory = factory;
 	}
 
 }

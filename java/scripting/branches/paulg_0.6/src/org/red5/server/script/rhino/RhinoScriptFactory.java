@@ -27,15 +27,16 @@ import org.red5.server.script.ScriptSource;
 import org.springframework.util.Assert;
 
 /**
- * {@link org.springframework.scripting.ScriptFactory} implementation
- * for a Rhino / Javascript script.
- *
- * <p>Typically used in combination with a
+ * {@link org.springframework.scripting.ScriptFactory} implementation for a
+ * Rhino / Javascript script.
+ * 
+ * <p>
+ * Typically used in combination with a
  * {@link org.springframework.scripting.support.ScriptFactoryPostProcessor};
  * see the latter's
  * {@link org.springframework.scripting.support.ScriptFactoryPostProcessor Javadoc}
  * for a configuration example.
- *
+ * 
  * @author Paul Gregoire
  * @since 0.6
  * @see org.springframework.scripting.support.ScriptFactoryPostProcessor
@@ -57,15 +58,28 @@ public class RhinoScriptFactory implements ScriptFactory {
 		this.scriptInterfaces = null;
 	}
 
+	public RhinoScriptFactory(String scriptSourceLocator, Class scriptInterface) {
+		Assert.hasText(scriptSourceLocator);
+		Assert.notNull(scriptInterface);
+		this.scriptSourceLocator = scriptSourceLocator;
+		this.scriptInterfaces = new Class[] { scriptInterface };
+	}
+
 	/**
 	 * Create a new RhinoScriptFactory for the given script source.
-	 * @param scriptSourceLocator a locator that points to the source of the script.
-	 * Interpreted by the post-processor that actually creates the script.
-	 * @param scriptInterfaces the Java interfaces that the scripted object
-	 * is supposed to implement
-	 * @throws IllegalArgumentException if either of the supplied arguments is <code>null</code>;
-	 * or the supplied <code>scriptSourceLocator</code> argument is composed wholly of whitespace;
-	 * or if the supplied <code>scriptInterfaces</code> argument array has no elements
+	 * 
+	 * @param scriptSourceLocator
+	 *            a locator that points to the source of the script. Interpreted
+	 *            by the post-processor that actually creates the script.
+	 * @param scriptInterfaces
+	 *            the Java interfaces that the scripted object is supposed to
+	 *            implement
+	 * @throws IllegalArgumentException
+	 *             if either of the supplied arguments is <code>null</code>;
+	 *             or the supplied <code>scriptSourceLocator</code> argument
+	 *             is composed wholly of whitespace; or if the supplied
+	 *             <code>scriptInterfaces</code> argument array has no
+	 *             elements
 	 */
 	public RhinoScriptFactory(String scriptSourceLocator,
 			Class[] scriptInterfaces) {
@@ -93,6 +107,7 @@ public class RhinoScriptFactory implements ScriptFactory {
 
 	/**
 	 * Rhino scripts do not require a config interface.
+	 * 
 	 * @return <code>false</code> always
 	 */
 	public boolean requiresConfigInterface() {
@@ -101,11 +116,13 @@ public class RhinoScriptFactory implements ScriptFactory {
 
 	/**
 	 * Load and parse the Rhino script via RhinoScriptUtils.
+	 * 
 	 * @see RhinoScriptUtils#createRhinoObject(String, Class[])
 	 */
 	public Object getScriptedObject(ScriptSource actualScriptSource,
 			Class[] actualInterfaces) throws IOException,
 			ScriptCompilationException {
+		log.debug("Getting scripted object...");
 		try {
 			return RhinoScriptUtils.createRhinoObject(actualScriptSource
 					.getScriptAsString(), actualInterfaces);

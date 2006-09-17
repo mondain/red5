@@ -78,7 +78,7 @@ Application.prototype.toString = function () {
 
 print('Javascript application BEGIN');
 		
-log.info('hello world');
+//log.info('hello world');
 		
 try {
 	var ap = new Application();
@@ -94,7 +94,7 @@ try {
 	ap.measureBandwidth();
 	ap.getStreamLength('temp.flv');
 } catch(e) {
-	log.error(e);
+	//log.error(e);
 	print('Script - Exception: ' + e);
 }
 

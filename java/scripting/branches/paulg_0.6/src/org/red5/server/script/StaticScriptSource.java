@@ -23,7 +23,7 @@ import org.springframework.util.Assert;
  * {@link org.springframework.scripting.ScriptSource} interface,
  * encapsulating a given String that contains the script
  * source text.
- *
+ * 
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
@@ -34,7 +34,6 @@ public class StaticScriptSource implements ScriptSource {
 
 	private boolean modified;
 
-
 	/**
 	 * Create a new StaticScriptSource for the given script.
 	 * @param script the script String
@@ -43,7 +42,6 @@ public class StaticScriptSource implements ScriptSource {
 	public StaticScriptSource(String script) {
 		setScript(script);
 	}
-
 
 	/**
 	 * Set a fresh script String, overriding the previous script.
@@ -56,7 +54,6 @@ public class StaticScriptSource implements ScriptSource {
 		this.script = script;
 	}
 
-
 	public String getScriptAsString() {
 		this.modified = false;
 		return this.script;
@@ -65,7 +62,6 @@ public class StaticScriptSource implements ScriptSource {
 	public boolean isModified() {
 		return this.modified;
 	}
-
 
 	public String toString() {
 		return this.script;

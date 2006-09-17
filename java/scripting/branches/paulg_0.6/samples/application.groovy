@@ -18,6 +18,18 @@ public class Application extends ApplicationAdapter {
 	def appScope
 	def serverStream
 
+	public Application() {
+		println "Groovy ctor"
+		super
+	}
+
+	public void main(s) {
+		println "Groovy main"
+		appStart(null)
+		appConnect(null, null)
+		toString()
+	}
+
 	public boolean appStart(app) {
 		println "Groovy appStart"
 		appScope = app

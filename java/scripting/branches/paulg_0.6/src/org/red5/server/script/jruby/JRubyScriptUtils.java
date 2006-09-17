@@ -36,7 +36,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Utility methods for handling JRuby-scripted objects.
- *
+ * 
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
@@ -67,11 +67,10 @@ public abstract class JRubyScriptUtils {
 			throw new ScriptCompilationException("Compilation of JRuby script returned '" + rubyObject + "'");
 		}
 		return Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(),
-						interfaces, new RubyObjectInvocationHandler(rubyObject, ruby));
+				interfaces, new RubyObjectInvocationHandler(rubyObject, ruby));
 	}
 
-
-    /**
+	/**
 	 * Given the root {@link Node} in a JRuby AST will locate the name of the class defined
 	 * by that AST.
 	 * @throws IllegalArgumentException if no class is defined by the supplied AST.
@@ -118,7 +117,6 @@ public abstract class JRubyScriptUtils {
 		return null;
 	}
 
-
 	/**
 	 * InvocationHandler that invokes a JRuby script method.
 	 */
@@ -133,7 +131,8 @@ public abstract class JRubyScriptUtils {
 			this.ruby = ruby;
 		}
 
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		public Object invoke(Object proxy, Method method, Object[] args)
+				throws Throwable {
 			IRubyObject[] rubyArgs = convertToRuby(args);
 			IRubyObject result = this.rubyObject.callMethod(method.getName(), rubyArgs);
 			return JavaUtil.convertRubyToJava(result);
@@ -146,6 +145,5 @@ public abstract class JRubyScriptUtils {
 			return JavaUtil.convertJavaArrayToRuby(this.ruby, javaArgs);
 		}
 	}
-
 
 }

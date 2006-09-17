@@ -1,4 +1,5 @@
 # JRuby - style
+
 require 'java'
 module RedFive
     include_package "org.red5.server.api"
@@ -7,7 +8,6 @@ module RedFive
 	include_package "org.red5.server.adapter"
 	include_package "org.red5.server.stream"
 end
-#include_class "org.red5.server.adapter.ApplicationAdapter"
 
 #
 # application.js - a translation into Ruby of the olfa demo application, a red5 example.
@@ -37,14 +37,13 @@ class Application < RedFive::ApplicationAdapter
 		puts "Ruby appConnect 2"
 		if conn.instance_of?(RedFive::IStreamCapableConnection)
 		    puts "Got stream capable connection"
-			streamConn = conn
 			sbc = RedFive::SimpleBandwidthConfigure.new
 			sbc.setMaxBurst(8388608)
 			sbc.setBurst(8388608)
 			sbc.setOverallBandwidth(2097152)
-			streamConn.setBandwidthConfigure(sbc)
+			conn.setBandwidthConfigure(sbc)
 		end
-		return super.appConnect(conn, params)
+		return super
 	end
 
 	def appDisconnect(conn) 
@@ -52,18 +51,24 @@ class Application < RedFive::ApplicationAdapter
 		if appScope == conn.getScope && @serverStream != nil 
 			@serverStream.close
 		end
-		super.appDisconnect(conn)
+		super
 	end
 
 	def toString
 		return "Ruby toString"
 	end
 
+    def method_missing(m, *args)
+      super unless @value.respond_to?(m) 
+      return @value.send(m, *args)
+    end
+
 end
 
 puts "Ruby application BEGIN"
 a = Application.new
 puts "Application started?", a.appStart(nil)
+a.measureBandwidth(nil)
 a.appConnect(nil, nil)
 
 #aa = RedFive::ApplicationAdapter.new
