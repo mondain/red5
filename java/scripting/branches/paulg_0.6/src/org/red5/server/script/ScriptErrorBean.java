@@ -15,18 +15,20 @@ package org.red5.server.script;
 public class ScriptErrorBean implements ErrorBean {
 
 	private Exception exception;
-	
-	public ScriptErrorBean(Exception ex){
+
+	public ScriptErrorBean(Exception ex) {
 		this.exception = ex;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.codegent.spark.script.ErrorBean#getException()
 	 */
 	public Exception getException() {
 		return exception;
 	}
-	
+
 	public void setException(Exception exception) {
 		this.exception = exception;
 	}

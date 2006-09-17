@@ -55,14 +55,28 @@ public class ScriptObjectContext implements ApplicationContextAware,
 
 	private ApplicationContext appCtx;
 
-	//ScriptEngine manager
+	private ScriptBeanFactory scriptBeanFactory;
+
+	// ScriptEngine manager
 	private static ScriptEngineManager scriptManager;
 
 	public void init() {
 		log.info("Loading scripting");
+		try {
+			scriptBeanFactory.setApplicationContext(appCtx);
+			// scriptBeanFactory.startup();
+		} catch (Exception e) {
+			log.warn("Problem starting script bean factory", e);
+		}
 	}
 
+	public ClassLoader getClassLoader() {
+		return Thread.currentThread().getContextClassLoader();
+	}	
+	
 	public void setParentContext(ApplicationContext parentContext) {
+		log.debug("Parent context for scripts: "
+				+ parentContext.getClass().getName());
 		this.parentContext = parentContext;
 	}
 
@@ -87,14 +101,13 @@ public class ScriptObjectContext implements ApplicationContextAware,
 		this.appCtx = appCtx;
 	}
 
-	/*
-	 public ListableBeanFactory getScripts(){
-	 return getScriptBeanFactory();
-	 }
-	 
-	 public ListableBeanFactory getScriptBeanFactory(){
-	 return appCtx;
-	 }*/
+	public ScriptBeanFactory getScriptBeanFactory() {
+		return scriptBeanFactory;
+	}
+
+	public void setScriptBeanFactory(ScriptBeanFactory scriptBeanFactory) {
+		this.scriptBeanFactory = scriptBeanFactory;
+	}
 
 	public MessageSource getMessageSource() {
 		return appCtx;
@@ -119,53 +132,56 @@ public class ScriptObjectContext implements ApplicationContextAware,
 			scriptManager = new ScriptEngineManager();
 		}
 
-		//Javascript
+		// Javascript
 		ScriptEngine jsEngine = scriptManager.getEngineByName("rhino");
 		jsEngine.put(ScriptEngine.FILENAME, "soc_test.js");
 
 		try {
 			System.out.println("Engine: " + jsEngine.getClass().getName()
 					+ "\n" + jsEngine.getFactory().getEngineVersion());
-			//jsEngine.eval(new FileReader("D:/tmp/red5/java/scripting/branches/paulg_0.6/samples/E4X/e4x_example.js"));
-			//jsEngine.eval(new FileReader("D:/tmp/red5/java/scripting/branches/paulg_0.6/samples/application2.js"));
-			//ScriptContext cx = jsEngine.getContext();
+			// jsEngine.eval(new
+			// FileReader("D:/tmp/red5/java/scripting/branches/paulg_0.6/samples/E4X/e4x_example.js"));
+			// jsEngine.eval(new
+			// FileReader("D:/tmp/red5/java/scripting/branches/paulg_0.6/samples/application2.js"));
+			// ScriptContext cx = jsEngine.getContext();
 
 			// Setup Contect and ClassLoader
-			//Context.enter();
-			//Context cx = Context.getCurrentContext();
-			//ScriptableObject scope = ScriptRuntime.getGlobal(cx);			
-			//ScriptableObject scope = ScriptRuntime.getGlobal((Context) cx);			
+			// Context.enter();
+			// Context cx = Context.getCurrentContext();
+			// ScriptableObject scope = ScriptRuntime.getGlobal(cx);
+			// ScriptableObject scope = ScriptRuntime.getGlobal((Context) cx);
 
-			//			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+			// ClassLoader cl = Thread.currentThread().getContextClassLoader();
 			//			
-			//			GeneratedClassLoader gcl = ctx.createClassLoader(cl);
+			// GeneratedClassLoader gcl = ctx.createClassLoader(cl);
 			//			
-			//			CompilerEnvirons ce = new CompilerEnvirons();
+			// CompilerEnvirons ce = new CompilerEnvirons();
 
-			//ce.setAllowMemberExprAsFunctionName(false)
-			//ctx.hasFeature(Context.FEATURE_DYNAMIC_SCOPE);
-			//			ce.initFromContext(ctx);
-			//			ce.setXmlAvailable(true);
-			//			ce.setOptimizationLevel(9);
+			// ce.setAllowMemberExprAsFunctionName(false)
+			// ctx.hasFeature(Context.FEATURE_DYNAMIC_SCOPE);
+			// ce.initFromContext(ctx);
+			// ce.setXmlAvailable(true);
+			// ce.setOptimizationLevel(9);
 			//			
-			//			ClassCompiler cc = new ClassCompiler(ce);
-			//			cc.setTargetExtends(getExtends());
-			//			cc.setTargetImplements(getInterfaces());
+			// ClassCompiler cc = new ClassCompiler(ce);
+			// cc.setTargetExtends(getExtends());
+			// cc.setTargetImplements(getInterfaces());
 			//
-			//			Object[] generated = null;
-			//			generated = cc.compileToClassFiles(js, this.getLocation(), 0, getTempClassName());
-			//			addGeneratedToClassLoader(gcl, generated);			
+			// Object[] generated = null;
+			// generated = cc.compileToClassFiles(js, this.getLocation(), 0,
+			// getTempClassName());
+			// addGeneratedToClassLoader(gcl, generated);
 
-			// load the script class 
-			//			clazz = ((ClassLoader) gcl).loadClass((String)generated[2]);
-			//			Script script = (Script) clazz.newInstance();
+			// load the script class
+			// clazz = ((ClassLoader) gcl).loadClass((String)generated[2]);
+			// Script script = (Script) clazz.newInstance();
 
 			// execute the script saving the resulting scope
 			// this is a bit like calling the constuctor on an object
 			// the scope contains the resulting object
-			//			Scriptable result = (Scriptable) script.exec(ctx, scope);			
+			// Scriptable result = (Scriptable) script.exec(ctx, scope);
 
-			//set engine scope namespace
+			// set engine scope namespace
 			Namespace n = new SimpleNamespace();
 			jsEngine.setNamespace(n, ScriptContext.ENGINE_SCOPE);
 
@@ -176,11 +192,11 @@ public class ScriptObjectContext implements ApplicationContextAware,
 			CompiledScript scr = eng.compile(new FileReader(
 					"samples/application2.js"));
 
-			//jsEngine.eval(new FileReader("samples/application2.js"));
+			// jsEngine.eval(new FileReader("samples/application2.js"));
 
 			scr.eval();
 
-			//Context.exit();
+			// Context.exit();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();

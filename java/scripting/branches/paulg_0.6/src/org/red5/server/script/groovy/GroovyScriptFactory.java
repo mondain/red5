@@ -30,13 +30,13 @@ import org.springframework.util.ClassUtils;
 /**
  * {@link org.springframework.scripting.ScriptFactory} implementation
  * for a Groovy script.
- *
+ * 
  * <p>Typically used in combination with a
  * {@link org.springframework.scripting.support.ScriptFactoryPostProcessor};
  * see the latter's
  * {@link org.springframework.scripting.support.ScriptFactoryPostProcessor Javadoc}
  * for a configuration example.
- *
+ * 
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @since 2.0
@@ -46,7 +46,6 @@ import org.springframework.util.ClassUtils;
 public class GroovyScriptFactory implements ScriptFactory {
 
 	private final String scriptSourceLocator;
-
 
 	/**
 	 * Create a new GroovyScriptFactory for the given script source.
@@ -60,7 +59,6 @@ public class GroovyScriptFactory implements ScriptFactory {
 		Assert.hasText(scriptSourceLocator);
 		this.scriptSourceLocator = scriptSourceLocator;
 	}
-
 
 	public String getScriptSourceLocator() {
 		return this.scriptSourceLocator;
@@ -96,18 +94,18 @@ public class GroovyScriptFactory implements ScriptFactory {
 		try {
 			Class clazz = groovyClassLoader.parseClass(actualScriptSource.getScriptAsString());
 			return clazz.newInstance();
-		}
-		catch (CompilationFailedException ex) {
+		} catch (CompilationFailedException ex) {
 			throw new ScriptCompilationException(
-					"Could not compile Groovy script: " + actualScriptSource, ex);
-		}
-		catch (InstantiationException ex) {
+					"Could not compile Groovy script: " + actualScriptSource,
+					ex);
+		} catch (InstantiationException ex) {
 			throw new ScriptCompilationException(
-					"Could not instantiate Groovy script class: " + actualScriptSource, ex);
-		}
-		catch (IllegalAccessException ex) {
+					"Could not instantiate Groovy script class: "
+							+ actualScriptSource, ex);
+		} catch (IllegalAccessException ex) {
 			throw new ScriptCompilationException(
-					"Could not access Groovy script constructor: " + actualScriptSource, ex);
+					"Could not access Groovy script constructor: "
+							+ actualScriptSource, ex);
 		}
 	}
 

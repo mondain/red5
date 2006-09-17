@@ -12,8 +12,6 @@
 	<classpathentry kind="lib" path="lib/spring-beans.jar"/>
 	<classpathentry kind="lib" path="lib/spring-context.jar"/>
 	<classpathentry kind="lib" path="lib/spring-core.jar"/>
-	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_2.jar"/>
-	<classpathentry kind="lib" path="lib/asm-1.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/bsh-2.0b4.jar"/>
 	<classpathentry kind="lib" path="lib/groovy-all-1.0-JSR-06.jar"/>
 	<classpathentry kind="lib" path="lib/jacl.jar"/>
@@ -34,5 +32,9 @@
 	<classpathentry kind="lib" path="lib/xbean.jar"/>
 	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/asm-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_3.jar"/>
+	<classpathentry kind="lib" path="lib/spring-aop.jar"/>
+	<classpathentry kind="lib" path="lib/aopalliance.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

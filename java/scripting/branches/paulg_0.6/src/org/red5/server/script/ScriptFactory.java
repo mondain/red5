@@ -22,7 +22,7 @@ import java.io.IOException;
  * Script definition interface, encapsulating the configuration
  * of a specific script as well as a factory method for
  * creating the actual scripted Java <code>Object</code>.
- *
+ * 
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @since 2.0

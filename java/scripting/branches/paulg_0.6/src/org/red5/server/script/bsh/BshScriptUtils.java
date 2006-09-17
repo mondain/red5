@@ -20,17 +20,18 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import bsh.EvalError;
+import bsh.Interpreter;
+import bsh.Primitive;
+import bsh.XThis;
+
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-import bsh.XThis;
-
 /**
  * Utility methods for handling BeanShell-scripted objects.
- *
+ * 
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
@@ -55,7 +56,6 @@ public abstract class BshScriptUtils {
 				interfaces, new BshObjectInvocationHandler(xt));
 	}
 
-
 	/**
 	 * InvocationHandler that invokes a BeanShell script method.
 	 */
@@ -69,14 +69,20 @@ public abstract class BshScriptUtils {
 
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			try {
-				return this.xt.invokeMethod(method.getName(), args);
+				Object result = this.xt.invokeMethod(method.getName(), args);
+				if (result == Primitive.NULL || result == Primitive.VOID) {
+					return null;
+				}
+				if (result instanceof Primitive) {
+					return ((Primitive) result).getValue();
+				}
+				return result;
 			}
 			catch (EvalError ex) {
 				throw new BshExecutionException(ex);
 			}
 		}
 	}
-
 
 	/**
 	 * Exception to be thrown on script execution failure.

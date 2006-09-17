@@ -27,13 +27,13 @@ import org.springframework.util.Assert;
 /**
  * {@link org.springframework.scripting.ScriptFactory} implementation
  * for a JRuby script.
- *
+ * 
  * <p>Typically used in combination with a
  * {@link org.springframework.scripting.support.ScriptFactoryPostProcessor};
  * see the latter's
  * {@link org.springframework.scripting.support.ScriptFactoryPostProcessor Javadoc}
  * for a configuration example.
- *
+ * 
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @since 2.0
@@ -45,7 +45,6 @@ public class JRubyScriptFactory implements ScriptFactory {
 	private final String scriptSourceLocator;
 
 	private final Class[] scriptInterfaces;
-
 
 	/**
 	 * Create a new JRubyScriptFactory for the given script source.
@@ -63,7 +62,6 @@ public class JRubyScriptFactory implements ScriptFactory {
 		this.scriptSourceLocator = scriptSourceLocator;
 		this.scriptInterfaces = scriptInterfaces;
 	}
-
 
 	public String getScriptSourceLocator() {
 		return this.scriptSourceLocator;

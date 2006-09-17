@@ -20,7 +20,7 @@ import org.springframework.core.NestedRuntimeException;
 
 /**
  * Exception to be thrown on script compilation failure.
- *
+ * 
  * @author Juergen Hoeller
  * @since 2.0
  */

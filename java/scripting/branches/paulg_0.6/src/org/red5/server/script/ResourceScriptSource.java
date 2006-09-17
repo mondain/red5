@@ -36,7 +36,7 @@ import org.springframework.util.FileCopyUtils;
  * {@link org.springframework.core.io.Resource#getInputStream() InputStream}
  * and tracks the file timestamp of the {@link org.springframework.core.io.Resource}
  * (if possible).
- *
+ * 
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
@@ -52,7 +52,6 @@ public class ResourceScriptSource implements ScriptSource {
 	private final Resource resource;
 
 	private long lastModified = -1;
-
 
 	/**
 	 * Create a new ResourceScriptSource for the given resource.
@@ -72,18 +71,17 @@ public class ResourceScriptSource implements ScriptSource {
 		return resource;
 	}
 
-    public String getScriptAsString() throws IOException {
-        this.lastModified = retrieveLastModifiedTime();
-        Reader reader = null;
-        try {
-            // try to get a FileReader first - generally more reliable
-            reader = new FileReader(this.resource.getFile());
-        }
-        catch (IOException ex) {
-            reader = new InputStreamReader(this.resource.getInputStream());
-        }
-        return FileCopyUtils.copyToString(reader);
-    }
+	public String getScriptAsString() throws IOException {
+		this.lastModified = retrieveLastModifiedTime();
+		Reader reader = null;
+		try {
+			// try to get a FileReader first - generally more reliable
+			reader = new FileReader(this.resource.getFile());
+		} catch (IOException ex) {
+			reader = new InputStreamReader(this.resource.getInputStream());
+		}
+		return FileCopyUtils.copyToString(reader);
+	}
 
 	public boolean isModified() {
 		if (this.lastModified < 0) {
@@ -91,7 +89,6 @@ public class ResourceScriptSource implements ScriptSource {
 		}
 		return (retrieveLastModifiedTime() > this.lastModified);
 	}
-
 
 	/**
 	 * Retrieve the current last-modified timestamp of the
@@ -102,8 +99,7 @@ public class ResourceScriptSource implements ScriptSource {
 		try {
 			File file = getResource().getFile();
 			return file.lastModified();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(
 						getResource() + " could not be resolved in the file system - current timestamp not available", ex);
@@ -111,7 +107,6 @@ public class ResourceScriptSource implements ScriptSource {
 			return 0;
 		}
 	}
-
 
 	public String toString() {
 		return this.resource.toString();
