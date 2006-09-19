@@ -178,7 +178,7 @@ public class ScriptFactoryPostProcessor extends
 		this.scriptBeanFactory.setParentBeanFactory(this.beanFactory);
 
 		// Required so that all BeanPostProcessors, Scopes, etc become available.
-		//this.scriptBeanFactory.copyConfigurationFrom(this.beanFactory);
+		this.scriptBeanFactory.copyConfigurationFrom(this.beanFactory);
 	}
 
 	public void setResourceLoader(ResourceLoader resourceLoader) {
