@@ -16,15 +16,18 @@
 
 package org.red5.server.script.rhino;
 
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.Invocable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import javax.script.Namespace;
 
 import net.sf.cglib.core.NamingPolicy;
 import net.sf.cglib.core.Predicate;
 
 import org.jruby.exceptions.JumpException;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.ScriptableObject;
 import org.red5.server.script.ScriptCompilationException;
 
 import com.sun.script.javascript.RhinoScriptEngine;
@@ -56,33 +59,33 @@ public abstract class RhinoScriptUtils {
 	public static Object createRhinoObject(String scriptSource,
 			Class[] interfaces) throws ScriptCompilationException, Exception {
 		RhinoScriptEngine engine = new RhinoScriptEngine();
-		// String className = findClassName(scriptSource);
 		Class clazz = null;
-		// Script rhinoObject = (Script) rhino.eval("\n" + className + ".new");
+		Object o = null;
 		try {
-			// ScriptEngine engine =
-			// scriptContext.getScriptManager().getEngineByExtension(".js");
-			// set engine scope namespace
-			//Namespace n = new SimpleNamespace();
-			//engine.setNamespace(n, ScriptContext.ENGINE_SCOPE);
 			Namespace n = engine.createNamespace();
 			// add the logger to the script
 			n.put("log", RhinoScriptFactory.log);
 			//evaluate - throw away result, we want function only
-			RhinoScriptFactory.log.debug("Eval output: " + engine.eval(scriptSource));
-			if (interfaces != null && interfaces.length > 0) {
-				Invocable invocable = (Invocable) engine;
-				clazz = (Class) invocable.getInterface(interfaces[0]);
-			} else {
-				//is this correct?
-				//clazz = (Class) engine.eval(scriptSource);
-				//clazz = (Class) invocable.getClass();
-				//clazz = (Class) engine.compile(scriptSource);
-				Compilable compiler = (Compilable) engine;
-				//CompiledScript script = compiler.compile(scriptSource);
-				clazz = compiler.compile(scriptSource).getClass();
-				//clazz = (Class) script.newInstance();
-			}
+			RhinoScriptFactory.log.debug("Eval output 1: " + engine.eval(scriptSource));
+			o = n.get("instance");
+			RhinoScriptFactory.log.debug("Eval output 2: " + o.getClass().getName());
+			Function fn = (Function) ScriptableObject.getProperty((ScriptableObject) o, "getListOfAvailableFLVs");
+			RhinoScriptFactory.log.debug("Fn output: " + fn.toString());
+//			if (interfaces != null && interfaces.length > 0) {
+//				Invocable invocable = (Invocable) engine;
+//				clazz = (Class) invocable.getInterface(interfaces[0]);
+//				o = invocable.call(className, new Object[]{});
+//			} else {
+//				//is this correct?
+//				//clazz = (Class) engine.eval(scriptSource);
+//				//clazz = (Class) invocable.getClass();
+//				//clazz = (Class) engine.compile(scriptSource);
+//				Compilable compiler = (Compilable) engine;
+//				CompiledScript script = compiler.compile(scriptSource);
+//				script.eval();
+//				//clazz = compiler.compile(scriptSource)
+//				//clazz = (Class) script.newInstance();
+//			}
 
 			// rhinoObject = clazz.newInstance();
 			// System.out.println("Result of compiled script: " +
@@ -91,22 +94,27 @@ public abstract class RhinoScriptUtils {
 			throw new ScriptCompilationException(
 					"Could not compile Rhino script: " + scriptSource, ex);
 		}
-		if (null == clazz) {
+		if (null == o) {
 			throw new ScriptCompilationException(
-					"Compilation of Rhino script returned " + clazz.getName());
+					"Compilation of Rhino script returned " + o.getClass().getName());
 		}
 		//return engine.getInterface(clazz);
-		return clazz.newInstance();
+		return o;
 	}
 
-	/*
-	 * private static String findClassName(String source) { String result =
-	 * null; try { Pattern regex = Pattern.compile("function ([\\w]+)[.\\(\\)
-	 * ]+[\\s|{]\\s", Pattern.CANON_EQ); Matcher matcher =
-	 * regex.matcher(source); if (matcher.find()) { result = matcher.group(); } }
-	 * catch (PatternSyntaxException ex) { // Syntax error in the regular
-	 * expression } return result; }
-	 */
+	private static String findClassName(String source) {
+		String result = null;
+		try {
+			Pattern regex = Pattern.compile(
+					"function ([\\w]+)[.\\(\\)]+[\\s|{]\\s", Pattern.CANON_EQ);
+			Matcher matcher = regex.matcher(source);
+			if (matcher.find()) {
+				result = matcher.group();
+			}
+		} catch (PatternSyntaxException ex) { // Syntax error in the regular expression 
+		}
+		return result;
+	}
 
 	/*
 	 * protected Object createObject(InputStream is) throws IOException,
