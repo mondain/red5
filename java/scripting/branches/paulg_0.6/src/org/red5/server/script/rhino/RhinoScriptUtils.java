@@ -16,21 +16,17 @@
 
 package org.red5.server.script.rhino;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.script.Invocable;
 import javax.script.Namespace;
-
-import net.sf.cglib.core.NamingPolicy;
-import net.sf.cglib.core.Predicate;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.SimpleNamespace;
 
 import org.jruby.exceptions.JumpException;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.ScriptableObject;
 import org.red5.server.script.ScriptCompilationException;
-
-import com.sun.script.javascript.RhinoScriptEngine;
 
 /**
  * Utility methods for handling Rhino / Javascript objects.
@@ -39,10 +35,6 @@ import com.sun.script.javascript.RhinoScriptEngine;
  * @since 0.6
  */
 public abstract class RhinoScriptUtils {
-
-	protected Class extendsClass = Object.class;
-
-	protected String id;
 
 	/**
 	 * Create a new Rhino-scripted object from the given script source.
@@ -58,62 +50,60 @@ public abstract class RhinoScriptUtils {
 	 */
 	public static Object createRhinoObject(String scriptSource,
 			Class[] interfaces) throws ScriptCompilationException, Exception {
-		RhinoScriptEngine engine = new RhinoScriptEngine();
-		Class clazz = null;
+
 		Object o = null;
 		try {
+			//get the function name ie. class name
+			String funcName = RhinoScriptUtils.getFunctionName(scriptSource);
+			System.out.println("\n" + scriptSource + "\n");
+			//JSR223 style
+			ScriptEngineManager mgr = new ScriptEngineManager();
+			ScriptEngine engine = mgr.getEngineByName("rhino");
+			//Rhino style
+			//RhinoScriptEngine engine = new RhinoScriptEngine();
+			// set engine scope namespace
 			Namespace n = engine.createNamespace();
+			if (null == n) {
+				System.out.println("Engine namespace not created, using simple");
+				n = new SimpleNamespace();
+				System.out.println("Setting ns");
+				engine.setNamespace(n, ScriptContext.ENGINE_SCOPE);
+			}
 			// add the logger to the script
 			n.put("log", RhinoScriptFactory.log);
-			//evaluate - throw away result, we want function only
-			RhinoScriptFactory.log.debug("Eval output 1: " + engine.eval(scriptSource));
-			o = n.get("instance");
-			RhinoScriptFactory.log.debug("Eval output 2: " + o.getClass().getName());
-			Function fn = (Function) ScriptableObject.getProperty((ScriptableObject) o, "getListOfAvailableFLVs");
-			RhinoScriptFactory.log.debug("Fn output: " + fn.toString());
-//			if (interfaces != null && interfaces.length > 0) {
-//				Invocable invocable = (Invocable) engine;
-//				clazz = (Class) invocable.getInterface(interfaces[0]);
-//				o = invocable.call(className, new Object[]{});
-//			} else {
-//				//is this correct?
-//				//clazz = (Class) engine.eval(scriptSource);
-//				//clazz = (Class) invocable.getClass();
-//				//clazz = (Class) engine.compile(scriptSource);
-//				Compilable compiler = (Compilable) engine;
-//				CompiledScript script = compiler.compile(scriptSource);
-//				script.eval();
-//				//clazz = compiler.compile(scriptSource)
-//				//clazz = (Class) script.newInstance();
-//			}
-
-			// rhinoObject = clazz.newInstance();
-			// System.out.println("Result of compiled script: " +
-			// compiled.eval());
+			//run it
+			engine.eval(scriptSource, n);
+			//get invocable
+			Object[] args = { "" };
+			Invocable invocable = (Invocable) engine;
+			o = invocable.call(funcName, args);
+			RhinoScriptFactory.log.debug("Result: " + o);
+			o = invocable.getInterface(interfaces[0]);
 		} catch (Exception ex) {
 			throw new ScriptCompilationException(
 					"Could not compile Rhino script: " + scriptSource, ex);
 		}
 		if (null == o) {
 			throw new ScriptCompilationException(
-					"Compilation of Rhino script returned " + o.getClass().getName());
+					"Compilation of Rhino script returned "
+							+ o.getClass().getName());
 		}
-		//return engine.getInterface(clazz);
 		return o;
 	}
 
-	private static String findClassName(String source) {
-		String result = null;
+	private static String getFunctionName(String scriptSource) {
+		String ret = "undefined";
 		try {
-			Pattern regex = Pattern.compile(
-					"function ([\\w]+)[.\\(\\)]+[\\s|{]\\s", Pattern.CANON_EQ);
-			Matcher matcher = regex.matcher(source);
-			if (matcher.find()) {
-				result = matcher.group();
-			}
-		} catch (PatternSyntaxException ex) { // Syntax error in the regular expression 
+			ret = scriptSource.replaceAll(
+					"[\\S\\w\\s]+function ([\\w]+)\\(\\)[\\S\\w\\s]+", "$1");
+		} catch (PatternSyntaxException ex) {
+			// Syntax error in the regular expression
+		} catch (IllegalArgumentException ex) {
+			// Syntax error in the replacement text (unescaped $ signs?)
+		} catch (IndexOutOfBoundsException ex) {
+			// Non-existent backreference used the replacement text
 		}
-		return result;
+		return ret;
 	}
 
 	/*
@@ -208,64 +198,5 @@ public abstract class RhinoScriptUtils {
 	 * exception", rex); } catch (Exception ex) { throw new
 	 * BeanCreationException("Error instantiating" + clazz, ex); } }
 	 */
-
-	public void setExtends(Class extendsClass) {
-		this.extendsClass = extendsClass;
-	}
-
-	public Class getExtends() {
-		return this.extendsClass;
-	}
-
-	/**
-	 * @param gcl
-	 * @param generated /
-	 *            private void addGeneratedToClassLoader(GeneratedClassLoader
-	 *            gcl, Object[] generated) { for (int i = 0; i <
-	 *            generated.length; i += 2) { String name = (String)
-	 *            generated[i]; byte[] code = (byte[]) generated[i + 1];
-	 *            gcl.defineClass(name, code); } }
-	 * 
-	 * private void setClassName(String className){ this.className = className +
-	 * '_' + id; }
-	 * 
-	 * private String getClassName(){ if(className!=null) return className; else
-	 * if(isInline()) return getInlineClassName(); else return
-	 * getSafeClassName(getLocation()); }
-	 * 
-	 * private String getInlineClassName(){ return "InlineJS__"+id; }
-	 * 
-	 * private String getTempClassName(){ return "TempJS__"+id; }
-	 * 
-	 * private String getPublicInterfaceName(){ return getClassName()+"_Pub"; }
-	 * 
-	 * public String getSafeClassName(String unsafe){
-	 * if(unsafe.toLowerCase().endsWith(".js")) unsafe = unsafe.substring(0,
-	 * unsafe.length()-3); unsafe = unsafe.replace('/', '.'); unsafe =
-	 * unsafe.replace('-', '_'); unsafe = unsafe.replace(' ', '_');
-	 * if(unsafe.startsWith(".")) unsafe = unsafe.substring(1); return unsafe +
-	 * "_" + id; }
-	 */
-
-	class InterfaceNamingPolicy implements NamingPolicy {
-
-		private String interfaceName;
-
-		public InterfaceNamingPolicy(String interfaceName) {
-			this.interfaceName = interfaceName;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see net.sf.cglib.core.NamingPolicy#getClassName(java.lang.String,
-		 *      java.lang.String, java.lang.Object, net.sf.cglib.core.Predicate)
-		 */
-		public String getClassName(String arg0, String arg1, Object arg2,
-				Predicate arg3) {
-			return interfaceName;
-		}
-
-	}
 
 }
