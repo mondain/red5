@@ -16,6 +16,9 @@
 
 package org.red5.server.script.rhino;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.regex.PatternSyntaxException;
 
 import javax.script.Invocable;
@@ -27,6 +30,7 @@ import javax.script.SimpleNamespace;
 
 import org.jruby.exceptions.JumpException;
 import org.red5.server.script.ScriptCompilationException;
+import org.springframework.util.ClassUtils;
 
 /**
  * Utility methods for handling Rhino / Javascript objects.
@@ -50,52 +54,83 @@ public abstract class RhinoScriptUtils {
 	 */
 	public static Object createRhinoObject(String scriptSource,
 			Class[] interfaces) throws ScriptCompilationException, Exception {
+		//System.out.println("\n" + scriptSource + "\n");
+		//JSR223 style
+		ScriptEngineManager mgr = new ScriptEngineManager();
+		ScriptEngine engine = mgr.getEngineByName("rhino");
+		// set engine scope namespace
+		Namespace nameSpace = engine.createNamespace();
+		if (null == nameSpace) {
+			System.out.println("Engine namespace not created, using simple");
+			nameSpace = new SimpleNamespace();
+			System.out.println("Setting ns");
+			engine.setNamespace(nameSpace, ScriptContext.ENGINE_SCOPE);
+		}
+		// add the logger to the script
+		nameSpace.put("log", RhinoScriptFactory.log);
 
-		Object o = null;
-		try {
-			//get the function name ie. class name
-			String funcName = RhinoScriptUtils.getFunctionName(scriptSource);
-			System.out.println("\n" + scriptSource + "\n");
-			//JSR223 style
-			ScriptEngineManager mgr = new ScriptEngineManager();
-			ScriptEngine engine = mgr.getEngineByName("rhino");
-			//Rhino style
-			//RhinoScriptEngine engine = new RhinoScriptEngine();
-			// set engine scope namespace
-			Namespace n = engine.createNamespace();
-			if (null == n) {
-				System.out.println("Engine namespace not created, using simple");
-				n = new SimpleNamespace();
-				System.out.println("Setting ns");
-				engine.setNamespace(n, ScriptContext.ENGINE_SCOPE);
-			}
-			// add the logger to the script
-			n.put("log", RhinoScriptFactory.log);
-			//run it
-			engine.eval(scriptSource, n);
-			//get invocable
-			Object[] args = { "" };
-			Invocable invocable = (Invocable) engine;
-			o = invocable.call(funcName, args);
-			RhinoScriptFactory.log.debug("Result: " + o);
-			o = invocable.getInterface(interfaces[0]);
-		} catch (Exception ex) {
-			throw new ScriptCompilationException(
-					"Could not compile Rhino script: " + scriptSource, ex);
-		}
-		if (null == o) {
-			throw new ScriptCompilationException(
-					"Compilation of Rhino script returned "
-							+ o.getClass().getName());
-		}
-		return o;
+		return Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), interfaces, new RhinoObjectInvocationHandler(engine, nameSpace, scriptSource, interfaces));
 	}
 
+	/**
+	 * InvocationHandler that invokes a Rhino script method.
+	 */
+	private static class RhinoObjectInvocationHandler implements InvocationHandler {
+
+		private final Invocable invocable;
+
+		public RhinoObjectInvocationHandler(ScriptEngine engine, Namespace nameSpace, String scriptSource, Class[] interfaces) {
+			try {
+				//get the function name ie. class name
+				String funcName = RhinoScriptUtils.getFunctionName(scriptSource);
+				RhinoScriptFactory.log.debug("Function: " + funcName);
+				//run it
+				engine.eval(scriptSource, nameSpace);
+				//get invocable
+				this.invocable = (Invocable) engine;
+				//call the constructor
+				//Object o = invocable.call(funcName, new Object[]{""});
+				Object o = invocable.call(funcName, interfaces);
+				RhinoScriptFactory.log.debug("Result of script constructor call: " + o);
+			} catch (Exception ex) {
+				throw new ScriptCompilationException("Could not compile Rhino script: " + scriptSource, ex);
+			}
+		}
+
+		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+//			RhinoScriptFactory.log.debug("Proxy: " + proxy.getClass().getName());	
+//
+//			Method[] methods = proxy.getClass().getMethods();
+//            Method m = null;
+//            String name = null;
+//            for (Method element : methods) {
+//                m = element;
+//                name = m.getName();			
+//                RhinoScriptFactory.log.debug("Proxy method: " + name); 
+//            }			
+//			RhinoScriptFactory.log.debug("Get interface: " + invocable.getInterface(proxy.getClass()));			
+			//ensure a set of args are available
+			if (args == null || args.length == 0) {
+				args = new Object[]{""};
+			}
+			RhinoScriptFactory.log.debug("Calling: "  + method.getName());
+			return  invocable.call(method.getName(), args);
+		}
+
+	}	
+	
+	/**
+	 * Uses a regex to get the first "function" name, this name
+	 * is used to create an instance of the javascript object.
+	 * 
+	 * @param scriptSource
+	 * @return
+	 */
 	private static String getFunctionName(String scriptSource) {
 		String ret = "undefined";
 		try {
 			ret = scriptSource.replaceAll(
-					"[\\S\\w\\s]+function ([\\w]+)\\(\\)[\\S\\w\\s]+", "$1");
+					"[\\S\\w\\s]*?function ([\\w]+)\\(\\)[\\S\\w\\s]+", "$1");
 		} catch (PatternSyntaxException ex) {
 			// Syntax error in the regular expression
 		} catch (IllegalArgumentException ex) {
@@ -105,98 +140,5 @@ public abstract class RhinoScriptUtils {
 		}
 		return ret;
 	}
-
-	/*
-	 * protected Object createObject(InputStream is) throws IOException,
-	 * BeansException { // clearInterfaces(); Class clazz = null; try { // Get
-	 * the JavaScript into a String String js = "";
-	 * 
-	 * if(isInline()) js = inlineScriptBody(); else js = getAsString(is);
-	 *  // Setup Contect and ClassLoader Context ctx = Context.enter();
-	 * 
-	 * //ctx.initStandardObjects();
-	 * 
-	 * ClassLoader cl = Thread.currentThread().getContextClassLoader();
-	 * 
-	 * GeneratedClassLoader gcl = ctx.createClassLoader(cl);
-	 * 
-	 * CompilerEnvirons ce = new CompilerEnvirons();
-	 * 
-	 * //ce.setAllowMemberExprAsFunctionName(false)
-	 * //ctx.hasFeature(Context.FEATURE_DYNAMIC_SCOPE); ce.initFromContext(ctx);
-	 * ce.setXmlAvailable(true); ce.setOptimizationLevel(9);
-	 * 
-	 * ClassCompiler cc = new ClassCompiler(ce);
-	 * cc.setTargetExtends(getExtends());
-	 * cc.setTargetImplements(getInterfaces());
-	 * 
-	 * Object[] generated = cc.compileToClassFiles(js, this.getLocation(), 0,
-	 * getTempClassName()); addGeneratedToClassLoader(gcl, generated);
-	 *  // get the scope; ScriptableObject scope =
-	 * JavaScriptScopeThreadLocal.getScope(); if(scope==null) scope =
-	 * ScriptRuntime.getGlobal(ctx);
-	 *  // add a log object to the scope ScriptableObject.putProperty(scope,
-	 * "log", Context.javaToJS(LogFactory.getLog(getClassName()), scope));
-	 *  // load the script class clazz = ((ClassLoader)
-	 * gcl).loadClass((String)generated[2]); Script script = (Script)
-	 * clazz.newInstance();
-	 *  // execute the script saving the resulting scope // this is a bit like
-	 * calling the constuctor on an object // the scope contains the resulting
-	 * object Scriptable result = (Scriptable) script.exec(ctx, scope);
-	 * 
-	 * cc.setTargetExtends(getExtends());
-	 * 
-	 * if(log.isDebugEnabled()) log.debug("Target extends:
-	 * "+cc.getTargetExtends());
-	 * 
-	 * if(meta.getImplements().length>0){ String[] interfaces =
-	 * meta.getImplements(); for(int i=0; i<interfaces.length; i++){
-	 * addInterface(cl.loadClass(interfaces[i])); } }
-	 * 
-	 * if(meta.getMethodNames().length>0){
-	 * 
-	 * Class publicInterface;
-	 * 
-	 * try{ publicInterface = cl.loadClass(getPublicInterfaceName()); }
-	 * catch(ClassNotFoundException ex){ InterfaceMaker interfaceMaker = new
-	 * InterfaceMaker(); interfaceMaker.setClassLoader(cl); NamingPolicy
-	 * namingPolicy = new InterfaceNamingPolicy(getPublicInterfaceName());
-	 * interfaceMaker.setNamingPolicy(namingPolicy); String[] methodNames =
-	 * meta.getMethodNames(); Type[] noEx = new Type[0]; for(int i=0; i<methodNames.length;
-	 * i++){ String descriptor = meta.getMethodDescriptor(methodNames[i]);
-	 * if(log.isDebugEnabled()) log.debug("Method descriptor: "+descriptor);
-	 * interfaceMaker.add(TypeUtils.parseSignature(descriptor),noEx); }
-	 * publicInterface = interfaceMaker.create(); }
-	 * 
-	 * if(log.isDebugEnabled()) log.debug("Generated public interface " +
-	 * publicInterface.getName());
-	 * 
-	 * addInterface(publicInterface);
-	 *  }
-	 * 
-	 * cc.setTargetImplements(getInterfaces());
-	 * 
-	 * try {
-	 * 
-	 * generated = cc.compileToClassFiles(js, this.getLocation(), 0,
-	 * getClassName());
-	 * 
-	 * addGeneratedToClassLoader(gcl, generated);
-	 * 
-	 * clazz = ((ClassLoader) gcl).loadClass(getClassName());
-	 * if(log.isDebugEnabled()) log.debug("Loaded javascript class " + clazz); }
-	 * catch(NoClassDefFoundError ncex){ throw new BeanCreationException("Class
-	 * not found", ncex); }
-	 *  // Call the constructor passing in the scope object Constructor cstr =
-	 * clazz.getConstructor(new Class[]{Scriptable.class}); Object instance =
-	 * cstr.newInstance(new Object[]{scope});
-	 * 
-	 * JavaScriptScopeThreadLocal.setScope(scope);
-	 * 
-	 * Context.exit(); return instance;
-	 *  } catch (RuntimeException rex){ throw new BeanCreationException("Runtime
-	 * exception", rex); } catch (Exception ex) { throw new
-	 * BeanCreationException("Error instantiating" + clazz, ex); } }
-	 */
 
 }
