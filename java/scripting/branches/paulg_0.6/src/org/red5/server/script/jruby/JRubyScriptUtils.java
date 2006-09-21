@@ -21,6 +21,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 import org.jruby.IRuby;
 import org.jruby.Ruby;
 import org.jruby.RubyNil;
@@ -53,15 +56,15 @@ public abstract class JRubyScriptUtils {
 	 */
 	public static Object createJRubyObject(String scriptSource, Class[] interfaces) throws JumpException {
 		IRuby ruby = Ruby.getDefaultInstance();
-
+		//node is a compiled script
 		Node scriptRootNode = ruby.parse(scriptSource, "");
+		//rubyObj is the result from an evaluated compiled script
 		IRubyObject rubyObject = ruby.eval(scriptRootNode);
-
+		//if the script does not return an instance then call the constructor
 		if (rubyObject instanceof RubyNil) {
 			String className = findClassName(scriptRootNode);
 			rubyObject = ruby.evalScript("\n" + className + ".new");
 		}
-
 		// still null?
 		if (rubyObject instanceof RubyNil) {
 			throw new ScriptCompilationException("Compilation of JRuby script returned '" + rubyObject + "'");
@@ -121,9 +124,9 @@ public abstract class JRubyScriptUtils {
 	 * InvocationHandler that invokes a JRuby script method.
 	 */
 	private static class RubyObjectInvocationHandler implements InvocationHandler {
-
+		//scripted instance
 		private final IRubyObject rubyObject;
-
+		//script engine
 		private final IRuby ruby;
 
 		public RubyObjectInvocationHandler(IRubyObject rubyObject, IRuby ruby) {
