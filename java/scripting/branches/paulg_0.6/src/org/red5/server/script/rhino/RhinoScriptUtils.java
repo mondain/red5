@@ -21,6 +21,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.regex.PatternSyntaxException;
 
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.Namespace;
 import javax.script.ScriptContext;
@@ -28,8 +30,12 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleNamespace;
 
+import org.mozilla.javascript.ScriptableObject;
 import org.red5.server.script.ScriptCompilationException;
 import org.springframework.util.ClassUtils;
+
+import com.sun.script.javascript.ExternalScriptable;
+import com.sun.script.javascript.RhinoScriptEngine;
 
 /**
  * Utility methods for handling Rhino / Javascript objects.
@@ -62,13 +68,43 @@ public abstract class RhinoScriptUtils {
 		if (null == nameSpace) {
 			System.out.println("Engine namespace not created, using simple");
 			nameSpace = new SimpleNamespace();
+			//set namespace
 			System.out.println("Setting ns");
 			engine.setNamespace(nameSpace, ScriptContext.ENGINE_SCOPE);
 		}
 		// add the logger to the script
 		nameSpace.put("log", RhinoScriptFactory.log);
-
-		return Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), interfaces, new RhinoObjectInvocationHandler(engine, nameSpace, scriptSource, interfaces));
+		// add the interfaces to the ns
+		nameSpace.put("interfaces", interfaces);
+		//compile the script
+		CompiledScript script = ((Compilable) engine).compile(scriptSource);
+		//see if the script returns an instance of the "class"
+		Object o = script.eval(nameSpace);
+		RhinoScriptFactory.log.debug("Result of script call: " + o);
+		//null result so try constructor
+		if (null == o) {
+			//get the function name ie. class name
+			String funcName = RhinoScriptUtils.getFunctionName(scriptSource);
+			RhinoScriptFactory.log.debug("Function: " + funcName);
+			//if function name is not null call it
+			if (null != funcName) {
+				o = ((Invocable) engine).call(funcName, interfaces);
+				RhinoScriptFactory.log.debug("Result of script constructor call: " + o);
+				if (null == o) {
+					o = engine.getNamespace(ScriptContext.ENGINE_SCOPE).get(funcName);	
+					RhinoScriptFactory.log.debug("Result of lookup with constructor name: " + o);
+				}
+			} 
+			//if the result is still null then look for an instance
+			if (null == o) {
+				o = engine.getNamespace(ScriptContext.ENGINE_SCOPE).get("instance");	
+			}
+		}
+		if (null == o) {
+			throw new ScriptCompilationException("Compilation of Rhino script returned '" + o + "'");
+		}		
+		
+		return Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), interfaces, new RhinoObjectInvocationHandler(engine, o));
 	}
 
 	/**
@@ -76,57 +112,64 @@ public abstract class RhinoScriptUtils {
 	 */
 	private static class RhinoObjectInvocationHandler implements InvocationHandler {
 
-		private final Invocable invocable;
+		private final ScriptEngine engine;
+		//private ExternalScriptable instance;
 		private Object instance;
 
-		public RhinoObjectInvocationHandler(ScriptEngine engine, Namespace nameSpace, String scriptSource, Class[] interfaces) {
-			try {
-				//get the function name ie. class name
-				String funcName = RhinoScriptUtils.getFunctionName(scriptSource);
-				RhinoScriptFactory.log.debug("Function: " + funcName);
-				//run it
-				engine.eval(scriptSource, nameSpace);
-				Object o = nameSpace.get("instance");
-				RhinoScriptFactory.log.debug("Result of script instance: " + o);
-				//get invocable
-				this.invocable = (Invocable) engine;
-				if (null != o) {
-					this.instance = o;
-				} else {
-					//call the constructor
-					o = invocable.call(funcName, interfaces);
-					//RhinoScriptFactory.log.debug("Result of script constructor call: " + o);
-				}
-			} catch (Exception ex) {
-				throw new ScriptCompilationException("Could not compile Rhino script: " + scriptSource, ex);
-			}
+		public RhinoObjectInvocationHandler(ScriptEngine engine, Object instance) {
+			this.engine = engine;
+			this.instance = instance;
 		}
 
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-//			RhinoScriptFactory.log.debug("Proxy: " + proxy.getClass().getName());	
-//
-//			Method[] methods = proxy.getClass().getMethods();
-//            Method m = null;
-//            String name = null;
-//            for (Method element : methods) {
-//                m = element;
-//                name = m.getName();			
-//                RhinoScriptFactory.log.debug("Proxy method: " + name); 
-//            }			
-//			RhinoScriptFactory.log.debug("Get interface: " + invocable.getInterface(proxy.getClass()));			
+			Object o = null;
 			//ensure a set of args are available
 			if (args == null || args.length == 0) {
 				args = new Object[]{""};
-			}
+			}		
+			Invocable invocable = (Invocable) engine;
 			RhinoScriptFactory.log.debug("Calling: "  + method.getName());
-			if (null != instance) {
-				return invocable.call(method.getName(), instance, args);
-			} else {
-				return invocable.call(method.getName(), args);
-			}
-		}
 
+//			for (Class interfac : interfaces) {
+//				dump(interfac);
+//				if (interfac.isInterface()) {
+//					o = invocable.getInterface(interfac);
+//					System.out.println("Interface: " + o.getClass().getName());
+//					dump(o);
+//					return o;
+//				}
+
+			Namespace nameSpace = engine.getNamespace(ScriptContext.ENGINE_SCOPE);
+			Class[] interfaces = (Class[]) nameSpace.get("interfaces");
+			dump(invocable.getInterface(interfaces[0]));
+			dump(invocable.getInterface(interfaces[1]));
+			dump(instance);
+			try {
+				o = invocable.call(method.getName(), args);
+			} catch(Throwable t) {
+				ExternalScriptable ext = new ExternalScriptable((RhinoScriptEngine) engine);
+				o = ScriptableObject.callMethod(ext, method.getName(), args);
+			}
+			return o;
+		}
 	}	
+
+	private static void dump(Object c) {
+		if (!RhinoScriptFactory.log.isDebugEnabled()) {
+			return;
+		}
+		System.out.println("Name: " + c.getClass().getName());
+		System.out.println("==============================================================================");
+		Method[] methods = c.getClass().getMethods();
+        Method m = null;
+        String name = null;
+        for (Method element : methods) {
+            m = element;
+            name = m.getName();			
+            RhinoScriptFactory.log.debug("Proxy method: " + name); 
+        }			
+        System.out.println("==============================================================================");
+	}
 	
 	/**
 	 * Uses a regex to get the first "function" name, this name
@@ -150,4 +193,6 @@ public abstract class RhinoScriptUtils {
 		return ret;
 	}
 
+	
+	
 }

@@ -18,6 +18,9 @@ package org.red5.server.script.rhino;
 
 import java.io.IOException;
 
+import net.sf.cglib.core.NamingPolicy;
+import net.sf.cglib.core.Predicate;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.red5.server.script.ScriptCompilationException;
@@ -131,5 +134,5 @@ public class RhinoScriptFactory implements ScriptFactory {
 					"Could not compile Rhino script: " + actualScriptSource, ex);
 		}
 	}
-
+	
 }
