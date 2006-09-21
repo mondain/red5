@@ -28,7 +28,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleNamespace;
 
-import org.jruby.exceptions.JumpException;
 import org.red5.server.script.ScriptCompilationException;
 import org.springframework.util.ClassUtils;
 
@@ -49,7 +48,7 @@ public abstract class RhinoScriptUtils {
 	 *            the interfaces that the scripted Java object is supposed to
 	 *            implement
 	 * @return the scripted Java object
-	 * @throws JumpException
+	 * @throws ScriptCompilationException
 	 *             in case of Rhino parsing failure
 	 */
 	public static Object createRhinoObject(String scriptSource,
@@ -78,6 +77,7 @@ public abstract class RhinoScriptUtils {
 	private static class RhinoObjectInvocationHandler implements InvocationHandler {
 
 		private final Invocable invocable;
+		private Object instance;
 
 		public RhinoObjectInvocationHandler(ScriptEngine engine, Namespace nameSpace, String scriptSource, Class[] interfaces) {
 			try {
@@ -86,12 +86,17 @@ public abstract class RhinoScriptUtils {
 				RhinoScriptFactory.log.debug("Function: " + funcName);
 				//run it
 				engine.eval(scriptSource, nameSpace);
+				Object o = nameSpace.get("instance");
+				RhinoScriptFactory.log.debug("Result of script instance: " + o);
 				//get invocable
 				this.invocable = (Invocable) engine;
-				//call the constructor
-				//Object o = invocable.call(funcName, new Object[]{""});
-				Object o = invocable.call(funcName, interfaces);
-				RhinoScriptFactory.log.debug("Result of script constructor call: " + o);
+				if (null != o) {
+					this.instance = o;
+				} else {
+					//call the constructor
+					o = invocable.call(funcName, interfaces);
+					//RhinoScriptFactory.log.debug("Result of script constructor call: " + o);
+				}
 			} catch (Exception ex) {
 				throw new ScriptCompilationException("Could not compile Rhino script: " + scriptSource, ex);
 			}
@@ -114,7 +119,11 @@ public abstract class RhinoScriptUtils {
 				args = new Object[]{""};
 			}
 			RhinoScriptFactory.log.debug("Calling: "  + method.getName());
-			return  invocable.call(method.getName(), args);
+			if (null != instance) {
+				return invocable.call(method.getName(), instance, args);
+			} else {
+				return invocable.call(method.getName(), args);
+			}
 		}
 
 	}	
