@@ -21,9 +21,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
 import org.jruby.IRuby;
 import org.jruby.Ruby;
 import org.jruby.RubyNil;

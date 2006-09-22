@@ -58,7 +58,7 @@ public abstract class RhinoScriptUtils {
 	 *             in case of Rhino parsing failure
 	 */
 	public static Object createRhinoObject(String scriptSource,
-			Class[] interfaces) throws ScriptCompilationException, Exception {
+			Class[] interfaces, Class extendedClass) throws ScriptCompilationException, Exception {
 		//System.out.println("\n" + scriptSource + "\n");
 		//JSR223 style
 		ScriptEngineManager mgr = new ScriptEngineManager();
@@ -76,6 +76,20 @@ public abstract class RhinoScriptUtils {
 		nameSpace.put("log", RhinoScriptFactory.log);
 		// add the interfaces to the ns
 		nameSpace.put("interfaces", interfaces);
+		//use a string builder to control proto prefix
+		StringBuilder sb = new StringBuilder();
+		//add prototypes (extensions and interfaces)
+		if (null != extendedClass) {
+			sb.append("__proto__");
+			nameSpace.put(sb.toString(), extendedClass.newInstance());
+			sb.append('.');
+		}
+		for (Class interfac : interfaces) {
+			sb.append("__proto__");
+			nameSpace.put(sb.toString(), interfac);
+			sb.append('.');
+		}
+		System.out.println("Proto chain: " + sb.toString());
 		//compile the script
 		CompiledScript script = ((Compilable) engine).compile(scriptSource);
 		//see if the script returns an instance of the "class"
