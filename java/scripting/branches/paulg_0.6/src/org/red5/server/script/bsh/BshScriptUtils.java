@@ -20,14 +20,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import org.springframework.core.NestedRuntimeException;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+
 import bsh.EvalError;
 import bsh.Interpreter;
 import bsh.Primitive;
 import bsh.XThis;
-
-import org.springframework.core.NestedRuntimeException;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 /**
  * Utility methods for handling BeanShell-scripted objects.

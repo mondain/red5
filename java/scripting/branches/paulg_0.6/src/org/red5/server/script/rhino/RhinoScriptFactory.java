@@ -18,9 +18,6 @@ package org.red5.server.script.rhino;
 
 import java.io.IOException;
 
-import net.sf.cglib.core.NamingPolicy;
-import net.sf.cglib.core.Predicate;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.red5.server.script.ScriptCompilationException;
@@ -52,6 +49,8 @@ public class RhinoScriptFactory implements ScriptFactory {
 	private final String scriptSourceLocator;
 
 	private final Class[] scriptInterfaces;
+	
+	private final Class extendedClass;
 
 	private ScriptObjectContext scriptContext;
 
@@ -59,6 +58,7 @@ public class RhinoScriptFactory implements ScriptFactory {
 		Assert.hasText(scriptSourceLocator);
 		this.scriptSourceLocator = scriptSourceLocator;
 		this.scriptInterfaces = null;
+		this.extendedClass = null;
 	}
 
 	public RhinoScriptFactory(String scriptSourceLocator, Class scriptInterface) {
@@ -66,6 +66,7 @@ public class RhinoScriptFactory implements ScriptFactory {
 		Assert.notNull(scriptInterface);
 		this.scriptSourceLocator = scriptSourceLocator;
 		this.scriptInterfaces = new Class[] { scriptInterface };
+		this.extendedClass = null;
 	}
 
 	/**
@@ -90,7 +91,18 @@ public class RhinoScriptFactory implements ScriptFactory {
 		Assert.notEmpty(scriptInterfaces);
 		this.scriptSourceLocator = scriptSourceLocator;
 		this.scriptInterfaces = scriptInterfaces;
+		this.extendedClass = null;
 	}
+	
+	public RhinoScriptFactory(String scriptSourceLocator,
+			Class[] scriptInterfaces, Class extendedClass) {
+		Assert.hasText(scriptSourceLocator);
+		Assert.notEmpty(scriptInterfaces);
+		Assert.notNull(extendedClass);
+		this.scriptSourceLocator = scriptSourceLocator;
+		this.scriptInterfaces = scriptInterfaces;
+		this.extendedClass = extendedClass;
+	}	
 
 	public ScriptObjectContext getScriptContext() {
 		return scriptContext;
@@ -128,7 +140,7 @@ public class RhinoScriptFactory implements ScriptFactory {
 		log.debug("Getting scripted object...");
 		try {
 			return RhinoScriptUtils.createRhinoObject(actualScriptSource
-					.getScriptAsString(), actualInterfaces);
+					.getScriptAsString(), actualInterfaces, extendedClass);
 		} catch (Exception ex) {
 			throw new ScriptCompilationException(
 					"Could not compile Rhino script: " + actualScriptSource, ex);
