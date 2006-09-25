@@ -4,9 +4,6 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.FileReader;
 
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.Namespace;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
