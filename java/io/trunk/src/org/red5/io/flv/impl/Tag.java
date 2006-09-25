@@ -47,7 +47,8 @@ public class Tag implements ITag {
 	 * @param bodySize
 	 * @param body
 	 */
-	public Tag(byte dataType, int timestamp, int bodySize, ByteBuffer body, int previousTagSize){
+	public Tag(byte dataType, int timestamp, int bodySize, ByteBuffer body,
+			int previousTagSize) {
 		this.dataType = dataType;
 		this.timestamp = timestamp;
 		this.bodySize = bodySize;
@@ -59,36 +60,45 @@ public class Tag implements ITag {
 		
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Tag#setBitflags()
 	 */
 	public byte getBitflags() {
 		return bitflags;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Tag#setBitflags()
 	 */
 	public void setBitflags(byte bitflags) {
 		this.bitflags = bitflags;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Tag#getPreviuosTagSize()
 	 */
 	public int getPreviuosTagSize() {
 		return previuosTagSize;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Tag#setPreviuosTagSize()
 	 */
 	public void setPreviuosTagSize(int previuosTagSize) {
 		this.previuosTagSize = previuosTagSize;
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Tag#getData()
 	 */
 	public ByteBuffer getData() {
@@ -96,9 +106,9 @@ public class Tag implements ITag {
 		return null;
 	}
 
-	
 	/**
 	 * Return the body ByteBuffer
+	 * 
 	 * @return ByteBuffer
 	 */
 	public ByteBuffer getBody() {
@@ -107,6 +117,7 @@ public class Tag implements ITag {
 	
 	/**
 	 * Return the size of the body
+	 * 
 	 * @return int
 	 */
 	public int getBodySize() {
@@ -115,6 +126,7 @@ public class Tag implements ITag {
 	
 	/**
 	 * Get the data type
+	 * 
 	 * @return byte
 	 */
 	public byte getDataType() {
@@ -123,6 +135,7 @@ public class Tag implements ITag {
 	
 	/**
 	 * Return the timestamp
+	 * 
 	 * @return int
 	 */
 	public int getTimestamp() {
@@ -131,6 +144,7 @@ public class Tag implements ITag {
 	
 	/**
 	 * Return the timestamp
+	 * 
 	 * @return int
 	 */
 	public int getPreviousTagSize() {
@@ -139,6 +153,7 @@ public class Tag implements ITag {
 	
 	/**
 	 * Prints out the contents of the tag
+	 * 
 	 * @return tag contents
 	 */
 	public String toString() {

@@ -35,8 +35,10 @@ import org.red5.io.object.Serializer;
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @author Paul Gregoire, (mondain@gmail.com)
  */
-public class FLVService extends BaseStreamableFileService implements IFLVService {
+public class FLVService extends BaseStreamableFileService implements
+		IFLVService {
 	private Serializer serializer;
 	private Deserializer deserializer;
 	private boolean generateMetadata = false;
@@ -49,7 +51,9 @@ public class FLVService extends BaseStreamableFileService implements IFLVService
 		return ".flv";
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.FLVService#setSerializer(org.red5.io.object.Serializer)
 	 */
 	public void setSerializer(Serializer serializer) {
@@ -57,7 +61,9 @@ public class FLVService extends BaseStreamableFileService implements IFLVService
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.FLVService#setDeserializer(org.red5.io.object.Deserializer)
 	 */
 	public void setDeserializer(Deserializer deserializer) {
@@ -65,7 +71,9 @@ public class FLVService extends BaseStreamableFileService implements IFLVService
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
 	 */
 	public IStreamableFile getStreamableFile(File file) throws IOException {
@@ -75,7 +83,6 @@ public class FLVService extends BaseStreamableFileService implements IFLVService
 	public void setGenerateMetadata(boolean generate) {
 		generateMetadata = generate;
 	}
-	
 
 	public Serializer getSerializer() {
 		return serializer;

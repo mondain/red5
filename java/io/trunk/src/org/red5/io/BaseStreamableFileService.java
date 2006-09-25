@@ -28,7 +28,8 @@ import java.io.IOException;
  * @author The Red5 Project (red5@osflash.org)
  * @author Joachim Bauch (jojo@struktur.de)
  */
-public abstract class BaseStreamableFileService implements IStreamableFileService {
+public abstract class BaseStreamableFileService implements
+		IStreamableFileService {
 
 	public abstract String getPrefix();
 
@@ -45,9 +46,12 @@ public abstract class BaseStreamableFileService implements IStreamableFileServic
 	}
 
 	public boolean canHandle(File file) {
-		return file.exists() && file.getAbsolutePath().toLowerCase().endsWith(getExtension());
+		return file.exists()
+				&& file.getAbsolutePath().toLowerCase()
+						.endsWith(getExtension());
 	}
 
-	public abstract IStreamableFile getStreamableFile(File file) throws IOException;
+	public abstract IStreamableFile getStreamableFile(File file)
+			throws IOException;
 
 }

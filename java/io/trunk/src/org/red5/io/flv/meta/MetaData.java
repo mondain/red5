@@ -42,110 +42,139 @@ import java.util.TreeSet;
  *          //	private int width = 320;
  *          //	private double duration = 7.347;
  */
-public class MetaData<K, V> extends HashMap<String, Object> implements IMetaData, Serializable {
+public class MetaData<K, V> extends HashMap<String, Object> implements
+		IMetaData, Serializable {
 
 	/** serialVersionUID = -5681069577717669925L; */
 	private static final long serialVersionUID = -5681069577717669925L;
 
-	IMetaCue cuePoints[] = null;	/** CuePoint array **/
+	IMetaCue cuePoints[] = null; //CuePoint array
 
 	/** MetaData constructor */
 	public MetaData() {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#getCanSeekToEnd()
 	 */
 	public boolean getCanSeekToEnd() {
 		return (Boolean) this.get("canSeekToEnd");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#setCanSeekToEnd(boolean)
 	 */
 	public void setCanSeekToEnd(boolean b) {
 		this.put("canSeekToEnd", b);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#getVideoCodecId()
 	 */
 	public int getVideoCodecId() {
 		return (Integer) this.get("videocodecid");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#setVideoCodecId(int)
 	 */
 	public void setVideoCodecId(int id) {
 		this.put("videocodecid", id);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#getframeRate()
 	 */
 	public int getframeRate() {
 		return (Integer) this.get("framerate");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#setframeRate(int)
 	 */
 	public void setframeRate(int rate) {
 		this.put("framerate", rate);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#getVideoDataRate()
 	 */
 	public int getVideoDataRate() {
 		return (Integer) this.get("videodatarate");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#setVideoDataRate(int)
 	 */
 	public void setVideoDataRate(int rate) {
 		this.put("videodatarate", rate);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#getWidth()
 	 */
 	public int getWidth() {
 		return (Integer) this.get("width");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#setWidth(int)
 	 */
 	public void setWidth(int w) {
 		this.put("width", w);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#getDuration()
 	 */
 	public double getDuration() {
 		return (Double) this.get("duration");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#setDuration(int)
 	 */
 	public void setDuration(double d) {
 		this.put("duration", d);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#getHeight()
 	 */
 	public int getHeight() {
 		return (Integer) this.get("height");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.MetaData#setHeight(int)
 	 */
 	public void setHeight(int h) {
@@ -156,7 +185,8 @@ public class MetaData<K, V> extends HashMap<String, Object> implements IMetaData
 	/**
 	 * Sets the MetaCue Points
 	 *
-	 * @param cuePoints The cuePoints to set.
+	 * @param cuePoints
+	 *            The cuePoints to set.
 	 */
 	public void setMetaCue(IMetaCue[] cuePoints) {
 		this.cuePoints = cuePoints;
@@ -214,8 +244,7 @@ public class MetaData<K, V> extends HashMap<String, Object> implements IMetaData
 
 
 	public String toString() {
-		return "MetaData{" +
-				"cuePoints=" + (cuePoints == null ? null : Arrays.asList(cuePoints)) +
-				'}';
+		return "MetaData{" + "cuePoints="
+				+ (cuePoints == null ? null : Arrays.asList(cuePoints)) + '}';
 	}
 }

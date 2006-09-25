@@ -27,6 +27,7 @@ public interface IResolver {
 
 	/**
 	 * Merges the two Meta objects
+	 * 
 	 * @param m1
 	 * @param m2
 	 * @return IMeta Meta 

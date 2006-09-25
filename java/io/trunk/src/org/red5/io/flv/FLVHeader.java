@@ -45,6 +45,7 @@ public class FLVHeader {
 
 	/**
 	 * Returns the data offset bytes
+	 * 
 	 * @return int
 	 */
 	public int getDataOffset() {
@@ -53,6 +54,7 @@ public class FLVHeader {
 
 	/**
 	 * Sets the data offset bytes
+	 * 
 	 * @param data_offset
 	 */
 	public void setDataOffset(int data_offset) {
@@ -61,6 +63,7 @@ public class FLVHeader {
 
 	/**
 	 * Returns the signature bytes
+	 * 
 	 * @return byte[]
 	 */
 	public byte[] getSignature() {		
@@ -88,6 +91,7 @@ public class FLVHeader {
 
 	/**
 	 * Sets the signature bytes
+	 * 
 	 * @param signature
 	 */
 	public void setSignature(byte[] signature) {
@@ -96,6 +100,7 @@ public class FLVHeader {
 
 	/**
 	 * Returns a boolean on whether this data contains audio
+	 * 
 	 * @return boolean
 	 */
 	public boolean getFlagAudio() {
@@ -104,6 +109,7 @@ public class FLVHeader {
 
 	/**
 	 * Sets the audioflag on whether this data contains audio
+	 * 
 	 * @param flagAudio
 	 */
 	public void setFlagAudio(boolean flagAudio) {
@@ -112,6 +118,7 @@ public class FLVHeader {
 
 	/**
 	 * Sets the type flags on whether this data is audio or video
+	 * 
 	 * @param typeFlags
 	 */
 	public void setTypeFlags(byte typeFlags) {
@@ -120,7 +127,9 @@ public class FLVHeader {
 	}
 	
 	/**
-	 * Gets the FlagReserved01 which is a datatype specified in the Flash Specification
+	 * Gets the FlagReserved01 which is a datatype specified in the Flash
+	 * Specification
+	 * 
 	 * @return byte
 	 */
 	public byte getFlagReserved01() {
@@ -128,7 +137,9 @@ public class FLVHeader {
 	}
 
 	/**
-	 * Sets the FlagReserved01 which is a datatype specified in the Flash Specification
+	 * Sets the FlagReserved01 which is a datatype specified in the Flash
+	 * Specification
+	 * 
 	 * @param flagReserved01
 	 */
 	public void setFlagReserved01(byte flagReserved01) {
@@ -136,7 +147,9 @@ public class FLVHeader {
 	}
 
 	/**
-	 * Gets the FlagReserved02 which is a datatype specified in the Flash Specification
+	 * Gets the FlagReserved02 which is a datatype specified in the Flash
+	 * Specification
+	 * 
 	 * @return byte
 	 */
 	public byte getFlagReserved02() {
@@ -144,7 +157,9 @@ public class FLVHeader {
 	}
 
 	/**
-	 * Sets the Flag Reserved02 which is a datatype specified in the Flash Specification
+	 * Sets the Flag Reserved02 which is a datatype specified in the Flash
+	 * Specification
+	 * 
 	 * @param flagReserved02
 	 */
 	public void setFlagReserved02(byte flagReserved02) {
@@ -153,6 +168,7 @@ public class FLVHeader {
 
 	/**
 	 * Returns a boolean on whether this data contains video
+	 * 
 	 * @return boolean
 	 */
 	public boolean getFlagVideo() {
@@ -161,6 +177,7 @@ public class FLVHeader {
 
 	/**
 	 * Sets the audioflag on whether this data contains audio
+	 * 
 	 * @param type_flags_video
 	 */
 	public void setFlagVideo(boolean type_flags_video) {
@@ -169,6 +186,7 @@ public class FLVHeader {
 
 	/**
 	 * Gets the version byte
+	 * 
 	 * @return byte
 	 */
 	public byte getVersion() {
@@ -177,6 +195,7 @@ public class FLVHeader {
 
 	/**
 	 * Sets the version byte
+	 * 
 	 * @param version
 	 */
 	public void setVersion(byte version) {

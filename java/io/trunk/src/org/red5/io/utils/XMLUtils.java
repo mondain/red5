@@ -48,7 +48,8 @@ public class XMLUtils {
 	
 	public static Document stringToDoc(String str) throws IOException {
 		try {
-			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			DocumentBuilder db = DocumentBuilderFactory.newInstance()
+					.newDocumentBuilder();
 			return db.parse(new InputSource(str));
 		} catch(Exception ex){
 			throw new IOException("Error converting from string to doc "+ex.getMessage());

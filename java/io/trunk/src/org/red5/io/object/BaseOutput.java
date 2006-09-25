@@ -67,6 +67,7 @@ public class BaseOutput {
 	
 	/**
 	 * Store an object into a map
+	 * 
 	 * @param obj
 	 */
 	public void storeReference(Object obj){
@@ -93,6 +94,7 @@ public class BaseOutput {
 	
 	/**
 	 * Returns the reference id based on the parameter obj
+	 * 
 	 * @param obj
 	 * @return short
 	 */

@@ -31,6 +31,7 @@ public interface IMetaCue extends IMeta, Comparable {
 	
 	/**
 	 * Sets the name
+	 * 
 	 * @param name
 	 * 
 	 */
@@ -38,14 +39,15 @@ public interface IMetaCue extends IMeta, Comparable {
 	
 	/**
 	 * Gets the name
+	 * 
 	 * @return name
 	 * 
 	 */
 	public String getName();
 	
 	/**
-	 * Sets the type
-	 * type can be "event" or "navigation"
+	 * Sets the type type can be "event" or "navigation"
+	 * 
 	 * @param type
 	 *
 	 */
@@ -53,6 +55,7 @@ public interface IMetaCue extends IMeta, Comparable {
 	
 	/**
 	 * Gets the type
+	 * 
 	 * @return type 
 	 *
 	 */
@@ -60,6 +63,7 @@ public interface IMetaCue extends IMeta, Comparable {
 	
 	/**
 	 * Sets the time
+	 * 
 	 * @param d
 	 *
 	 */
@@ -67,6 +71,7 @@ public interface IMetaCue extends IMeta, Comparable {
 	
 	/**
 	 * Gets the time
+	 * 
 	 * @return time 
 	 *
 	 */

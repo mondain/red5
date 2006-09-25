@@ -64,7 +64,8 @@ public class RecordSet {
 		}
 		input.skipEndObject();
 		
-		Map<String, Object> serverInfo = (Map<String, Object>) dataMap.get("serverinfo");
+		Map<String, Object> serverInfo = (Map<String, Object>) dataMap
+				.get("serverinfo");
 		if (serverInfo == null)
 			// This is right according to the specs on osflash.org
 			serverInfo = (Map<String, Object>) dataMap.get("serverInfo");
@@ -73,7 +74,8 @@ public class RecordSet {
 			throw new RuntimeException("Expected Map but got " + serverInfo);
 		
 		totalCount = (Integer) serverInfo.get("totalCount");
-		List<List<Object>> initialData = (List<List<Object>>) serverInfo.get("initialData");
+		List<List<Object>> initialData = (List<List<Object>>) serverInfo
+				.get("initialData");
 		cursor = (Integer) serverInfo.get("cursor");
 		serviceName = (String) serverInfo.get("serviceName");
 		columns = (List<String>) serverInfo.get("columNames");
@@ -168,17 +170,21 @@ public class RecordSet {
 			// Default to "ondemand"
 			count = 1;
 		
- 		result = client.invokeMethod(serviceName + ".getRecords", new Object[]{id, start+1, count});
+		result = client.invokeMethod(serviceName + ".getRecords", new Object[] {
+				id, start + 1, count });
 		if (!(result instanceof RecordSetPage))
-			throw new RuntimeException("expected RecordSetPage but got " + result);
+			throw new RuntimeException("expected RecordSetPage but got "
+					+ result);
 		
 		RecordSetPage page = (RecordSetPage) result;
 		if (page.getCursor() != start+1)
-			throw new RuntimeException("expected offset " + (start+1) + " but got " + page.getCursor());
+			throw new RuntimeException("expected offset " + (start + 1)
+					+ " but got " + page.getCursor());
 		
 		List<List<Object>> data = page.getData();
 		if (data.size() != count)
-			throw new RuntimeException("expected " + count + " results but got " + data.size());
+			throw new RuntimeException("expected " + count
+					+ " results but got " + data.size());
 		
 		// Store received items
 		for (int i=0; i<count; i++)

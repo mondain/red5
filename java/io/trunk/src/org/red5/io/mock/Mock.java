@@ -36,11 +36,16 @@ public class Mock {
 	public static String toStringValue(byte dataType){
 		
 		switch(dataType){
-			case TYPE_END_OF_OBJECT: return "End of Object";
-			case TYPE_END_OF_ARRAY: return "End of Array";
-			case TYPE_ELEMENT_SEPARATOR: return ",";
-			case TYPE_ITEM_SEPARATOR: return ",";
-			case TYPE_PROPERTY_SEPARATOR: return "::";
+		case TYPE_END_OF_OBJECT:
+			return "End of Object";
+		case TYPE_END_OF_ARRAY:
+			return "End of Array";
+		case TYPE_ELEMENT_SEPARATOR:
+			return ",";
+		case TYPE_ITEM_SEPARATOR:
+			return ",";
+		case TYPE_PROPERTY_SEPARATOR:
+			return "::";
 		}
 		
 		return "MOCK[" + (dataType - DataTypes.CUSTOM_MOCK_MASK)+"]";
@@ -56,9 +61,11 @@ public class Mock {
 				byte type = ((Byte) val).byteValue();
 				if(type < DataTypes.CUSTOM_MOCK_MASK) 
 					sb.append(DataTypes.toStringValue(type));
-				else sb.append(toStringValue(type));
+				else
+					sb.append(toStringValue(type));
 			} else {
-				if( val != null) sb.append( val.getClass().getName() );
+				if (val != null)
+					sb.append(val.getClass().getName());
 				sb.append( " { " );
 				sb.append( val==null ? null : val.toString() );
 				sb.append( " } " );

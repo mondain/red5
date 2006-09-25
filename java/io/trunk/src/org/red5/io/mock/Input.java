@@ -88,7 +88,8 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	
 	public boolean hasMoreItems() {
 		Object next = list.get(idx);
-		if (! (next instanceof Byte)) return true;
+		if (!(next instanceof Byte))
+			return true;
 		Byte b = (Byte) next;
 		return (b.byteValue() != Mock.TYPE_END_OF_MAP);
 	}
@@ -117,7 +118,8 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 
 	public boolean hasMoreProperties() {
 		Object next = list.get(idx);
-		if (! (next instanceof Byte)) return true;
+		if (!(next instanceof Byte))
+			return true;
 		Byte b = (Byte) next;
 		return (b.byteValue() != Mock.TYPE_END_OF_OBJECT);
 	}
@@ -150,8 +152,4 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 		return getReference(num.shortValue());
 	}
 
-
-	
-	
-	
 }

@@ -38,8 +38,8 @@ import org.red5.io.utils.XMLUtils;
 import org.w3c.dom.Document;
 
 /**
- * The Serializer class writes data output and handles the data 
- * according to the core data types 
+ * The Serializer class writes data output and handles the data according to the
+ * core data types
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
@@ -52,6 +52,7 @@ public class Serializer implements SerializerOpts {
 	
 	/**
 	 * serializes output to a core data type object
+	 * 
 	 * @param out
 	 * @param any
 	 */
@@ -88,6 +89,7 @@ public class Serializer implements SerializerOpts {
 		
 	/**
 	 * Writes a primitive out as an object
+	 * 
 	 * @param out
 	 * @param basic
 	 * @return boolean
@@ -103,12 +105,14 @@ public class Serializer implements SerializerOpts {
 			out.writeString((String) basic);
 		else if(basic instanceof Date)
 			out.writeDate((Date) basic);
-		else return false;
+		else
+			return false;
 		return true;
 	}
 	
 	/**
 	 * Writes a complex type out as an object
+	 * 
 	 * @param out
 	 * @param complex
 	 * @return boolean
@@ -117,16 +121,23 @@ public class Serializer implements SerializerOpts {
 		if(log.isDebugEnabled()) {
 			log.debug("writeComplex");
 		}
-		if(writeListType(out,complex)) return true;
-		else if(writeArrayType(out,complex)) return true;
-		else if(writeXMLType(out,complex)) return true;
-		else if(writeCustomType(out, complex)) return true;
-		else if(writeObjectType(out,complex)) return true;
-		else return false;
+		if (writeListType(out, complex))
+			return true;
+		else if (writeArrayType(out, complex))
+			return true;
+		else if (writeXMLType(out, complex))
+			return true;
+		else if (writeCustomType(out, complex))
+			return true;
+		else if (writeObjectType(out, complex))
+			return true;
+		else
+			return false;
 	}
 	
 	/**
 	 * Writes Lists out as a data type
+	 * 
 	 * @param out
 	 * @param listType
 	 * @return boolean
@@ -137,12 +148,14 @@ public class Serializer implements SerializerOpts {
 		}
 		if(listType instanceof List) {
 			writeList(out, (List) listType);
-		} else return false;
+		} else
+			return false;
 		return true;
 	}
 	
 	/**
 	 * Writes a List out as an Object
+	 * 
 	 * @param out
 	 * @param list
 	 */
@@ -156,9 +169,13 @@ public class Serializer implements SerializerOpts {
 		// if there are over 80% then its probably best to do it as a map
 		int size = list.size();
 		int nullCount = 0;
-		for(int i=0; i<size; i++) if(list.get(i)==null) nullCount++;
-		if(nullCount > (size * 0.8)) writeListAsMap(out, list);
-		else writeListAsArray(out, list);
+		for (int i = 0; i < size; i++)
+			if (list.get(i) == null)
+				nullCount++;
+		if (nullCount > (size * 0.8))
+			writeListAsMap(out, list);
+		else
+			writeListAsArray(out, list);
 	}
 	
 	protected void writeListAsMap(Output out, List list){
@@ -179,20 +196,21 @@ public class Serializer implements SerializerOpts {
 		int size = list.size();
 		out.writeStartArray(size);
 		for(int i=0; i<size; i++){
-			if(i>0) out.markElementSeparator();
+			if (i > 0)
+				out.markElementSeparator();
 			//log.info(i);
 			serialize(out, list.get(i));
 		}
 		out.markEndArray();
 	}
 	
-	
 	/**
-	 * Writes an Array type out as output
-	 * Arrays, Collections, etc
+	 * Writes an Array type out as output Arrays, Collections, etc
+	 * 
 	 * @param out
 	 * @param arrType
-	 * @return <code>true</code> if the object has been written, otherwise <code>false</code>
+	 * @return <code>true</code> if the object has been written, otherwise
+	 *         <code>false</code>
 	 */
 	protected boolean writeArrayType(Output out, Object arrType){
 		if(log.isDebugEnabled()) {
@@ -207,12 +225,14 @@ public class Serializer implements SerializerOpts {
 			writePrimitiveArray(out, arrType);
 		} else if(arrType instanceof Object[]) {
 			writeObjectArray(out, (Object[]) arrType);
-		} else return false;
+		} else
+			return false;
 		return true;
 	}
 	
 	/**
 	 * Writes a collection to the output
+	 * 
 	 * @param out
 	 * @param col
 	 */
@@ -224,8 +244,10 @@ public class Serializer implements SerializerOpts {
 		Iterator it = col.iterator();
 		boolean isFirst = true;
 		while(it.hasNext()){
-			if(!isFirst) out.markElementSeparator();
-			else isFirst = false;
+			if (!isFirst)
+				out.markElementSeparator();
+			else
+				isFirst = false;
 			serialize(out, it.next());
 		}
 		out.markEndArray();
@@ -233,6 +255,7 @@ public class Serializer implements SerializerOpts {
 	
 	/**
 	 * Writes a primitive array to the output
+	 * 
 	 * @param out
 	 * @param array
 	 */
@@ -245,13 +268,15 @@ public class Serializer implements SerializerOpts {
 		Iterator it = IteratorUtils.arrayIterator(array);
 		while(it.hasNext()){
 			serialize(out, it.next());
-			if(it.hasNext()) out.markElementSeparator();
+			if (it.hasNext())
+				out.markElementSeparator();
 		}
 		out.markEndArray();
 	}
 	
 	/**
 	 * Writes an object array out to the output
+	 * 
 	 * @param out
 	 * @param array
 	 */
@@ -263,7 +288,8 @@ public class Serializer implements SerializerOpts {
 		out.writeStartArray(array.length);
 
 		for (int i = 0; i < array.length; i++) {
-			if(i>0) out.markElementSeparator();
+			if (i > 0)
+				out.markElementSeparator();
 			//log.info(i);
 			serialize(out, array[i]);
 		}
@@ -273,6 +299,7 @@ public class Serializer implements SerializerOpts {
 	
 	/**
 	 * Writes an iterator out to the output
+	 * 
 	 * @param out
 	 * @param it
 	 */
@@ -281,12 +308,14 @@ public class Serializer implements SerializerOpts {
 			log.debug("writeIterator");
 		}
 		LinkedList list = new LinkedList();
-		while(it.hasNext()) list.addLast(it.next());
+		while (it.hasNext())
+			list.addLast(it.next());
 		writeCollection(out, list);
 	}
 	
 	/**
 	 * Writes an xml type out to the output
+	 * 
 	 * @param out
 	 * @param xml
 	 * @return boolean
@@ -297,12 +326,14 @@ public class Serializer implements SerializerOpts {
 		}
 		if(xml instanceof Document) 
 			writeDocument(out, (Document) xml);
-		else return false;
+		else
+			return false;
 		return true;
 	}
 	
 	/**
 	 * Writes a document to the output
+	 * 
 	 * @param out
 	 * @param doc
 	 */
@@ -312,9 +343,11 @@ public class Serializer implements SerializerOpts {
 	
 	/**
 	 * Writes an object to the output
+	 * 
 	 * @param out
 	 * @param obj
-	 * @return <code>true</code> if the object has been written, otherwise <code>false</code>
+	 * @return <code>true</code> if the object has been written, otherwise
+	 *         <code>false</code>
 	 */
 	protected boolean writeObjectType(Output out, Object obj){		
 		if (obj instanceof Map) 
@@ -326,6 +359,7 @@ public class Serializer implements SerializerOpts {
 	
 	/**
 	 * Writes a map to the output
+	 * 
 	 * @param out
 	 * @param map
 	 */
@@ -342,10 +376,12 @@ public class Serializer implements SerializerOpts {
 		boolean isBeanMap = (map instanceof BeanMap);
 		while(it.hasNext()){
 			Map.Entry entry = (Map.Entry) it.next();
-			if(isBeanMap && ((String)entry.getKey()).equals("class")) continue;
+			if (isBeanMap && ((String) entry.getKey()).equals("class"))
+				continue;
 			out.writeItemKey(entry.getKey().toString());
 			serialize(out,entry.getValue());
-			if(it.hasNext()) out.markPropertySeparator();
+			if (it.hasNext())
+				out.markPropertySeparator();
 		}
 		out.markEndMap();
 	}
@@ -359,7 +395,8 @@ public class Serializer implements SerializerOpts {
 	public boolean writeBean(Output out, Object bean) {
 		BeanMap beanMap = new BeanMap(bean);
 		Set set = beanMap.entrySet();
-		if ((set.size() == 0) || (set.size() == 1 && beanMap.containsKey("class")))
+		if ((set.size() == 0)
+				|| (set.size() == 1 && beanMap.containsKey("class")))
 			// BeanMap is empty or can only access "class" attribute, skip it
 			return false;
 		
@@ -387,6 +424,7 @@ public class Serializer implements SerializerOpts {
 	
 	/**
 	 * Writes an arbitrary object to the output.
+	 * 
 	 * @param out
 	 * @param object
 	 */
@@ -427,8 +465,7 @@ public class Serializer implements SerializerOpts {
 	
 	// Extension points
 	/**
-	 * Pre processes an object
-	 * TODO must be implemented
+	 * Pre processes an object TODO must be implemented
 	 */
 	public Object preProcessExtension(Object any){
 		// Does nothing right now but will later
@@ -437,15 +474,18 @@ public class Serializer implements SerializerOpts {
 	
 	/**
 	 * Writes a custom data type to the output
+	 * 
 	 * @param out
 	 * @param obj
-	 * @return <code>true</code> if the object has been written, otherwise <code>false</code>
+	 * @return <code>true</code> if the object has been written, otherwise
+	 *         <code>false</code>
 	 */
 	protected boolean writeCustomType(Output out, Object obj){
 		if(out.isCustom(obj)){
 			out.writeCustom(obj);
 			return true;
-		} else return false;
+		} else
+			return false;
 	}
 
 	public boolean isOptEnabled(Object obj, SerializerOption opt){
