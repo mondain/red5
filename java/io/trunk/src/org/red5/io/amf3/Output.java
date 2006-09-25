@@ -35,13 +35,14 @@ import org.apache.mina.common.ByteBuffer;
 public class Output implements org.red5.io.object.Output {
 
 	protected static Log log = LogFactory.getLog(Output.class.getName());
-	protected ByteBuffer buffer;
 
+	protected ByteBuffer buffer;
 
 	/**
 	 * Constructor of AMF3 output.
 	 *
-	 * @param buffer instance of ByteBuffer
+	 * @param buffer
+	 *            instance of ByteBuffer
 	 * @see ByteBuffer
 	 */
 	public Output(ByteBuffer buffer) {

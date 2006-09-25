@@ -27,8 +27,10 @@ package org.red5.io.object;
  */
 public class DataTypes {
 
-	// The core datatypes supported by red5, I have left out undefined (this is up for debate).
-	// If a codec returns one of these datatypes its handled by the base serializer
+	// The core datatypes supported by red5, I have left out undefined (this is
+	// up for debate).
+	// If a codec returns one of these datatypes its handled by the base
+	// serializer
 	public final static byte CORE_SKIP = 0x00; // padding
 	
 	public final static byte CORE_NULL = 0x01; // no undefined type
@@ -48,7 +50,8 @@ public class DataTypes {
 	public final static byte OPT_REFERENCE = 0x10;
 	
 	// More datatypes can be added but they should be prefixed by the type
-	// If a codec return one of these datatypes its handled by a custom serializer
+	// If a codec return one of these datatypes its handled by a custom
+	// serializer
 	
 	public final static byte CUSTOM_MOCK_MASK = 0x20;
 	public final static byte CUSTOM_AMF_MASK = 0x30;
@@ -60,22 +63,34 @@ public class DataTypes {
 	
 	/**
 	 * Returns the string value of the data type
+	 * 
 	 * @return String
 	 */
 	public static String toStringValue(byte dataType){
 		
 		switch(dataType){
-			case CORE_SKIP: return "skip";
-			case CORE_NULL: return "null";
-			case CORE_BOOLEAN: return "Boolean";
-			case CORE_NUMBER: return "Number";
-			case CORE_STRING: return "String";
-			case CORE_DATE: return "Date";
-			case CORE_ARRAY: return "Array";
-			case CORE_MAP: return "List";
-			case CORE_XML: return "XML";
-			case CORE_OBJECT: return "Object";
-			case OPT_REFERENCE: return "Reference";
+		case CORE_SKIP:
+			return "skip";
+		case CORE_NULL:
+			return "null";
+		case CORE_BOOLEAN:
+			return "Boolean";
+		case CORE_NUMBER:
+			return "Number";
+		case CORE_STRING:
+			return "String";
+		case CORE_DATE:
+			return "Date";
+		case CORE_ARRAY:
+			return "Array";
+		case CORE_MAP:
+			return "List";
+		case CORE_XML:
+			return "XML";
+		case CORE_OBJECT:
+			return "Object";
+		case OPT_REFERENCE:
+			return "Reference";
 		}
 		
 		if(dataType >= CUSTOM_MOCK_MASK && dataType < CUSTOM_AMF_MASK){
@@ -100,6 +115,7 @@ public class DataTypes {
 	
 	/**
 	 * Returns whether it is a basic data type
+	 * 
 	 * @param type
 	 * @return boolean
 	 */
@@ -109,6 +125,7 @@ public class DataTypes {
 	
 	/**
 	 * Returns whether it is a complex data type
+	 * 
 	 * @param type
 	 * @return boolean
 	 */
@@ -118,6 +135,7 @@ public class DataTypes {
 	
 	/**
 	 * Returns whether it is a custom data type
+	 * 
 	 * @param type
 	 * @return boolean
 	 */

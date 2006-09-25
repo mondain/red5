@@ -108,6 +108,7 @@ public class Deserializer {
 	
 	/**
 	 * Reads the input and returns an array of Objects
+	 * 
 	 * @param in
 	 * @return ArrayList
 	 */
@@ -128,6 +129,7 @@ public class Deserializer {
 	
 	/**
 	 * Reads the input and returns a List.
+	 * 
 	 * @param in
 	 * @return List
 	 */
@@ -167,6 +169,7 @@ public class Deserializer {
 	
 	/**
 	 * Reads the input as xml and returns an object
+	 * 
 	 * @param in
 	 * @return the xml document
 	 */
@@ -184,6 +187,7 @@ public class Deserializer {
 	
 	/**
 	 * Reads the input as and object and returns an Object
+	 * 
 	 * @param in
 	 * @return Object
 	 */
@@ -213,6 +217,7 @@ public class Deserializer {
 	
 	/**
 	 * Reads the input as a bean and returns an object
+	 * 
 	 * @param in
 	 * @param bean
 	 * @return Object
@@ -252,6 +257,7 @@ public class Deserializer {
 	
 	/**
 	 * Reads the input as a map and returns a Map
+	 * 
 	 * @param in
 	 * @return Map
 	 */
@@ -288,7 +294,8 @@ public class Deserializer {
 	protected Object newInstance(String className){
 		Object instance = null; 
 		try	{ 
-			Class clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
+			Class clazz = Thread.currentThread().getContextClassLoader()
+					.loadClass(className);
 			instance = clazz.newInstance();
 		} catch(Exception ex){
 			log.error("Error loading class: "+className, ex);
@@ -298,12 +305,14 @@ public class Deserializer {
 	
 	/**
 	 * Reads the input as a reference and returns an Object
+	 * 
 	 * @param in
 	 * @return Object
 	 */
 	protected Object readReference(Input in){
 		final Object ref = in.readReference();
-		if(ref==null) log.error("Reference returned by input is null");
+		if (ref == null)
+			log.error("Reference returned by input is null");
 		return ref;
 	}
 	
@@ -315,6 +324,5 @@ public class Deserializer {
 		// does nothing at the moment, but will later!
 		return result;
 	}
-	
 
 }

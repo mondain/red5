@@ -92,8 +92,6 @@ public class IOUtils {
 		return val;
 	}
 	
-
-	
 	public static void debug(Log log, String msg, ByteBuffer buf){
 		if(log.isDebugEnabled()){
 			
@@ -104,7 +102,6 @@ public class IOUtils {
 			final String string = toString(buf);
 			
 			log.debug("\n"+string+"\n");
-			
 			
 			//log.debug("Data:\n\n" + b);
 		}

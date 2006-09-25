@@ -23,7 +23,8 @@ import java.nio.charset.Charset;
 
 /**
  * AMF3 data type definitions.<br />
- * For detailed specification please see <strong>specification AMF3</strong> link below.
+ * For detailed specification please see <strong>specification AMF3</strong>
+ * link below.
  *
  * @see org.red5.io.amf.AMF
  * @see <a href="http://osflash.org/amf3/index">specifictation AMF3 (external)</a>
@@ -40,7 +41,9 @@ public class AMF3 {
 	public final static byte TYPE_INTEGER = 0x04;
 	public final static byte TYPE_NUMBER = 0x05;
 	public final static byte TYPE_STRING = 0x06;
-	//TODO m.j.m  hm..not defined on site, says it's only XML type, so i'll assume it is for the time beeing..
+
+	// TODO m.j.m hm..not defined on site, says it's only XML type, so i'll
+	// assume it is for the time being..
 	public final static byte TYPE_XML_SPECIAL = 0x07;
 	public final static byte TYPE_DATE = 0x08;
 	public final static byte TYPE_ARRAY = 0x09;

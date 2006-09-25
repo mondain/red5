@@ -34,24 +34,28 @@ public interface ITagWriter {
 	
 	/**
 	 * Return the offset
+	 * 
 	 * @return int offset
 	 */
 	public int getOffset();
 	
 	/**
 	 * Return the bytes written
+	 * 
 	 * @return long bytesWritten
 	 */
 	public long getBytesWritten();
 	
 	/**
 	 * Writes the header bytes
+	 * 
 	 * @throws IOException 
 	 */
 	public void writeHeader() throws IOException;
 	
 	/**
 	 * Writes a Tag object
+	 * 
 	 * @param tag
 	 * @return boolean 
 	 * @throws IOException
@@ -60,6 +64,7 @@ public interface ITagWriter {
 	
 	/**
 	 * Write a Tag using bytes
+	 * 
 	 * @param type
 	 * @param data
 	 * @return boolean
@@ -69,12 +74,12 @@ public interface ITagWriter {
 	
 	/**
 	 * Write a Stream to disk using bytes
+	 * 
 	 * @param b
 	 * @return boolean
 	 * @throws IOException
 	 */
 	public boolean writeStream(byte[] b);
-	
 	
 	/**
 	 * Closes a Writer

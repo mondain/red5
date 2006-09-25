@@ -23,6 +23,7 @@ import org.apache.mina.common.ByteBuffer;
 
 /**
  * Buffer Utility class which reads/writes intergers to the input/output buffer  
+ * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
@@ -31,6 +32,7 @@ public class BufferUtils {
 
 	/**
 	 * Writes a Medium Int to the output buffer
+	 * 
 	 * @param out
 	 * @param value
 	 */
@@ -44,6 +46,7 @@ public class BufferUtils {
 	
 	/**
 	 * Reads an unsigned Medium Int from the in buffer
+	 * 
 	 * @param in
 	 * @return int
 	 */
@@ -57,9 +60,9 @@ public class BufferUtils {
 		return val;
 	}
 	
-	
 	/**
 	 * Reads a Medium Int to the in buffer
+	 * 
 	 * @param in
 	 * @return int
 	 */
@@ -85,7 +88,8 @@ public class BufferUtils {
 	 */
 	public static int put(ByteBuffer out, ByteBuffer in, int numBytesMax){
 		final int limit = in.limit();
-		final int numBytesRead = (numBytesMax > in.remaining()) ? in.remaining() : numBytesMax;
+		final int numBytesRead = (numBytesMax > in.remaining()) ? in
+				.remaining() : numBytesMax;
 		in.limit(in.position()+numBytesRead);
 		out.put(in);
 		in.limit(limit);

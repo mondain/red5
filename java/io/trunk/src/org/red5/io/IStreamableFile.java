@@ -43,6 +43,5 @@ public interface IStreamableFile {
 	 * @return the writer
 	 */
 	public ITagWriter getAppendWriter() throws IOException;
-	
 
 }

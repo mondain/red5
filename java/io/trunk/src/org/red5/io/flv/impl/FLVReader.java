@@ -25,8 +25,8 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,8 +46,10 @@ import org.red5.io.utils.IOUtils;
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @author Paul Gregoire, (mondain@gmail.com)
  */
-public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer {
+public class FLVReader implements IoConstants, ITagReader,
+		IKeyFrameDataAnalyzer {
 
 	private static Log log = LogFactory.getLog(FLVReader.class.getName());
 	private FileInputStream fis = null;
@@ -80,17 +82,43 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		channel = fis.getChannel();
 		try {
 			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-			
-			// Should the file be loaded into memory.
-			// It would be nice if we could load busy files into memory and share them.
-			//mappedFile.load();
+			mappedFile.order(ByteOrder.BIG_ENDIAN);
 		} catch (IOException e) {
 			log.error("FLVReader :: FLVReader ::>\n"  , e);
 		}
-		mappedFile.order(ByteOrder.BIG_ENDIAN);
 		in = ByteBuffer.wrap(mappedFile);
-		if (in.remaining() >= 9) decodeHeader();
+		log.debug("FLVReader 1 - Buffer size: " + in.capacity() + " position: "
+				+ in.position() + " remaining: " + in.remaining());
+		if (in.remaining() >= 9) {
+			decodeHeader();
+		}
 		keyframeMeta = analyzeKeyFrames();
+	}
+
+	/**
+	 * Accepts mapped file bytes to construct internal members.
+	 * 
+	 * @param mappedFile
+	 * @param generateMetadata
+	 */
+	public FLVReader(ByteBuffer buffer, boolean generateMetadata) {
+		this.generateMetadata = generateMetadata;
+		in = buffer;
+		log.debug("FLVReader 2 - Buffer size: " + in.capacity() + " position: "
+				+ in.position() + " remaining: " + in.remaining());
+		if (in.remaining() >= 9) {
+			decodeHeader();
+		}
+		keyframeMeta = analyzeKeyFrames();
+	}
+
+	/**
+	 * Returns the file buffer.
+	 * 
+	 * @return file bytes
+	 */
+	public ByteBuffer getFileData() {
+		return in.asReadOnlyBuffer();
 	}
 
 	public void decodeHeader() {
@@ -101,9 +129,12 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		header.setVersion(in.get());
 		header.setTypeFlags(in.get());
 		header.setDataOffset(in.getInt());
+		log.debug("Header: " + header.toString());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Reader#getFLV()
 	 */
 	public IStreamableFile getFile() {
@@ -111,7 +142,9 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Reader#getOffset()
 	 */
 	public int getOffset() {
@@ -119,7 +152,9 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		return 0;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Reader#getBytesRead()
 	 */
 	synchronized public long getBytesRead() {
@@ -130,7 +165,9 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		return duration;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Reader#hasMoreTags()
 	 */
 	synchronized public boolean hasMoreTags() {
@@ -174,14 +211,17 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Reader#readTag()
 	 */
 	synchronized public ITag readTag() {
 		int oldPos = in.position();
 		ITag tag = readTagHeader();
 
-		if (tagPosition == 0 && tag.getDataType() != TYPE_METADATA && generateMetadata) {
+		if (tagPosition == 0 && tag.getDataType() != TYPE_METADATA
+				&& generateMetadata) {
 			// Generate initial metadata automatically
 			in.position(oldPos);
 			KeyFrameMeta meta = analyzeKeyFrames();
@@ -206,22 +246,29 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		return tag;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.Reader#close()
 	 */
 	synchronized public void close() {
-		mappedFile.clear();
+		log.debug("Reader close");
+		if (mappedFile != null) {
+		    mappedFile.clear();
+			mappedFile = null;
+		}
 		if (in != null) {
 			in.release();
 			in = null;
 		}
+		if (channel != null) {
 		try {
 			channel.close();
 			fis.close();
 		} catch (IOException e) {
 			log.error("FLVReader :: close ::>\n", e);
 		}
-
+		}
 	}
 
 	synchronized public KeyFrameMeta analyzeKeyFrames() {
@@ -255,16 +302,20 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 				if (firstAudioTag == -1)
 					firstAudioTag = pos;
 			}
-			// XXX Paul: this 'properly' handles damaged FLV files - as far as duration/size is concerned
+			// XXX Paul: this 'properly' handles damaged FLV files - as far as
+			// duration/size is concerned
 			int newPosition = (pos + tmpTag.getBodySize() + 15);
-			//log.debug("---->" + in.remaining() + " limit=" + in.limit() + " new pos=" + newPosition);
+			// log.debug("---->" + in.remaining() + " limit=" + in.limit() + "
+			// new pos=" + newPosition);
 			if (newPosition >= in.limit()) {
 				log.info("New position exceeds limit");
 				if (log.isDebugEnabled()) {
 					log.debug("-----");
 					log.debug("Keyframe analysis");
-					log.debug(" data type=" + tmpTag.getDataType() + " bodysize=" + tmpTag.getBodySize());
-					log.debug(" remaining=" + in.remaining() + " limit=" + in.limit() + " new pos=" + newPosition);
+					log.debug(" data type=" + tmpTag.getDataType()
+							+ " bodysize=" + tmpTag.getBodySize());
+					log.debug(" remaining=" + in.remaining() + " limit="
+							+ in.limit() + " new pos=" + newPosition);
 					log.debug(" pos=" + pos);
 					log.debug("-----");
 				}
@@ -283,7 +334,8 @@ public class FLVReader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
 		for (int i = 0; i < keyframeMeta.positions.length; i++) {
 			keyframeMeta.positions[i] = positionList.get(i);
 			keyframeMeta.timestamps[i] = timestampList.get(i);
-			posTimeMap.put((long) positionList.get(i), (long) timestampList.get(i));
+			posTimeMap.put((long) positionList.get(i), (long) timestampList
+					.get(i));
 		}
 		return keyframeMeta;
 	}

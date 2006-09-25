@@ -75,7 +75,8 @@ public class HexDump {
    /**
     *  Sets the WithByteSeparator attribute of the Convert class
     *
-    * @param  bs  The new WithByteSeparator value
+	 * @param bs
+	 *            The new WithByteSeparator value
     */
    public static void setWithByteSeparator(boolean bs) {
       WITH_BYTE_SEPARATOR = bs;
@@ -84,7 +85,8 @@ public class HexDump {
    /**
     *  Sets the ByteSeparator attribute of the Convert class
     *
-    * @param  bs  The new ByteSeparator value
+	 * @param bs
+	 *            The new ByteSeparator value
     */
    public static void setByteSeparator(char bs) {
       BYTE_SEPARATOR = bs;
@@ -93,8 +95,10 @@ public class HexDump {
    /**
     *  Sets the BitDigits attribute of the Convert class
     *
-    * @param  bd             The new BitDigits value
-    * @exception  Exception  Description of Exception
+	 * @param bd
+	 *            The new BitDigits value
+	 * @exception Exception
+	 *                Description of Exception
     */
    public static void setBitDigits(char[] bd) throws Exception {
 
@@ -123,7 +127,8 @@ public class HexDump {
    /**
     *  Description of the Method
     *
-    * @param  block  Description of Parameter
+	 * @param block
+	 *            Description of Parameter
     * @return        Description of the Returned Value
     */
    public static String byteArrayToBinaryString(byte[] block) {
@@ -258,7 +263,8 @@ public class HexDump {
    /**
     *  Description of the Method
     *
-    * @param  block  Description of Parameter
+	 * @param block
+	 *            Description of Parameter
     * @return        Description of the Returned Value
     */
    public static String byteArrayToHexString(byte[] block) {
@@ -280,7 +286,8 @@ public class HexDump {
    /**
     *  Description of the Method
     *
-    * @param  in  string to be converted
+	 * @param in
+	 *            string to be converted
     * @return     String in readable hex encoding
     */
    public static String stringToHexString(String in) {
@@ -293,9 +300,12 @@ public class HexDump {
    /**
     *  Description of the Method
     *
-    * @param  block   Description of Parameter
-    * @param  offset  Description of Parameter
-    * @param  length  Description of Parameter
+	 * @param block
+	 *            Description of Parameter
+	 * @param offset
+	 *            Description of Parameter
+	 * @param length
+	 *            Description of Parameter
     * @return         Description of the Returned Value
     */
    public static String byteArrayToHexString(byte[] block, int offset,
@@ -325,7 +335,8 @@ public class HexDump {
     *  Returns a string of hexadecimal digits from a byte array. Each byte is
     *  converted to 2 hex symbols.
     *
-    * @param  ba  Description of Parameter
+	 * @param ba
+	 *            Description of Parameter
     * @return     Description of the Returned Value
     */
    public static String toHexString(byte[] ba) {
@@ -405,9 +416,12 @@ public class HexDump {
    /**
     *  converts String to Hex String. Example: niko ->6E696B6F
     *
-    * @param  ba      Description of Parameter
-    * @param  offset  Description of Parameter
-    * @param  length  Description of Parameter
+	 * @param ba
+	 *            Description of Parameter
+	 * @param offset
+	 *            Description of Parameter
+	 * @param length
+	 *            Description of Parameter
     * @return         Description of the Returned Value
     */
    public static String toHexString(byte[] ba, int offset, int length) {
@@ -631,7 +645,8 @@ public class HexDump {
       }
 
       if (!nextCharIsUpper) {
-         throw new RuntimeException("The String did not contain an equal number of hex digits");
+			throw new RuntimeException(
+					"The String did not contain an equal number of hex digits");
       }
 
       return result.toByteArray();
@@ -644,25 +659,25 @@ public class HexDump {
    /**
     *  Description of the Method
     *
-    * @param  b    Description of Parameter
-    * @param  buf  Description of Parameter
+	 * @param b
+	 *            Description of Parameter
+	 * @param buf
+	 *            Description of Parameter
     */
    private static void byte2hex(byte b, StringBuffer buf) {
-
-      char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
-                          'B', 'C', 'D', 'E', 'F' };
       int high = ((b & 0xf0) >> 4);
       int low = (b & 0x0f);
-
-      buf.append(hexChars[high]);
-      buf.append(hexChars[low]);
+      buf.append(HEX_DIGITS[high]);
+      buf.append(HEX_DIGITS[low]);
    }
 
    /**
     *  Description of the Method
     *
-    * @param  b    Description of Parameter
-    * @param  buf  Description of Parameter
+	 * @param b
+	 *            Description of Parameter
+	 * @param buf
+	 *            Description of Parameter
     */
    private static void byte2bin(byte b, StringBuffer buf) {
 
@@ -682,7 +697,8 @@ public class HexDump {
     *  Returns a string of 8 hexadecimal digits (most significant digit first)
     *  corresponding to the integer <i>n</i> , which is treated as unsigned.
     *
-    * @param  n  Description of Parameter
+	 * @param n
+	 *            Description of Parameter
     * @return    Description of the Returned Value
     */
    private static String intToHexString(int n) {
@@ -700,7 +716,8 @@ public class HexDump {
    /**
     *  test and demo for the Convert class
     *
-    * @param  args  none needed
+	 * @param args
+	 *            none needed
     */
    public static void main(String args[]) {
 

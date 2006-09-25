@@ -32,24 +32,28 @@ public interface ITag extends IoConstants {
 
 	/**
 	 * Return the body ByteBuffer
+	 * 
 	 * @return ByteBuffer
 	 */
 	public ByteBuffer getBody();
 	
 	/**
 	 * Return the size of the body
+	 * 
 	 * @return int
 	 */
 	public int getBodySize();
 	
 	/**
 	 * Get the data type
+	 * 
 	 * @return byte
 	 */
 	public byte getDataType();
 	
 	/**
 	 * Return the timestamp
+	 * 
 	 * @return int
 	 */
 	public int getTimestamp();
@@ -57,12 +61,14 @@ public interface ITag extends IoConstants {
 
 	/**
 	 * Returns the data as a ByteBuffer
+	 * 
 	 * @return ByteBuffer buf
 	 */
 	public ByteBuffer getData();
 	
 	/**
 	 * Returns the data as a ByteBuffer
+	 * 
 	 * @return ByteBuffer buf
 	 */
 	public int getPreviousTagSize();

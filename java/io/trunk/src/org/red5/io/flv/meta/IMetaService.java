@@ -50,6 +50,7 @@ public interface IMetaService {
 	
 	/**
 	 * Initiates writing of the MetaData
+	 * 
 	 * @param meta 
 	 * @throws IOException 
 	 */
@@ -57,6 +58,7 @@ public interface IMetaService {
 	
 	/**
 	 * Writes the MetaData
+	 * 
 	 * @param metaData
 	 */
 	public void writeMetaData(IMetaData metaData);
@@ -68,12 +70,14 @@ public interface IMetaService {
 	
 	/**
 	 * Read the MetaData
+	 * 
 	 * @return metaData
 	 */
 	public MetaData readMetaData(ByteBuffer buffer);
 	
 	/**
 	 * Read the Meta Cue Points
+	 * 
 	 * @return IMetaCue[] metaCue[]
 	 */
 	public IMetaCue[] readMetaCue();

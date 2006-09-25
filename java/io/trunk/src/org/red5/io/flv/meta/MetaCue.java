@@ -40,42 +40,54 @@ public class MetaCue<K,V> extends HashMap<String, Object> implements IMetaCue {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.ICuePoint#setName(java.lang.String)
 	 */
 	public void setName(String name) {
 		this.put("name", name);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.ICuePoint#getName()
 	 */
 	public String getName() {
 		return (String) this.get("name");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.ICuePoint#setType(java.lang.String)
 	 */
 	public void setType(String type) {
 		this.put("type", type);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.ICuePoint#getType()
 	 */
 	public String getType() {
 		return (String) this.get("type");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.ICuePoint#setTime(double)
 	 */
 	public void setTime(double d) {
 		this.put("time", d);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.ICuePoint#getTime()
 	 */
 	public double getTime() {

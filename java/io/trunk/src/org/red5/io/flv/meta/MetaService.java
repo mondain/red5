@@ -37,6 +37,7 @@ import org.red5.io.object.Serializer;
 
 /**
  * MetaService represents a MetaData service in Spring
+ * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
@@ -44,10 +45,15 @@ import org.red5.io.object.Serializer;
 public class MetaService implements IMetaService {
 	
 	File file = null;
+
 	private FileInputStream fis;
+
 	private FileOutputStream fos;
+
 	private Serializer serializer;
+
 	private Deserializer deserializer;
+
 	private Resolver resolver;
 	
 	/**
@@ -58,7 +64,8 @@ public class MetaService implements IMetaService {
 	}
 
 	/**
-	 * @param resolver The resolver to set.
+	 * @param resolver
+	 *            The resolver to set.
 	 */
 	public void setResolver(Resolver resolver) {
 		this.resolver = resolver;
@@ -72,7 +79,8 @@ public class MetaService implements IMetaService {
 	}
 
 	/**
-	 * @param deserializer The deserializer to set.
+	 * @param deserializer
+	 *            The deserializer to set.
 	 */
 	public void setDeserializer(Deserializer deserializer) {
 		this.deserializer = deserializer;
@@ -86,7 +94,8 @@ public class MetaService implements IMetaService {
 	}
 
 	/**
-	 * @param serializer The serializer to set.
+	 * @param serializer
+	 *            The serializer to set.
 	 */
 	public void setSerializer(Serializer serializer) {
 		this.serializer = serializer;
@@ -99,7 +108,9 @@ public class MetaService implements IMetaService {
 		super();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.meta.IMetaService#write()
 	 */
 	public void write(IMetaData meta) throws IOException {
@@ -164,6 +175,7 @@ public class MetaService implements IMetaService {
 	
 	/**
 	 * Merges the two Meta objects according to user
+	 * 
 	 * @param metaData
 	 * @param md
 	 * @return
@@ -185,12 +197,13 @@ public class MetaService implements IMetaService {
 		byte tmpDataType = ITag.TYPE_METADATA;
 		int tmpTimestamp = 0;
 		
-		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody, tmpPreviousTagSize);
+		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody,
+				tmpPreviousTagSize);
 	}
 
-	
 	/**
 	 * Injects metadata (Cue Points) into a tag
+	 * 
 	 * @param meta
 	 * @param tag
 	 * @return ITag tag
@@ -209,12 +222,14 @@ public class MetaService implements IMetaService {
 		byte tmpDataType = ITag.TYPE_METADATA;
 		int tmpTimestamp = getTimeInMilliseconds(meta);
 								
-		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody, tmpPreviousTagSize);
+		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody,
+				tmpPreviousTagSize);
 		
 	}
 	
 	/**
 	 * Returns a timestamp in milliseconds
+	 * 
 	 * @param metaCue
 	 * @return int time
 	 */
@@ -223,7 +238,9 @@ public class MetaService implements IMetaService {
 		
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.meta.IMetaService#writeMetaData()
 	 */
 	public void writeMetaData(IMetaData metaData) {
@@ -234,13 +251,14 @@ public class MetaService implements IMetaService {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.red5.io.flv.meta.IMetaService#writeMetaCue()
 	 */
 	public void writeMetaCue() {
 		
 	}
-
 
 	/**
 	 * @return Returns the file.
@@ -250,7 +268,8 @@ public class MetaService implements IMetaService {
 	}
 
 	/**
-	 * @param file The file to set.
+	 * @param file
+	 *            The file to set.
 	 */
 	public void setFile(File file) {
 		this.file = file;
