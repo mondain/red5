@@ -31,7 +31,7 @@ import org.jruby.ast.Node;
 import org.jruby.exceptions.JumpException;
 import org.jruby.javasupport.JavaUtil;
 import org.jruby.runtime.builtin.IRubyObject;
-import org.red5.server.script.ScriptCompilationException;
+import org.springframework.scripting.ScriptCompilationException;
 import org.springframework.util.ClassUtils;
 
 /**

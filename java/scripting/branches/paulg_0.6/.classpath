@@ -36,5 +36,6 @@
 	<classpathentry kind="lib" path="lib/asm-2.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Spring2.0"/>
+	<classpathentry kind="lib" path="lib/spring-support.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

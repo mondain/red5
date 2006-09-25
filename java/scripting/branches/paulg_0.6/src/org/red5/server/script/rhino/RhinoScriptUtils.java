@@ -37,7 +37,7 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
-import org.red5.server.script.ScriptCompilationException;
+import org.springframework.scripting.ScriptCompilationException;
 import org.springframework.util.ClassUtils;
 
 /**

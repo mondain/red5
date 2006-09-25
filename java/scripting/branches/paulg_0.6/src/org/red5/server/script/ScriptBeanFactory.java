@@ -30,6 +30,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
+import org.springframework.scripting.ScriptSource;
 
 /**
  * @author Luke Hubbard <luke@codegent.com>

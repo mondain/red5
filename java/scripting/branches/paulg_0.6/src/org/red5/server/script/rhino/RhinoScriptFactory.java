@@ -20,10 +20,10 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.red5.server.script.ScriptCompilationException;
-import org.red5.server.script.ScriptFactory;
 import org.red5.server.script.ScriptObjectContext;
-import org.red5.server.script.ScriptSource;
+import org.springframework.scripting.ScriptCompilationException;
+import org.springframework.scripting.ScriptFactory;
+import org.springframework.scripting.ScriptSource;
 import org.springframework.util.Assert;
 
 /**
