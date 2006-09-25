@@ -57,16 +57,19 @@ public class RhinoScriptFactory implements ScriptFactory {
 	public RhinoScriptFactory(String scriptSourceLocator) {
 		Assert.hasText(scriptSourceLocator);
 		this.scriptSourceLocator = scriptSourceLocator;
-		this.scriptInterfaces = null;
+		this.scriptInterfaces = new Class[]{};
 		this.extendedClass = null;
 	}
 
 	public RhinoScriptFactory(String scriptSourceLocator, Class scriptInterface) {
 		Assert.hasText(scriptSourceLocator);
-		Assert.notNull(scriptInterface);
 		this.scriptSourceLocator = scriptSourceLocator;
-		this.scriptInterfaces = new Class[] { scriptInterface };
 		this.extendedClass = null;
+		if (null == scriptInterface) {
+			this.scriptInterfaces = new Class[]{};
+		} else {
+			this.scriptInterfaces = new Class[] { scriptInterface };
+		}
 	}
 
 	/**
@@ -88,20 +91,26 @@ public class RhinoScriptFactory implements ScriptFactory {
 	public RhinoScriptFactory(String scriptSourceLocator,
 			Class[] scriptInterfaces) {
 		Assert.hasText(scriptSourceLocator);
-		Assert.notEmpty(scriptInterfaces);
 		this.scriptSourceLocator = scriptSourceLocator;
-		this.scriptInterfaces = scriptInterfaces;
 		this.extendedClass = null;
+		if (null == scriptInterfaces || scriptInterfaces.length < 1) {
+			this.scriptInterfaces = new Class[]{};
+		} else {
+			this.scriptInterfaces = scriptInterfaces;
+		}
 	}
 	
 	public RhinoScriptFactory(String scriptSourceLocator,
 			Class[] scriptInterfaces, Class extendedClass) {
 		Assert.hasText(scriptSourceLocator);
-		Assert.notEmpty(scriptInterfaces);
 		Assert.notNull(extendedClass);
 		this.scriptSourceLocator = scriptSourceLocator;
-		this.scriptInterfaces = scriptInterfaces;
 		this.extendedClass = extendedClass;
+		if (null == scriptInterfaces || scriptInterfaces.length < 1) {
+			this.scriptInterfaces = new Class[]{};
+		} else {
+			this.scriptInterfaces = scriptInterfaces;
+		}
 	}	
 
 	public ScriptObjectContext getScriptContext() {

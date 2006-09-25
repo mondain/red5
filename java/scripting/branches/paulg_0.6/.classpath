@@ -24,7 +24,11 @@
 	<classpathentry kind="lib" path="lib/jawk.0_14.jar"/>
 	<classpathentry kind="lib" path="lib/jfunutil.jar"/>
 	<classpathentry kind="lib" path="lib/jparsec.jar"/>
-	<classpathentry kind="lib" path="lib/js.jar"/>
+	<classpathentry sourcepath="D:/dev/shared/scripting/rhino1_6R3/src" kind="lib" path="lib/js.jar">
+		<attributes>
+			<attribute value="file:/D:/dev/shared/scripting/rhino1_6R3/docs/apidocs/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/xbean.jar"/>
 	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>
