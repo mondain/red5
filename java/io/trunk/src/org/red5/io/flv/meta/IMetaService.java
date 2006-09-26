@@ -33,7 +33,7 @@ import org.apache.mina.common.ByteBuffer;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public interface IMetaService {
-	
+
 	// Get FLV from FLVService
 	// grab a reader from FLV	
 	// Set up CuePoints
@@ -47,7 +47,7 @@ public interface IMetaService {
 	// after that, call writeMetaCue()
 	// this will loop through all the tags making
 	// sure that the cuepoints are inserted
-	
+
 	/**
 	 * Initiates writing of the MetaData
 	 * 
@@ -55,26 +55,26 @@ public interface IMetaService {
 	 * @throws IOException 
 	 */
 	public void write(IMetaData meta) throws IOException;
-	
+
 	/**
 	 * Writes the MetaData
 	 * 
 	 * @param metaData
 	 */
 	public void writeMetaData(IMetaData metaData);
-	
+
 	/**
 	 * Writes the Meta Cue Points
 	 */
 	public void writeMetaCue();
-	
+
 	/**
 	 * Read the MetaData
 	 * 
 	 * @return metaData
 	 */
 	public MetaData readMetaData(ByteBuffer buffer);
-	
+
 	/**
 	 * Read the Meta Cue Points
 	 * 
@@ -85,5 +85,5 @@ public interface IMetaService {
 	public void setInStream(FileInputStream fis);
 
 	public void setOutStream(FileOutputStream fos);
-	
+
 }

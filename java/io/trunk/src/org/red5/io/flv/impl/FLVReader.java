@@ -52,39 +52,52 @@ public class FLVReader implements IoConstants, ITagReader,
 		IKeyFrameDataAnalyzer {
 
 	private static Log log = LogFactory.getLog(FLVReader.class.getName());
+
 	private FileInputStream fis = null;
+
 	private FileChannel channel = null;
+
 	private MappedByteBuffer mappedFile = null;
+
 	private KeyFrameMeta keyframeMeta = null;
+
 	private ByteBuffer in = null;
+
 	/** Set to true to generate metadata automatically before the first tag. */
 	private boolean generateMetadata = false;
+
 	/** Position of first video tag. */
 	private int firstVideoTag = -1;
+
 	/** Position of first audio tag. */
 	private int firstAudioTag = -1;
+
 	/** Current tag. */
 	private int tagPosition = 0;
+
 	/** Duration in milliseconds. */
 	private long duration = 0;
+
 	/** Mapping between file position and timestamp in ms. */
 	private HashMap<Long, Long> posTimeMap = null;
+
 	/** Mapping between file position and tag number. */
 	private HashMap<Long, Integer> posTagMap = null;
 
 	public FLVReader(FileInputStream f) {
 		this(f, false);
 	}
-	
+
 	public FLVReader(FileInputStream f, boolean generateMetadata) {
 		this.fis = f;
 		this.generateMetadata = generateMetadata;
 		channel = fis.getChannel();
 		try {
-			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel
+					.size());
 			mappedFile.order(ByteOrder.BIG_ENDIAN);
 		} catch (IOException e) {
-			log.error("FLVReader :: FLVReader ::>\n"  , e);
+			log.error("FLVReader :: FLVReader ::>\n", e);
 		}
 		in = ByteBuffer.wrap(mappedFile);
 		log.debug("FLVReader 1 - Buffer size: " + in.capacity() + " position: "
@@ -206,7 +219,8 @@ public class FLVReader implements IoConstants, ITagReader,
 		out.markEndMap();
 		buf.flip();
 
-		ITag result = new Tag(ITag.TYPE_METADATA, 0, buf.limit(), null, 0);
+		ITag result = new Tag(IoConstants.TYPE_METADATA, 0, buf.limit(), null,
+				0);
 		result.setBody(buf);
 		return result;
 	}
@@ -226,10 +240,11 @@ public class FLVReader implements IoConstants, ITagReader,
 			in.position(oldPos);
 			KeyFrameMeta meta = analyzeKeyFrames();
 			tagPosition++;
-			if (meta != null)
+			if (meta != null) {
 				return createFileMeta();
+			}
 		}
-		
+
 		ByteBuffer body = ByteBuffer.allocate(tag.getBodySize());
 		final int limit = in.limit();
 		// XXX Paul: this assists in 'properly' handling damaged FLV files		
@@ -239,7 +254,7 @@ public class FLVReader implements IoConstants, ITagReader,
 			body.put(in);
 			body.flip();
 			in.limit(limit);
-	
+
 			tag.setBody(body);
 			tagPosition++;
 		}
@@ -254,7 +269,7 @@ public class FLVReader implements IoConstants, ITagReader,
 	synchronized public void close() {
 		log.debug("Reader close");
 		if (mappedFile != null) {
-		    mappedFile.clear();
+			mappedFile.clear();
 			mappedFile = null;
 		}
 		if (in != null) {
@@ -262,19 +277,20 @@ public class FLVReader implements IoConstants, ITagReader,
 			in = null;
 		}
 		if (channel != null) {
-		try {
-			channel.close();
-			fis.close();
-		} catch (IOException e) {
-			log.error("FLVReader :: close ::>\n", e);
-		}
+			try {
+				channel.close();
+				fis.close();
+			} catch (IOException e) {
+				log.error("FLVReader :: close ::>\n", e);
+			}
 		}
 	}
 
 	synchronized public KeyFrameMeta analyzeKeyFrames() {
-		if (keyframeMeta != null)
+		if (keyframeMeta != null) {
 			return keyframeMeta;
-		
+		}
+
 		List<Integer> positionList = new ArrayList<Integer>();
 		List<Integer> timestampList = new ArrayList<Integer>();
 		int origPos = in.position();
@@ -287,20 +303,22 @@ public class FLVReader implements IoConstants, ITagReader,
 			posTagMap.put((long) pos, idx++);
 			ITag tmpTag = this.readTagHeader();
 			duration = tmpTag.getTimestamp();
-			if (tmpTag.getDataType() == ITag.TYPE_VIDEO) {
-				if (firstVideoTag == -1)
+			if (tmpTag.getDataType() == IoConstants.TYPE_VIDEO) {
+				if (firstVideoTag == -1) {
 					firstVideoTag = pos;
-				
+				}
+
 				// Grab Frame type
 				byte frametype = in.get();
 				if (((frametype & MASK_VIDEO_FRAMETYPE) >> 4) == FLAG_FRAMETYPE_KEYFRAME) {
 					positionList.add(pos);
 					timestampList.add(tmpTag.getTimestamp());
 				}
-				
-			} else if (tmpTag.getDataType() == ITag.TYPE_AUDIO) {
-				if (firstAudioTag == -1)
+
+			} else if (tmpTag.getDataType() == IoConstants.TYPE_AUDIO) {
+				if (firstAudioTag == -1) {
 					firstAudioTag = pos;
+				}
 			}
 			// XXX Paul: this 'properly' handles damaged FLV files - as far as
 			// duration/size is concerned
@@ -348,9 +366,10 @@ public class FLVReader implements IoConstants, ITagReader,
 		analyzeKeyFrames();
 		// Update the current tag number
 		Integer tag = posTagMap.get(pos);
-		if (tag == null)
+		if (tag == null) {
 			return;
-		
+		}
+
 		tagPosition = tag;
 	}
 

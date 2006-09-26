@@ -42,14 +42,20 @@ import org.red5.io.utils.IOUtils;
 public class FLVWriter implements ITagWriter {
 
 	private static Log log = LogFactory.getLog(FLVWriter.class.getName());
+
 	private FileOutputStream fos = null;
+
 	private WritableByteChannel channel;
+
 	//private MappedByteBuffer mappedFile;
 	private ByteBuffer out;
+
 	private ITag lastTag = null;
 
 	private IFLV flv = null;
+
 	private long bytesWritten = 0;
+
 	private int offset = 0;
 
 	public FLVWriter(FileOutputStream fos) {
@@ -64,8 +70,9 @@ public class FLVWriter implements ITagWriter {
 	public FLVWriter(FileOutputStream fos, ITag lastTag) {
 		this.fos = fos;
 		this.lastTag = lastTag;
-		if (lastTag != null)
+		if (lastTag != null) {
 			offset = lastTag.getTimestamp();
+		}
 		channel = this.fos.getChannel();
 		out = ByteBuffer.allocate(1024);
 		out.setAutoExpand(true);
@@ -77,7 +84,6 @@ public class FLVWriter implements ITagWriter {
 	 * @throws IOException
 	 */
 	public void writeHeader() throws IOException {
-
 
 		out.put((byte) 0x46);
 		out.put((byte) 0x4C);
@@ -115,8 +121,8 @@ public class FLVWriter implements ITagWriter {
 	/*
 	 * (non-Javadoc)
 	 * 
-		 * @see org.red5.io.flv.Writer#setFLV()
-		 */
+	 * @see org.red5.io.flv.Writer#setFLV()
+	 */
 	public void setFLV(IFLV flv) {
 		this.flv = flv;
 	}

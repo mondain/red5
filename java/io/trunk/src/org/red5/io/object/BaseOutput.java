@@ -32,73 +32,75 @@ import java.util.Map;
 public class BaseOutput {
 
 	class IdentityWrapper {
-		
+
 		Object object;
-		
+
 		public IdentityWrapper(Object object) {
 			this.object = object;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return System.identityHashCode(object);
 		}
-		
+
 		@Override
 		public boolean equals(Object object) {
-			if (object instanceof IdentityWrapper)
+			if (object instanceof IdentityWrapper) {
 				return ((IdentityWrapper) object).object == this.object;
-			
+			}
+
 			return false;
 		}
-	
+
 	}
-	
+
 	protected Map<IdentityWrapper, Short> refMap;
+
 	protected short refId = 0;
-	
+
 	/**
 	 * BaseOutput Constructor
 	 *
 	 */
-	protected BaseOutput(){
+	protected BaseOutput() {
 		refMap = new HashMap<IdentityWrapper, Short>();
 	}
-	
+
 	/**
 	 * Store an object into a map
 	 * 
 	 * @param obj
 	 */
-	public void storeReference(Object obj){
+	public void storeReference(Object obj) {
 		refMap.put(new IdentityWrapper(obj), new Short(refId++));
 	}
-	
+
 	/**
 	 * Returns a boolean stating whether the map contains an object by
 	 * that key
 	 * @param obj
 	 * @return boolean
 	 */
-	public boolean hasReference(Object obj){
+	public boolean hasReference(Object obj) {
 		return refMap.containsKey(new IdentityWrapper(obj));
 	}
-	
+
 	/**
 	 * Clears the map
 	 */
-	public void clearReferences(){
+	public void clearReferences() {
 		refMap.clear();
 		refId = 0;
 	}
-	
+
 	/**
 	 * Returns the reference id based on the parameter obj
 	 * 
 	 * @param obj
 	 * @return short
 	 */
-	protected short getReferenceId(Object obj){
+	protected short getReferenceId(Object obj) {
 		return refMap.get(new IdentityWrapper(obj)).shortValue();
 	}
 

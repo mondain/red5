@@ -43,5 +43,4 @@ public class Resolver implements IResolver {
 		return m2;
 	}
 
-
 }

@@ -26,31 +26,31 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.red5.io.object.BaseInput;
 
-public class Input extends BaseInput implements org.red5.io.object.Input  {
+public class Input extends BaseInput implements org.red5.io.object.Input {
 
-	protected static Log log =
-        LogFactory.getLog(Input.class.getName());
-	
+	protected static Log log = LogFactory.getLog(Input.class.getName());
+
 	protected List list;
+
 	protected int idx;
-	
-	public Input(List list){
+
+	public Input(List list) {
 		super();
 		this.list = list;
 		this.idx = 0;
 	}
 
-	protected Object getNext(){
+	protected Object getNext() {
 		return list.get(idx++);
 	}
-		
-	public byte readDataType(){
+
+	public byte readDataType() {
 		Byte b = (Byte) getNext();
 		return b.byteValue();
 	}
-	
+
 	// Basic
-	
+
 	public Object readNull() {
 		return null;
 	}
@@ -63,7 +63,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 		return (Number) getNext();
 	}
 
-	public String readString(){
+	public String readString() {
 		return (String) getNext();
 	}
 
@@ -72,7 +72,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	}
 
 	// Array
-	
+
 	public int readStartArray() {
 		Integer i = (Integer) getNext();
 		return i.intValue();
@@ -85,11 +85,12 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	public void skipEndArray() {
 		// SKIP
 	}
-	
+
 	public boolean hasMoreItems() {
 		Object next = list.get(idx);
-		if (!(next instanceof Byte))
+		if (!(next instanceof Byte)) {
 			return true;
+		}
 		Byte b = (Byte) next;
 		return (b.byteValue() != Mock.TYPE_END_OF_MAP);
 	}
@@ -109,7 +110,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	public void skipItemSeparator() {
 		getNext();
 	}
-	
+
 	// Object
 
 	public String readStartObject() {
@@ -118,8 +119,9 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 
 	public boolean hasMoreProperties() {
 		Object next = list.get(idx);
-		if (!(next instanceof Byte))
+		if (!(next instanceof Byte)) {
 			return true;
+		}
 		Byte b = (Byte) next;
 		return (b.byteValue() != Mock.TYPE_END_OF_OBJECT);
 	}
@@ -128,7 +130,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 		return (String) getNext();
 	}
 
-	public void skipPropertySeparator(){
+	public void skipPropertySeparator() {
 		getNext();
 	}
 
@@ -136,13 +138,13 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 		getNext();
 	}
 
-    // Others
-	
+	// Others
+
 	public String readXML() {
 		return readString();
 	}
 
-	public Object readCustom(){
+	public Object readCustom() {
 		// Not supported
 		return null;
 	}

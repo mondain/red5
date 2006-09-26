@@ -26,7 +26,7 @@ import java.util.HashMap;
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
-public class MetaCue<K,V> extends HashMap<String, Object> implements IMetaCue {
+public class MetaCue<K, V> extends HashMap<String, Object> implements IMetaCue {
 
 	/**
 	 * SerialVersionUID = -1769771340654996861L;
@@ -94,22 +94,22 @@ public class MetaCue<K,V> extends HashMap<String, Object> implements IMetaCue {
 		return (Double) this.get("time");
 	}
 
-	public int compareTo(Object arg0) {		
+	public int compareTo(Object arg0) {
 		MetaCue cp = (MetaCue) arg0;
 		double cpTime = cp.getTime();
 		double thisTime = this.getTime();
-		
-		if(cpTime > thisTime) {
+
+		if (cpTime > thisTime) {
 			return -1;
-		} else if(cpTime < thisTime) {
+		} else if (cpTime < thisTime) {
 			return 1;
 		}
-		
+
 		return 0;
 	}
 
-
+	@Override
 	public String toString() {
-		return "MetaCue{"+this+"}";
+		return "MetaCue{" + this + "}";
 	}
 }

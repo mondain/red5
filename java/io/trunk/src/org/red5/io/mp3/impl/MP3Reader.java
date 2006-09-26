@@ -34,34 +34,47 @@ import org.apache.mina.common.ByteBuffer;
 import org.red5.io.IStreamableFile;
 import org.red5.io.ITag;
 import org.red5.io.ITagReader;
+import org.red5.io.IoConstants;
 import org.red5.io.amf.Output;
 import org.red5.io.flv.IKeyFrameDataAnalyzer;
 import org.red5.io.flv.impl.Tag;
 
 public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 
-	protected static Log log =
-			LogFactory.getLog(MP3Reader.class.getName());
+	protected static Log log = LogFactory.getLog(MP3Reader.class.getName());
 
 	private FileInputStream fis = null;
+
 	private FileChannel channel = null;
+
 	private MappedByteBuffer mappedFile = null;
+
 	private ByteBuffer in = null;
+
 	private ITag tag = null;
+
 	private int prevSize = 0;
+
 	private double currentTime = 0;
+
 	private KeyFrameMeta frameMeta = null;
+
 	private HashMap<Integer, Double> posTimeMap = null;
+
 	private int dataRate = 0;
+
 	private boolean firstFrame;
+
 	private ITag fileMeta;
-    private long duration = 0;
+
+	private long duration = 0;
 
 	public MP3Reader(FileInputStream stream) {
 		fis = stream;
 		channel = fis.getChannel();
 		try {
-			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel
+					.size());
 		} catch (IOException e) {
 			log.error("MP3Reader :: MP3Reader ::>\n", e);
 		}
@@ -75,10 +88,11 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 			int pos = in.position();
 			MP3Header header = readHeader();
 			in.position(pos);
-			if (header != null)
+			if (header != null) {
 				checkValidHeader(header);
-			else
+			} else {
 				throw new RuntimeException("No initial header found.");
+			}
 		}
 	}
 
@@ -88,18 +102,19 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 	 */
 	private void checkValidHeader(MP3Header header) {
 		switch (header.getSampleRate()) {
-		case 44100:
-		case 22050:
-		case 11025:
-		case 5513:
-			// Supported sample rate
-			break;
-			
-		default:
-			throw new RuntimeException("Unsupported sample rate: " + header.getSampleRate());
+			case 44100:
+			case 22050:
+			case 11025:
+			case 5513:
+				// Supported sample rate
+				break;
+
+			default:
+				throw new RuntimeException("Unsupported sample rate: "
+						+ header.getSampleRate());
 		}
 	}
-	
+
 	private ITag createFileMeta() {
 		// Create tag for onMetaData event
 		ByteBuffer buf = ByteBuffer.allocate(1024);
@@ -108,9 +123,10 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		out.writeString("onMetaData");
 		out.writeStartMap(3);
 		out.writePropertyName("duration");
-		out.writeNumber(frameMeta.timestamps[frameMeta.timestamps.length - 1] / 1000.0);
+		out
+				.writeNumber(frameMeta.timestamps[frameMeta.timestamps.length - 1] / 1000.0);
 		out.writePropertyName("audiocodecid");
-		out.writeNumber(ITag.FLAG_FORMAT_MP3);
+		out.writeNumber(IoConstants.FLAG_FORMAT_MP3);
 		if (dataRate > 0) {
 			out.writePropertyName("audiodatarate");
 			out.writeNumber(dataRate);
@@ -120,7 +136,8 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		out.markEndMap();
 		buf.flip();
 
-		ITag result = new Tag(ITag.TYPE_METADATA, 0, buf.limit(), null, prevSize);
+		ITag result = new Tag(IoConstants.TYPE_METADATA, 0, buf.limit(), null,
+				prevSize);
 		result.setBody(buf);
 		return result;
 	}
@@ -128,9 +145,10 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 	/** Search for next frame sync. */
 	public void searchNextFrame() {
 		while (in.remaining() > 1) {
-			int ch = (int) in.get() & 0xff;
-			if (ch != 0xff)
+			int ch = in.get() & 0xff;
+			if (ch != 0xff) {
 				continue;
+			}
 
 			if ((in.get() & 0xe0) == 0xe0) {
 				// Found it
@@ -153,8 +171,8 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 	public long getBytesRead() {
 		return in.position();
 	}
-	
-	public long getDuration(){
+
+	public long getDuration() {
 		return duration;
 	}
 
@@ -171,8 +189,9 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 			}
 		}
 
-		if (header == null)
+		if (header == null) {
 			return false;
+		}
 
 		if (in.position() + header.frameSize() - 4 > in.limit()) {
 			// Last frame is incomplete
@@ -198,7 +217,7 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		}
 		return header;
 	}
-	
+
 	public synchronized ITag readTag() {
 		if (firstFrame) {
 			// Return file metadata as first tag.
@@ -207,8 +226,9 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		}
 
 		MP3Header header = readHeader();
-		if (header == null)
+		if (header == null) {
 			return null;
+		}
 
 		int frameSize = header.frameSize();
 		if (in.position() + frameSize - 4 > in.limit()) {
@@ -217,25 +237,28 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 			return null;
 		}
 
-		tag = new Tag(ITag.TYPE_AUDIO, (int) currentTime, frameSize + 1, null, prevSize);
+		tag = new Tag(IoConstants.TYPE_AUDIO, (int) currentTime, frameSize + 1,
+				null, prevSize);
 		prevSize = frameSize + 1;
 		currentTime += header.frameDuration();
 		ByteBuffer body = ByteBuffer.allocate(tag.getBodySize());
-		byte tagType = (ITag.FLAG_FORMAT_MP3 << 4) | (ITag.FLAG_SIZE_16_BIT << 1);
+		byte tagType = (IoConstants.FLAG_FORMAT_MP3 << 4)
+				| (IoConstants.FLAG_SIZE_16_BIT << 1);
 		switch (header.getSampleRate()) {
 			case 44100:
-				tagType |= ITag.FLAG_RATE_44_KHZ << 2;
+				tagType |= IoConstants.FLAG_RATE_44_KHZ << 2;
 				break;
 			case 22050:
-				tagType |= ITag.FLAG_RATE_22_KHZ << 2;
+				tagType |= IoConstants.FLAG_RATE_22_KHZ << 2;
 				break;
 			case 11025:
-				tagType |= ITag.FLAG_RATE_11_KHZ << 2;
+				tagType |= IoConstants.FLAG_RATE_11_KHZ << 2;
 				break;
 			default:
-				tagType |= ITag.FLAG_RATE_5_5_KHZ << 2;
+				tagType |= IoConstants.FLAG_RATE_5_5_KHZ << 2;
 		}
-		tagType |= (header.isStereo() ? ITag.FLAG_TYPE_STEREO : ITag.FLAG_TYPE_MONO);
+		tagType |= (header.isStereo() ? IoConstants.FLAG_TYPE_STEREO
+				: IoConstants.FLAG_TYPE_MONO);
 		body.put(tagType);
 		final int limit = in.limit();
 		body.putInt(header.getData());
@@ -250,8 +273,9 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 	}
 
 	public void close() {
-		if (posTimeMap != null)
+		if (posTimeMap != null) {
 			posTimeMap.clear();
+		}
 		mappedFile.clear();
 		if (in != null) {
 			in.release();
@@ -275,16 +299,18 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		// Make sure we can resolve file positions to timestamps
 		analyzeKeyFrames();
 		Double time = posTimeMap.get(in.position());
-		if (time != null)
+		if (time != null) {
 			currentTime = time;
-		else
+		} else {
 			// Unknown frame position - this should never happen
 			currentTime = 0;
+		}
 	}
 
 	public synchronized KeyFrameMeta analyzeKeyFrames() {
-		if (frameMeta != null)
+		if (frameMeta != null) {
 			return frameMeta;
+		}
 
 		List<Integer> positionList = new ArrayList<Integer>();
 		List<Double> timestampList = new ArrayList<Double>();
@@ -297,14 +323,16 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
 		searchNextFrame();
 		while (this.hasMoreTags()) {
 			MP3Header header = readHeader();
-			if (header == null)
+			if (header == null) {
 				// No more tags
 				break;
+			}
 
 			int pos = in.position() - 4;
-			if (pos + header.frameSize() > in.limit())
+			if (pos + header.frameSize() > in.limit()) {
 				// Last frame is incomplete
 				break;
+			}
 
 			positionList.add(pos);
 			timestampList.add(time);

@@ -31,14 +31,18 @@ public class FLVHeader {
 
 	// Signature
 	public byte[] signature = null;
+
 	public byte version = 0x00; //version 1
-	 
+
 	// TYPES
 	public byte flagReserved01 = 0x00;
+
 	public boolean flagAudio = false;
+
 	public byte flagReserved02 = 0x00;
+
 	public boolean flagVideo = false;
-	
+
 	// DATA OFFSET
 	// reserved for data up to 4,294,967,295
 	public int dataOffset = 0x00;
@@ -66,15 +70,16 @@ public class FLVHeader {
 	 * 
 	 * @return byte[]
 	 */
-	public byte[] getSignature() {		
+	public byte[] getSignature() {
 		return signature;
 	}
-	
+
 	/**
 	 * Overrides the toString method so that a FLVHeader can
 	 * be represented by its datatypes
 	 * @return String
 	 */
+	@Override
 	public String toString() {
 		String ret = "";
 		//ret += "SIGNATURE: \t" + getSIGNATURE() + "\n";
@@ -84,9 +89,9 @@ public class FLVHeader {
 		ret += "TYPE FLAGS AUDIO: \t" + getFlagAudio() + "\n";
 		ret += "DATA OFFSET: \t\t" + getDataOffset() + "\n";
 		//byte b = 0x01;
-		
+
 		return ret;
-		
+
 	}
 
 	/**
@@ -125,7 +130,7 @@ public class FLVHeader {
 		flagVideo = (((typeFlags << 7) >> 7) > 0x00);
 		flagAudio = (((typeFlags << 5) >> 7) > 0x00);
 	}
-	
+
 	/**
 	 * Gets the FlagReserved01 which is a datatype specified in the Flash
 	 * Specification

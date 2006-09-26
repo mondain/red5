@@ -181,7 +181,6 @@ public class MetaData<K, V> extends HashMap<String, Object> implements
 		this.put("height", h);
 	}
 
-
 	/**
 	 * Sets the MetaCue Points
 	 *
@@ -196,8 +195,8 @@ public class MetaData<K, V> extends HashMap<String, Object> implements
 		// Place in TreeSet for sorting
 		TreeSet<IMetaCue> ts = new TreeSet<IMetaCue>();
 
-		for (int i = 0; i < cuePoints.length; i++) {
-			ts.add(cuePoints[i]);
+		for (IMetaCue element : cuePoints) {
+			ts.add(element);
 		}
 
 		int j = 0;
@@ -208,15 +207,15 @@ public class MetaData<K, V> extends HashMap<String, Object> implements
 			ts.remove(ts.first());
 		}
 
-//		"CuePoints", cuePointData
-//					"0",	MetaCue
-//							name, "test"
-//							type, "event"
-//							time, "0.1"
-//					"1",	MetaCue
-//							name, "test1"
-//							type, "event1"
-//							time, "0.5"
+		//		"CuePoints", cuePointData
+		//					"0",	MetaCue
+		//							name, "test"
+		//							type, "event"
+		//							time, "0.1"
+		//					"1",	MetaCue
+		//							name, "test1"
+		//							type, "event1"
+		//							time, "0.5"
 
 		this.put("cuePoints", cuePointData);
 
@@ -242,7 +241,7 @@ public class MetaData<K, V> extends HashMap<String, Object> implements
 		return ret;
 	}
 
-
+	@Override
 	public String toString() {
 		return "MetaData{" + "cuePoints="
 				+ (cuePoints == null ? null : Arrays.asList(cuePoints)) + '}';

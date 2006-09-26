@@ -53,22 +53,22 @@ import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
 public class FLV implements IFLV {
 
 	protected static Log log = LogFactory.getLog(FLV.class.getName());
-	
+
 	private File file;
-	
+
 	private boolean generateMetadata;
 
 	private IMetaService metaService;
-	
-	public FLV(File file){
+
+	public FLV(File file) {
 		this(file, false);
 	}
-	
+
 	public FLV(File file, boolean generateMetadata) {
 		this.file = file;
 		this.generateMetadata = generateMetadata;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -144,7 +144,7 @@ public class FLV implements IFLV {
 	 * 
 	 * @see org.red5.io.flv.FLV#reader()
 	 */
-	public ITagReader getReader() throws IOException{
+	public ITagReader getReader() throws IOException {
 		FLVReader reader = null;
 		ByteBuffer fileData = null;
 		String fileName = file.getName();
@@ -171,9 +171,9 @@ public class FLV implements IFLV {
 					log.warn("Item rejected by the cache: " + fileName);
 				}
 			} else {
-			log.info("Creating new file: "+file);
-			file.createNewFile();
-		}
+				log.info("Creating new file: " + file);
+				file.createNewFile();
+			}
 		} else {
 			fileData = ByteBuffer.wrap(ic.getBytes());
 			reader = new FLVReader(fileData, generateMetadata);
@@ -197,29 +197,32 @@ public class FLV implements IFLV {
 	 * @see org.red5.io.flv.FLV#writer()
 	 */
 	public ITagWriter getWriter() throws IOException {
-		if (file.exists())
+		if (file.exists()) {
 			file.delete();
+		}
 		file.createNewFile();
 		ITagWriter writer = new FLVWriter(new FileOutputStream(file));
 		writer.writeHeader();
 		return writer;
 	}
-	
+
 	public ITagWriter getAppendWriter() throws IOException {
 		// If the file doesnt exist, we cant append to it, so return a writer
-		if(!file.exists()){ 
-			log.info("File does not exist, calling writer. This will create a new file.");
+		if (!file.exists()) {
+			log
+					.info("File does not exist, calling writer. This will create a new file.");
 			return getWriter();
 		}
 		ITagReader reader = getReader();
 		// Its an empty flv, so no point appending call writer
-		if(!reader.hasMoreTags()) {
+		if (!reader.hasMoreTags()) {
 			reader.close();
-			log.info("Reader is empty, calling writer. This will create a new file.");
+			log
+					.info("Reader is empty, calling writer. This will create a new file.");
 			return getWriter();
 		}
 		ITag lastTag = null;
-		while(reader.hasMoreTags()){
+		while (reader.hasMoreTags()) {
 			lastTag = reader.readTag();
 		}
 		reader.close();
@@ -227,7 +230,7 @@ public class FLV implements IFLV {
 		ITagWriter writer = new FLVWriter(fos, lastTag);
 		return writer;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -247,6 +250,6 @@ public class FLV implements IFLV {
 	}
 
 	public void setMetaService(IMetaService service) {
-		metaService = service;		
+		metaService = service;
 	}
 }

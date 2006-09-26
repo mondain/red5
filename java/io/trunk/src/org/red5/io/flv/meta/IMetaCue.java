@@ -27,8 +27,7 @@ package org.red5.io.flv.meta;
  * @author Dominick Accattato (daccattato@gmail.com)
  */
 public interface IMetaCue extends IMeta, Comparable {
-	
-	
+
 	/**
 	 * Sets the name
 	 * 
@@ -36,7 +35,7 @@ public interface IMetaCue extends IMeta, Comparable {
 	 * 
 	 */
 	public void setName(String name);
-	
+
 	/**
 	 * Gets the name
 	 * 
@@ -44,7 +43,7 @@ public interface IMetaCue extends IMeta, Comparable {
 	 * 
 	 */
 	public String getName();
-	
+
 	/**
 	 * Sets the type type can be "event" or "navigation"
 	 * 
@@ -52,7 +51,7 @@ public interface IMetaCue extends IMeta, Comparable {
 	 *
 	 */
 	public void setType(String type);
-	
+
 	/**
 	 * Gets the type
 	 * 
@@ -60,7 +59,7 @@ public interface IMetaCue extends IMeta, Comparable {
 	 *
 	 */
 	public String getType();
-	
+
 	/**
 	 * Sets the time
 	 * 
@@ -68,7 +67,7 @@ public interface IMetaCue extends IMeta, Comparable {
 	 *
 	 */
 	public void setTime(double d);
-	
+
 	/**
 	 * Gets the time
 	 * 

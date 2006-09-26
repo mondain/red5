@@ -22,7 +22,7 @@ package org.red5.io.amf;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,63 +73,63 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 
 		switch (currentDataType) {
 
-		case AMF.TYPE_NULL:
-		case AMF.TYPE_UNDEFINED:
-			coreType = DataTypes.CORE_NULL;
-			break;
+			case AMF.TYPE_NULL:
+			case AMF.TYPE_UNDEFINED:
+				coreType = DataTypes.CORE_NULL;
+				break;
 
-		case AMF.TYPE_NUMBER:
-			coreType = DataTypes.CORE_NUMBER;
-			break;
+			case AMF.TYPE_NUMBER:
+				coreType = DataTypes.CORE_NUMBER;
+				break;
 
-		case AMF.TYPE_BOOLEAN:
-			coreType = DataTypes.CORE_BOOLEAN;
-			break;
+			case AMF.TYPE_BOOLEAN:
+				coreType = DataTypes.CORE_BOOLEAN;
+				break;
 
-		case AMF.TYPE_STRING:
-		case AMF.TYPE_LONG_STRING:
-			coreType = DataTypes.CORE_STRING;
-			break;
+			case AMF.TYPE_STRING:
+			case AMF.TYPE_LONG_STRING:
+				coreType = DataTypes.CORE_STRING;
+				break;
 
-		case AMF.TYPE_CLASS_OBJECT:
-		case AMF.TYPE_OBJECT:
-			coreType = DataTypes.CORE_OBJECT;
-			break;
+			case AMF.TYPE_CLASS_OBJECT:
+			case AMF.TYPE_OBJECT:
+				coreType = DataTypes.CORE_OBJECT;
+				break;
 
-		case AMF.TYPE_MIXED_ARRAY:
-			coreType = DataTypes.CORE_MAP;
-			break;
+			case AMF.TYPE_MIXED_ARRAY:
+				coreType = DataTypes.CORE_MAP;
+				break;
 
-		case AMF.TYPE_ARRAY:
-			coreType = DataTypes.CORE_ARRAY;
-			break;
+			case AMF.TYPE_ARRAY:
+				coreType = DataTypes.CORE_ARRAY;
+				break;
 
-		case AMF.TYPE_DATE:
-			coreType = DataTypes.CORE_DATE;
-			break;
+			case AMF.TYPE_DATE:
+				coreType = DataTypes.CORE_DATE;
+				break;
 
-		case AMF.TYPE_XML:
-			coreType = DataTypes.CORE_XML;
-			break;
+			case AMF.TYPE_XML:
+				coreType = DataTypes.CORE_XML;
+				break;
 
-		case AMF.TYPE_REFERENCE:
-			coreType = DataTypes.OPT_REFERENCE;
-			break;
+			case AMF.TYPE_REFERENCE:
+				coreType = DataTypes.OPT_REFERENCE;
+				break;
 
-		case AMF.TYPE_UNSUPPORTED:
-		case AMF.TYPE_MOVIECLIP:
-		case AMF.TYPE_RECORDSET:
-			// These types are not handled by core datatypes
-			// So add the amf mast to them, this way the deserializer
-			// will call back to readCustom, we can then handle or reutrn null
-			coreType = (byte) (currentDataType + DataTypes.CUSTOM_AMF_MASK);
-			break;
+			case AMF.TYPE_UNSUPPORTED:
+			case AMF.TYPE_MOVIECLIP:
+			case AMF.TYPE_RECORDSET:
+				// These types are not handled by core datatypes
+				// So add the amf mast to them, this way the deserializer
+				// will call back to readCustom, we can then handle or reutrn null
+				coreType = (byte) (currentDataType + DataTypes.CUSTOM_AMF_MASK);
+				break;
 
-		case AMF.TYPE_END_OF_OBJECT:
-		default:
-			// End of object, and anything else lets just skip
-			coreType = DataTypes.CORE_SKIP;
-			break;
+			case AMF.TYPE_END_OF_OBJECT:
+			default:
+				// End of object, and anything else lets just skip
+				coreType = DataTypes.CORE_SKIP;
+				break;
 		}
 
 		return coreType;
@@ -162,13 +162,15 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	 */
 	public Number readNumber() {
 		double num = buf.getDouble();
-		if (num == (double) Math.round(num)) {
-			if (num < Integer.MAX_VALUE)
+		if (num == Math.round(num)) {
+			if (num < Integer.MAX_VALUE) {
 				return new Integer((int) num);
-			else
+			} else {
 				return new Long(Math.round(num));
-		} else
+			}
+		} else {
 			return new Double(num);
+		}
 	}
 
 	/**
@@ -179,12 +181,12 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	public String readString() {
 		int len = 0;
 		switch (currentDataType) {
-		case AMF.TYPE_LONG_STRING:
-			len = buf.getInt();
-			break;
-		case AMF.TYPE_STRING:
-			len = buf.getShort();
-			break;
+			case AMF.TYPE_LONG_STRING:
+				len = buf.getInt();
+				break;
+			case AMF.TYPE_STRING:
+				len = buf.getShort();
+				break;
 		}
 		int limit = buf.limit();
 		final java.nio.ByteBuffer strBuf = buf.buf();
@@ -231,7 +233,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 		short clientTimeZoneMins = buf.getShort();
 		ms += clientTimeZoneMins * 60 * 1000;
 		Calendar cal = new GregorianCalendar();
-		cal.setTime(new Date(ms - SimpleTimeZone.getDefault().getRawOffset()));
+		cal.setTime(new Date(ms - TimeZone.getDefault().getRawOffset()));
 		Date date = cal.getTime();
 		if (cal.getTimeZone().inDaylightTime(date)) {
 			date.setTime(date.getTime() - cal.getTimeZone().getDSTSavings());
@@ -312,10 +314,11 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	 * @return String
 	 */
 	public String readStartObject() {
-		if (currentDataType == AMF.TYPE_CLASS_OBJECT)
+		if (currentDataType == AMF.TYPE_CLASS_OBJECT) {
 			return getString(buf);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**

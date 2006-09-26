@@ -148,9 +148,9 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 	}
 
 	public void writeStartObject(String className) {
-		if (className == null)
+		if (className == null) {
 			buf.put(AMF.TYPE_OBJECT);
-		else {
+		} else {
 			buf.put(AMF.TYPE_CLASS_OBJECT);
 			putString(buf, className);
 		}
