@@ -33,25 +33,27 @@ import java.util.Map;
 public class RecordSetPage {
 
 	private int cursor;
+
 	private List<List<Object>> data;
-	
+
 	public RecordSetPage(Input input) {
 		Deserializer deserizalizer = new Deserializer();
 		Object result = deserizalizer.deserialize(input);
-		if (!(result instanceof Map))
+		if (!(result instanceof Map)) {
 			throw new RuntimeException("expected Map but got " + result);
-		
+		}
+
 		Map<String, Object> mapResult = (Map<String, Object>) result;
 		cursor = (Integer) mapResult.get("Cursor");
 		data = (List<List<Object>>) mapResult.get("Page");
 	}
-	
+
 	protected int getCursor() {
 		return cursor;
 	}
-	
+
 	protected List<List<Object>> getData() {
 		return Collections.unmodifiableList(data);
 	}
-	
+
 }

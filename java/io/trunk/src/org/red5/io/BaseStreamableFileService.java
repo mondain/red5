@@ -38,10 +38,11 @@ public abstract class BaseStreamableFileService implements
 	public String prepareFilename(String name) {
 		if (name.startsWith(getPrefix() + ":")) {
 			name = name.substring(getPrefix().length() + 1);
-			if (!name.endsWith(getExtension()))
+			if (!name.endsWith(getExtension())) {
 				name = name + getExtension();
+			}
 		}
-		
+
 		return name;
 	}
 

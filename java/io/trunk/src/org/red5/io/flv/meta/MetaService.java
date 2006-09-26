@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.ITag;
+import org.red5.io.IoConstants;
 import org.red5.io.amf.Input;
 import org.red5.io.amf.Output;
 import org.red5.io.flv.impl.FLVReader;
@@ -43,7 +44,7 @@ import org.red5.io.object.Serializer;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class MetaService implements IMetaService {
-	
+
 	File file = null;
 
 	private FileInputStream fis;
@@ -55,7 +56,7 @@ public class MetaService implements IMetaService {
 	private Deserializer deserializer;
 
 	private Resolver resolver;
-	
+
 	/**
 	 * @return Returns the resolver.
 	 */
@@ -119,60 +120,60 @@ public class MetaService implements IMetaService {
 		FLVReader reader = new FLVReader(fis);
 		FLVWriter writer = new FLVWriter(fos);
 		writer.writeHeader();
-		
+
 		IMetaData metaData = null;
 		ITag tag = null;
 		// Read first tag
-		if(reader.hasMoreTags()) {
-			 tag = reader.readTag();
-			if(tag.getDataType() == ITag.TYPE_METADATA) {
+		if (reader.hasMoreTags()) {
+			tag = reader.readTag();
+			if (tag.getDataType() == IoConstants.TYPE_METADATA) {
 				metaData = this.readMetaData(tag.getBody());
-			}			
+			}
 		}
-		
+
 		IMetaData mergedMeta = (IMetaData) mergeMeta(metaData, meta);
 		ITag injectedTag = injectMetaData(mergedMeta, tag);
-//		System.out.println("tag: \n--------\n" + injectedTag);
+		//		System.out.println("tag: \n--------\n" + injectedTag);
 		writer.writeTag(injectedTag);
-		
+
 		int cuePointTimeStamp = getTimeInMilliseconds(metaArr[0]);
 		int counter = 0;
-		while(reader.hasMoreTags()) {
+		while (reader.hasMoreTags()) {
 			tag = reader.readTag();
-	
+
 			// if there are cuePoints in the TreeSet
-			if(counter < metaArr.length) {
-	
+			if (counter < metaArr.length) {
+
 				// If the tag has a greater timestamp than the
 				// cuePointTimeStamp, then inject the tag
-				while(tag.getTimestamp() > cuePointTimeStamp) {
-					
+				while (tag.getTimestamp() > cuePointTimeStamp) {
+
 					injectedTag = injectMetaCue(metaArr[counter], tag);
-//					System.out.println("In tag: \n--------\n" + injectedTag);
-					writer.writeTag(injectedTag);	
-					
+					//					System.out.println("In tag: \n--------\n" + injectedTag);
+					writer.writeTag(injectedTag);
+
 					tag.setPreviousTagSize((injectedTag.getBodySize() + 11));
-					
+
 					// Advance to the next CuePoint
 					counter++;
-				
-					if(counter > (metaArr.length - 1)) {
-						break;						
+
+					if (counter > (metaArr.length - 1)) {
+						break;
 					}
-					
+
 					cuePointTimeStamp = getTimeInMilliseconds(metaArr[counter]);
-					
-				}										
+
+				}
 			}
-			
-			if(tag.getDataType() != ITag.TYPE_METADATA) {
+
+			if (tag.getDataType() != IoConstants.TYPE_METADATA) {
 				writer.writeTag(tag);
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
 	 * Merges the two Meta objects according to user
 	 * 
@@ -185,18 +186,18 @@ public class MetaService implements IMetaService {
 	}
 
 	private ITag injectMetaData(IMetaData meta, ITag tag) {
-		
+
 		Output out = new Output(ByteBuffer.allocate(1000));
-		Serializer ser = new Serializer();		
-		ser.serialize(out,"onMetaData");
-		ser.serialize(out,meta);
-		
-		ByteBuffer tmpBody = out.buf().flip();		
-		int tmpBodySize = out.buf().limit();	
+		Serializer ser = new Serializer();
+		ser.serialize(out, "onMetaData");
+		ser.serialize(out, meta);
+
+		ByteBuffer tmpBody = out.buf().flip();
+		int tmpBodySize = out.buf().limit();
 		int tmpPreviousTagSize = tag.getPreviousTagSize();
-		byte tmpDataType = ITag.TYPE_METADATA;
+		byte tmpDataType = IoConstants.TYPE_METADATA;
 		int tmpTimestamp = 0;
-		
+
 		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody,
 				tmpPreviousTagSize);
 	}
@@ -209,24 +210,24 @@ public class MetaService implements IMetaService {
 	 * @return ITag tag
 	 */
 	private ITag injectMetaCue(IMetaCue meta, ITag tag) {
-		
-//		IMeta meta = (MetaCue) cue;
+
+		//		IMeta meta = (MetaCue) cue;
 		Output out = new Output(ByteBuffer.allocate(1000));
-		Serializer ser = new Serializer();		
-		ser.serialize(out,"onCuePoint");
-		ser.serialize(out,meta);
-				
-		ByteBuffer tmpBody = out.buf().flip();	
-		int tmpBodySize = out.buf().limit();	
+		Serializer ser = new Serializer();
+		ser.serialize(out, "onCuePoint");
+		ser.serialize(out, meta);
+
+		ByteBuffer tmpBody = out.buf().flip();
+		int tmpBodySize = out.buf().limit();
 		int tmpPreviousTagSize = tag.getPreviousTagSize();
-		byte tmpDataType = ITag.TYPE_METADATA;
+		byte tmpDataType = IoConstants.TYPE_METADATA;
 		int tmpTimestamp = getTimeInMilliseconds(meta);
-								
+
 		return new Tag(tmpDataType, tmpTimestamp, tmpBodySize, tmpBody,
 				tmpPreviousTagSize);
-		
+
 	}
-	
+
 	/**
 	 * Returns a timestamp in milliseconds
 	 * 
@@ -235,7 +236,7 @@ public class MetaService implements IMetaService {
 	 */
 	private int getTimeInMilliseconds(IMetaCue metaCue) {
 		return (int) (metaCue.getTime() * 1000.00);
-		
+
 	}
 
 	/*
@@ -245,9 +246,9 @@ public class MetaService implements IMetaService {
 	 */
 	public void writeMetaData(IMetaData metaData) {
 		IMetaCue meta = (MetaCue) metaData;
-		Output out = new Output(ByteBuffer.allocate(1000));		
-		serializer.serialize(out,"onCuePoint");
-		serializer.serialize(out,meta);
+		Output out = new Output(ByteBuffer.allocate(1000));
+		serializer.serialize(out, "onCuePoint");
+		serializer.serialize(out, meta);
 
 	}
 
@@ -257,7 +258,7 @@ public class MetaService implements IMetaService {
 	 * @see org.red5.io.flv.meta.IMetaService#writeMetaCue()
 	 */
 	public void writeMetaCue() {
-		
+
 	}
 
 	/**
@@ -280,17 +281,17 @@ public class MetaService implements IMetaService {
 	}
 
 	public void setOutStream(FileOutputStream fos) {
-		this.fos = fos;		
+		this.fos = fos;
 	}
 
 	// TODO need to fix
 	public MetaData readMetaData(ByteBuffer buffer) {
 		MetaData retMeta = new MetaData();
-		Input input = new Input(buffer);	
+		Input input = new Input(buffer);
 		String metaType = (String) deserializer.deserialize(input);
 		Map m = (Map) deserializer.deserialize(input);
 		retMeta.putAll(m);
-		
+
 		return retMeta;
 	}
 

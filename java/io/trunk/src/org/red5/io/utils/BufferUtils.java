@@ -29,7 +29,6 @@ import org.apache.mina.common.ByteBuffer;
  */
 public class BufferUtils {
 
-
 	/**
 	 * Writes a Medium Int to the output buffer
 	 * 
@@ -43,7 +42,7 @@ public class BufferUtils {
 		bytes[2] = (byte) (value & 0x00FF);
 		out.put(bytes);
 	}
-	
+
 	/**
 	 * Reads an unsigned Medium Int from the in buffer
 	 * 
@@ -59,7 +58,7 @@ public class BufferUtils {
 		val += (bytes[2] & 0xFF);
 		return val;
 	}
-	
+
 	/**
 	 * Reads a Medium Int to the in buffer
 	 * 
@@ -73,11 +72,12 @@ public class BufferUtils {
 		val += bytes[0] * 256 * 256;
 		val += bytes[1] * 256;
 		val += bytes[2];
-		if (val < 0)
+		if (val < 0) {
 			val += 256;
+		}
 		return val;
 	}
-	
+
 	/**
 	 * Puts an in buffer stream onto an out buffer stream
 	 * and returns the bytes written
@@ -86,14 +86,14 @@ public class BufferUtils {
 	 * @param numBytesMax
 	 * @return int
 	 */
-	public static int put(ByteBuffer out, ByteBuffer in, int numBytesMax){
+	public static int put(ByteBuffer out, ByteBuffer in, int numBytesMax) {
 		final int limit = in.limit();
 		final int numBytesRead = (numBytesMax > in.remaining()) ? in
 				.remaining() : numBytesMax;
-		in.limit(in.position()+numBytesRead);
+		in.limit(in.position() + numBytesRead);
 		out.put(in);
 		in.limit(limit);
 		return numBytesRead;
 	}
-	
+
 }

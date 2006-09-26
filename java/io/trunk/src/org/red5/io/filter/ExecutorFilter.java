@@ -59,7 +59,8 @@ public class ExecutorFilter extends IoFilterAdapter {
 	 * Creates a new instace with the default thread pool implementation (<tt>new ThreadPoolExecutor(16, 16, 60, TimeUnit.SECONDS, new LinkedBlockingQueue() )</tt>).
 	 */
 	public ExecutorFilter() {
-		this(new ThreadPoolExecutor(16, 16, 60, TimeUnit.SECONDS, new LinkedBlockingQueue()));
+		this(new ThreadPoolExecutor(16, 16, 60, TimeUnit.SECONDS,
+				new LinkedBlockingQueue()));
 	}
 
 	/**
@@ -72,10 +73,12 @@ public class ExecutorFilter extends IoFilterAdapter {
 		this.executor = executor;
 	}
 
-	public ExecutorFilter(int corePoolSize, int maximumPoolSize, long keepAliveTime) {
-		this(new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, new LinkedBlockingQueue()));
+	public ExecutorFilter(int corePoolSize, int maximumPoolSize,
+			long keepAliveTime) {
+		this(new ThreadPoolExecutor(corePoolSize, maximumPoolSize,
+				keepAliveTime, TimeUnit.SECONDS, new LinkedBlockingQueue()));
 	}
-	
+
 	/**
 	 * Returns the underlying {@link Executor} instance this filter uses.
 	 */
@@ -151,6 +154,7 @@ public class ExecutorFilter extends IoFilterAdapter {
 			this.value = value;
 		}
 
+		@Override
 		public String toString() {
 			return value;
 		}
@@ -182,34 +186,41 @@ public class ExecutorFilter extends IoFilterAdapter {
 		}
 	}
 
+	@Override
 	public void sessionCreated(NextFilter nextFilter, IoSession session) {
 		nextFilter.sessionCreated(session);
 	}
 
+	@Override
 	public void sessionOpened(NextFilter nextFilter, IoSession session) {
 		fireEvent(nextFilter, session, EventType.OPENED, null);
 	}
 
+	@Override
 	public void sessionClosed(NextFilter nextFilter, IoSession session) {
 		fireEvent(nextFilter, session, EventType.CLOSED, null);
 	}
 
+	@Override
 	public void sessionIdle(NextFilter nextFilter, IoSession session,
 			IdleStatus status) {
 		fireEvent(nextFilter, session, EventType.IDLE, status);
 	}
 
+	@Override
 	public void exceptionCaught(NextFilter nextFilter, IoSession session,
 			Throwable cause) {
 		fireEvent(nextFilter, session, EventType.EXCEPTION, cause);
 	}
 
+	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) {
 		ByteBufferUtil.acquireIfPossible(message);
 		fireEvent(nextFilter, session, EventType.RECEIVED, message);
 	}
 
+	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			Object message) {
 		ByteBufferUtil.acquireIfPossible(message);
@@ -235,11 +246,13 @@ public class ExecutorFilter extends IoFilterAdapter {
 		}
 	}
 
+	@Override
 	public void filterWrite(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) {
 		nextFilter.filterWrite(session, writeRequest);
 	}
 
+	@Override
 	public void filterClose(NextFilter nextFilter, IoSession session)
 			throws Exception {
 		nextFilter.filterClose(session);

@@ -30,42 +30,58 @@ import java.util.Date;
  */
 public interface Input {
 
-	byte readDataType(); 
-	
+	byte readDataType();
+
 	// Data Types
 	Object readNull();
+
 	Boolean readBoolean();
+
 	Number readNumber();
-	String readString(); 
+
+	String readString();
+
 	Date readDate();
-	
+
 	// Stuctures
-	int readStartArray(); 
+	int readStartArray();
+
 	void skipElementSeparator();
+
 	void skipEndArray();
-	
+
 	int readStartMap();
+
 	String readItemKey();
+
 	void skipItemSeparator();
+
 	boolean hasMoreItems();
+
 	void skipEndMap();
-	
+
 	String readStartObject();
+
 	String readPropertyName();
+
 	void skipPropertySeparator();
+
 	boolean hasMoreProperties();
+
 	void skipEndObject();
-	
+
 	//int readStartXML();
 	String readXML();
-	
+
 	Object readCustom();
-	
+
 	//void readEndXML();
 
 	// Reference to Complex Data Type
 	Object readReference();
+
 	void storeReference(Object obj);
+
 	void clearReferences();
 
 }

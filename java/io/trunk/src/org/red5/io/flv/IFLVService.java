@@ -39,7 +39,7 @@ public interface IFLVService extends IStreamableFileService {
 	 * @param serializer
 	 */
 	public void setSerializer(Serializer serializer);
-	
+
 	/**
 	 * Sets the deserializer
 	 * 

@@ -52,76 +52,76 @@ public class DOM2Writer {
 		int type = node.getNodeType();
 
 		switch (type) {
-		case Node.DOCUMENT_NODE: {
-			NodeList children = node.getChildNodes();
+			case Node.DOCUMENT_NODE: {
+				NodeList children = node.getChildNodes();
 
-			if (children != null) {
-				int numChildren = children.getLength();
+				if (children != null) {
+					int numChildren = children.getLength();
 
-				for (int i = 0; i < numChildren; i++) {
-					print(children.item(i), startnode, out);
+					for (int i = 0; i < numChildren; i++) {
+						print(children.item(i), startnode, out);
+					}
 				}
-			}
-			break;
-		}
-
-		case Node.ELEMENT_NODE: {
-
-			out.print('<' + node.getNodeName());
-
-			NamedNodeMap attrs = node.getAttributes();
-			int len = (attrs != null) ? attrs.getLength() : 0;
-
-			for (int i = 0; i < len; i++) {
-				Attr attr = (Attr) attrs.item(i);
-
-				out.print(' ' + attr.getNodeName() + "=\"" + attr.getValue()
-						+ '\"');
-
+				break;
 			}
 
-			NodeList children = node.getChildNodes();
+			case Node.ELEMENT_NODE: {
 
-			if (children != null) {
-				int numChildren = children.getLength();
+				out.print('<' + node.getNodeName());
 
-				hasChildren = (numChildren > 0);
+				NamedNodeMap attrs = node.getAttributes();
+				int len = (attrs != null) ? attrs.getLength() : 0;
 
-				if (hasChildren) {
-					out.print('>');
+				for (int i = 0; i < len; i++) {
+					Attr attr = (Attr) attrs.item(i);
+
+					out.print(' ' + attr.getNodeName() + "=\""
+							+ attr.getValue() + '\"');
+
 				}
 
-				for (int i = 0; i < numChildren; i++) {
-					print(children.item(i), startnode, out);
+				NodeList children = node.getChildNodes();
+
+				if (children != null) {
+					int numChildren = children.getLength();
+
+					hasChildren = (numChildren > 0);
+
+					if (hasChildren) {
+						out.print('>');
+					}
+
+					for (int i = 0; i < numChildren; i++) {
+						print(children.item(i), startnode, out);
+					}
+				} else {
+					hasChildren = false;
 				}
-			} else {
-				hasChildren = false;
+
+				if (!hasChildren) {
+					out.print("/>");
+				}
+				break;
 			}
 
-			if (!hasChildren) {
-				out.print("/>");
+			case Node.ENTITY_REFERENCE_NODE: {
+				out.print('&');
+				out.print(node.getNodeName());
+				out.print(';');
+				break;
 			}
-			break;
-		}
 
-		case Node.ENTITY_REFERENCE_NODE: {
-			out.print('&');
-			out.print(node.getNodeName());
-			out.print(';');
-			break;
-		}
+			case Node.CDATA_SECTION_NODE: {
+				out.print("<![CDATA[");
+				out.print(node.getNodeValue());
+				out.print("]]>");
+				break;
+			}
 
-		case Node.CDATA_SECTION_NODE: {
-			out.print("<![CDATA[");
-			out.print(node.getNodeValue());
-			out.print("]]>");
-			break;
-		}
-
-		case Node.TEXT_NODE: {
-			out.print(node.getNodeValue());
-			break;
-		}
+			case Node.TEXT_NODE: {
+				out.print(node.getNodeValue());
+				break;
+			}
 		}
 		if (type == Node.ELEMENT_NODE && hasChildren == true) {
 			out.print("</");

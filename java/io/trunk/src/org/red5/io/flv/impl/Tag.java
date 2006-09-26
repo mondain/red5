@@ -32,11 +32,17 @@ import org.red5.io.ITag;
 public class Tag implements ITag {
 
 	private byte type;
+
 	private byte dataType;
+
 	private int timestamp;
+
 	private int bodySize;
+
 	private ByteBuffer body;
+
 	private int previuosTagSize;
+
 	private byte bitflags;
 
 	/**
@@ -55,11 +61,11 @@ public class Tag implements ITag {
 		this.body = body;
 		this.previuosTagSize = previousTagSize;
 	}
-	
-	public Tag(){
-		
+
+	public Tag() {
+
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -114,7 +120,7 @@ public class Tag implements ITag {
 	public ByteBuffer getBody() {
 		return body;
 	}
-	
+
 	/**
 	 * Return the size of the body
 	 * 
@@ -123,7 +129,7 @@ public class Tag implements ITag {
 	public int getBodySize() {
 		return bodySize;
 	}
-	
+
 	/**
 	 * Get the data type
 	 * 
@@ -132,7 +138,7 @@ public class Tag implements ITag {
 	public byte getDataType() {
 		return dataType;
 	}
-	
+
 	/**
 	 * Return the timestamp
 	 * 
@@ -141,7 +147,7 @@ public class Tag implements ITag {
 	public int getTimestamp() {
 		return timestamp;
 	}
-	
+
 	/**
 	 * Return the timestamp
 	 * 
@@ -150,18 +156,19 @@ public class Tag implements ITag {
 	public int getPreviousTagSize() {
 		return previuosTagSize;
 	}
-	
+
 	/**
 	 * Prints out the contents of the tag
 	 * 
 	 * @return tag contents
 	 */
+	@Override
 	public String toString() {
-		String ret 	 = "Data Type\t=" + dataType + "\n";
-		ret 		+= "Prev. Tag Size\t=" + previuosTagSize + "\n";
-		ret 		+= "Body size\t=" + bodySize + "\n";
-		ret			+= "timestamp\t=" + timestamp + "\n";
-		ret			+= "Body Data\t=" + body + "\n";
+		String ret = "Data Type\t=" + dataType + "\n";
+		ret += "Prev. Tag Size\t=" + previuosTagSize + "\n";
+		ret += "Body size\t=" + bodySize + "\n";
+		ret += "timestamp\t=" + timestamp + "\n";
+		ret += "Body Data\t=" + body + "\n";
 		return ret;
 	}
 
@@ -169,42 +176,34 @@ public class Tag implements ITag {
 		return type;
 	}
 
-
 	public void setType(byte type) {
 		this.type = type;
 	}
-
 
 	public void setBody(ByteBuffer body) {
 		this.body = body;
 	}
 
-
 	public void setBodySize(int bodySize) {
 		this.bodySize = bodySize;
 	}
-
 
 	public void setDataType(byte dataType) {
 		this.dataType = dataType;
 	}
 
-
 	public void setTimestamp(int timestamp) {
 		this.timestamp = timestamp;
 	}
 
-
 	public void setData() {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	public void setPreviousTagSize(int size) {
 		this.previuosTagSize = size;
-		
-	}
 
+	}
 
 }
