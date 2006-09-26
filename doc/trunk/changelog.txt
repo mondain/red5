@@ -6,6 +6,11 @@ versions of Red5.
 
 Red5 0.6    (unreleased)
 ------------------------
+New features:
+- Enabled Tomcat or Jetty as J2EE container implementations
+- FLV cache implementations (2 are included) (Trac #99)
+- Scripting support (javascript, ruby, python, groovy, and bsh) based on Spring 2 and JSR223
+
 Bugfixes:
 - last frames aren't lost when reading .flv files (Trac #90)
 - FileConsumer acted on all consumer pipe events (Trac #92)
@@ -19,7 +24,6 @@ Bugfixes:
 - "close" can be called on RTMPT connections multiple times (Trac #166)
 - fixed synchronizing problem with clients publishing repeatedly (Trac #124)
 - RTMPT connections can be closed from the serverside (Trac #179)
-
 
 Red5 0.5    (2006-07-25)
 ------------------------
