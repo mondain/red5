@@ -110,7 +110,7 @@ public class UTF8Codec {
 				out[realLen++] = outCh;
 				len -= 3;
 			} else if ((ch >> 4) == 0xe) {
-				outCh = (char) (ch & 7);
+				outCh = (char) (ch & 0x0f);
 				ch = (int) (in.get() & 0xff);
 				outCh = (char) ((outCh << 6) | ((char) (ch & 0x3f)));
 				ch = (int) (in.get() & 0xff);
@@ -118,7 +118,7 @@ public class UTF8Codec {
 				out[realLen++] = outCh;
 				len -= 2;
 			} else if ((ch >> 5) == 6) {
-				outCh = (char) (ch & 7);
+				outCh = (char) (ch & 0x1f);
 				ch = (int) (in.get() & 0xff);
 				outCh = (char) ((outCh << 6) | ((char) (ch & 0x3f)));
 				out[realLen++] = outCh;
