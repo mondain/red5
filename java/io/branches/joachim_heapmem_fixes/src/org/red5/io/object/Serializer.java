@@ -358,8 +358,7 @@ public class Serializer implements SerializerOpts {
 	 */
 	public boolean writeBean(Output out, Object bean) {
 		BeanMap beanMap = new BeanMap(bean);
-		Set set = beanMap.entrySet();
-		if ((set.size() == 0) || (set.size() == 1 && beanMap.containsKey("class")))
+		if ((beanMap.size() == 0) || (beanMap.size() == 1 && beanMap.containsKey("class")))
 			// BeanMap is empty or can only access "class" attribute, skip it
 			return false;
 		
@@ -368,10 +367,10 @@ public class Serializer implements SerializerOpts {
 		} else {
 			out.writeStartObject(null);
 		}
-		Iterator it = set.iterator();
+		Iterator it = beanMap.entryIterator();
 		while (it.hasNext()){
 			BeanMap.Entry entry = (BeanMap.Entry) it.next();
-			if (entry.getKey().toString().equals("class"))
+			if ("class".equals(entry.getKey()))
 				continue;
 			
 			out.writePropertyName(entry.getKey().toString());
