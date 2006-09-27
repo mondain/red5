@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.object.BaseOutput;
+import org.red5.io.utils.UTF8Codec;
 
 /**
  *
@@ -38,7 +39,6 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
         LogFactory.getLog(Output.class.getName());
 	
 	protected ByteBuffer buf;
-	
 	
 	public Output(ByteBuffer buf){
 		super();
@@ -162,22 +162,20 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 	}
 
 	public void writeString(String string) {
-		final java.nio.ByteBuffer strBuf = AMF.CHARSET.encode(string);
-		final int len = strBuf.limit();
-		if(len < AMF.LONG_STRING_LENGTH) {
+		final int len = UTF8Codec.calculateUTF8Length(string);
+		if (len < AMF.LONG_STRING_LENGTH) {
 			buf.put(AMF.TYPE_STRING);
-			buf.putShort((short)len);
+			buf.putShort((short) len);
 		} else {
 			buf.put(AMF.TYPE_LONG_STRING);
 			buf.putInt(len);
 		}
-		buf.put(strBuf);
+		UTF8Codec.encodeUTF8(string, buf);
 	}
 	
 	public static void putString(ByteBuffer buf, String string){
-		final java.nio.ByteBuffer strBuf = AMF.CHARSET.encode(string);
-		buf.putShort((short)strBuf.limit());
-		buf.put(strBuf);
+		buf.putShort((short) UTF8Codec.calculateUTF8Length(string));
+		UTF8Codec.encodeUTF8(string, buf);
 	}
 
 	public void writeXML(String xml) {
