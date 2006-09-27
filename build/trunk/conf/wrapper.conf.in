@@ -40,7 +40,7 @@ wrapper.java.classpath.25=../lib/mina-filter-ssl-0.9.5.jar
 wrapper.java.classpath.26=../lib/mina-integration-spring-0.9.5.jar
 wrapper.java.classpath.27=../lib/quartz-1.5.2.jar
 wrapper.java.classpath.28=../lib/servlet-api-2.5.jar
-wrapper.java.classpath.29=../lib/servlet-api.jar
+wrapper.java.classpath.29=../lib/ehcache-1.2.3.jar
 wrapper.java.classpath.30=../lib/slf4j-log4j12.jar
 wrapper.java.classpath.31=../lib/slf4j-simple-1.0.1.jar
 wrapper.java.classpath.32=../lib/whirlycache-1.0.1_lite.jar
@@ -63,7 +63,7 @@ wrapper.java.classpath.48=../lib/tomcat-http-5.5.17.jar
 wrapper.java.classpath.49=../lib/tomcat-util-5.5.17.jar
 wrapper.java.classpath.50=../lib/spring-support.jar
 wrapper.java.classpath.51=../lib/commons-lang-2.1.jar
-wrapper.java.classpath.52=../lib/commons-jexl-1.0.jar
+wrapper.java.classpath.52=../lib/commons-jexl-1.1.jar
 wrapper.java.classpath.53=../lib/groovy-all-1.0-JSR-06.jar
 wrapper.java.classpath.54=../lib/jacl.jar
 wrapper.java.classpath.55=../lib/jaskell-1.0.jar
@@ -80,6 +80,7 @@ wrapper.java.classpath.65=../lib/jython.jar
 wrapper.java.classpath.66=../lib/ognl-2.6.9.jar
 wrapper.java.classpath.67=../lib/tcljava.jar
 wrapper.java.classpath.68=../lib/xbean.jar
+wrapper.java.classpath.69=../lib/antlr-2.7.6.jar
 
 # Java Library Path (location of Wrapper.DLL or libwrapper.so)
 wrapper.java.library.path.1=../lib
@@ -157,4 +158,4 @@ wrapper.ntservice.dependency.1=
 wrapper.ntservice.starttype=AUTO_START
 
 # Allow the service to interact with the desktop.
-wrapper.ntservice.interactive=false
+wrapper.ntservice.interactive=true
