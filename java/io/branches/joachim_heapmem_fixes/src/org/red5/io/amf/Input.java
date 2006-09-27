@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.object.BaseInput;
 import org.red5.io.object.DataTypes;
+import org.red5.io.utils.UTF8Codec;
 
 /**
  * Input for red5 data types
@@ -181,12 +182,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 			len = buf.getShort();
 			break;
 		}
-		int limit = buf.limit();
-		final java.nio.ByteBuffer strBuf = buf.buf();
-		strBuf.limit(strBuf.position() + len);
-		final String string = AMF.CHARSET.decode(strBuf).toString();
-		buf.limit(limit); // Reset the limit
-		return string;
+		return UTF8Codec.decodeUTF8(buf, len);
 	}
 	
 	/**
@@ -196,16 +192,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input  {
 	 */
 	public static String getString(ByteBuffer buf){
 		short len = buf.getShort();
-		int limit = buf.limit();
-		final java.nio.ByteBuffer strBuf = buf.buf();
-		//if(log.isDebugEnabled()) {
-		//	log.debug("len: "+len);
-		//}
-		//log.info("limit: "+strBuf.position() + len);
-		strBuf.limit(strBuf.position() + len);
-		final String string = AMF.CHARSET.decode(strBuf).toString();
-		buf.limit(limit); // Reset the limit
-		return string;
+		return UTF8Codec.decodeUTF8(buf, len);
 	}
 	
 	/**
