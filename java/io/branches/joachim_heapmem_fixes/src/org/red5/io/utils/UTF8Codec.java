@@ -82,4 +82,50 @@ public class UTF8Codec {
 		}
 	}
 
+	/**
+	 * Decode a UTF-8 encoded string.
+	 * 
+	 * @param in
+	 * 			ByteBuffer to decode from
+	 * @param len
+	 * 			number of bytes to decode
+	 * @return the decoded string
+	 */
+	public static final String decodeUTF8(ByteBuffer in, int len) {
+		char[] out = new char[len];
+		int realLen = 0;
+		char outCh;
+		for (int i=0; i<len; i++) {
+			int ch = (int) (in.get() & 0xff);
+			if (ch <= 0x7f)
+				out[realLen++] = (char) ch;
+			else if ((ch >> 3) == 0x1e) {
+				outCh = (char) (ch & 7);
+				ch = (int) (in.get() & 0xff);
+				outCh = (char) ((outCh << 6) | ((char) (ch & 0x3f)));
+				ch = (int) (in.get() & 0xff);
+				outCh = (char) ((outCh << 6) | ((char) (ch & 0x3f)));
+				ch = (int) (in.get() & 0xff);
+				outCh = (char) ((outCh << 6) | ((char) (ch & 0x3f)));
+				out[realLen++] = outCh;
+				len -= 3;
+			} else if ((ch >> 4) == 0xe) {
+				outCh = (char) (ch & 7);
+				ch = (int) (in.get() & 0xff);
+				outCh = (char) ((outCh << 6) | ((char) (ch & 0x3f)));
+				ch = (int) (in.get() & 0xff);
+				outCh = (char) ((outCh << 6) | ((char) (ch & 0x3f)));
+				out[realLen++] = outCh;
+				len -= 2;
+			} else if ((ch >> 5) == 6) {
+				outCh = (char) (ch & 7);
+				ch = (int) (in.get() & 0xff);
+				outCh = (char) ((outCh << 6) | ((char) (ch & 0x3f)));
+				out[realLen++] = outCh;
+				len--;
+			}
+		}
+		return new String(out, 0, realLen);
+	}
+	
 }
