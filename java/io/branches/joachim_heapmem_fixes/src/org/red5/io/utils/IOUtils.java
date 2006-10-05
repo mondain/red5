@@ -42,11 +42,9 @@ public class IOUtils {
 	}
 	
 	public static void writeMediumInt(ByteBuffer out, int value) {
-		byte[] bytes = new byte[3];
-		bytes[0] = (byte) ((value >>> 16) & 0x000000FF);
-		bytes[1] = (byte) ((value >>> 8) & 0x000000FF);
-		bytes[2] = (byte) (value & 0x00FF);
-		out.put(bytes);
+		out.put((byte) ((value >>> 16) & 0x000000FF));
+		out.put((byte) ((value >>> 8) & 0x000000FF));
+		out.put((byte) (value & 0x00FF));
 	}
 	
 	public static int readUnsignedMediumInt(ByteBuffer in) {
