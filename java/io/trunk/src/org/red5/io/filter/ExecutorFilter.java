@@ -59,8 +59,7 @@ public class ExecutorFilter extends IoFilterAdapter {
 	 * Creates a new instace with the default thread pool implementation (<tt>new ThreadPoolExecutor(16, 16, 60, TimeUnit.SECONDS, new LinkedBlockingQueue() )</tt>).
 	 */
 	public ExecutorFilter() {
-		this(new ThreadPoolExecutor(16, 16, 60, TimeUnit.SECONDS,
-				new LinkedBlockingQueue()));
+		this(new ThreadPoolExecutor(16, 16, 60, TimeUnit.SECONDS, new LinkedBlockingQueue()));
 	}
 
 	/**
@@ -70,13 +69,12 @@ public class ExecutorFilter extends IoFilterAdapter {
 		if (executor == null) {
 			throw new NullPointerException("executor");
 		}
+		System.out.println("Executor set to: " + executor.getClass().getName());
 		this.executor = executor;
 	}
 
-	public ExecutorFilter(int corePoolSize, int maximumPoolSize,
-			long keepAliveTime) {
-		this(new ThreadPoolExecutor(corePoolSize, maximumPoolSize,
-				keepAliveTime, TimeUnit.SECONDS, new LinkedBlockingQueue()));
+	public ExecutorFilter(int corePoolSize, int maximumPoolSize, long keepAliveTime) {
+		this(new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, new LinkedBlockingQueue()));
 	}
 
 	/**

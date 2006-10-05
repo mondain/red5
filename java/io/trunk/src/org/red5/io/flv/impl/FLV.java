@@ -166,9 +166,9 @@ public class FLV implements IFLV {
 				fileData = reader.getFileData();
 				// offer the uncached file to the cache
 				if (cache.offer(fileName, new CacheableImpl(fileData))) {
-					log.debug("Item accepted by the cache: " + fileName);
+					log.info("Item accepted by the cache: " + fileName);
 				} else {
-					log.warn("Item rejected by the cache: " + fileName);
+					log.info("Item rejected by the cache: " + fileName);
 				}
 			} else {
 				log.info("Creating new file: " + file);
