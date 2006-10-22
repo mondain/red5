@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<project name="RED5WAR" basedir="." default="all">
+
+    <!-- user overides for project properties
+    <property file="${user.home}/ant.properties" /> -->
+    <!-- base project properties -->
+    <property file="build.properties" />
+
+    <!-- project properties -->
+	<property environment="env"/>
+
+	<property name="java.home" value="${env.JAVA_HOME}"/>
+
+	<property name="src.dir" value="src"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="build.dir" value="build"/>
+	<property name="classes.dir" value="${build.dir}/WEB-INF/classes"/>
+	<property name="debug.state" value="true"/>
+
+	<path id="project.classpath">
+        <fileset dir="${lib.dir}" includesfile="${lib.dir}/library.properties" />
+	</path>
+
+    <path id="script.classpath">
+        <fileset dir="${lib.dir}" includesfile="${lib.dir}/script.properties" />
+        <pathelement location="${bin.dir}"/>
+    </path>    
+
+	<echo>java.home is ${java.home} and the target version is ${java.target_version}</echo>
+
+	<!-- setup the directories for building -->
+
+	<target name="prepare">
+		<mkdir dir="${classes.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+	</target>
+
+	<!-- do a clean -->
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete dir="${dist.dir}"/>
+	</target>
+
+	<target name="compile" depends="prepare">
+        <condition property="java.target_version" value="1.5">
+            <not>
+                <isset property="java.target_version" />
+            </not>
+        </condition>
+        <echo message="Javac version: ${java.target_version}" />     
+
+        <condition property="compiler" value="${build.compiler}${java.target_version}">
+            <equals arg1="${build.compiler}" arg2="javac" />
+        </condition>        
+        <property name="compiler" value="${build.compiler}" />
+        <echo message="Compiler adapter name: ${compiler}" />
+       
+		<javac
+			sourcepath=""
+			srcdir="${src.dir}"
+			destdir="${classes.dir}"     
+            classpathref="project.classpath"
+    
+            optimize="${build.optimize}" 
+            verbose="${build.verbose}" 
+            fork="${build.fork}" 
+            nowarn="${build.nowarn}"
+            deprecation="${build.deprecation}"
+  
+            debug="${debug.state}"
+            compiler="${compiler}"
+            source="${java.target_version}"
+            target="${java.target_version}" 
+            memoryMaximumSize="1024m" 
+            excludes="**/*.jsp,com/sun/**,org/red5/server/script/**" 
+            listfiles="false"      
+            />
+
+        <javac
+            sourcepath=""
+            srcdir="${src.dir}"
+            destdir="${classes.dir}"     
+            classpathref="script.classpath"
+    
+            optimize="${build.optimize}" 
+            verbose="${build.verbose}" 
+            fork="${build.fork}" 
+            nowarn="${build.nowarn}"
+            deprecation="${build.deprecation}"
+  
+            debug="${debug.state}"
+            compiler="${compiler}"
+            source="${java.target_version}"
+            target="${java.target_version}" 
+            memoryMaximumSize="1024m" 
+            listfiles="false"      
+            />     
+        
+	</target>
+
+	<target name="webwar" description="Make Web Archive" depends="compile">
+        <tstamp prefix="build">
+            <format property="TODAY" pattern="d-MMMM-yyyy" locale="en" />
+        </tstamp>
+		<copy todir="${build.dir}">
+			<fileset dir=".">
+				<include name="license.txt"/>
+			</fileset>
+		</copy>
+		<copy todir="${build.dir}/WEB-INF">
+			<fileset dir="www/WEB-INF">
+				<include name="*.xml"/>
+				<include name="*.properties"/>
+				<exclude name="web.xml"/>
+			</fileset>
+		</copy>
+		<copy todir="${build.dir}">
+			<fileset dir="www">
+				<include name="**/*.html"/>
+				<include name="**/*.jsp"/>
+				<include name="**/*.js"/>
+				<include name="**/*.css"/>
+				<include name="**/*.ico"/>
+				<include name="**/*.swf"/>
+				<exclude name="WEB-INF"/>
+			</fileset>
+		</copy>
+		<war destfile="${dist.dir}/red5.war" webxml="www/WEB-INF/web.xml">
+			<fileset dir="${build.dir}"/>
+            <lib dir="${lib.dir}">
+                <exclude name="*.properties"/>
+                <exclude name="servlet-api-2.5.jar"/>
+                <exclude name="ehcache-1.2.3.jar"/>
+                <exclude name="whirlycache-1.0.1_lite.jar"/>
+            </lib>
+			<manifest>
+				<attribute name="Built-By" value="RED5 Project - red5@osflash.org"/>
+                <attribute name="Built-On" value="${build.TODAY}" />
+			</manifest>
+		</war>
+		<!-- delete dir="${build}"/ -->
+	</target>
+
+	<target name="all" depends="clean, prepare, compile, webwar"/>
+    
+    <target name="usage">
+        <echo message="Type ant -p for available targets" />
+    </target>
+
+</project>
