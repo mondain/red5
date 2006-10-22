@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<configExtensions>
+		<configExtension>xml</configExtension>
+	</configExtensions>
+	<configs>
+		<config>www/WEB-INF/red5-common.xml</config>
+		<config>www/WEB-INF/red5-core.xml</config>
+		<config>www/WEB-INF/beanRefContext.xml</config>
+		<config>www/WEB-INF/ofla-context.xml</config>
+		<config>www/WEB-INF/applicationContext.xml</config>
+		<config>conf/global.xml</config>
+	</configs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>
