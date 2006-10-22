@@ -38,10 +38,8 @@ import org.red5.server.net.remoting.codec.RemotingCodecFactory;
 import org.red5.server.net.remoting.message.RemotingCall;
 import org.red5.server.net.remoting.message.RemotingPacket;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
  * Servlet that handles remoting requests.
@@ -68,60 +66,14 @@ public class AMFGatewayServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		webAppCtx = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+		webAppCtx = WebApplicationContextUtils
+				.getWebApplicationContext(getServletContext());
 		if (webAppCtx != null) {
-			log.info("\n----------------- Webapp Ctx: " + webAppCtx);
-			log.info("\n----------------- Name: " + webAppCtx.getDisplayName());
-			String[] names = webAppCtx.getBeanDefinitionNames();
-			StringBuilder sb = new StringBuilder("\n-----------------\n");
-			for (String n : names) {
-				sb.append(n);
-				sb.append('\n');
-			}
-			sb.append("-----------------");
-			log.info(sb);
-			log.info("Has default.context bean entry: "
-					+ webAppCtx.containsBean("default.context"));
-			log.info("Has web.context bean entry: "
-					+ webAppCtx.containsBean("web.context"));
-			if (webAppCtx.containsBean("red5.web")) {
-				String[] dnames = webAppCtx.getBeanDefinitionNames();
-				sb = new StringBuilder("\n-----------------\n");
-				for (String n : dnames) {
-					sb.append(n);
-					sb.append('\n');
-				}
-				sb.append("-----------------");
-				log.info(sb);
-
-				XmlWebApplicationContext tmp = (XmlWebApplicationContext) webAppCtx
-						.getBean("red5.web");
-				///
-				names = tmp.getBeanDefinitionNames();
-				sb = new StringBuilder("\n-----------------\n");
-				for (String n : names) {
-					sb.append(n);
-					sb.append('\n');
-				}
-				sb.append("-----------------");
-				log.info(sb);
-				///
-				webContext = (IContext) tmp.getBean("web.context");
-			} else if (webAppCtx.containsBean("web.context")) {
 				webContext = (IContext) webAppCtx.getBean("web.context");
-			} else if (webAppCtx.containsBean("global.context")) {
-				webContext = (IContext) webAppCtx.getBean("global.context");
-			} else {
-			}
-			//look for codec factory
-			if (webAppCtx.containsBean("remotingCodecFactory")) {
 				codecFactory = (RemotingCodecFactory) webAppCtx
 						.getBean("remotingCodecFactory");
 			} else {
-				webAppCtx.getParent().getBean("remotingCodecFactory");
-			}
-		} else {
-			log.warn("No web context");
+			log.debug("No web context");
 		}
 	}
 

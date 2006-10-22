@@ -68,6 +68,8 @@ public class RamPersistence implements IPersistenceStore {
 		if (id.startsWith("/")) {
 			id = id.substring(1);
 		}
+		if (id.lastIndexOf(name) == -1)
+			return id;
 		return id.substring(0, id.lastIndexOf(name) - 1);
 	}
 

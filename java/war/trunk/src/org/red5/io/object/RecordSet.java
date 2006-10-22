@@ -88,7 +88,7 @@ public class RecordSet {
 				.get("initialData");
 		cursor = (Integer) serverInfo.get("cursor");
 		serviceName = (String) serverInfo.get("serviceName");
-		columns = (List<String>) serverInfo.get("columNames");
+		columns = (List<String>) serverInfo.get("columnNames");
 		version = (Integer) serverInfo.get("version");
 		id = serverInfo.get("id");
 
