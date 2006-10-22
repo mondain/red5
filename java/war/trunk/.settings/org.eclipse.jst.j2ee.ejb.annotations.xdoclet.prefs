@@ -1,0 +1,18 @@
+#Thu Oct 19 21:36:28 PDT 2006
+XDOCLETBUILDERACTIVE=false
+XDOCLETHOME=D\:\\dev\\shared\\xdoclet-1.2.3
+XDOCLETUSEGLOBAL=false
+XDOCLETVERSION=1.2.3
+eclipse.preferences.version=1
+webdoclet.deploymentdescriptor.displayname=${web}
+webdoclet.deploymentdescriptor.displayname.include=true
+webdoclet.deploymentdescriptor.mergedir=${web.module.webinf}
+webdoclet.deploymentdescriptor.mergedir.include=true
+webdoclet.deploymentdescriptor.servletspec=${servlet.spec.version}
+webdoclet.deploymentdescriptor.servletspec.include=true
+webdoclet.deploymentdescriptor.useIds=true
+webdoclet.deploymentdescriptor.useIds.include=true
+webdoclet.deploymentdescriptor.validatexml=false
+webdoclet.deploymentdescriptor.validatexml.include=true
+weboclet.deploymentdescriptor.destdir=${web.module.webinf}
+weboclet.deploymentdescriptor.destdir.include=true
