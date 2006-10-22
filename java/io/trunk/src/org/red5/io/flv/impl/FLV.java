@@ -38,9 +38,6 @@ import org.red5.io.flv.meta.IMetaService;
 import org.red5.server.api.cache.ICacheStore;
 import org.red5.server.api.cache.ICacheable;
 import org.red5.server.cache.CacheableImpl;
-import org.springframework.beans.factory.access.BeanFactoryLocator;
-import org.springframework.beans.factory.access.BeanFactoryReference;
-import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
 
 /**
  * A FLVImpl implements the FLV api
@@ -54,12 +51,21 @@ public class FLV implements IFLV {
 
 	protected static Log log = LogFactory.getLog(FLV.class.getName());
 
+	private static ICacheStore cache;	
+	
 	private File file;
 
 	private boolean generateMetadata;
 
 	private IMetaService metaService;
 
+	/**
+	 * Default constructor, used by Spring so that parameters 
+	 * may be injected.
+	 */
+	public FLV() {
+	}
+	
 	public FLV(File file) {
 		this(file, false);
 	}
@@ -69,6 +75,15 @@ public class FLV implements IFLV {
 		this.generateMetadata = generateMetadata;
 	}
 
+	/**
+	 * Sets the cache implementation to be used.
+	 * 
+	 * @param cache
+	 */
+	public void setCache(ICacheStore cache) {
+		FLV.cache = cache;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -105,8 +120,6 @@ public class FLV implements IFLV {
 	 * @see org.red5.io.flv.FLV#setKeyFrameData(java.util.Map)
 	 */
 	public void setKeyFrameData(Map keyframedata) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/*
@@ -149,11 +162,6 @@ public class FLV implements IFLV {
 		ByteBuffer fileData = null;
 		String fileName = file.getName();
 
-		BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator
-				.getInstance("red5.xml");
-		BeanFactoryReference bfr = bfl.useBeanFactory("red5.common");
-		ICacheStore cache = (ICacheStore) bfr.getFactory().getBean(
-				"object.cache");
 		ICacheable ic = cache.get(fileName);
 
 		// look in the cache before reading the file from the disk
@@ -166,7 +174,7 @@ public class FLV implements IFLV {
 				fileData = reader.getFileData();
 				// offer the uncached file to the cache
 				if (cache.offer(fileName, new CacheableImpl(fileData))) {
-					log.info("Item accepted by the cache: " + fileName);
+					log.debug("Item accepted by the cache: " + fileName);
 				} else {
 					log.info("Item rejected by the cache: " + fileName);
 				}

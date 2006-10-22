@@ -139,6 +139,13 @@ public class StatefulScopeWrappingAdapter extends AbstractScopeAdapter
 		return scope.lookupConnections(client);
 	}
 
+	/**
+	 * Returns array of resources (as Spring core Resource class instances)
+	 * 
+	 * @param pattern			Resource pattern
+	 * @return					Returns array of resources
+	 * @throws IOException		IO exxception
+	 */
 	public Resource[] getResources(String pattern) throws IOException {
 		return scope.getResources(pattern);
 	}

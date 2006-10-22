@@ -61,10 +61,18 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 		WhirlyCacheImpl.applicationContext = context;
 	}
 
+	/**
+	 * Returns Spring application context used by this class
+	 * @return	Spring application context object
+	 */
 	public static ApplicationContext getApplicationContext() {
 		return applicationContext;
 	}
 
+	/**
+	 * Initialazing method
+	 *
+	 */
 	public void init() {
 		log.info("Loading whirlycache");
 		// log.debug("Appcontext: " + applicationContext.toString());
@@ -87,30 +95,58 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 		}
 	}
 
+	/**
+	 * Returns cachable object by name
+	 * @param	name	Object name
+	 */
 	public ICacheable get(String name) {
 		return (ICacheable) cache.retrieve(name);
 	}
 
+	/**
+	 * Puts object in cache under given name, overloaded method.
+	 * 
+	 * @param	name	Name
+	 * @param	obj		Object to store in cache
+	 */
 	public void put(String name, Object obj) {
 		// Put an object into the cache
 		cache.store(name, new CacheableImpl(obj));
 	}
 
+	/**
+	 * Puts object in cache under given name, overloaded method.
+	 * 
+	 * @param	name	Name
+	 * @param	obj		Object to store in cache
+	 */
 	public void put(String name, ICacheable obj) {
 		// Put an object into the cache
 		cache.store(name, obj);
 	}
 
+	/**
+	 * Iterate thru names of objects in cache. To be implemented!
+	 * @return		Iterator
+	 */
 	public Iterator<String> getObjectNames() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * Iterate thru names of objects in cache with soft reference. To be implemented!
+	 */
 	public Iterator<SoftReference<? extends ICacheable>> getObjects() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * Stores object in the cache
+	 * @param	name	Name of stored object
+	 * @param	obj		Object to store
+	 */
 	public boolean offer(String name, ICacheable obj) {
 		// Put an object into the cache
 		cache.store(name, obj);
@@ -118,27 +154,52 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 		return true;
 	}
 
+	/**
+	 * Removes object from cache
+	 * @param	obj		Object to remove from cache
+	 */
 	public boolean remove(ICacheable obj) {
 		return (null != cache.remove(obj.getName()));
 	}
 
+	/**
+	 * Removes object from cache by name
+	 * @param	name	Name of object to remove
+	 */
 	public boolean remove(String name) {
 		return (null != cache.remove(name));
 	}
 
+	/**
+	 * Sets cache configuration
+	 * @param cacheConfig	Cache configuration
+	 */
 	public void setCacheConfig(CacheConfiguration cacheConfig) {
 		this.cacheConfig = cacheConfig;
 	}
 
+	/**
+	 * 
+	 */
 	public void setMaxEntries(int capacity) {
 		log.debug("Setting max entries for this cache to " + capacity);
 	}
 
+	/**
+	 * Returns cache hits stats
+	 * 
+	 * @return	cache hits stats
+	 */
 	public static long getCacheHit() {
 		RecordKeeper rec = new RecordKeeper();
 		return rec.getHits();
 	}
 
+	/**
+	 * Returns cache misses stats
+	 * 
+	 * @return	cache misses stats
+	 */
 	public static long getCacheMiss() {
 		long misses = 0;
 		RecordKeeper rec = new RecordKeeper();
@@ -159,6 +220,9 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 		return misses;
 	}	
 	
+	/**
+	 * Shuts cache manager down
+	 */
 	public void destroy() {
 		// Shut down the cache manager
 		try {
