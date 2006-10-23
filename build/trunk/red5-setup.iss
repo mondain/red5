@@ -296,10 +296,8 @@ begin
     if not FileExists(ExpandConstant('{app}\webapps\oflaDemo\streams')) then
       ForceDirectories(ExpandConstant('{app}\webapps\oflaDemo\streams'));
 
-    AddDownloadFile('CoolDown_JohnGrden.mp3');
-    AddDownloadFile('OFLA_PROMO.flv');
     AddDownloadFile('on2_flash8_w_audio.flv');
-    AddDownloadFile('TomSawyer_4.12.2006_JohnGrden.mp3');
+    AddDownloadFile('Spiderman3_trailer_300.flv');
   end;
 
   Result := (isxdl_DownloadFiles(Wnd) <> 0);
