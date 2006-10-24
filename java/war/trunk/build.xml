@@ -136,11 +136,11 @@
                 <exclude name="whirlycache-1.0.1_lite.jar"/>
             </lib>
 			<manifest>
-				<attribute name="Built-By" value="RED5 Project - red5@osflash.org"/>
+				<attribute name="Built-By" value="RED5 Project - red5@osflash.org" />
                 <attribute name="Built-On" value="${build.TODAY}" />
 			</manifest>
 		</war>
-		<!-- delete dir="${build}"/ -->
+		<delete dir="${build}" />
 	</target>
 
 	<target name="all" depends="clean, prepare, compile, webwar"/>
