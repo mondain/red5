@@ -75,6 +75,7 @@ wrapper.java.classpath.60=../lib/jruby.jar
 wrapper.java.classpath.61=../lib/antlr-2.7.6.jar
 wrapper.java.classpath.62=../lib/jetty-xbean-6.0.1.jar
 wrapper.java.classpath.63=../lib/servlet-api.jar
+wrapper.java.classpath.64=../lib/bsh-2.0b4.jar
 
 # Java Library Path (location of Wrapper.DLL or libwrapper.so)
 wrapper.java.library.path.1=../lib
