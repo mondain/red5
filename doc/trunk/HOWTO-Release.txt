@@ -10,8 +10,6 @@ This document describes the steps necessary to create a new release of Red5:
 3. Create tags of the modules that are linked into the main code tree:
 
    - documentation at http://svn1.cvsdude.com/osflash/red5/doc/tags
-   - installer builder at http://svn1.cvsdude.com/osflash/red5/build/tags
-   - debian build scripts at http://svn1.cvsdude.com/osflash/red5/debian/tags
    - io code at http://svn1.cvsdude.com/osflash/red5/java/io/tags
    
    Tags for versions should always be the version string with dots replaced
