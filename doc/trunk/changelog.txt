@@ -7,10 +7,12 @@ versions of Red5.
 Red5 0.6    (unreleased)
 ------------------------
 New features:
-- Created WAR (Web Application Archive) version of Red5 (Separate repository java/war)
+- Created WAR (Web Application Archive) version of Red5
+  (Separate repository java/war)
 - Enabled Tomcat or Jetty as J2EE container implementations
 - FLV cache implementations (2 are included) (Trac #99)
-- Scripting support (javascript, ruby, python, groovy, and bsh) based on Spring 2 and JSR223
+- Scripting support (javascript, ruby, python, groovy, and bsh)
+  based on Spring 2 and JSR223
 
 Bugfixes:
 - last frames aren't lost when reading .flv files (Trac #90)
