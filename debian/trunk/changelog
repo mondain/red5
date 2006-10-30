@@ -1,3 +1,9 @@
+red5 (0.6rc1-1) unstable; urgency=low
+
+  * Upgrade to new red5 upstream release.
+
+ -- Simon Eisenmann <simon@struktur.de>  Mon, 30 Oct 2006 18:50:40 +0100
+
 red5 (0.5-1) unstable; urgency=low
 
   * Upgrade to new re5 upstream release.
