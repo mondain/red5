@@ -124,6 +124,7 @@
 				<include name="**/*.css"/>
 				<include name="**/*.ico"/>
 				<include name="**/*.swf"/>
+				<include name="**/*.flv"/>
 				<exclude name="WEB-INF"/>
 			</fileset>
 		</copy>
