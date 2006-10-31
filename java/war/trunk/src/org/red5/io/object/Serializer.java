@@ -365,10 +365,29 @@ public class Serializer implements SerializerOpts {
 	protected boolean writeObjectType(Output out, Object obj) {
 		if (obj instanceof Map) {
 			writeMap(out, (Map) obj);
+		} else if (obj instanceof RecordSet) {
+			writeRecordSet(out, (RecordSet) obj);
 		} else if (!writeBean(out, obj)) {
 			writeObject(out, obj);
 		}
 		return true;
+	}
+
+	/**
+	 * Writes a RecordSet to the output.
+	 * 
+	 * @param out
+	 * @param set
+	 */
+	protected void writeRecordSet(Output out, RecordSet set) {
+		if (log.isDebugEnabled()) {
+			log.debug("writeRecordSet");
+		}
+		out.writeStartObject("RecordSet");
+		Map info = set.serialize();
+		out.writeItemKey("serverInfo");
+		serialize(out, info);
+		out.markEndObject();
 	}
 
 	/**

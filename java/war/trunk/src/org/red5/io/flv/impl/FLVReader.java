@@ -93,8 +93,7 @@ public class FLVReader implements IoConstants, ITagReader,
 		this.generateMetadata = generateMetadata;
 		channel = fis.getChannel();
 		try {
-			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel
-					.size());
+			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
 			mappedFile.order(ByteOrder.BIG_ENDIAN);
 		} catch (IOException e) {
 			log.error("FLVReader :: FLVReader ::>\n", e);
