@@ -259,4 +259,21 @@ public class RecordSet {
 		return getNumberAvailable() == getLength();
 	}
 
+	/**
+	 * Return Map that can be serialized as result.
+	 * 
+	 * @return serializable informations
+	 */
+	public Map<String,Object> serialize() {
+		Map<String, Object> serverInfo = new HashMap<String, Object>();
+		serverInfo.put("totalCount", totalCount);
+		serverInfo.put("cursor", cursor);
+		serverInfo.put("serviceName", serviceName);
+		serverInfo.put("columnNames", columns);
+		serverInfo.put("version", version);
+		serverInfo.put("id", id);
+		serverInfo.put("initialData", data);
+		
+		return serverInfo;
+	}
 }

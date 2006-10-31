@@ -168,15 +168,14 @@ public class FLV implements IFLV {
 		if (null == ic || (null == ic.getByteBuffer())) {
 			if (file.exists()) {
 				log.debug("File size: " + file.length());
-				reader = new FLVReader(new FileInputStream(file),
-						generateMetadata);
+				reader = new FLVReader(new FileInputStream(file), generateMetadata);
 				// get a ref to the mapped byte buffer
 				fileData = reader.getFileData();
 				// offer the uncached file to the cache
 				if (cache.offer(fileName, new CacheableImpl(fileData))) {
 					log.debug("Item accepted by the cache: " + fileName);
 				} else {
-					log.info("Item rejected by the cache: " + fileName);
+					log.debug("Item will not be cached: " + fileName);
 				}
 			} else {
 				log.info("Creating new file: " + file);

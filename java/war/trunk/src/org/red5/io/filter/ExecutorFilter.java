@@ -26,14 +26,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoFilterAdapter;
 import org.apache.mina.common.IoFilterChain;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.common.ThreadModel;
 import org.apache.mina.util.ByteBufferUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A filter that forward events to {@link Executor}.
@@ -50,8 +50,8 @@ import org.apache.mina.util.ByteBufferUtil;
  * @version $Rev: 350169 $, $Date: 2005-12-01 00:17:41 -0500 (Thu, 01 Dec 2005) $
  */
 public class ExecutorFilter extends IoFilterAdapter {
-	private static final Log logger = LogFactory.getLog(ExecutorFilter.class
-			.getName());
+	private static final Logger logger = LoggerFactory
+			.getLogger(ExecutorFilter.class.getName());
 
 	private final Executor executor;
 
@@ -59,8 +59,7 @@ public class ExecutorFilter extends IoFilterAdapter {
 	 * Creates a new instace with the default thread pool implementation (<tt>new ThreadPoolExecutor(16, 16, 60, TimeUnit.SECONDS, new LinkedBlockingQueue() )</tt>).
 	 */
 	public ExecutorFilter() {
-		this(new ThreadPoolExecutor(16, 16, 60, TimeUnit.SECONDS,
-				new LinkedBlockingQueue()));
+		this(new ThreadPoolExecutor(16, 16, 60, TimeUnit.SECONDS, new LinkedBlockingQueue()));
 	}
 
 	/**
@@ -70,13 +69,12 @@ public class ExecutorFilter extends IoFilterAdapter {
 		if (executor == null) {
 			throw new NullPointerException("executor");
 		}
+		logger.debug("Executor set to: " + executor.getClass().getName());
 		this.executor = executor;
 	}
 
-	public ExecutorFilter(int corePoolSize, int maximumPoolSize,
-			long keepAliveTime) {
-		this(new ThreadPoolExecutor(corePoolSize, maximumPoolSize,
-				keepAliveTime, TimeUnit.SECONDS, new LinkedBlockingQueue()));
+	public ExecutorFilter(int corePoolSize, int maximumPoolSize, long keepAliveTime) {
+		this(new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, new LinkedBlockingQueue()));
 	}
 
 	/**
