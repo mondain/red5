@@ -84,6 +84,11 @@ public class FLVReader implements IoConstants, ITagReader,
 	/** Mapping between file position and tag number. */
 	private HashMap<Long, Integer> posTagMap = null;
 
+	/** Buffer type / style to use **/
+	private static String bufferType = "auto"; //Default
+	
+	FLVReader() {}
+	
 	public FLVReader(FileInputStream f) {
 		this(f, false);
 	}
@@ -93,12 +98,40 @@ public class FLVReader implements IoConstants, ITagReader,
 		this.generateMetadata = generateMetadata;
 		channel = fis.getChannel();
 		try {
-			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel
+					.size());
 			mappedFile.order(ByteOrder.BIG_ENDIAN);
+
+			log.debug("Mapped file capacity: " + mappedFile.capacity() + " Channel size: " + channel.size());
+
+			switch (bufferType.hashCode()) {
+				case 3198444: //heap
+					//Get a heap buffer from buffer pool
+					in = ByteBuffer.allocate(mappedFile.capacity(), false);
+					break;
+				case -1331586071: //direct
+					//Get a direct buffer from buffer pool
+					in = ByteBuffer.allocate(mappedFile.capacity(), true);
+					break;
+				case 3005871: //auto
+				default:
+					//Let MINA choose
+					in = ByteBuffer.allocate(mappedFile.capacity());
+			}
+			//drop in the file
+			in.put(mappedFile);
+			//prepare the buffer for access
+			in.flip();
+
+			log.debug("Direct buffer: " + in.isDirect() + " Read only: "
+					+ in.isReadOnly() + " Pooled: " + in.isPooled());
+
 		} catch (IOException e) {
 			log.error("FLVReader :: FLVReader ::>\n", e);
+		} catch (Exception e) {
+			log.error("FLVReader :: FLVReader ::>\n", e);
 		}
-		in = ByteBuffer.wrap(mappedFile);
+
 		log.debug("FLVReader 1 - Buffer size: " + in.capacity() + " position: "
 				+ in.position() + " remaining: " + in.remaining());
 		if (in.remaining() >= 9) {
@@ -122,6 +155,14 @@ public class FLVReader implements IoConstants, ITagReader,
 			decodeHeader();
 		}
 		keyframeMeta = analyzeKeyFrames();
+	}
+
+	public static String getBufferType() {
+		return bufferType;
+	}
+
+	public static void setBufferType(String bufferType) {
+		FLVReader.bufferType = bufferType;
 	}
 
 	/**
