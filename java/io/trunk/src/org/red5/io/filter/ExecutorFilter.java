@@ -69,7 +69,7 @@ public class ExecutorFilter extends IoFilterAdapter {
 		if (executor == null) {
 			throw new NullPointerException("executor");
 		}
-		System.out.println("Executor set to: " + executor.getClass().getName());
+		logger.debug("Executor set to: " + executor.getClass().getName());
 		this.executor = executor;
 	}
 
