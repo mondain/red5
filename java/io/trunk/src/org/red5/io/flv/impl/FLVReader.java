@@ -53,18 +53,18 @@ public class FLVReader implements IoConstants, ITagReader,
 
 	private static Log log = LogFactory.getLog(FLVReader.class.getName());
 
-	private FileInputStream fis = null;
+	private FileInputStream fis;
 
-	private FileChannel channel = null;
+	private FileChannel channel;
 
-	private MappedByteBuffer mappedFile = null;
+	private MappedByteBuffer mappedFile;
 
-	private KeyFrameMeta keyframeMeta = null;
+	private KeyFrameMeta keyframeMeta;
 
-	private ByteBuffer in = null;
+	private ByteBuffer in;
 
 	/** Set to true to generate metadata automatically before the first tag. */
-	private boolean generateMetadata = false;
+	private boolean generateMetadata;
 
 	/** Position of first video tag. */
 	private int firstVideoTag = -1;
@@ -73,16 +73,16 @@ public class FLVReader implements IoConstants, ITagReader,
 	private int firstAudioTag = -1;
 
 	/** Current tag. */
-	private int tagPosition = 0;
+	private int tagPosition;
 
 	/** Duration in milliseconds. */
-	private long duration = 0;
+	private long duration;
 
 	/** Mapping between file position and timestamp in ms. */
-	private HashMap<Long, Long> posTimeMap = null;
+	private HashMap<Long, Long> posTimeMap;
 
 	/** Mapping between file position and tag number. */
-	private HashMap<Long, Integer> posTagMap = null;
+	private HashMap<Long, Integer> posTagMap;
 
 	/** Buffer type / style to use **/
 	private static String bufferType = "auto"; //Default
@@ -101,9 +101,9 @@ public class FLVReader implements IoConstants, ITagReader,
 			mappedFile = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel
 					.size());
 			mappedFile.order(ByteOrder.BIG_ENDIAN);
-
-			log.debug("Mapped file capacity: " + mappedFile.capacity() + " Channel size: " + channel.size());
-
+			if (log.isDebugEnabled()) {
+				log.debug("Mapped file capacity: " + mappedFile.capacity() + " Channel size: " + channel.size());
+			}
 			switch (bufferType.hashCode()) {
 				case 3198444: //heap
 					//Get a heap buffer from buffer pool
@@ -122,18 +122,18 @@ public class FLVReader implements IoConstants, ITagReader,
 			in.put(mappedFile);
 			//prepare the buffer for access
 			in.flip();
-
-			log.debug("Direct buffer: " + in.isDirect() + " Read only: "
-					+ in.isReadOnly() + " Pooled: " + in.isPooled());
-
+			if (log.isDebugEnabled()) {
+				log.debug("Direct buffer: " + in.isDirect() + " Read only: " + in.isReadOnly() + " Pooled: " + in.isPooled());
+			}
 		} catch (IOException e) {
 			log.error("FLVReader :: FLVReader ::>\n", e);
 		} catch (Exception e) {
 			log.error("FLVReader :: FLVReader ::>\n", e);
 		}
-
-		log.debug("FLVReader 1 - Buffer size: " + in.capacity() + " position: "
+		if (log.isDebugEnabled()) {
+			log.debug("FLVReader 1 - Buffer size: " + in.capacity() + " position: "
 				+ in.position() + " remaining: " + in.remaining());
+		}
 		if (in.remaining() >= 9) {
 			decodeHeader();
 		}
@@ -149,8 +149,10 @@ public class FLVReader implements IoConstants, ITagReader,
 	public FLVReader(ByteBuffer buffer, boolean generateMetadata) {
 		this.generateMetadata = generateMetadata;
 		in = buffer;
-		log.debug("FLVReader 2 - Buffer size: " + in.capacity() + " position: "
+		if (log.isDebugEnabled()) {
+			log.debug("FLVReader 2 - Buffer size: " + in.capacity() + " position: "
 				+ in.position() + " remaining: " + in.remaining());
+		}
 		if (in.remaining() >= 9) {
 			decodeHeader();
 		}
@@ -182,7 +184,9 @@ public class FLVReader implements IoConstants, ITagReader,
 		header.setVersion(in.get());
 		header.setTypeFlags(in.get());
 		header.setDataOffset(in.getInt());
-		log.debug("Header: " + header.toString());
+		if (log.isDebugEnabled()) {
+			log.debug("Header: " + header.toString());
+		}
 	}
 
 	/*

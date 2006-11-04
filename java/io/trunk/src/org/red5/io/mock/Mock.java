@@ -46,14 +46,13 @@ public class Mock {
 			case TYPE_END_OF_ARRAY:
 				return "End of Array";
 			case TYPE_ELEMENT_SEPARATOR:
-				return ",";
 			case TYPE_ITEM_SEPARATOR:
 				return ",";
 			case TYPE_PROPERTY_SEPARATOR:
 				return "::";
 		}
 
-		return "MOCK[" + (dataType - DataTypes.CUSTOM_MOCK_MASK) + "]";
+		return "MOCK[" + (dataType - DataTypes.CUSTOM_MOCK_MASK) + ']';
 
 	}
 

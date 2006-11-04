@@ -164,12 +164,12 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 		double num = buf.getDouble();
 		if (num == Math.round(num)) {
 			if (num < Integer.MAX_VALUE) {
-				return new Integer((int) num);
+				return Integer.valueOf((int) num);
 			} else {
-				return new Long(Math.round(num));
+				return Long.valueOf(Math.round(num));
 			}
 		} else {
-			return new Double(num);
+			return Double.valueOf(num);
 		}
 	}
 

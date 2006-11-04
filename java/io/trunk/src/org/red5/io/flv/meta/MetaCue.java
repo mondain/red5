@@ -110,6 +110,6 @@ public class MetaCue<K, V> extends HashMap<String, Object> implements IMetaCue {
 
 	@Override
 	public String toString() {
-		return "MetaCue{" + this + "}";
+		return "MetaCue{" + this + '}';
 	}
 }

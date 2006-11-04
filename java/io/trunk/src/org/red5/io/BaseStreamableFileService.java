@@ -36,7 +36,7 @@ public abstract class BaseStreamableFileService implements
 	public abstract String getExtension();
 
 	public String prepareFilename(String name) {
-		if (name.startsWith(getPrefix() + ":")) {
+		if (name.startsWith(getPrefix() + ':')) {
 			name = name.substring(getPrefix().length() + 1);
 			if (!name.endsWith(getExtension())) {
 				name = name + getExtension();
