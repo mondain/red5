@@ -66,7 +66,6 @@ public class DOM2Writer {
 			}
 
 			case Node.ELEMENT_NODE: {
-
 				out.print('<' + node.getNodeName());
 
 				NamedNodeMap attrs = node.getAttributes();

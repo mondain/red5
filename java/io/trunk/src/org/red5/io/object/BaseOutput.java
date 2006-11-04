@@ -57,7 +57,7 @@ public class BaseOutput {
 
 	protected Map<IdentityWrapper, Short> refMap;
 
-	protected short refId = 0;
+	protected short refId;
 
 	/**
 	 * BaseOutput Constructor
@@ -73,7 +73,7 @@ public class BaseOutput {
 	 * @param obj
 	 */
 	public void storeReference(Object obj) {
-		refMap.put(new IdentityWrapper(obj), new Short(refId++));
+		refMap.put(new IdentityWrapper(obj), Short.valueOf(refId++));
 	}
 
 	/**

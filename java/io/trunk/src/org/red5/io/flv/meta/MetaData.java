@@ -19,7 +19,6 @@ package org.red5.io.flv.meta;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,12 +42,12 @@ import java.util.TreeSet;
  *          //	private double duration = 7.347;
  */
 public class MetaData<K, V> extends HashMap<String, Object> implements
-		IMetaData, Serializable {
+		IMetaData {
 
 	/** serialVersionUID = -5681069577717669925L; */
 	private static final long serialVersionUID = -5681069577717669925L;
 
-	IMetaCue cuePoints[] = null; //CuePoint array
+	IMetaCue cuePoints[]; //CuePoint array
 
 	/** MetaData constructor */
 	public MetaData() {
@@ -208,11 +207,11 @@ public class MetaData<K, V> extends HashMap<String, Object> implements
 		}
 
 		//		"CuePoints", cuePointData
-		//					"0",	MetaCue
+		//					'0',	MetaCue
 		//							name, "test"
 		//							type, "event"
 		//							time, "0.1"
-		//					"1",	MetaCue
+		//					'1',	MetaCue
 		//							name, "test1"
 		//							type, "event1"
 		//							time, "0.5"

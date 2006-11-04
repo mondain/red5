@@ -45,31 +45,31 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 
 	// DONE
 	public void markElementSeparator() {
-		list.add(new Byte(Mock.TYPE_ELEMENT_SEPARATOR));
+		list.add(Byte.valueOf(Mock.TYPE_ELEMENT_SEPARATOR));
 	}
 
 	// DONE
 	public void markEndArray() {
-		list.add(new Byte(Mock.TYPE_END_OF_ARRAY));
+		list.add(Byte.valueOf(Mock.TYPE_END_OF_ARRAY));
 	}
 
 	public void markEndObject() {
-		list.add(new Byte(Mock.TYPE_END_OF_OBJECT));
+		list.add(Byte.valueOf(Mock.TYPE_END_OF_OBJECT));
 	}
 
 	public void markEndMap() {
-		list.add(new Byte(Mock.TYPE_END_OF_MAP));
+		list.add(Byte.valueOf(Mock.TYPE_END_OF_MAP));
 	}
 
 	// DONE
 	public void markPropertySeparator() {
 		log.info("PROPERTY SEPARATOR");
-		list.add(new Byte(Mock.TYPE_PROPERTY_SEPARATOR));
+		list.add(Byte.valueOf(Mock.TYPE_PROPERTY_SEPARATOR));
 	}
 
 	public void markItemSeparator() {
 		log.info("ITEM SEPARATOR");
-		list.add(new Byte(Mock.TYPE_ITEM_SEPARATOR));
+		list.add(Byte.valueOf(Mock.TYPE_ITEM_SEPARATOR));
 	}
 
 	public boolean supportsDataType(byte type) {
@@ -79,7 +79,7 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 
 	// DONE
 	public void writeBoolean(Boolean bol) {
-		list.add(new Byte(DataTypes.CORE_BOOLEAN));
+		list.add(Byte.valueOf(DataTypes.CORE_BOOLEAN));
 		list.add(bol);
 	}
 
@@ -88,18 +88,18 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 	}
 
 	public void writeDate(Date date) {
-		list.add(new Byte(DataTypes.CORE_DATE));
+		list.add(Byte.valueOf(DataTypes.CORE_DATE));
 		list.add(date);
 	}
 
 	// DONE
 	public void writeNull() {
-		list.add(new Byte(DataTypes.CORE_NULL));
+		list.add(Byte.valueOf(DataTypes.CORE_NULL));
 	}
 
 	// DONE
 	public void writeNumber(Number num) {
-		list.add(new Byte(DataTypes.CORE_NUMBER));
+		list.add(Byte.valueOf(DataTypes.CORE_NUMBER));
 		list.add(num);
 	}
 
@@ -112,32 +112,32 @@ public class Output extends BaseOutput implements org.red5.io.object.Output {
 	}
 
 	public void writeReference(Object obj) {
-		list.add(new Byte(DataTypes.OPT_REFERENCE));
-		list.add(new Short(getReferenceId(obj)));
+		list.add(Byte.valueOf(DataTypes.OPT_REFERENCE));
+		list.add(Short.valueOf(getReferenceId(obj)));
 	}
 
 	public void writeStartArray(int length) {
-		list.add(new Byte(DataTypes.CORE_ARRAY));
-		list.add(new Integer(length));
+		list.add(Byte.valueOf(DataTypes.CORE_ARRAY));
+		list.add(Integer.valueOf(length));
 	}
 
 	public void writeStartMap(int highestIndex) {
-		list.add(new Byte(DataTypes.CORE_MAP));
-		list.add(new Integer(highestIndex));
+		list.add(Byte.valueOf(DataTypes.CORE_MAP));
+		list.add(Integer.valueOf(highestIndex));
 	}
 
 	public void writeStartObject(String className) {
-		list.add(new Byte(DataTypes.CORE_OBJECT));
+		list.add(Byte.valueOf(DataTypes.CORE_OBJECT));
 		list.add(className == null ? null : className);
 	}
 
 	public void writeString(String string) {
-		list.add(new Byte(DataTypes.CORE_STRING));
+		list.add(Byte.valueOf(DataTypes.CORE_STRING));
 		list.add(string);
 	}
 
 	public void writeXML(String xml) {
-		list.add(new Byte(DataTypes.CORE_XML));
+		list.add(Byte.valueOf(DataTypes.CORE_XML));
 		list.add(xml);
 	}
 

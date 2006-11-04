@@ -30,18 +30,18 @@ package org.red5.io.flv;
 public class FLVHeader {
 
 	// Signature
-	public byte[] signature = null;
+	public byte[] signature;
 
 	public byte version = 0x00; //version 1
 
 	// TYPES
 	public byte flagReserved01 = 0x00;
 
-	public boolean flagAudio = false;
+	public boolean flagAudio;
 
 	public byte flagReserved02 = 0x00;
 
-	public boolean flagVideo = false;
+	public boolean flagVideo;
 
 	// DATA OFFSET
 	// reserved for data up to 4,294,967,295
