@@ -11,6 +11,8 @@ New features:
 
 Bugfixes:
 - serialize RecordSet objects (Trac #201)
+- "NetConnection.Connect.Rejected" is sent for non-existing scopes to
+  match result code of FCS/FMS
 
 
 Red5 0.6rc1 (2006-10-30)
