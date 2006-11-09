@@ -14,6 +14,7 @@ Bugfixes:
 - "NetConnection.Connect.Rejected" is sent for non-existing scopes to
   match result code of FCS/FMS
 - RTMPT through Jetty working again (Trac #213)
+- size of last frame is correctly written to .flv files
 
 
 Red5 0.6rc1 (2006-10-30)
