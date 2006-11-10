@@ -8,6 +8,7 @@ Red5 0.6    (unreleased)
 ------------------------
 New features:
 - Stream classes can be configured through red5-common.xml (Trac #223)
+- RTMP network library supports client mode (Trac #94)
 
 Bugfixes:
 - serialize RecordSet objects (Trac #201)
