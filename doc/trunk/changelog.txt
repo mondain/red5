@@ -10,6 +10,7 @@ New features:
 - Stream classes can be configured through red5-common.xml (Trac #223)
 - RTMP network library supports client mode (Trac #94)
 - source of VOD streams can be customized through IStreamFilenameGenerator
+- API: IStreamFilenameGenerator differs between playback and recording
 
 Bugfixes:
 - serialize RecordSet objects (Trac #201)
