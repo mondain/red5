@@ -68,6 +68,39 @@ You can also also use the ApplicationAdapter_ to check for streams, shared
 objects, or subscribe them.  See the API documentation for further details.
 
 
+Execution order of connection methods
+`````````````````````````````````````
+Assuming you connect to `rtmp://server/app/room1/room2`
+
+At first, the connection is established, so the user "connects" to all scopes
+that are traversed up to `room2`:
+
+1. `app`     (-> appConnect)
+2. `room1`   (-> roomConnect)
+3. `room2`   (-> roomConnect)
+
+After the connection is established, the client object is retrieved and if
+it's the first connection by this client to the scope, he "joins" the scopes:
+
+1. `app`     (-> appJoin)
+2. `room1`   (-> roomJoin)
+3. `room2`   (-> roomJoin)
+
+If the same client establishes a second connection to the same scope, only
+the `connect` methods will be called.  If you conect to partially the same
+scopes, only a few `join` methods might be called, e.g.
+`rtmp://server/app/room1/room3` will trigger
+
+1. `appConnect("app")`
+2. `joinConnect("room1")`
+3. `joinConnect("room3")`
+4. `roomJoin("room3")`
+
+The `appStart` method currently is only called once during startup of Red5
+as it currently can't unload/load applications like FCS/FMS does.
+The `roomStart` methods are called when the first client connects to a room. 
+
+
 Accepting / rejecting clients
 -----------------------------
 FCS / FMS provide the methods `acceptConnection` and `rejectConnection` to
