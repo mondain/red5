@@ -22,9 +22,11 @@ package org.red5.io;
 import java.io.File;
 import java.util.Set;
 
-public interface IStreamableFileFactory {
+import org.red5.server.api.IScopeService;
 
-	public static final String KEY = "streamableFileFactory";
+public interface IStreamableFileFactory extends IScopeService {
+
+	public static String BEAN_NAME = "streamableFileFactory";
 
 	public abstract IStreamableFileService getService(File fp);
 
