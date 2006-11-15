@@ -22,6 +22,7 @@ Bugfixes:
 - errors during "connect" are reported back to client through RTMPT
 - fixed NPE in FlowControlService thread (Trac #175)
 - deserializing of mixed arrays now works in all cases (Trac #109, #195)
+- "NetStream.Record.Start" and "NetStream.Record.Stop" are sent (Trac #127)
 
 
 Red5 0.6rc1 (2006-10-30)
