@@ -22,6 +22,7 @@ package org.red5.io.object;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -128,29 +129,26 @@ public class Deserializer {
 	}
 
 	/**
-	 * Reads the input and returns a List.
+	 * Reads the input and returns a List or Map depending on
+	 * the mixed array's keys.
 	 * 
 	 * @param in
-	 * @return List
+	 * @return List or Map
 	 */
-	protected List readMixedArray(Input in) {
+	protected Object readMixedArray(Input in) {
 		if (log.isDebugEnabled()) {
-			log.debug("read map");
+			log.debug("read mixed array");
 		}
 
-		int size = in.readStartMap();
-
+		// The maximum number used in this mixed array.
+		int maxNumber = in.readStartMap();
 		if (log.isDebugEnabled()) {
-			log.debug("Read start mixed array: " + size);
+			log.debug("Read start mixed array: " + maxNumber);
 		}
 
-		final List result = new ArrayList(size);
-		// Initialize array with null values
-		for (int i = 0; i < size; i++) {
-			result.add(null);
-		}
-
-		in.storeReference(result);
+		boolean allNumbers = true;
+		Object result;
+		final Map<Object, Object> mixedResult = new LinkedHashMap<Object, Object>(maxNumber);
 		while (in.hasMoreItems()) {
 			String key = in.readItemKey();
 			if (log.isDebugEnabled()) {
@@ -160,11 +158,31 @@ public class Deserializer {
 			if (log.isDebugEnabled()) {
 				log.debug("item: " + item);
 			}
-			result.set(Integer.parseInt(key), item);
+			try {
+				mixedResult.put(Integer.parseInt(key), item);
+			} catch (NumberFormatException err) {
+				mixedResult.put(key, item);
+				allNumbers = false;
+			}
 			if (in.hasMoreItems()) {
 				in.skipItemSeparator();
 			}
 		}
+		
+		if (allNumbers) {
+			// MixedArray actually is a regular array
+			if (log.isDebugEnabled()) {
+				log.debug("mixed array is a regular array");
+			}
+			final List<Object> listResult = new ArrayList<Object>(maxNumber);
+			for (int i=0; i<maxNumber; i++) {
+				listResult.add(i, mixedResult.get(i));
+			}
+			result = listResult;
+		} else
+			result = mixedResult;
+		
+		in.storeReference(result);
 		in.skipEndMap();
 		return result;
 	}
