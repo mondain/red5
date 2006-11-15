@@ -20,6 +20,7 @@ Bugfixes:
 - size of last frame is correctly written to .flv files
 - errors during "connect" are reported back to client through RTMPT
 - fixed NPE in FlowControlService thread (Trac #175)
+- deserializing of mixed arrays now works in all cases (Trac #109, #195)
 
 
 Red5 0.6rc1 (2006-10-30)
