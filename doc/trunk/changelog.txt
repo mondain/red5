@@ -27,6 +27,7 @@ Bugfixes:
   a stream with the same name
 - streams stopped if bandwidth limit was set too high (Trac #165)
 - fixed potential concurrency issue in FlowControlService (Trac #224)
+- stream notification callbacks are invoked on reused connetions (Trac #133)
 
 
 Red5 0.6rc1 (2006-10-30)
