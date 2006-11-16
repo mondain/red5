@@ -23,6 +23,8 @@ Bugfixes:
 - fixed NPE in FlowControlService thread (Trac #175)
 - deserializing of mixed arrays now works in all cases (Trac #109, #195)
 - "NetStream.Record.Start" and "NetStream.Record.Stop" are sent (Trac #127)
+- "NetStream.Publish.BadName" is sent if two clients try to publish/record
+  a stream with the same name
 
 
 Red5 0.6rc1 (2006-10-30)
