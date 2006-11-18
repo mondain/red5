@@ -87,6 +87,11 @@ public class FLVReader implements IoConstants, ITagReader,
 	/** Buffer type / style to use **/
 	private static String bufferType = "auto"; //Default
 	
+	private static int maxBufferSize = 0;
+	private static volatile int bufferUsed = 0;
+	
+	private boolean useBuffer = false;
+	
 	FLVReader() {}
 	
 	public FLVReader(FileInputStream f) {
@@ -104,24 +109,43 @@ public class FLVReader implements IoConstants, ITagReader,
 			if (log.isDebugEnabled()) {
 				log.debug("Mapped file capacity: " + mappedFile.capacity() + " Channel size: " + channel.size());
 			}
-			switch (bufferType.hashCode()) {
-				case 3198444: //heap
-					//Get a heap buffer from buffer pool
-					in = ByteBuffer.allocate(mappedFile.capacity(), false);
-					break;
-				case -1331586071: //direct
-					//Get a direct buffer from buffer pool
-					in = ByteBuffer.allocate(mappedFile.capacity(), true);
-					break;
-				case 3005871: //auto
-				default:
-					//Let MINA choose
-					in = ByteBuffer.allocate(mappedFile.capacity());
+			int bufferTypeHash = bufferType.hashCode();
+			if (bufferTypeHash == 3198444 ||
+					bufferTypeHash == -1331586071 ||
+					bufferTypeHash == 3005871) {
+				synchronized (FLVReader.class) {
+					if (bufferUsed + mappedFile.capacity() <= maxBufferSize) {
+						bufferUsed += mappedFile.capacity();
+						useBuffer = true;
+					}
+				}
 			}
-			//drop in the file
-			in.put(mappedFile);
-			//prepare the buffer for access
-			in.flip();
+			in = null;
+			if (useBuffer) {
+				switch (bufferTypeHash) {
+					case 3198444: //heap
+						//Get a heap buffer from buffer pool
+						in = ByteBuffer.allocate(mappedFile.capacity(), false);
+						break;
+					case -1331586071: //direct
+						//Get a direct buffer from buffer pool
+						in = ByteBuffer.allocate(mappedFile.capacity(), true);
+						break;
+					case 3005871: //auto
+						//Let MINA choose
+						in = ByteBuffer.allocate(mappedFile.capacity());
+						break;
+					default:
+						break;
+				}
+			}
+			if (in != null) {
+				//drop in the file
+				in.put(mappedFile);
+				in.flip();
+			} else {
+				in = ByteBuffer.wrap(mappedFile);
+			}
 			if (log.isDebugEnabled()) {
 				log.debug("Direct buffer: " + in.isDirect() + " Read only: " + in.isReadOnly() + " Pooled: " + in.isPooled());
 			}
@@ -165,6 +189,14 @@ public class FLVReader implements IoConstants, ITagReader,
 
 	public static void setBufferType(String bufferType) {
 		FLVReader.bufferType = bufferType;
+	}
+	
+	public static int getMaxBufferSize() {
+		return maxBufferSize;
+	}
+	
+	public static void setMaxBufferSize(int maxBufferSize) {
+		FLVReader.maxBufferSize = maxBufferSize;
 	}
 
 	/**
@@ -312,13 +344,25 @@ public class FLVReader implements IoConstants, ITagReader,
 	 */
 	synchronized public void close() {
 		log.debug("Reader close");
+		if (in != null) {
+			if (useBuffer) {
+				int bufferTypeHash = bufferType.hashCode();
+				if (bufferTypeHash == 3198444 ||
+						bufferTypeHash == -1331586071 ||
+						bufferTypeHash == 3005871) {
+					synchronized (FLVReader.class) {
+						if (mappedFile != null) {
+							bufferUsed -= mappedFile.capacity();
+						}
+					}
+				}
+			}
+			in.release();
+			in = null;
+		}
 		if (mappedFile != null) {
 			mappedFile.clear();
 			mappedFile = null;
-		}
-		if (in != null) {
-			in.release();
-			in = null;
 		}
 		if (channel != null) {
 			try {
