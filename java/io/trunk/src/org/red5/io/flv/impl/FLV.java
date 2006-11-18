@@ -37,7 +37,6 @@ import org.red5.io.flv.meta.IMetaData;
 import org.red5.io.flv.meta.IMetaService;
 import org.red5.server.api.cache.ICacheStore;
 import org.red5.server.api.cache.ICacheable;
-import org.red5.server.cache.CacheableImpl;
 
 /**
  * A FLVImpl implements the FLV api
@@ -174,7 +173,7 @@ public class FLV implements IFLV {
 				// get a ref to the mapped byte buffer
 				fileData = reader.getFileData();
 				// offer the uncached file to the cache
-				if (cache.offer(fileName, new CacheableImpl(fileData))) {
+				if (cache.offer(fileName, fileData)) {
 					if (log.isDebugEnabled()) {
 						log.debug("Item accepted by the cache: " + fileName);
 					}
