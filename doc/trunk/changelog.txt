@@ -12,6 +12,8 @@ New features:
 - source of VOD streams can be customized through IStreamFilenameGenerator
   (Trac #120)
 - API: IStreamFilenameGenerator differs between playback and recording
+- results of method calls can be deferred until they are available to free
+  io threads
 
 Bugfixes:
 - serialize RecordSet objects (Trac #201)
