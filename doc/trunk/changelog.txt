@@ -31,6 +31,7 @@ Bugfixes:
 - fixed potential concurrency issue in FlowControlService (Trac #224)
 - stream notification callbacks are invoked on reused connetions (Trac #133)
 - the playlist is flushed by default (Jira APPSERVER-6)
+- fixed ClassCastException in "pendingVideoMessages" (Jira APPSERVER-14)
 
 
 Red5 0.6rc1 (2006-10-30)
