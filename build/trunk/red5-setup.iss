@@ -94,6 +94,7 @@ Source: "{#root_dir}\.classpath"; DestDir: "{app}"; Flags: ignoreversion; Compon
 Source: "{#root_dir}\.project"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#root_dir}\.springBeans"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#root_dir}\build.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#root_dir}\build.properties"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#root_dir}\red5.bat"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#root_dir}\red5.sh"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#root_dir}\src\*"; DestDir: "{app}\src"; Flags: ignoreversion recursesubdirs; Components: java_source
