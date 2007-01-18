@@ -33,6 +33,7 @@ Bugfixes:
 - stream notification callbacks are invoked on reused connetions (Trac #133)
 - the playlist is flushed by default (Jira APPSERVER-6)
 - fixed ClassCastException in "pendingVideoMessages" (Jira APPSERVER-14)
+- calling "pause" with null argument works again (Jira APPSERVER-12)
 
 
 Red5 0.6rc1 (2006-10-30)
