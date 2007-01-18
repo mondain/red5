@@ -14,6 +14,7 @@ New features:
 - API: IStreamFilenameGenerator differs between playback and recording
 - results of method calls can be deferred until they are available to free
   io threads
+- transient fields will not be serialized any longer (Jira APPSERVER-27)
 
 Bugfixes:
 - serialize RecordSet objects (Trac #201)
