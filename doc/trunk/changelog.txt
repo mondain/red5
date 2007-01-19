@@ -34,6 +34,8 @@ Bugfixes:
 - the playlist is flushed by default (Jira APPSERVER-6)
 - fixed ClassCastException in "pendingVideoMessages" (Jira APPSERVER-14)
 - calling "pause" with null argument works again (Jira APPSERVER-12)
+- "NetStream.Publish.BadName" is only sent if another client is already
+  publishing a stream
 
 
 Red5 0.6rc1 (2006-10-30)
