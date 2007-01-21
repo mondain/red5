@@ -36,7 +36,7 @@ Bugfixes:
 - calling "pause" with null argument works again (Jira APPSERVER-12)
 - "NetStream.Publish.BadName" is only sent if another client is already
   publishing a stream
-- playing a stream while being recorded now works (Jira SN-4)
+- playing a stream while being recorded now works (Jira SN-4, SN-13)
 
 
 Red5 0.6rc1 (2006-10-30)
