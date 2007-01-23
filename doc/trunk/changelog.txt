@@ -37,6 +37,8 @@ Bugfixes:
 - "NetStream.Publish.BadName" is only sent if another client is already
   publishing a stream
 - playing a stream while being recorded now works (Jira SN-4, SN-13)
+- "IPendingServiceCall.isSuccess()" returns true when a result has been
+  received (Jira APPSERVER-35)
 
 
 Red5 0.6rc1 (2006-10-30)
