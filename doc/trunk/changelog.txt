@@ -41,6 +41,8 @@ Bugfixes:
 - playing a stream while being recorded now works (Jira SN-4, SN-13)
 - "IPendingServiceCall.isSuccess()" returns true when a result has been
   received (Jira APPSERVER-35)
+- the "http.host" setting from "red5.properties" is evaluated
+  (Jira APPSERVER-36)
 
 
 Red5 0.6rc1 (2006-10-30)
