@@ -15,6 +15,7 @@ New features:
 - results of method calls can be deferred until they are available to free
   io threads
 - transient fields will not be serialized any longer (Jira APPSERVER-27)
+- Red5 compiles with Java6 now
 
 Bugfixes:
 - serialize RecordSet objects (Trac #201)
