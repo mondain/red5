@@ -16,7 +16,7 @@ New features:
   io threads
 - transient fields will not be serialized any longer (Jira APPSERVER-27)
 - Red5 compiles with Java6 now
-- support for AMF3 added (APPSERVER-31)
+- support for AMF3 incl. IExternalizable objects added (APPSERVER-31)
 
 Bugfixes:
 - serialize RecordSet objects (Trac #201)
