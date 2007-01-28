@@ -45,6 +45,7 @@ Bugfixes:
   (Jira APPSERVER-36)
 - "IBroadcastStream" knows about the filename it is being recorded to
   (Jira APPSERVER-30)
+- BufferOverflowException for empty RTMP packets fixed (Jira APPSERVER-37)
 
 
 Red5 0.6rc1 (2006-10-30)
