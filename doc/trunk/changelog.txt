@@ -16,7 +16,7 @@ New features:
   io threads
 - transient fields will not be serialized any longer (Jira APPSERVER-27)
 - Red5 compiles with Java6 now
-- support for AMF3 incl. IExternalizable objects added (APPSERVER-31)
+- support for AMF3 incl. IExternalizable objects added (Jira APPSERVER-31)
 
 Bugfixes:
 - serialize RecordSet objects (Trac #201)
@@ -47,6 +47,7 @@ Bugfixes:
   (Jira APPSERVER-30)
 - BufferOverflowException for empty RTMP packets fixed (Jira APPSERVER-37)
 - flv files are no longer locked after playback (Jira APPSERVER-17)
+- SharedObjects support "getAttributes" (Jira APPSERVER-45)
 
 
 Red5 0.6rc1 (2006-10-30)
