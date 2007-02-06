@@ -18,6 +18,9 @@ New features:
 - Red5 compiles with Java6 now
 - support for AMF3 incl. IExternalizable objects added (Jira APPSERVER-31)
 - access to streams can be limited (Jira APPSERVER-25)
+- (non-persistent) shared objects can be acquired by serverside code to
+  prevent them from being released when the last client disconnects
+  (Jira APPSERVER-48)
 
 Bugfixes:
 - serialize RecordSet objects (Trac #201)
