@@ -50,6 +50,7 @@ Bugfixes:
 - SharedObjects support "getAttributes" (Jira APPSERVER-45)
 - access to streams can be limited (Jira APPSERVER-25)
 - mp3 files containing images can be played back (Jira APPSERVER-47)
+- fixed parsing of long strings (Jira APPSERVER-44)
 
 
 Red5 0.6rc1 (2006-10-30)
