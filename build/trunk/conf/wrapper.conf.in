@@ -38,7 +38,7 @@ wrapper.java.classpath.23=../lib/mina-core-2.0.0-M1.jar
 wrapper.java.classpath.24=../lib/mina-filter-compression-2.0.0-M1.jar
 wrapper.java.classpath.25=../lib/mina-filter-ssl-2.0.0-M1.jar
 wrapper.java.classpath.26=../lib/mina-integration-spring-2.0.0-M1.jar
-wrapper.java.classpath.27=../lib/quartz-1.5.2.jar
+wrapper.java.classpath.27=../lib/quartz-1.6.0.jar
 wrapper.java.classpath.28=../lib/servlet-api-2.5.jar
 wrapper.java.classpath.29=../lib/ehcache-1.2.3.jar
 wrapper.java.classpath.30=../lib/slf4j-log4j12.jar
@@ -73,6 +73,7 @@ wrapper.java.classpath.58=../lib/judo.jar
 wrapper.java.classpath.59=../lib/servlet-api.jar
 wrapper.java.classpath.60=../lib/jruby.jar
 wrapper.java.classpath.61=../lib/bsh-2.0b4.jar
+wrapper.java.classpath.62=../lib/jta.jar
 
 # Java Library Path (location of Wrapper.DLL or libwrapper.so)
 wrapper.java.library.path.1=../lib
