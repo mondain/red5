@@ -4,8 +4,9 @@
 ##
 import os, sys
 from time import strftime
+from distutils.dir_util import remove_tree
 
-# defaults
+# defaults, adjust to your needs
 ANT_CMD  = r'D:\Develop\osflash\apache-ant-1.6.5\bin\ant'
 INNO_CMD = r'C:\Programme\InnoSe~1\ISCC.exe'
 VERSION  = strftime('%Y%m%d')
@@ -20,18 +21,23 @@ def log(msg):
 
 class Builder:
     
-    def compile(self, ant, script, *args):
+    def compile(self, ant, script, version, *args):
         args = args and ' ' + ' '.join(args) or ''
-        assert os.system('%s -quiet -buildfile %s%s' % (ant, script, args)) == 0
+        assert os.system('%s -quiet -Djava.target_version=%s -buildfile %s%s' % (ant, version, script, args)) == 0
 
     def __init__(self, java_home, ant_cmd):
         self.java_home = java_home
         self.ant_cmd = ant_cmd
         self.build_root = os.path.abspath(os.path.split(__file__)[0])
 
-    def prepareWrapperConf(self, src, dst):
+    def prepareWrapperConf(self, src, dst, java5=False):
         fp = file(dst, 'wb')
-        jars = [x for x in os.listdir(os.path.join(self.build_root, '..', 'dist', 'lib')) if x.lower().endswith('.jar')]
+        jars = [x for x in os.listdir(os.path.join(self.build_root, '..', 'dist.java5', 'lib')) if x.lower().endswith('.jar')]
+        if java5:
+            # filter Java6-only files
+            jars = [x for x in jars if not os.path.isfile(os.path.join(self.build_root, '..', 'dist.java5', 'lib', 'java5', x))]
+            # add Java5 backport files
+            jars += [os.path.join('java5', x) for x in os.listdir(os.path.join(self.build_root, '..', 'dist.java5', 'lib', 'java5')) if x.lower().endswith('.jar')]
         added = False
         for line in file(src, 'rb').readlines():
             if not line.startswith('wrapper.java.classpath.'):
@@ -45,7 +51,7 @@ class Builder:
             fp.write('wrapper.java.classpath.1=../lib/wrapper.jar\n')
             fp.write('wrapper.java.classpath.2=../conf\n')
             fp.write('wrapper.java.classpath.3=../bin\n')
-            fp.write('wrapper.java.classpath.4=../lib/red5.jar\n')
+            fp.write('wrapper.java.classpath.4=../red5.jar\n')
             for idx, filename in enumerate(jars):
                 fp.write('wrapper.java.classpath.%d=../lib/%s\n' % (idx+5, filename))
             added = True
@@ -53,21 +59,38 @@ class Builder:
     def build(self, platform='windows'):
         log('Building from %s' % self.build_root)
         # prepare "dist" directory
-        red5_root = os.path.abspath(os.path.join(self.build_root, '..', 'dist'))
-        self.compile(self.ant_cmd, os.path.join(red5_root, '..', 'build.xml'), 'installerdist')
+        log('Cleaning old directories...')
+        red5_root = os.path.abspath(os.path.join(self.build_root, '..'))
+        if os.path.isdir(os.path.join(red5_root, 'dist.java5')):
+            remove_tree(os.path.join(red5_root, 'dist.java5'))
+        if os.path.isdir(os.path.join(red5_root, 'dist.java6')):
+            remove_tree(os.path.join(red5_root, 'dist.java6'))
+        
+        log('Compiling Java 1.5 version...')
+        self.compile(self.ant_cmd, os.path.join(red5_root, 'build.xml'), '1.5', 'installerdist')
+        os.renames(os.path.join(self.build_root, '..', 'dist'), os.path.join(self.build_root, '..', 'dist.java5'))
+        
+        log('Compiling Java 1.6 version...')
+        os.environ['JAVACMD'] = os.path.join(JAVA6_HOME, 'bin', 'java.exe')
+        self.compile(self.ant_cmd, os.path.join(red5_root, 'build.xml'), '1.6', 'installerdist')
+        os.renames(os.path.join(self.build_root, '..', 'dist'), os.path.join(self.build_root, '..', 'dist.java6'))
         
         # setup .jar files to wrapper.conf
         self.prepareWrapperConf(os.path.join(self.build_root, 'conf', 'wrapper.conf.in'), 
-                                os.path.join(self.build_root, 'conf', 'wrapper.conf'))
+                                os.path.join(self.build_root, 'conf', 'wrapper.conf.java6'))
+        self.prepareWrapperConf(os.path.join(self.build_root, 'conf', 'wrapper.conf.in'), 
+                                os.path.join(self.build_root, 'conf', 'wrapper.conf.java5'), java5=True)
         
         # build installer
         dest = os.getcwd()
         args = [
-            '/q',                                   # quiet
-            '/dversion="%s"' % VERSION,             # Red5 version
-            '/droot_dir="%s"' % red5_root,          # Red5 root
-            '/dbuild_dir="%s"' % self.build_root,   # build root
-            '/o"%s"' % dest,                        # output directory
+            '/q',                                                           # quiet
+            '/dversion="%s"' % VERSION,                                     # Red5 version
+            '/dcommon_root="%s"' % os.path.join(red5_root, 'dist.java5'),   # Red5 root
+            '/djava5_root="%s"' % os.path.join(red5_root, 'dist.java5'),    # Red5 root
+            '/djava6_root="%s"' % os.path.join(red5_root, 'dist.java6'),    # Red5 root
+            '/dbuild_dir="%s"' % self.build_root,                           # build root
+            '/o"%s"' % dest,                                                # output directory
         ]
         script = os.path.join(self.build_root, 'red5-setup.iss')
         cmd = INNO_CMD
@@ -79,6 +102,7 @@ class Builder:
 
 
 def main():
+    global JAVA_HOME, JAVA6_HOME
     if len(sys.argv) == 2:
         # create installer with specific version number
         global VERSION
@@ -87,6 +111,7 @@ def main():
     log('Red5 build system')
     log('-----------------')
     JAVA_HOME = os.environ.get('JAVA_HOME', r'C:\Programme\Java\jdk1.5.0_05')
+    JAVA6_HOME = os.environ.get('JAVA6_HOME', r'C:\Programme\Java\jdk1.6.0')
     
     if not os.path.isfile(os.path.join(JAVA_HOME, 'bin', 'java.exe')):
         error('could not find "java.exe" in "%s"' % JAVA_HOME)
