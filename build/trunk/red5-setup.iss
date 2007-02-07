@@ -25,7 +25,7 @@ SolidCompression=yes
 ;Compression=none
 WizardSmallImageFile={#build_dir}\images\red5_top.bmp
 WizardImageFile={#build_dir}\images\red5_left.bmp
-LicenseFile={#root_dir}\license.txt
+LicenseFile={#common_root}\license.txt
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -35,10 +35,12 @@ RegisterService=&Register as service
 StartService=&Start service
 JavaSetup=Java Setup
 JavaHome=Java Home
-JavaHomeDesc=Red5 needs a Java Runtime Environment (JRE) 1.5 to work properly.
+JavaHomeDesc=Red5 needs a Java Runtime Environment (JRE) 1.5 or 1.6 to work properly.
 JavaHomeInfo=Enter the path to your Java installation.
-InvalidJavaHome=The path you selected is invalid. Please make sure a java.exe exists inside the "bin" directory.
+InvalidJavaHome=The path you selected is invalid. Please make sure a java.exe exists inside the "bin" directory and the version is 1.5 or 1.6.
 MainFiles=Main files
+Documentation=Documentation
+SampleWebapps=Sample applications
 JavaSources=Java source files
 FlashSources=Flash sample source files
 Red5Services=Network services
@@ -58,6 +60,8 @@ DownloadSampleStreams=Download sample streams
 
 [Components]
 Name: "main"; Description: "{cm:MainFiles}"; Types: full compact custom; Flags: fixed
+Name: "documentation"; Description: "{cm:Documentation}"; Types: full
+Name: "sample_applications"; Description: "{cm:SampleWebapps}"; Types: full
 Name: "java_source"; Description: "{cm:JavaSources}"; Types: full
 Name: "flash_source"; Description: "{cm:FlashSources}"; Types: full
 
@@ -65,42 +69,50 @@ Name: "flash_source"; Description: "{cm:FlashSources}"; Types: full
 Name: "service"; Description: "{cm:RegisterService}"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; Flags: unchecked
 #ifdef DOWNLOAD_SAMPLES
-Name: "sample_streams"; Description: "{cm:DownloadSampleStreams}"
+Name: "sample_streams"; Description: "{cm:DownloadSampleStreams}"; Components: sample_applications
 #endif
 
 [Files]
 ; Application files
-Source: "{#root_dir}\license.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#root_dir}\red5.jar"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#root_dir}\conf\*"; DestDir: "{app}\conf"; Excludes: "red5.properties"; Flags: onlyifdoesntexist recursesubdirs
-Source: "{#root_dir}\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
-Source: "{#root_dir}\swf\DEV_Deploy\*"; DestDir: "{app}\swf"; Flags: ignoreversion recursesubdirs
+Source: "{#common_root}\license.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#java5_root}\red5.jar"; DestDir: "{app}"; Flags: ignoreversion; Check: IsJavaVersion(5)
+Source: "{#java6_root}\red5.jar"; DestDir: "{app}"; Flags: ignoreversion; Check: IsJavaVersion(6)
+Source: "{#common_root}\conf\*"; DestDir: "{app}\conf"; Excludes: "red5.properties"; Flags: onlyifdoesntexist recursesubdirs
+Source: "{#common_root}\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
+Source: "{#common_root}\swf\DEV_Deploy\*"; DestDir: "{app}\swf"; Flags: ignoreversion recursesubdirs
 #ifdef DOWNLOAD_SAMPLES
-Source: "{#root_dir}\webapps\*"; DestDir: "{app}\webapps"; Excludes: "oflaDemo\streams\*.flv,oflaDemo\streams\*.mp3"; Flags: onlyifdoesntexist recursesubdirs
+Source: "{#common_root}\webapps\*"; DestDir: "{app}\webapps"; Excludes: "oflaDemo\streams\*.flv,oflaDemo\streams\*.mp3"; Flags: onlyifdoesntexist recursesubdirs; Components: sample_applications
 #else
-Source: "{#root_dir}\webapps\*"; DestDir: "{app}\webapps"; Flags: onlyifdoesntexist recursesubdirs
+Source: "{#common_root}\webapps\*"; DestDir: "{app}\webapps"; Flags: onlyifdoesntexist recursesubdirs; Components: sample_applications
 #endif
-Source: "{#root_dir}\doc\*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs
+Source: "{#common_root}\webapps\red5-default.xml"; DestDir: "{app}\webapps"; Flags: onlyifdoesntexist; Components: not sample_applications
+Source: "{#common_root}\webapps\admin\*"; DestDir: "{app}\webapps\admin"; Flags: onlyifdoesntexist; Components: not sample_applications
+Source: "{#common_root}\webapps\root\*"; DestDir: "{app}\webapps\root"; Flags: onlyifdoesntexist; Components: not sample_applications
+Source: "{#common_root}\doc\*"; DestDir: "{app}\doc"; Excludes: "api\*"; Flags: ignoreversion recursesubdirs; Components: documentation
+Source: "{#java5_root}\doc\api\*"; DestDir: "{app}\doc\api"; Flags: ignoreversion recursesubdirs; Components: documentation; Check: IsJavaVersion(5)
+Source: "{#java6_root}\doc\api\*"; DestDir: "{app}\doc\api"; Flags: ignoreversion recursesubdirs; Components: documentation; Check: IsJavaVersion(6)
 
 ; Files required for windows service / wrapped start
 Source: "{#build_dir}\bin\*.bat"; DestDir: "{app}\wrapper"; Flags: ignoreversion
 Source: "{#build_dir}\bin\wrapper.exe"; DestDir: "{app}\wrapper"; Flags: ignoreversion
-Source: "{#build_dir}\conf\wrapper.conf"; DestDir: "{app}\conf"; Flags: ignoreversion; AfterInstall: UpdateWrapperConf('{app}\conf\wrapper.conf')
+Source: "{#build_dir}\conf\wrapper.conf.java5"; DestDir: "{app}\conf"; DestName: "wrapper.conf"; Flags: ignoreversion; AfterInstall: UpdateWrapperConf('{app}\conf\wrapper.conf'); Check: IsJavaVersion(5)
+Source: "{#build_dir}\conf\wrapper.conf.java6"; DestDir: "{app}\conf"; DestName: "wrapper.conf"; Flags: ignoreversion; AfterInstall: UpdateWrapperConf('{app}\conf\wrapper.conf'); Check: IsJavaVersion(6)
 Source: "{#build_dir}\lib\wrapper.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#build_dir}\lib\wrapper.jar"; DestDir: "{app}\lib"; Flags: ignoreversion
 
 ; Java source code (optional)
-Source: "{#root_dir}\.classpath"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
-Source: "{#root_dir}\.project"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
-Source: "{#root_dir}\.springBeans"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
-Source: "{#root_dir}\build.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
-Source: "{#root_dir}\build.properties"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
-Source: "{#root_dir}\red5.bat"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
-Source: "{#root_dir}\red5.sh"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
-Source: "{#root_dir}\src\*"; DestDir: "{app}\src"; Flags: ignoreversion recursesubdirs; Components: java_source
+Source: "{#common_root}\.classpath"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\.project"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\.springBeans"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\build.properties"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\build.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\build.properties"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\red5.bat"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\red5.sh"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\src\*"; DestDir: "{app}\src"; Flags: ignoreversion recursesubdirs; Components: java_source
 
 ; Flash sample source code (optional)
-Source: "{#root_dir}\swf\DEV_Source\*"; DestDir: "{app}\swf"; Flags: ignoreversion recursesubdirs; Components: flash_source
+Source: "{#common_root}\swf\DEV_Source\*"; DestDir: "{app}\swf"; Flags: ignoreversion recursesubdirs; Components: flash_source
 
 [Dirs]
 Name: "{app}\logs"
@@ -146,6 +158,7 @@ const
 var
   JavaHome: String;
   JavaHomePage: TInputDirWizardPage;
+  JavaVersion: Integer;
   ServicesPage: TWizardPage;
   EnableRTMP: TCheckBox;
   PortRTMP: TEdit;
@@ -156,10 +169,15 @@ var
   EnableDebug: TCheckBox;
   PortDebug: TEdit;
 
+function IsJavaVersion(Version: Integer): Boolean;
+begin
+  Result := Version = JavaVersion;
+end;
+
 function InitializeSetup(): Boolean;
 begin
   Result := False;
-  // Check Java 1.5 installation
+  // Check Java 5 installation
   if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment\1.5', 'JavaHome', JavaHome) then
     JavaHome := '';
 
@@ -222,8 +240,9 @@ begin
   URLLabel.OnClick := @URLLabelOnClick;
   URLLabel.Parent := WizardForm;
 
+
   // Custom page to select JAVA_HOME
-  JavaHomePage := CreateInputDirPage(wpSelectTasks,
+  JavaHomePage := CreateInputDirPage(wpLicense,
     ExpandConstant('{cm:JavaSetup}'),
     ExpandConstant('{cm:JavaHomeDesc}'),
     ExpandConstant('{cm:JavaHomeInfo}'),
@@ -233,7 +252,7 @@ begin
   JavaHomePage.Values[0] := JavaHome;
   
   // Setup page containing services selection
-  ServicesPage := CreateCustomPage(JavaHomePage.ID,
+  ServicesPage := CreateCustomPage(wpSelectTasks,
     ExpandConstant('{cm:Red5ServicesSetup}'),
     ExpandConstant('{cm:RedServicesSetupInfo}'));
     
@@ -265,10 +284,60 @@ begin
   Static.Caption := ExpandConstant('{cm:AdminUsernamePassword}');
 end;
 
-function IsValidJavaHome(Path: String): Boolean;
+function ExecOutput(const Filename, Params: String): String;
+var
+  TmpFile: String;
+  ResultCode: Integer;
 begin
+  Result := '';
+  TmpFile := GenerateUniqueName(ExpandConstant('{tmp}'), 'tmp');
+  if Exec(ExpandConstant('{cmd}'), '/C ' + Filename + ' ' + Params + ' 2> ' + TmpFile,
+     '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    if ResultCode = 0 then
+      if LoadStringFromFile(TmpFile, Result) then
+      begin
+        Result := Trim(Result);
+        Log('ExecOutput: running ' + Filename + ' succeded with output: ' + Result);
+      end
+      else
+        Log('ExecOutput: running ' + Filename + ' succeded, but the temp file was not created')
+    else
+      Log('ExecOutput: running ' + Filename + ' failed, code: ' + IntToStr(ResultCode))
+  else
+    { That's really odd, we should always be able to exec the command interpreter! }
+    Log('ExecOutput: cannot exec command interpreter, code: ' + IntToStr(ResultCode) + ', message: ' + SysErrorMessage(ResultCode));
+end;
+
+{**
+ * Check if <Path> is a valid Java home.
+ * Returns 5 for Java5, 6 for Java6 and 0 for unknown/wrong version.
+ *}
+function CheckJavaHome(Path: String): Integer;
+var
+  Output: String;
+  Idx: Integer;
+begin
+  Result := 0;
   Path := AddBackslash(Path);
-  Result := FileExists(Path + 'bin\java.exe');
+  if (not FileExists(Path + 'bin\java.exe')) then
+    exit;
+
+  Output := ExecOutput(Path + 'bin\java.exe', '-version');
+  Idx := Pos('java version "', Output);
+  if (Idx <= 0) then
+    exit;
+    
+  Output := Copy(Output, Idx+14, Length(Output)-Idx);
+  Idx := Pos('"', Output);
+  if (Idx <= 0) then
+    exit;
+
+  Output := Copy(Output, 1, Idx-1);
+  if (Pos('1.5', Output) = 1) then
+    Result := 5
+  else if (Pos('1.6', Output) = 1) then
+    Result := 6;
+  Log('Detected Java version: ' + IntToStr(Result));
 end;
 
 #ifdef DOWNLOAD_SAMPLES
@@ -309,7 +378,8 @@ function NextButtonClick(CurPage: Integer): Boolean;
 begin
   Result := True;
   if (CurPage = JavaHomePage.ID) then begin
-    if not IsValidJavaHome(JavaHomePage.Values[0]) then begin
+    JavaVersion := CheckJavaHome(JavaHomePage.Values[0]);
+    if (JavaVersion = 0) then begin
       MsgBox(ExpandConstant('{cm:InvalidJavaHome}'), mbError, MB_OK);
       Result := False;
     end;
@@ -329,7 +399,8 @@ begin
 
   Result := Result +
     ExpandConstant('{cm:JavaHome}') + ':' + NewLine +
-    Space + AddBackslash(JavaHomePage.Values[0]) + NewLine + NewLine;
+    Space + AddBackslash(JavaHomePage.Values[0]) + NewLine +
+    Space + 'Version 1.' + IntToStr(JavaVersion) + NewLine + NewLine;
     
   Result := Result +
     ExpandConstant('{cm:Red5Services}') + ':' + NewLine;
