@@ -4,7 +4,7 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
-Red5 0.6    (unreleased)
+Red5 0.6rc2 (2007-02-12)
 ------------------------
 New features:
 - Stream classes can be configured through red5-common.xml (Trac #223)
