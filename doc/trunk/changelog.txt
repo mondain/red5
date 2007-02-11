@@ -61,7 +61,7 @@ Bugfixes:
 - "NetStream.InvalidArg" is returned for invalid arguments
   (Jira APPSERVER-55)
 - "NetConnection.Connect.InvalidApp" is returned for non-existing application
-  scopes on the server (Jira APPSERVER-55)
+  scopes on the server
 
 
 Red5 0.6rc1 (2006-10-30)
