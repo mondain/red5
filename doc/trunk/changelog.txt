@@ -62,6 +62,8 @@ Bugfixes:
   (Jira APPSERVER-55)
 - "NetConnection.Connect.InvalidApp" is returned for non-existing application
   scopes on the server
+- "NetStream.Record.NoAccess" is returned if file could not be created
+  or written to (Jira APPSERVER-53)
 
 
 Red5 0.6rc1 (2006-10-30)
