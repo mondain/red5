@@ -64,6 +64,7 @@ Bugfixes:
   scopes on the server
 - "NetStream.Record.NoAccess" is returned if file could not be created
   or written to (Jira APPSERVER-53)
+- error when setting SO attributes fixed (Jira APPSERVER-57)
 
 
 Red5 0.6rc1 (2006-10-30)
