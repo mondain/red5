@@ -58,7 +58,10 @@ Bugfixes:
 - number of streams is no longer limited (Jira SN-14)
 - "NetStream.Play.Failed" is returned if a VOD stream can not be played
   due to IO errors (Jira APPSERVER-52)
-- "NetStream.InvalidArg" returned for invalid arguments (Jira APPSERVER-55)
+- "NetStream.InvalidArg" is returned for invalid arguments
+  (Jira APPSERVER-55)
+- "NetConnection.Connect.InvalidApp" is returned for non-existing application
+  scopes on the server (Jira APPSERVER-55)
 
 
 Red5 0.6rc1 (2006-10-30)
