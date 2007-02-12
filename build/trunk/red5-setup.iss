@@ -9,6 +9,15 @@
 #ifndef root_dir
 #define root_dir ".."
 #endif
+#ifndef common_root
+#define common_root "..\dist.java5"
+#endif
+#ifndef java5_root
+#define java5_root "..\dist.java5"
+#endif
+#ifndef java6_root
+#define java6_root "..\dist.java6"
+#endif
 #ifndef version
 #define version "test"
 #endif
@@ -79,7 +88,8 @@ Source: "{#java5_root}\red5.jar"; DestDir: "{app}"; Flags: ignoreversion; Check:
 Source: "{#java6_root}\red5.jar"; DestDir: "{app}"; Flags: ignoreversion; Check: IsJavaVersion(6)
 Source: "{#common_root}\conf\*"; DestDir: "{app}\conf"; Excludes: "red5.properties"; Flags: onlyifdoesntexist recursesubdirs
 Source: "{#common_root}\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
-Source: "{#common_root}\swf\DEV_Deploy\*"; DestDir: "{app}\swf"; Flags: ignoreversion recursesubdirs
+Source: "{#common_root}\swf\DEV_Deploy\*"; DestDir: "{app}\swf\DEV_Deploy"; Flags: ignoreversion recursesubdirs
+Source: "{#common_root}\swf\samples\*.swf"; DestDir: "{app}\swf\samples"; Flags: ignoreversion recursesubdirs
 #ifdef DOWNLOAD_SAMPLES
 Source: "{#common_root}\webapps\*"; DestDir: "{app}\webapps"; Excludes: "oflaDemo\streams\*.flv,oflaDemo\streams\*.mp3"; Flags: onlyifdoesntexist recursesubdirs; Components: sample_applications
 #else
@@ -112,7 +122,8 @@ Source: "{#common_root}\red5.sh"; DestDir: "{app}"; Flags: ignoreversion; Compon
 Source: "{#common_root}\src\*"; DestDir: "{app}\src"; Flags: ignoreversion recursesubdirs; Components: java_source
 
 ; Flash sample source code (optional)
-Source: "{#common_root}\swf\DEV_Source\*"; DestDir: "{app}\swf"; Flags: ignoreversion recursesubdirs; Components: flash_source
+Source: "{#common_root}\swf\DEV_Source\*"; DestDir: "{app}\swf\DEV_Source"; Flags: ignoreversion recursesubdirs; Components: flash_source
+Source: "{#common_root}\swf\samples\*.fla"; DestDir: "{app}\swf\samples"; Flags: ignoreversion recursesubdirs; Components: flash_source
 
 [Dirs]
 Name: "{app}\logs"
@@ -291,7 +302,7 @@ var
 begin
   Result := '';
   TmpFile := GenerateUniqueName(ExpandConstant('{tmp}'), 'tmp');
-  if Exec(ExpandConstant('{cmd}'), '/C ' + Filename + ' ' + Params + ' 2> ' + TmpFile,
+  if Exec(ExpandConstant('{cmd}'), '/C "' + Filename + '" ' + Params + ' 2> ' + TmpFile,
      '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
     if ResultCode = 0 then
       if LoadStringFromFile(TmpFile, Result) then
