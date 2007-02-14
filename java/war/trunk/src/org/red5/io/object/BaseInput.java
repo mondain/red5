@@ -3,7 +3,7 @@ package org.red5.io.object;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -30,17 +30,22 @@ import java.util.Map;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class BaseInput {
-
+    /**
+     * References map
+     */
 	protected Map refMap = new HashMap();
 
-	protected short refId = 0;
+    /**
+     * References id
+     */
+    protected int refId;
 
 	/**
 	 * Store an object into a map
-	 * @param obj
+	 * @param obj  Object to store
 	 */
-	public void storeReference(Object obj) {
-		refMap.put(new Short(refId++), obj);
+	protected void storeReference(Object obj) {
+		refMap.put(Integer.valueOf(refId++), obj);
 	}
 
 	/**
@@ -53,11 +58,11 @@ public class BaseInput {
 
 	/**
 	 * Returns the object with the parameters id
-	 * @param id
-	 * @return Object
+	 * @param id        Object reference id
+	 * @return Object   Object reference with given id
 	 */
-	protected Object getReference(short id) {
-		return refMap.get(new Short(id));
+	protected Object getReference(int id) {
+		return refMap.get(Integer.valueOf(id));
 	}
 
 }

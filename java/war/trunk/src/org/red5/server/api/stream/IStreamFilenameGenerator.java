@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -20,6 +20,7 @@ package org.red5.server.api.stream;
  */
 
 import org.red5.server.api.IScope;
+import org.red5.server.api.IScopeService;
 
 /**
  * A class that can generate filenames for streams.
@@ -27,28 +28,36 @@ import org.red5.server.api.IScope;
  * @author The Red5 Project (red5@osflash.org)
  * @author Joachim Bauch (bauch@struktur.de)
  */
-public interface IStreamFilenameGenerator {
+public interface IStreamFilenameGenerator extends IScopeService {
 
 	/** Name of the bean to setup a custom filename generator in an application. */
-	public static final String KEY = "streamFilenameGenerator";
+	public static String BEAN_NAME = "streamFilenameGenerator";
 
+	/** Possible filename generation types. */
+	public static enum GenerationType {
+			PLAYBACK,
+			RECORD
+	};
+	
 	/**
 	 * Generate a filename without an extension.
 	 * 
-	 * @param scope
-	 * @param name
-	 * @return
+	 * @param scope           Scope to use
+	 * @param name            Stream name
+     * @param type            Generation strategy (either playback or record)
+     * @return                Full filename
 	 */
-	public String generateFilename(IScope scope, String name);
+	public String generateFilename(IScope scope, String name, GenerationType type);
 
 	/**
 	 * Generate a filename with an extension.
-	 * 
-	 * @param scope
-	 * @param name
-	 * @param extension
-	 * @return
-	 */
-	public String generateFilename(IScope scope, String name, String extension);
+	 *
+	 * @param scope           Scope to use
+	 * @param name            Stream filename
+	 * @param extension       Extension
+     * @param type            Generation strategy (either playback or record)
+	 * @return                Full filename with extension
+     */
+	public String generateFilename(IScope scope, String name, String extension, GenerationType type);
 
 }

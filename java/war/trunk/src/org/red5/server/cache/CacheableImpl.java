@@ -3,7 +3,7 @@ package org.red5.server.cache;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -49,15 +49,16 @@ public class CacheableImpl implements ICacheable {
 		tmp.putObject(obj);
 		bytes = new byte[tmp.capacity()];
 		tmp.get(bytes);
-		tmp.release();
 		cached = true;
+		tmp = null;
 	}
 
 	public CacheableImpl(ByteBuffer buffer) {
-		log.debug("Buffer is direct: " + buffer.isDirect() + " capacity: "
-				+ buffer.capacity());
-		log.debug("Buffer limit: " + buffer.limit() + " remaining: "
+		if (log.isDebugEnabled()) {
+			log.debug("Buffer is direct: " + buffer.isDirect() + " capacity: " + buffer.capacity());
+			log.debug("Buffer limit: " + buffer.limit() + " remaining: "
 				+ buffer.remaining() + " position: " + buffer.position());
+		}
 		bytes = new byte[buffer.capacity()];
 		buffer.rewind();
 		int i = 0;
@@ -68,35 +69,43 @@ public class CacheableImpl implements ICacheable {
 			}
 		}
 		cached = true;
-		log.debug("Buffer size: " + buffer.capacity());
-		buffer.release();
+		if (log.isDebugEnabled()) {
+			log.debug("Buffer size: " + buffer.capacity());
+		}
+		buffer = null;
 	}
 
 	public void addRequest() {
 		log.info("Adding request for: " + name);
 	}
 
-	public byte[] getBytes() {
+	/** {@inheritDoc} */
+    public byte[] getBytes() {
 		return bytes;
 	}
 
-	public ByteBuffer getByteBuffer() {
+	/** {@inheritDoc} */
+    public ByteBuffer getByteBuffer() {
 		return ByteBuffer.wrap(bytes).asReadOnlyBuffer();
 	}
 
-	public String getName() {
+	/** {@inheritDoc} */
+    public String getName() {
 		return name;
 	}
 
-	public boolean isCached() {
+	/** {@inheritDoc} */
+    public boolean isCached() {
 		return cached;
 	}
 
-	public void setCached(boolean cached) {
+	/** {@inheritDoc} */
+    public void setCached(boolean cached) {
 		this.cached = cached;
 	}
 
-	public void setName(String name) {
+	/** {@inheritDoc} */
+    public void setName(String name) {
 		this.name = name;
 	}
 

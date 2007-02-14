@@ -3,7 +3,7 @@ package org.red5.io.flv.meta;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -20,26 +20,23 @@ package org.red5.io.flv.meta;
  */
 
 /**
+ * Metadata resolver implementation, merges metadata objects
+ *
  * @author The Red5 Project (red5@osflash.org)
  * @author daccattato(daccattato@gmail.com)
  */
 public class Resolver implements IResolver {
 
-	/**
-	 * 
-	 */
+    /**
+	*  Creates resolver object
+	*/
 	public Resolver() {
 		super();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.meta.IResolver#resolve(org.red5.io.flv.meta.IMeta,
-	 *      org.red5.io.flv.meta.IMeta)
+	/** {@inheritDoc}
 	 */
 	public IMeta resolve(IMeta m1, IMeta m2) {
-
 		return m2;
 	}
 

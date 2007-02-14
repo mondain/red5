@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -21,12 +21,25 @@ package org.red5.server.stream;
 
 import org.red5.server.api.event.IEvent;
 
+/**
+ * Source for streams
+ */
 public interface IStreamSource {
-
+    /**
+     * Is there something more to stream?
+     * @return      <code>true</code> if there's streamable data, <code>false</code> otherwise
+     */
 	public abstract boolean hasMore();
 
-	public abstract IEvent dequeue();
+    /**
+     * Double ended queue of event objects
+     * @return      Event from queue
+     */
+    public abstract IEvent dequeue();
 
+    /**
+     * Close stream source
+     */
 	public abstract void close();
 
 }

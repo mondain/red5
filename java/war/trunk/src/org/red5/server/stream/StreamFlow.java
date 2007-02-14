@@ -2,25 +2,23 @@ package org.red5.server.stream;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
- * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
- * 
- * This library is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License as published by the Free Software 
- * Foundation; either version 2.1 of the License, or (at your option) any later 
- * version. 
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ *
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along 
- * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.red5.server.net.rtmp.event.AudioData;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.event.Notify;
@@ -29,81 +27,134 @@ import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.stream.message.RTMPMessage;
 import org.springframework.core.style.ToStringCreator;
 
+/**
+ * Stream flow
+ */
 public class StreamFlow implements IStreamFlow {
 
-	private static final Log log = LogFactory.getLog(StreamFlow.class);
-
+    /**
+     * Data segment constant
+     */
 	private static final int DATA = 0;
-
+    /**
+     * Audio segment constant
+     */
 	private static final int AUDIO = 1;
-
+    /**
+     * Video segment constant
+     */
 	private static final int VIDEO = 2;
-
-	private boolean streaming = false;
-
+    /**
+     * Streaming flag
+     */
+	private boolean streaming;
+    /**
+     * Stream start time
+     */
 	private long streamStartTime;
-
-	private long totalBytesTransfered = 0;
-
+    /**
+     * Total number of bytes transferred
+     */
+	private long totalBytesTransfered;
+    /**
+     * Data times
+     */
 	private int[] totalDataTimes = new int[] { 0, 0, 0 };
-
-	private long combinedTotalDataTime = 0;
-
+    /**
+     * Combined totalBytesTransfered data time
+     * Not used?
+     */
+	private long combinedTotalDataTime;
+    /**
+     * Segment start time
+     */
 	private long segmentStartTime;
-
-	private int segmentBytesTransfered = 0;
-
+    /**
+     * Segment bytes transfered
+     */
+	private int segmentBytesTransfered;
+    /**
+     * Segment data times
+     */
 	private int[] segmentDataTimes = new int[] { 0, 0, 0 };
-
-	private int combinedSegmentDataTime = 0;
-
+    /**
+     * Combined segment data time
+     */
+	private int combinedSegmentDataTime;
+    /**
+     * Minimal time buffer
+     */
 	private int minTimeBuffer = 10000;
-
-	private int maxTimeBuffer = 20000;
-
+    /**
+     * Max time buffer
+     */
+    private int maxTimeBuffer = 20000;
+    /**
+     * Client time buffer
+     */
 	private long clientTimeBuffer = 10000;
-
+    /**
+     * TODO : Ask Steven what the hell is this
+     */
 	private long zeroToStreamTime = -1;
-
-	private int bufferTime = 0;
-
+    /**
+     * Buffer time
+     */
+	private int bufferTime;
+    /**
+     * Array of last buffer times
+     */
 	private int lastBufferTimes[] = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-	private int lastBufferTime = 0;
-
-	private int lastBufferTimeIndex = 0;
-
+    /**
+     * Last buffer time
+     */
+	private int lastBufferTime;
+    /**
+     * Last buffer time index
+     */
+	private int lastBufferTimeIndex;
+    /**
+     * Stream tracker
+     */
 	private StreamTracker streamTracker = new StreamTracker();
 
-	public StreamFlow() {
+	/** Constructs a new StreamFlow. */
+    public StreamFlow() {
 	}
 
-	public int getMaxTimeBuffer() {
+	/** {@inheritDoc} */
+    public int getMaxTimeBuffer() {
 		return maxTimeBuffer;
 	}
 
-	public void setMaxTimeBuffer(int maxTimeBuffer) {
+	/** {@inheritDoc} */
+    public void setMaxTimeBuffer(int maxTimeBuffer) {
 		this.maxTimeBuffer = maxTimeBuffer;
 	}
 
-	public int getMinTimeBuffer() {
+	/** {@inheritDoc} */
+    public int getMinTimeBuffer() {
 		return minTimeBuffer;
 	}
 
-	public void setMinTimeBuffer(int minTimeBuffer) {
+	/** {@inheritDoc} */
+    public void setMinTimeBuffer(int minTimeBuffer) {
 		this.minTimeBuffer = minTimeBuffer;
 	}
 
-	public long getClientTimeBuffer() {
+	/** {@inheritDoc} */
+    public long getClientTimeBuffer() {
 		return clientTimeBuffer;
 	}
 
-	public void setClientTimeBuffer(long clientTimeBuffer) {
+	/** {@inheritDoc} */
+    public void setClientTimeBuffer(long clientTimeBuffer) {
 		this.clientTimeBuffer = clientTimeBuffer;
 	}
 
-	public int getDataBitRate() {
+	/** {@inheritDoc} */
+    public int getDataBitRate() {
 		int dataTime = getSegmentDataTime() / 1000;
 		if (dataTime == 0) {
 			return 0;
@@ -111,11 +162,13 @@ public class StreamFlow implements IStreamFlow {
 		return ((segmentBytesTransfered * 8) / dataTime);
 	}
 
-	public int getSegmentBytesTransfered() {
+	/** {@inheritDoc} */
+    public int getSegmentBytesTransfered() {
 		return segmentBytesTransfered;
 	}
 
-	public int getSegmentDataTime() {
+	/** {@inheritDoc} */
+    public int getSegmentDataTime() {
 		if (segmentDataTimes[VIDEO] >= segmentDataTimes[AUDIO]
 				&& segmentDataTimes[VIDEO] >= segmentDataTimes[DATA]) {
 			return segmentDataTimes[VIDEO];
@@ -127,18 +180,21 @@ public class StreamFlow implements IStreamFlow {
 		}
 	}
 
-	public long getSegmentStreamTime() {
+	/** {@inheritDoc} */
+    public long getSegmentStreamTime() {
 		if (segmentStartTime == 0) {
 			return 0;
 		}
 		return System.currentTimeMillis() - segmentStartTime;
 	}
 
-	public int getStreamBitRate() {
+	/** {@inheritDoc} */
+    public int getStreamBitRate() {
 		return (int) ((segmentBytesTransfered * 8) / (getSegmentStreamTime() / 1000));
 	}
 
-	public boolean isBufferTimeIncreasing() {
+	/** {@inheritDoc} */
+    public boolean isBufferTimeIncreasing() {
 		int combinedBufferTime = 0;
 		for (int element : lastBufferTimes) {
 			combinedBufferTime += element;
@@ -151,11 +207,13 @@ public class StreamFlow implements IStreamFlow {
 		return isIncreasing;
 	}
 
-	public long getTotalBytesTransfered() {
+	/** {@inheritDoc} */
+    public long getTotalBytesTransfered() {
 		return totalBytesTransfered;
 	}
 
-	public long getTotalDataTime() {
+	/** {@inheritDoc} */
+    public long getTotalDataTime() {
 		if (totalDataTimes[VIDEO] >= totalDataTimes[AUDIO]
 				&& totalDataTimes[VIDEO] >= totalDataTimes[DATA]) {
 			return totalDataTimes[VIDEO];
@@ -167,18 +225,21 @@ public class StreamFlow implements IStreamFlow {
 		}
 	}
 
-	public long getTotalStreamTime() {
+	/** {@inheritDoc} */
+    public long getTotalStreamTime() {
 		return System.currentTimeMillis() - streamStartTime;
 	}
 
-	public long getZeroToStreamTime() {
+	/** {@inheritDoc} */
+    public long getZeroToStreamTime() {
 		if (zeroToStreamTime == -1) {
 			return System.currentTimeMillis() - segmentStartTime;
 		}
 		return zeroToStreamTime;
 	}
 
-	public int getBufferTime() {
+	/** {@inheritDoc} */
+    public int getBufferTime() {
 		return (int) (getSegmentDataTime() - getSegmentStreamTime());
 	}
 
@@ -191,15 +252,18 @@ public class StreamFlow implements IStreamFlow {
 		segmentStartTime = now;
 	}
 
-	public void pause() {
+	/** {@inheritDoc} */
+    public void pause() {
 		clear();
 	}
 
-	public void resume() {
+	/** {@inheritDoc} */
+    public void resume() {
 		startSegment();
 	}
 
-	public void clear() {
+	/** {@inheritDoc} */
+    public void clear() {
 		streaming = false;
 		segmentBytesTransfered = 0;
 		combinedSegmentDataTime = 0;
@@ -211,7 +275,8 @@ public class StreamFlow implements IStreamFlow {
 		streamTracker.reset();
 	}
 
-	public void reset() {
+	/** {@inheritDoc} */
+    public void reset() {
 		clear();
 		streamStartTime = 0;
 		totalBytesTransfered = 0;
@@ -219,7 +284,8 @@ public class StreamFlow implements IStreamFlow {
 		totalDataTimes[0] = totalDataTimes[1] = totalDataTimes[2] = 0;
 	}
 
-	public void update(RTMPMessage rtmpMsg) {
+	/** {@inheritDoc} */
+    public void update(RTMPMessage rtmpMsg) {
 		//log.info(">>>"+msg.getBody());
 		IRTMPEvent msg = rtmpMsg.getBody();
 		int ts = streamTracker.add(msg);
@@ -273,7 +339,8 @@ public class StreamFlow implements IStreamFlow {
 		combinedTotalDataTime += relativeTime;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String toString() {
 		return new ToStringCreator(this).append("BT", getBufferTime()).append(
 				"SBT", segmentBytesTransfered).append("SDT",

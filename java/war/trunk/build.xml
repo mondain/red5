@@ -25,7 +25,7 @@
     <path id="script.classpath">
         <fileset dir="${lib.dir}" includesfile="${lib.dir}/script.properties" />
         <pathelement location="${bin.dir}"/>
-    </path>    
+    </path>
 
 	<echo>java.home is ${java.home} and the target version is ${java.target_version}</echo>
 
@@ -44,60 +44,60 @@
 	</target>
 
 	<target name="compile" depends="prepare">
-        <condition property="java.target_version" value="1.5">
+        <condition property="java.target_version" value="1.6">
             <not>
                 <isset property="java.target_version" />
             </not>
         </condition>
-        <echo message="Javac version: ${java.target_version}" />     
+        <echo message="Javac version: ${java.target_version}" />
 
         <condition property="compiler" value="${build.compiler}${java.target_version}">
             <equals arg1="${build.compiler}" arg2="javac" />
-        </condition>        
+        </condition>
         <property name="compiler" value="${build.compiler}" />
         <echo message="Compiler adapter name: ${compiler}" />
-       
+
 		<javac
 			sourcepath=""
 			srcdir="${src.dir}"
-			destdir="${classes.dir}"     
+			destdir="${classes.dir}"
             classpathref="project.classpath"
-    
-            optimize="${build.optimize}" 
-            verbose="${build.verbose}" 
-            fork="${build.fork}" 
+
+            optimize="${build.optimize}"
+            verbose="${build.verbose}"
+            fork="${build.fork}"
             nowarn="${build.nowarn}"
             deprecation="${build.deprecation}"
-  
+
             debug="${debug.state}"
             compiler="${compiler}"
             source="${java.target_version}"
-            target="${java.target_version}" 
-            memoryMaximumSize="1024m" 
-            excludes="**/*.jsp,com/sun/**,org/red5/server/script/**" 
-            listfiles="false"      
+            target="${java.target_version}"
+            memoryMaximumSize="1024m"
+            excludes="**/*.jsp,com/sun/**,org/red5/server/script/**"
+            listfiles="false"
             />
 
         <javac
             sourcepath=""
             srcdir="${src.dir}"
-            destdir="${classes.dir}"     
+            destdir="${classes.dir}"
             classpathref="script.classpath"
-    
-            optimize="${build.optimize}" 
-            verbose="${build.verbose}" 
-            fork="${build.fork}" 
+
+            optimize="${build.optimize}"
+            verbose="${build.verbose}"
+            fork="${build.fork}"
             nowarn="${build.nowarn}"
             deprecation="${build.deprecation}"
-  
+
             debug="${debug.state}"
             compiler="${compiler}"
             source="${java.target_version}"
-            target="${java.target_version}" 
-            memoryMaximumSize="1024m" 
-            listfiles="false"      
-            />     
-        
+            target="${java.target_version}"
+            memoryMaximumSize="1024m"
+            listfiles="false"
+            />
+
 	</target>
 
 	<target name="webwar" description="Make Web Archive" depends="compile">
@@ -131,6 +131,7 @@
 		<war destfile="${dist.dir}/red5.war" webxml="www/WEB-INF/web.xml">
 			<fileset dir="${build.dir}"/>
             <lib dir="${lib.dir}">
+                <exclude name="ext/**"/>
                 <exclude name="*.properties"/>
                 <exclude name="servlet-api-2.5.jar"/>
                 <exclude name="ehcache-1.2.3.jar"/>
@@ -145,7 +146,7 @@
 	</target>
 
 	<target name="all" depends="clean, prepare, compile, webwar"/>
-    
+
     <target name="usage">
         <echo message="Type ant -p for available targets" />
     </target>

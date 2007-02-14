@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,28 +23,51 @@ import org.red5.server.api.event.IEventListener;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmp.message.Header;
 
+/**
+ * Base abstract class for all RTMP events
+ */
 public abstract class BaseEvent implements Constants, IRTMPEvent {
 	// XXX we need a better way to inject allocation debugging
 	// (1) make it configurable in xml
 	// (2) make it aspect oriented
 	private static final boolean allocationDebugging = false;
-
+    /**
+     * Event type
+     */
 	private Type type;
-
+    /**
+     * Event target object
+     */
 	protected Object object;
-
+    /**
+     * Event listener
+     */
 	protected IEventListener source;
-
+    /**
+     * Event listener
+     */
 	protected int timestamp;
-
+    /**
+     * Event RTMP packet header
+     */
 	protected Header header = null;
-
+    /**
+     * Event references count
+     */
 	protected int refcount = 1;
 
-	public BaseEvent(Type type) {
+    /**
+     * Create new event of given type
+     * @param type             Event type
+     */
+    public BaseEvent(Type type) {
 		this(type, null);
 	}
-
+    /**
+     * Create new event of given type
+     * @param type             Event type
+     * @param source           Event source
+     */
 	public BaseEvent(Type type, IEventListener source) {
 		this.type = type;
 		this.source = source;
@@ -53,45 +76,56 @@ public abstract class BaseEvent implements Constants, IRTMPEvent {
 		}
 	}
 
-	public Type getType() {
+	/** {@inheritDoc} */
+    public Type getType() {
 		return type;
 	}
 
-	public Object getObject() {
+	/** {@inheritDoc} */
+    public Object getObject() {
 		return object;
 	}
 
-	public Header getHeader() {
+	/** {@inheritDoc} */
+    public Header getHeader() {
 		return header;
 	}
 
-	public void setHeader(Header header) {
+	/** {@inheritDoc} */
+    public void setHeader(Header header) {
 		this.header = header;
 	}
 
-	public boolean hasSource() {
+	/** {@inheritDoc} */
+    public boolean hasSource() {
 		return source != null;
 	}
 
-	public IEventListener getSource() {
+	/** {@inheritDoc} */
+    public IEventListener getSource() {
 		return source;
 	}
 
-	public void setSource(IEventListener source) {
+	/** {@inheritDoc} */
+    public void setSource(IEventListener source) {
 		this.source = source;
 	}
 
-	public abstract byte getDataType();
+	/** {@inheritDoc} */
+    public abstract byte getDataType();
 
-	public int getTimestamp() {
+	/** {@inheritDoc} */
+    public int getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(int timestamp) {
+	/** {@inheritDoc} */
+    public void setTimestamp(int timestamp) {
 		this.timestamp = timestamp;
 	}
 
-	public synchronized void retain() {
+	/** {@inheritDoc} */
+    public synchronized void retain() {
 		if (allocationDebugging) {
 			AllocationDebugger.getInstance().retain(this);
 		}
@@ -100,7 +134,8 @@ public abstract class BaseEvent implements Constants, IRTMPEvent {
 		}
 	}
 
-	public synchronized void release() {
+	/** {@inheritDoc} */
+    public synchronized void release() {
 		if (allocationDebugging) {
 			AllocationDebugger.getInstance().release(this);
 		}
@@ -112,6 +147,9 @@ public abstract class BaseEvent implements Constants, IRTMPEvent {
 		}
 	}
 
-	protected abstract void releaseInternal();
+    /**
+     * Rekease event
+     */
+    protected abstract void releaseInternal();
 
 }

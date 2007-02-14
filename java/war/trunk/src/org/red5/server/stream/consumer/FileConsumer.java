@@ -3,7 +3,7 @@ package org.red5.server.stream.consumer;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -50,24 +50,49 @@ import org.red5.server.stream.message.RTMPMessage;
 import org.red5.server.stream.message.ResetMessage;
 import org.red5.server.stream.message.StatusMessage;
 
+/**
+ * Consumer that pushes messages to file. Used when recording live streams.
+ */
 public class FileConsumer implements Constants, IPushableConsumer,
 		IPipeConnectionListener {
-	private static final Log log = LogFactory.getLog(FileConsumer.class);
-
+    /**
+     * Logger
+     */
+    private static final Log log = LogFactory.getLog(FileConsumer.class);
+    /**
+     * Scope
+     */
 	private IScope scope;
-
+    /**
+     * File
+     */
 	private File file;
-
+    /**
+     * Tag writer
+     */
 	private ITagWriter writer;
-
+    /**
+     * Operation mode
+     */
 	private String mode;
-
+    /**
+     * Offset
+     */
 	private int offset;
-
+    /**
+     * Last write timestamp
+     */
 	private int lastTimestamp;
-
+    /**
+     * Start timestamp
+     */
 	private int startTimestamp;
 
+    /**
+     * Creates file consumer
+     * @param scope        Scope of consumer
+     * @param file         File
+     */
 	public FileConsumer(IScope scope, File file) {
 		this.scope = scope;
 		this.file = file;
@@ -76,7 +101,14 @@ public class FileConsumer implements Constants, IPushableConsumer,
 		startTimestamp = -1;
 	}
 
-	public void pushMessage(IPipe pipe, IMessage message) {
+    /**
+     * Push message through pipe
+     * Synchronize this method to avoid FLV corruption from abrupt disconnection
+     * @param pipe         Pipe
+     * @param message      Message to push
+     * @throws IOException if message could not be written
+     */
+    synchronized public void pushMessage(IPipe pipe, IMessage message) throws IOException {
 		if (message instanceof ResetMessage) {
 			startTimestamp = -1;
 			offset += lastTimestamp;
@@ -88,11 +120,7 @@ public class FileConsumer implements Constants, IPushableConsumer,
 			return;
 		}
 		if (writer == null) {
-			try {
-				init();
-			} catch (Exception e) {
-				log.error("error init file consumer", e);
-			}
+			init();
 		}
 		RTMPMessage rtmpMsg = (RTMPMessage) message;
 		final IRTMPEvent msg = rtmpMsg.getBody();
@@ -123,13 +151,23 @@ public class FileConsumer implements Constants, IPushableConsumer,
 		}
 	}
 
-	public void onOOBControlMessage(IMessageComponent source, IPipe pipe,
+    /**
+     * Out-of-band control message handler
+     *
+     * @param source            Source of message
+     * @param pipe              Pipe that is used to transmit OOB message
+     * @param oobCtrlMsg        OOB control message
+     */
+    public void onOOBControlMessage(IMessageComponent source, IPipe pipe,
 			OOBControlMessage oobCtrlMsg) {
 		// TODO Auto-generated method stub
-
 	}
 
-	public void onPipeConnectionEvent(PipeConnectionEvent event) {
+    /**
+     * Pipe connection event handler
+     * @param event       Pipe connection event
+     */
+    public void onPipeConnectionEvent(PipeConnectionEvent event) {
 		switch (event.getType()) {
 			case PipeConnectionEvent.CONSUMER_CONNECT_PUSH:
 				if (event.getConsumer() != this) {
@@ -154,14 +192,21 @@ public class FileConsumer implements Constants, IPushableConsumer,
 		}
 	}
 
-	private void init() throws IOException {
+    /**
+     * Initialization
+     *
+     * @throws IOException          I/O exception
+     */
+    private void init() throws IOException {
 		IStreamableFileFactory factory = (IStreamableFileFactory) ScopeUtils
-				.getScopeService(scope, IStreamableFileFactory.KEY,
+				.getScopeService(scope, IStreamableFileFactory.class,
 						StreamableFileFactory.class);
 		if (!file.isFile()) {
 			// Maybe the (previously existing) file has been deleted
 			file.createNewFile();
-		}
+		} else if (!file.canWrite())
+			throw new IOException("the file is read-only");
+
 		IStreamableFileService service = factory.getService(file);
 		IStreamableFile flv = service.getStreamableFile(file);
 		if (mode == null || mode.equals(IClientStream.MODE_RECORD)) {
@@ -173,7 +218,10 @@ public class FileConsumer implements Constants, IPushableConsumer,
 		}
 	}
 
-	private void uninit() {
+    /**
+     * Reset
+     */
+    synchronized private void uninit() {
 		if (writer != null) {
 			writer.close();
 			writer = null;

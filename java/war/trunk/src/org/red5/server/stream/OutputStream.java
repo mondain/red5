@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,37 +23,75 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.red5.server.net.rtmp.Channel;
 
+/**
+ * Output stream that consists of audio, video and data channels
+ *
+ * @see org.red5.server.net.rtmp.Channel
+ */
 public class OutputStream {
-
+    /**
+     * Logger
+     */
 	protected static Log log = LogFactory.getLog(OutputStream.class.getName());
-
+    /**
+     * Video channel
+     */
 	private Channel video;
-
+    /**
+     * Audio channel
+     */
 	private Channel audio;
-
+    /**
+     * Data channel
+     */
 	private Channel data;
 
-	public OutputStream(Channel video, Channel audio, Channel data) {
+    /**
+     * Creates output stream from channels
+     *
+     * @param video        Video channel
+     * @param audio        Audio channel
+     * @param data         Data channel
+     */
+    public OutputStream(Channel video, Channel audio, Channel data) {
 		this.video = video;
 		this.audio = audio;
 		this.data = data;
 	}
 
-	public void close() {
+    /**
+     * Closes audion, video and data channels
+     */
+    public void close() {
 		this.video.close();
 		this.audio.close();
 		this.data.close();
 	}
 
-	public Channel getAudio() {
+	/**
+     * Getter for audio channel
+     *
+     * @return  Audio channel
+     */
+    public Channel getAudio() {
 		return audio;
 	}
 
-	public Channel getData() {
+	/**
+     * Getter for data channel
+     *
+     * @return   Data channel
+     */
+    public Channel getData() {
 		return data;
 	}
 
-	public Channel getVideo() {
+	/**
+     * Getter for video channel
+     *
+     * @return Video channel
+     */
+    public Channel getVideo() {
 		return video;
 	}
 }

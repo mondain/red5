@@ -3,7 +3,7 @@ package org.red5.server.api;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -24,7 +24,9 @@ import org.red5.server.exception.ClientRejectedException;
 
 /**
  * Provides a registry of client objects.
- * You can lookup a client by its clientid / session id.
+ * You can lookup a client by its client id / session id using lookupClient method.
+ * This interface implementations also create new client objects from given params, usually
+ * passed from client-side Flex/Flash application upon initial connection.
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard (luke@codegent.com)

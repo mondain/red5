@@ -3,7 +3,7 @@ package org.red5.server.net.proxy;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -27,21 +27,38 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoFilterAdapter;
 import org.apache.mina.common.IoSession;
 
+/**
+ * Network dump filter, performs raw data and headers dump on message recieve
+ */
 public class NetworkDumpFilter extends IoFilterAdapter {
-
+    /**
+     * Logger
+     */
 	protected static Log log = LogFactory.getLog(ProxyFilter.class.getName());
 
-	protected WritableByteChannel raw;
+    /**
+     * Raw data byte channel
+     */
+    protected WritableByteChannel raw;
 
-	protected WritableByteChannel headers;
+    /**
+     * Headers byte channel
+     */
+    protected WritableByteChannel headers;
 
-	public NetworkDumpFilter(WritableByteChannel headers,
+    /**
+     * Create network dump filter from given dump channels
+     * @param headers           Channel to dump headers
+     * @param raw               Channel to dump raw data
+     */
+    public NetworkDumpFilter(WritableByteChannel headers,
 			WritableByteChannel raw) {
 		this.raw = raw;
 		this.headers = headers;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void messageReceived(NextFilter next, IoSession session,
 			Object message) throws Exception {
 		if (message instanceof ByteBuffer) {
@@ -60,7 +77,8 @@ public class NetworkDumpFilter extends IoFilterAdapter {
 		next.messageReceived(session, message);
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void sessionClosed(NextFilter next, IoSession session)
 			throws Exception {
 		if (headers.isOpen()) {

@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -24,9 +24,10 @@ import org.red5.server.stream.IStreamData;
 
 public class AudioData extends BaseEvent implements IStreamData {
 
-	protected ByteBuffer data = null;
+	protected ByteBuffer data;
 
-	public AudioData() {
+	/** Constructs a new AudioData. */
+    public AudioData() {
 		this(ByteBuffer.allocate(0).flip());
 	}
 
@@ -35,24 +36,27 @@ public class AudioData extends BaseEvent implements IStreamData {
 		this.data = data;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public byte getDataType() {
 		return TYPE_AUDIO_DATA;
 	}
 
-	public ByteBuffer getData() {
+	/** {@inheritDoc} */
+    public ByteBuffer getData() {
 		return data;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String toString() {
 		return "Audio  ts: " + getTimestamp();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	protected void releaseInternal() {
 		if (data != null) {
-			data.release();
 			data = null;
 		}
 	}

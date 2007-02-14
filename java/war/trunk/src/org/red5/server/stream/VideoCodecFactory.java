@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -28,18 +28,37 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.server.api.stream.IVideoStreamCodec;
 
+/**
+ * Factory for video codecs. Creates and returns video codecs
+ */
 public class VideoCodecFactory {
-
+    /**
+     * Object key
+     */
 	public static final String KEY = "videoCodecFactory";
-
+    /**
+     * Logger for video factory
+     */
 	private Log log = LogFactory.getLog(VideoCodecFactory.class.getName());
-
+    /**
+     * List of available codecs
+     */
 	private List codecs = new ArrayList();
 
-	public void setCodecs(List codecs) {
+	/**
+     * Setter for codecs
+     *
+     * @param codecs List of codecs
+     */
+    public void setCodecs(List codecs) {
 		this.codecs = codecs;
 	}
 
+    /**
+     * Create and return new video codec applicable for byte buffer data
+     * @param data                 Byte buffer data
+     * @return                     Video codec
+     */
 	public IVideoStreamCodec getVideoCodec(ByteBuffer data) {
 		IVideoStreamCodec result = null;
 		Iterator it = this.codecs.iterator();

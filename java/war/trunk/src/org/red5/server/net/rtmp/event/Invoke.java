@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,38 +22,54 @@ package org.red5.server.net.rtmp.event;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.server.api.service.IPendingServiceCall;
 
+/**
+ * Remote invocation event
+ */
 public class Invoke extends Notify {
 
-	public Invoke() {
+	/** Constructs a new Invoke. */
+    public Invoke() {
 		super();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public byte getDataType() {
 		return TYPE_INVOKE;
 	}
 
-	public Invoke(ByteBuffer data) {
+    /**
+     * Create new invocation event with given data
+     * @param data        Event data
+     */
+    public Invoke(ByteBuffer data) {
 		super(data);
 	}
 
-	public Invoke(IPendingServiceCall call) {
+    /**
+     * Create new invocation event with given pending service call
+     * @param call         Pending call
+     */
+    public Invoke(IPendingServiceCall call) {
 		super(call);
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public IPendingServiceCall getCall() {
 		return (IPendingServiceCall) call;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Invoke: ").append(call);
 		return sb.toString();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;

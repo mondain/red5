@@ -3,7 +3,7 @@ package org.red5.server.api.persistence;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -53,7 +53,7 @@ public interface IPersistable {
 	 * Returns <code>true</code> if the object is persistent,
 	 * <code>false</code> otherwise.
 	 * 
-	 * @return true or false
+	 * @return <code>true</code> if object is persistent, <code>false</code> otherwise
 	 */
 	public boolean isPersistent();
 
@@ -61,14 +61,14 @@ public interface IPersistable {
 	 * Set the persistent flag of the object.
 	 * 
 	 * @param persistent
-	 * 		true if the object is persistent, false otherwise
+	 * 		<code>true</code> if object is persistent, <code>false</code> otherwise
 	 */
 	public void setPersistent(boolean persistent);
 
 	/**
 	 * Returns the name of the persistent object.
 	 * 
-	 * @return the name of the object
+	 * @return Object name
 	 */
 	public String getName();
 
@@ -76,21 +76,21 @@ public interface IPersistable {
 	 * Set the name of the persistent object.
 	 * 
 	 * @param name
-	 * 		the new name of the object
+	 * 		New object name
 	 */
 	public void setName(String name);
 
 	/**
 	 * Returns the type of the persistent object.
 	 * 
-	 * @return the type of the object
+	 * @return Object type
 	 */
 	public String getType();
 
 	/**
 	 * Returns the path of the persistent object.
 	 * 
-	 * @return the path of the object
+	 * @return Persisted object path
 	 */
 	public String getPath();
 
@@ -98,21 +98,21 @@ public interface IPersistable {
 	 * Set the path of the persistent object.
 	 * 
 	 * @param path
-	 * 		the new path of the object
+	 * 		New persisted object path
 	 */
 	public void setPath(String path);
 
 	/**
 	 * Returns the timestamp when the object was last modified.
 	 * 
-	 * @return last modification date in milliseconds
+	 * @return      Last modification date in milliseconds
 	 */
 	public long getLastModified();
 
 	/**
 	 * Returns the persistence store this object is stored in
 	 * 
-	 * @return the store for this object
+	 * @return      This object's persistence store
 	 */
 	public IPersistenceStore getStore();
 
@@ -120,7 +120,7 @@ public interface IPersistable {
 	 * Store a reference to the persistence store in the object.
 	 * 
 	 * @param store
-	 * 		the store the object is saved in
+	 * 		Store the object is saved in
 	 */
 	void setStore(IPersistenceStore store);
 
@@ -128,7 +128,8 @@ public interface IPersistable {
 	 * Write the object to the passed output stream.
 	 * 
 	 * @param output
-	 * 		the output stream to write to
+	 * 		Output stream to write to
+     * @throws java.io.IOException     Any I/O exception
 	 */
 	void serialize(Output output) throws IOException;
 
@@ -136,7 +137,8 @@ public interface IPersistable {
 	 * Load the object from the passed input stream.
 	 * 
 	 * @param input
-	 * 		the input stream to load from
+	 * 		Input stream to load from
+     * @throws java.io.IOException      Any I/O exception
 	 */
 	void deserialize(Input input) throws IOException;
 

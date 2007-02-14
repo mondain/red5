@@ -3,7 +3,7 @@ package org.red5.server.api.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -27,11 +27,23 @@ import java.util.Iterator;
  *
  */
 public interface IEventObservable {
-
+    /**
+     * Add event listener to this observable
+     * @param listener      Event listener
+     */
 	public void addEventListener(IEventListener listener);
 
-	public void removeEventListener(IEventListener listener);
+    /**
+     * Remove event listener from this observable
+     * @param listener      Event listener
+     */
+    public void removeEventListener(IEventListener listener);
 
-	public Iterator<IEventListener> getEventListeners();
+	/**
+     * Iterator for event listeners
+     *
+     * @return  Event listeners iterator
+     */
+    public Iterator<IEventListener> getEventListeners();
 
 }

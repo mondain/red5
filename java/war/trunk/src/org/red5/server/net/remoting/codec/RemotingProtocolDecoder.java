@@ -2,21 +2,21 @@ package org.red5.server.net.remoting.codec;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
- * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
- * 
- * This library is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License as published by the Free Software 
- * Foundation; either version 2.1 of the License, or (at your option) any later 
- * version. 
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ *
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along 
- * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 import java.util.LinkedList;
@@ -35,20 +35,30 @@ import org.red5.server.net.remoting.message.RemotingCall;
 import org.red5.server.net.remoting.message.RemotingPacket;
 
 public class RemotingProtocolDecoder implements SimpleProtocolDecoder {
+    /**
+     * Logger
+     */
+	protected static Log log = LogFactory.getLog(RemotingProtocolDecoder.class.getName());
+    /**
+     * I/O logger
+     */
+	protected static Log ioLog = LogFactory.getLog(RemotingProtocolDecoder.class.getName() + ".in");
+    /**
+     * Data deserializer
+     */
+	private Deserializer deserializer;
 
-	protected static Log log = LogFactory.getLog(RemotingProtocolDecoder.class
-			.getName());
-
-	protected static Log ioLog = LogFactory
-			.getLog(RemotingProtocolDecoder.class.getName() + ".in");
-
-	private Deserializer deserializer = null;
-
-	public void setDeserializer(Deserializer deserializer) {
+	/**
+     * Setter for deserializer
+     *
+     * @param deserializer  Deserializer
+     */
+    public void setDeserializer(Deserializer deserializer) {
 		this.deserializer = deserializer;
 	}
 
-	public List decodeBuffer(ProtocolState state, ByteBuffer buffer) {
+	/** {@inheritDoc} */
+    public List decodeBuffer(ProtocolState state, ByteBuffer buffer) {
 		List list = new LinkedList();
 		Object packet = null;
 		try {
@@ -63,37 +73,58 @@ public class RemotingProtocolDecoder implements SimpleProtocolDecoder {
 		return list;
 	}
 
-	public Object decode(ProtocolState state, ByteBuffer in) throws Exception {
+	/** {@inheritDoc} */
+    public Object decode(ProtocolState state, ByteBuffer in) throws Exception {
 		skipHeaders(in);
 		List calls = decodeCalls(in);
 		return new RemotingPacket(calls);
 	}
 
-	public void dispose(IoSession arg0) throws Exception {
+    /**
+     * Disposes session. Not yet implemented.
+     * @param session          Session to dispose
+     * @throws Exception       Any exception can be raised on desposal
+     */
+    public void dispose(IoSession session) throws Exception {
 		// TODO Auto-generated method stub
 	}
 
-	protected void skipHeaders(ByteBuffer in) {
-		log.debug("Skip headers");
+    /**
+     * Skip headers
+     * @param in         Input data as byte buffer
+     */
+    protected void skipHeaders(ByteBuffer in) {
 		int version = in.getUnsignedShort(); // skip the version
 		int count = in.getUnsignedShort();
-		log.debug("Version: " + version);
-		log.debug("Count: " + count);
+		if (log.isDebugEnabled()) {
+			log.debug("Skip headers");
+			log.debug("Version: " + version);
+			log.debug("Count: " + count);
+		}
 		for (int i = 0; i < count; i++) {
-			log.debug("Header: " + Input.getString(in));
 			boolean required = in.get() == 0x01;
-			log.debug("Required: " + required);
+			if (log.isDebugEnabled()) {
+				log.debug("Header: " + Input.getString(in));
+				log.debug("Required: " + required);
+			}
 			in.skip(in.getInt());
 		}
 	}
 
+    /**
+     * Decode calls
+     * @param in         Input data as byte buffer
+     * @return           List of pending calls
+     */
 	protected List decodeCalls(ByteBuffer in) {
 		log.debug("Decode calls");
 		//in.getInt();
 		List<RemotingCall> calls = new LinkedList<RemotingCall>();
 		Input input = new Input(in);
 		int count = in.getUnsignedShort();
-		log.debug("Calls: " + count);
+		if (log.isDebugEnabled()) {
+			log.debug("Calls: " + count);
+		}
 		int limit = in.limit();
 
 		// Loop over all the body elements
@@ -104,9 +135,10 @@ public class RemotingProtocolDecoder implements SimpleProtocolDecoder {
 
 			String serviceString = Input.getString(in);
 			String clientCallback = Input.getString(in);
-			log.debug("callback: " + clientCallback);
-			int length = in.getInt();
-
+			if (log.isDebugEnabled()) {
+				log.debug("callback: " + clientCallback);
+			}
+			@SuppressWarnings("unused") int length = in.getInt();
 			// set the limit and deserialize
 			// NOTE: disabled because the FP sends wrong values here
 			/*
@@ -118,7 +150,7 @@ public class RemotingProtocolDecoder implements SimpleProtocolDecoder {
 
 			String serviceName;
 			String serviceMethod;
-			int dotPos = serviceString.lastIndexOf(".");
+			int dotPos = serviceString.lastIndexOf('.');
 			if (dotPos != -1) {
 				serviceName = serviceString.substring(0, dotPos);
 				serviceMethod = serviceString.substring(dotPos + 1,
@@ -154,8 +186,7 @@ public class RemotingProtocolDecoder implements SimpleProtocolDecoder {
 			}
 
 			// Add the call to the list
-			calls.add(new RemotingCall(serviceName, serviceMethod, args,
-					clientCallback));
+			calls.add(new RemotingCall(serviceName, serviceMethod, args, clientCallback));
 		}
 		return calls;
 	}

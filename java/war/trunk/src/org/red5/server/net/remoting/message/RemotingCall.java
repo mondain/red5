@@ -3,7 +3,7 @@ package org.red5.server.net.remoting.message;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors. All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors. All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,29 +22,52 @@ package org.red5.server.net.remoting.message;
 import org.red5.server.service.PendingCall;
 
 /**
+ * Remoting method call, specific pending call. 
  *
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class RemotingCall extends PendingCall {
-
+    /**
+     * Handler success posfix constant
+     */
 	public static final String HANDLER_SUCCESS = "/onResult";
-
+    /**
+     * Handler error posfix constant
+     */
 	public static final String HANDLER_ERROR = "/onStatus";
+    /**
+     * Client callback name
+     */
+	public String clientCallback;
 
-	public String clientCallback = null;
-
-	public RemotingCall(String serviceName, String serviceMethod,
-			Object[] args, String callback) {
+    /**
+     * Create remoting call from service name, method name, list of arguments and callback name
+     * @param serviceName                Service name
+     * @param serviceMethod              Service method name
+     * @param args                       Parameters passed to method
+     * @param callback                   Name of client callback
+     */
+    public RemotingCall(String serviceName, String serviceMethod, Object[] args, String callback) {
 		super(serviceName, serviceMethod, args);
 		setClientCallback(callback);
 	}
 
-	public void setClientCallback(String clientCallback) {
+	/**
+     * Setter for client callback.
+     *
+     * @param clientCallback  Client callback
+     */
+    public void setClientCallback(String clientCallback) {
 		this.clientCallback = clientCallback;
 	}
 
-	public String getClientResponse() {
+	/**
+     * Getter for client response.
+     *
+     * @return  Client response
+     */
+    public String getClientResponse() {
 		if (clientCallback != null) {
 			return clientCallback
 					+ (isSuccess() ? HANDLER_SUCCESS : HANDLER_ERROR);
@@ -53,7 +76,12 @@ public class RemotingCall extends PendingCall {
 		}
 	}
 
-	public Object getClientResult() {
+	/**
+     * Getter for client result.
+     *
+     * @return Client result
+     */
+    public Object getClientResult() {
 		return isSuccess() ? getResult() : getException();
 	}
 

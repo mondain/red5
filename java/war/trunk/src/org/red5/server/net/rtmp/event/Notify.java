@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -25,79 +25,142 @@ import org.apache.mina.common.ByteBuffer;
 import org.red5.server.api.service.IServiceCall;
 import org.red5.server.stream.IStreamData;
 
+/**
+ * Stream notification event
+ */
 public class Notify extends BaseEvent implements IStreamData {
-
-	protected IServiceCall call = null;
-
-	protected ByteBuffer data = null;
-
+    /**
+     * Service call
+     */
+	protected IServiceCall call;
+    /**
+     * Event data
+     */
+	protected ByteBuffer data;
+    /**
+     * Invoke id
+     */
 	private int invokeId = 0;
 
-	private Map connectionParams = null;
+    /**
+     * Connection parameters
+     */
+    private Map connectionParams;
 
-	public Notify() {
+	/** Constructs a new Notify. */
+    public Notify() {
 		super(Type.SERVICE_CALL);
 	}
 
-	public Notify(ByteBuffer data) {
+    /**
+     * Create new notification event with given byte buffer
+     * @param data       Byte buffer
+     */
+    public Notify(ByteBuffer data) {
 		super(Type.STREAM_DATA);
 		this.data = data;
 	}
 
+    /**
+     * Create new notification event with given service call
+     * @param call        Service call
+     */
 	public Notify(IServiceCall call) {
 		super(Type.SERVICE_CALL);
 		this.call = call;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public byte getDataType() {
 		return TYPE_NOTIFY;
 	}
 
-	public void setData(ByteBuffer data) {
+	/**
+     * Setter for data
+     *
+     * @param data  Data
+     */
+    public void setData(ByteBuffer data) {
 		this.data = data;
 	}
 
-	public void setCall(IServiceCall call) {
+	/**
+     * Setter for call
+     *
+     * @param call Service call
+     */
+    public void setCall(IServiceCall call) {
 		this.call = call;
 	}
 
-	public IServiceCall getCall() {
+	/**
+     * Getter for service call
+     *
+     * @return  Service call
+     */
+    public IServiceCall getCall() {
 		return this.call;
 	}
 
-	public ByteBuffer getData() {
+	/** {@inheritDoc} */
+    public ByteBuffer getData() {
 		return data;
 	}
 
-	public int getInvokeId() {
+	/**
+     * Getter for invoke id
+     *
+     * @return  Invoke id
+     */
+    public int getInvokeId() {
 		return invokeId;
 	}
 
-	public void setInvokeId(int invokeId) {
+	/**
+     * Setter for invoke id
+     *
+     * @param invokeId  Invoke id
+     */
+    public void setInvokeId(int invokeId) {
 		this.invokeId = invokeId;
 	}
 
-	protected void doRelease() {
+    /**
+     * Release event (nullify call object)
+     */
+    protected void doRelease() {
 		call = null;
 	}
 
-	public Map getConnectionParams() {
+	/**
+     * Getter for connection parameters
+     *
+     * @return Connection parameters
+     */
+    public Map getConnectionParams() {
 		return connectionParams;
 	}
 
-	public void setConnectionParams(Map connectionParams) {
+	/**
+     * Setter for connection parameters
+     *
+     * @param connectionParams  Connection parameters
+     */
+    public void setConnectionParams(Map connectionParams) {
 		this.connectionParams = connectionParams;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Notify: ").append(call);
 		return sb.toString();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
@@ -133,10 +196,10 @@ public class Notify extends BaseEvent implements IStreamData {
 		return true;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	protected void releaseInternal() {
 		if (data != null) {
-			data.release();
 			data = null;
 		}
 	}

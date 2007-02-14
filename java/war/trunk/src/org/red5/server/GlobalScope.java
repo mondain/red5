@@ -3,7 +3,7 @@ package org.red5.server;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -24,18 +24,35 @@ import org.red5.server.api.IServer;
 import org.red5.server.api.persistence.IPersistenceStore;
 import org.red5.server.api.persistence.PersistenceUtils;
 
+/**
+ * Global scope is a top level scope. Server instance is meant to be injected with Spring before
+ * initialization (otherwise NullPointerException is thrown).
+ *
+ * @see  org.red5.server.api.IGlobalScope
+ * @see  org.red5.server.api.IScope
+ */
 public class GlobalScope extends Scope implements IGlobalScope {
-
+    // Red5 Server instance
 	protected IServer server;
 
-	@Override
+    /**
+     *
+     * @param persistenceClass          Persistent class name
+     * @throws Exception                Exception
+     */
+    @Override
 	public void setPersistenceClass(String persistenceClass) throws Exception {
 		this.persistenceClass = persistenceClass;
 		// We'll have to wait for creation of the store object
 		// until all classes have been initialized.
 	}
 
-	@Override
+    /**
+     * Get persistence store for scope
+     *
+     * @return            Persistence store
+     */
+    @Override
 	public IPersistenceStore getStore() {
 		if (store != null) {
 			return store;
@@ -51,11 +68,19 @@ public class GlobalScope extends Scope implements IGlobalScope {
 		return store;
 	}
 
-	public void setServer(IServer server) {
+	/**
+     * Setter for server
+     *
+     * @param server Server
+     */
+    public void setServer(IServer server) {
 		this.server = server;
 	}
 
-	public void register() {
+    /**
+     *  Register global scope in server instance, then call initialization
+     */
+    public void register() {
 		server.registerGlobal(this);
 		init();
 	}

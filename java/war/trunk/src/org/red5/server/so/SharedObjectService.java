@@ -3,7 +3,7 @@ package org.red5.server.so;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -36,23 +36,45 @@ import org.red5.server.api.so.ISharedObject;
 import org.red5.server.api.so.ISharedObjectService;
 import org.red5.server.persistence.RamPersistence;
 
+/**
+ * Shared object service
+ */
 public class SharedObjectService implements ISharedObjectService {
-
+    /**
+     * Logger
+     */
 	private Log log = LogFactory.getLog(SharedObjectService.class.getName());
-
+    /**
+     * Persistence store prefix
+     */
 	private static final String SO_PERSISTENCE_STORE = IPersistable.TRANSIENT_PREFIX
 			+ "_SO_PERSISTENCE_STORE_";
-
+    /**
+     * Transient store prefix
+     */
 	private static final String SO_TRANSIENT_STORE = IPersistable.TRANSIENT_PREFIX
 			+ "_SO_TRANSIENT_STORE_";
-
+    /**
+     * Persistence class name
+     */
 	private String persistenceClassName = "org.red5.server.persistence.RamPersistence";
 
-	public void setPersistenceClassName(String name) {
+	/**
+     * Setter for persistence class name.
+     *
+     * @param name  Setter for persistence class name
+     */
+    public void setPersistenceClassName(String name) {
 		persistenceClassName = name;
 	}
 
-	private IPersistenceStore getStore(IScope scope, boolean persistent) {
+    /**
+     * Return scope store
+     * @param scope                Scope
+     * @param persistent           Persistent store or not?
+     * @return                     Scope's store
+     */
+    private IPersistenceStore getStore(IScope scope, boolean persistent) {
 		IPersistenceStore store;
 		if (!persistent) {
 			// Use special store for non-persistent shared objects
@@ -86,31 +108,39 @@ public class SharedObjectService implements ISharedObjectService {
 		return (IPersistenceStore) scope.getAttribute(SO_PERSISTENCE_STORE);
 	}
 
-	public boolean createSharedObject(IScope scope, String name,
+	/** {@inheritDoc} */
+    public boolean createSharedObject(IScope scope, String name,
 			boolean persistent) {
-		if (hasSharedObject(scope, name)) {
-			// The shared object already exists.
-			return true;
+		synchronized (scope) {
+			if (hasSharedObject(scope, name)) {
+				// The shared object already exists.
+				return true;
+			}
+	
+			final IBasicScope soScope = new SharedObjectScope(scope, name,
+					persistent, getStore(scope, persistent));
+			return scope.addChildScope(soScope);
 		}
-
-		final IBasicScope soScope = new SharedObjectScope(scope, name,
-				persistent, getStore(scope, persistent));
-		return scope.addChildScope(soScope);
 	}
 
-	public ISharedObject getSharedObject(IScope scope, String name) {
+	/** {@inheritDoc} */
+    public ISharedObject getSharedObject(IScope scope, String name) {
 		return (ISharedObject) scope.getBasicScope(TYPE, name);
 	}
 
-	public ISharedObject getSharedObject(IScope scope, String name,
+	/** {@inheritDoc} */
+    public ISharedObject getSharedObject(IScope scope, String name,
 			boolean persistent) {
-		if (!hasSharedObject(scope, name)) {
-			createSharedObject(scope, name, persistent);
+		synchronized (scope) {
+			if (!hasSharedObject(scope, name)) {
+				createSharedObject(scope, name, persistent);
+			}
+			return getSharedObject(scope, name);
 		}
-		return getSharedObject(scope, name);
 	}
 
-	public Set<String> getSharedObjectNames(IScope scope) {
+	/** {@inheritDoc} */
+    public Set<String> getSharedObjectNames(IScope scope) {
 		Set<String> result = new HashSet<String>();
 		Iterator<String> iter = scope.getBasicScopeNames(TYPE);
 		while (iter.hasNext()) {
@@ -119,30 +149,34 @@ public class SharedObjectService implements ISharedObjectService {
 		return result;
 	}
 
-	public boolean hasSharedObject(IScope scope, String name) {
+	/** {@inheritDoc} */
+    public boolean hasSharedObject(IScope scope, String name) {
 		return scope.hasChildScope(TYPE, name);
 	}
 
-	public boolean clearSharedObjects(IScope scope, String name) {
+	/** {@inheritDoc} */
+    public boolean clearSharedObjects(IScope scope, String name) {
 		boolean result = false;
-		if (hasSharedObject(scope, name)) {
-			// "/" clears all local and persistent shared objects associated
-			// with the instance
-			// if (name.equals("/")) {
-			// /foo/bar clears the shared object /foo/bar; if bar is a directory
-			// name, no shared objects are deleted.
-			// if (name.equals("/")) {
-			// /foo/bar/* clears all shared objects stored under the instance
-			// directory /foo/bar. The bar directory is also deleted if no
-			// persistent shared objects are in use within this namespace.
-			// if (name.equals("/")) {
-			// /foo/bar/XX?? clears all shared objects that begin with XX,
-			// followed by any two characters. If a directory name matches this
-			// specification, all the shared objects within this directory are
-			// cleared.
-			// if (name.equals("/")) {
-			// }
-			result = ((ISharedObject) scope.getBasicScope(TYPE, name)).clear();
+		synchronized (scope) {
+			if (hasSharedObject(scope, name)) {
+				// '/' clears all local and persistent shared objects associated
+				// with the instance
+				// if (name.equals('/')) {
+				// /foo/bar clears the shared object /foo/bar; if bar is a directory
+				// name, no shared objects are deleted.
+				// if (name.equals('/')) {
+				// /foo/bar/* clears all shared objects stored under the instance
+				// directory /foo/bar. The bar directory is also deleted if no
+				// persistent shared objects are in use within this namespace.
+				// if (name.equals('/')) {
+				// /foo/bar/XX?? clears all shared objects that begin with XX,
+				// followed by any two characters. If a directory name matches this
+				// specification, all the shared objects within this directory are
+				// cleared.
+				// if (name.equals('/')) {
+				// }
+				result = ((ISharedObject) scope.getBasicScope(TYPE, name)).clear();
+			}
 		}
 		return result;
 	}

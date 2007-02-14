@@ -30,36 +30,42 @@ public class ThreadObjectFactory implements PoolableObjectFactory {
 	 */
 	private static final Log log = LogFactory.getLog(ThreadObjectFactory.class);
 
-	/*
+	/** {@inheritDoc} */ /*
 	 * Creates a new worker thread object
 	 * 
 	 * @see org.apache.commons.pool.PoolableObjectFactory#makeObject()
 	 */
 	public Object makeObject() {
-		log.debug(" makeObject...");
+		if (log.isDebugEnabled()) {
+			log.debug(" makeObject...");
+		}
 		return new WorkerThread();
 	}
 
-	/*
+	/** {@inheritDoc} */ /*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.apache.commons.pool.PoolableObjectFactory#destroyObject(java.lang.Object)
 	 */
 	public void destroyObject(Object obj) {
-		log.debug(" !!! destroyObject... !!!" + obj);
+		if (log.isDebugEnabled()) {
+			log.debug(" !!! destroyObject... !!!" + obj);
+		}
 		if (obj instanceof WorkerThread) {
 			WorkerThread rt = (WorkerThread) obj;
 			rt.setStopped(true);
 		}
 	}
 
-	/*
+	/** {@inheritDoc} */ /*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.apache.commons.pool.PoolableObjectFactory#validateObject(java.lang.Object)
 	 */
 	public boolean validateObject(Object obj) {
-		log.debug(" validateObject..." + obj);
+		if (log.isDebugEnabled()) {
+			log.debug(" validateObject..." + obj);
+		}
 		if (obj instanceof WorkerThread) {
 			WorkerThread rt = (WorkerThread) obj;
 			if (!rt.isDone()) { // if the thread is running the previous task,
@@ -76,7 +82,7 @@ public class ThreadObjectFactory implements PoolableObjectFactory {
 		return true;
 	}
 
-	/*
+	/** {@inheritDoc} */ /*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.apache.commons.pool.PoolableObjectFactory#activateObject(java.lang.Object)
@@ -85,13 +91,15 @@ public class ThreadObjectFactory implements PoolableObjectFactory {
 		log.debug(" activateObject...");
 	}
 
-	/*
+	/** {@inheritDoc} */ /*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.apache.commons.pool.PoolableObjectFactory#passivateObject(java.lang.Object)
 	 */
 	public void passivateObject(Object obj) {
-		log.debug(" passivateObject..." + obj);
+		if (log.isDebugEnabled()) {
+			log.debug(" passivateObject..." + obj);
+		}
 		if (obj instanceof WorkerThread) {
 			WorkerThread wt = (WorkerThread) obj;
 			wt.setResult(null);

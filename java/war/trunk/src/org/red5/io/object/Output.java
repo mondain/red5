@@ -2,28 +2,30 @@ package org.red5.io.object;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
- * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
- * 
- * This library is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License as published by the Free Software 
- * Foundation; either version 2.1 of the License, or (at your option) any later 
- * version. 
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ *
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along 
- * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Output interface which defines contract methods to be implemented
- * 
+ *
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
@@ -31,53 +33,124 @@ public interface Output {
 
 	boolean supportsDataType(byte type);
 
+	void putString(String string);
+
 	// Basic Data Types
-	void writeNumber(Number num);
+    /**
+     * Write number
+     * @param num       Number
+     */
+    void writeNumber(Number num);
 
-	void writeBoolean(Boolean bol);
+    /**
+     * Write boolean
+     * @param bol       Boolean
+     */
+    void writeBoolean(Boolean bol);
 
-	void writeString(String string);
+    /**
+     * Write string
+     * @param string    String
+     */
+    void writeString(String string);
 
-	void writeDate(Date date);
+    /**
+     * Write date
+     * @param date      Date
+     */
+    void writeDate(Date date);
 
 	void writeNull();
 
-	// Complex Data Types
-	void writeStartArray(int length);
+    /**
+     * Write array.
+     * @param array     	Array to write.
+     * @param serializer	Serializer to use for subobjects.
+     */
+    void writeArray(Collection array, Serializer serializer);
 
-	void markElementSeparator();
+    /**
+     * Write array.
+     * @param array     	Array to write.
+     * @param serializer	Serializer to use for subobjects.
+     */
+    void writeArray(Object[] array, Serializer serializer);
 
-	void markEndArray();
+    /**
+     * Write primitive array.
+     * @param array     	Array to write.
+     * @param serializer	Serializer to use for subobjects.
+     */
+    void writeArray(Object array, Serializer serializer);
 
-	void writeStartMap(int size);
+    /**
+     * Write map.
+     *
+     * @param map			Map to write
+     * @param serializer	Serializer to use for subobjects.
+     */
+    void writeMap(Map<Object, Object> map, Serializer serializer);
 
-	void writeItemKey(String key);
+    /**
+     * Write array as map.
+     *
+     * @param array			Array to write
+     * @param serializer	Serializer to use for subobjects.
+     */
+    void writeMap(Collection array, Serializer serializer);
 
-	void markItemSeparator();
+    /**
+     * Write object.
+     *
+     * @param object		Object to write
+     * @param serializer	Serializer to use for subobjects.
+     */
+    void writeObject(Object object, Serializer serializer);
 
-	void markEndMap();
+    /**
+     * Write map as object.
+     *
+     * @param map			Map to write
+     * @param serializer	Serializer to use for subobjects.
+     */
+    void writeObject(Map<Object, Object> map, Serializer serializer);
 
-	void writeStartObject(String classname);
+    /**
+     * Write recordset.
+     *
+     * @param recordset		Recordset to write.
+     * @param serializer	Serializer to use for subobjects.
+     */
+    void writeRecordSet(RecordSet recordset, Serializer serializer);
 
-	void writePropertyName(String name);
+    /**
+     * Write XML object
+     * @param xml      XML as string
+     */
+    void writeXML(String xml);
 
-	void markPropertySeparator();
-
-	void markEndObject();
-
-	void writeXML(String xml);
-
-	// Reference to Complex Data Type
+    /**
+     * Write reference to complex data type
+     * @param obj   Referenced object
+     */
 	void writeReference(Object obj);
 
-	// Custom datatypes can be handled by
+    /**
+     * Whether object is custom
+     *
+     * @param custom           Object
+     * @return                 true if object is of user type, false otherwise
+     */
 	boolean isCustom(Object custom);
 
-	void writeCustom(Object custom);
+    /**
+     * Write custom (user) object
+     * @param custom     Custom data type object
+     */
+    void writeCustom(Object custom);
 
-	void storeReference(Object obj);
-
-	boolean hasReference(Object obj);
-
-	void clearReferences();
+    /**
+     * Clear references
+     */
+    void clearReferences();
 }

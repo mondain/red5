@@ -3,7 +3,7 @@ package org.red5.server.api.so;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,14 +22,15 @@ package org.red5.server.api.so;
 import java.util.Set;
 
 import org.red5.server.api.IScope;
+import org.red5.server.api.IScopeService;
 
 /**
- * Service that manages shared objects.
+ * Service that manages shared objects for given scope.
  * 
  */
-public interface ISharedObjectService {
+public interface ISharedObjectService extends IScopeService {
 
-	public final static String SHARED_OBJECT_SERVICE = "sharedObjectService";
+	public static String BEAN_NAME = "sharedObjectService";
 
 	/**
 	 * Get a set of the shared object names.

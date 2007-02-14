@@ -3,7 +3,7 @@ package org.red5.io.mock;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -21,10 +21,13 @@ package org.red5.io.mock;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.red5.io.object.BaseInput;
+import org.red5.io.object.Deserializer;
+import org.w3c.dom.Document;
 
 public class Input extends BaseInput implements org.red5.io.object.Input {
 
@@ -40,116 +43,88 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 		this.idx = 0;
 	}
 
-	protected Object getNext() {
+	/**
+     * Getter for property 'next'.
+     *
+     * @return Value for property 'next'.
+     */
+    protected Object getNext() {
 		return list.get(idx++);
 	}
 
-	public byte readDataType() {
+	/** {@inheritDoc} */
+    public byte readDataType() {
 		Byte b = (Byte) getNext();
 		return b.byteValue();
 	}
 
 	// Basic
 
-	public Object readNull() {
+	/** {@inheritDoc} */
+    public Object readNull() {
 		return null;
 	}
 
-	public Boolean readBoolean() {
+	/** {@inheritDoc} */
+    public Boolean readBoolean() {
 		return (Boolean) getNext();
 	}
 
-	public Number readNumber() {
+	/** {@inheritDoc} */
+    public Number readNumber() {
 		return (Number) getNext();
 	}
-
+    /** {@inheritDoc} */
+	public String getString() {
+		return (String) getNext();
+	}
+    /** {@inheritDoc} */
 	public String readString() {
 		return (String) getNext();
 	}
 
-	public Date readDate() {
+	/** {@inheritDoc} */
+    public Date readDate() {
 		return (Date) getNext();
 	}
 
 	// Array
 
-	public int readStartArray() {
-		Integer i = (Integer) getNext();
-		return i.intValue();
+	/** {@inheritDoc} */
+    public Object readArray(Deserializer deserializer) {
+    	return getNext();
+    }
+    
+	/** {@inheritDoc} */
+    public Object readMap(Deserializer deserializer) {
+		return getNext();
 	}
-
-	public void skipElementSeparator() {
-		getNext();
+    
+	/** {@inheritDoc} */
+    public Map<String, Object> readKeyValues(Deserializer deserializer) {
+		return (Map<String, Object>) getNext();
 	}
-
-	public void skipEndArray() {
-		// SKIP
-	}
-
-	public boolean hasMoreItems() {
-		Object next = list.get(idx);
-		if (!(next instanceof Byte)) {
-			return true;
-		}
-		Byte b = (Byte) next;
-		return (b.byteValue() != Mock.TYPE_END_OF_MAP);
-	}
-
-	public String readItemKey() {
-		return (String) getNext();
-	}
-
-	public int readStartMap() {
-		return ((Integer) getNext()).intValue();
-	}
-
-	public void skipEndMap() {
-		getNext();
-	}
-
-	public void skipItemSeparator() {
-		getNext();
-	}
-
+    
 	// Object
 
-	public String readStartObject() {
-		return readString();
+	/** {@inheritDoc} */
+    public Object readObject(Deserializer deserializer) {
+		return getNext();
 	}
 
-	public boolean hasMoreProperties() {
-		Object next = list.get(idx);
-		if (!(next instanceof Byte)) {
-			return true;
-		}
-		Byte b = (Byte) next;
-		return (b.byteValue() != Mock.TYPE_END_OF_OBJECT);
+	/** {@inheritDoc} */
+	public Document readXML() {
+		return (Document) getNext();
 	}
 
-	public String readPropertyName() {
-		return (String) getNext();
-	}
-
-	public void skipPropertySeparator() {
-		getNext();
-	}
-
-	public void skipEndObject() {
-		getNext();
-	}
-
-	// Others
-
-	public String readXML() {
-		return readString();
-	}
-
-	public Object readCustom() {
+	/** {@inheritDoc} */
+    public Object readCustom() {
 		// Not supported
 		return null;
 	}
 
-	public Object readReference() {
+	/** {@inheritDoc} */
+    public Object readReference() {
 		final Short num = (Short) getNext();
 		return getReference(num.shortValue());
 	}

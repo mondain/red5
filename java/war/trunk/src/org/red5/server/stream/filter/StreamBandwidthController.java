@@ -3,7 +3,7 @@ package org.red5.server.stream.filter;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -29,22 +29,41 @@ import org.red5.server.messaging.IPipeConnectionListener;
 import org.red5.server.messaging.OOBControlMessage;
 import org.red5.server.messaging.PipeConnectionEvent;
 
+/**
+ * Controls stream bandwidth
+ */
 public class StreamBandwidthController implements IFilter,
 		IPipeConnectionListener, Runnable {
-	private static final Log log = LogFactory
+
+    /**
+     * Logger
+     */
+    private static final Log log = LogFactory
 			.getLog(StreamBandwidthController.class);
-
+    /**
+     * Class name
+     */
 	public static final String KEY = StreamBandwidthController.class.getName();
-
+    /**
+     * Stream provider pipe
+     */
 	private IPipe providerPipe;
-
+    /**
+     * Stream consumer pipe
+     */
 	private IPipe consumerPipe;
-
+    /**
+     * Daemon thread that pulls data from provider and pushes to consumer, using this controller
+     */
 	private Thread puller;
 
-	private boolean isStarted;
+    /**
+     * Start state
+     */
+    private boolean isStarted;
 
-	public void onPipeConnectionEvent(PipeConnectionEvent event) {
+	/** {@inheritDoc} */
+    public void onPipeConnectionEvent(PipeConnectionEvent event) {
 		switch (event.getType()) {
 			case PipeConnectionEvent.PROVIDER_CONNECT_PULL:
 				if (event.getProvider() != this && providerPipe == null) {
@@ -71,15 +90,19 @@ public class StreamBandwidthController implements IFilter,
 		}
 	}
 
-	public void onOOBControlMessage(IMessageComponent source, IPipe pipe,
+	/** {@inheritDoc} */
+    public void onOOBControlMessage(IMessageComponent source, IPipe pipe,
 			OOBControlMessage oobCtrlMsg) {
 	}
 
-	public void run() {
+	/** {@inheritDoc} */
+    public void run() {
 		while (isStarted && providerPipe != null && consumerPipe != null) {
 			try {
 				IMessage message = providerPipe.pullMessage();
-				log.debug("got message: " + message);
+				if (log.isDebugEnabled()) {
+					log.debug("got message: " + message);
+				}
 				consumerPipe.pushMessage(message);
 			} catch (Exception e) {
 				break;
@@ -88,15 +111,24 @@ public class StreamBandwidthController implements IFilter,
 		isStarted = false;
 	}
 
-	public void start() {
+    /**
+     * Start pulling (streaming)
+     */
+    public void start() {
 		startThread();
 	}
 
-	public void close() {
+    /**
+     * Stop pulling, close stream
+     */
+    public void close() {
 		isStarted = false;
 	}
 
-	synchronized private void startThread() {
+    /**
+     * Start puller thread
+     */
+    private synchronized void startThread() {
 		if (!isStarted && providerPipe != null && consumerPipe != null) {
 			puller = new Thread(this);
 			puller.setDaemon(true);

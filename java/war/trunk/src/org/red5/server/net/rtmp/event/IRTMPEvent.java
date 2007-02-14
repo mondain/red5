@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -25,19 +25,52 @@ import org.red5.server.net.rtmp.message.Header;
 
 public interface IRTMPEvent extends IEvent {
 
-	public byte getDataType();
+	/**
+     * Getter for data type
+     *
+     * @return  Data type
+     */
+    public byte getDataType();
 
-	public void setSource(IEventListener source);
+	/**
+     * Setter for source
+     *
+     * @param source Source
+     */
+    public void setSource(IEventListener source);
 
-	public Header getHeader();
+	/**
+     * Getter for header
+     *
+     * @return  RTMP packet header
+     */
+    public Header getHeader();
 
-	public void setHeader(Header header);
+	/**
+     * Setter for header
+     *
+     * @param header RTMP packet header
+     */
+    public void setHeader(Header header);
 
-	public int getTimestamp();
+	/**
+     * Getter for timestamp
+     *
+     * @return  Event timestamp
+     */
+    public int getTimestamp();
 
-	public void setTimestamp(int timestamp);
+	/**
+     * Setter for timestamp
+     *
+     * @param timestamp  New event timestamp
+     */
+    public void setTimestamp(int timestamp);
 
-	public void retain();
+    /**
+     * Retain event
+     */
+    public void retain();
 
 	/**
 	 * Hook to free buffers allocated by the event.

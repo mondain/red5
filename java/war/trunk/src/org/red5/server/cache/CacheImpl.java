@@ -3,7 +3,7 @@ package org.red5.server.cache;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -53,9 +53,9 @@ public class CacheImpl implements ICacheStore, ApplicationContextAware {
 
 	private static int capacity = 5;
 
-	private static volatile long cacheHit = 0;
+	private static volatile long cacheHit;
 
-	private static volatile long cacheMiss = 0;
+	private static volatile long cacheMiss;
 
 	static {
 		// create an instance
@@ -66,7 +66,7 @@ public class CacheImpl implements ICacheStore, ApplicationContextAware {
 		registry = new HashMap<String, Integer>(3);
 	}
 
-	/*
+	/** Do not instantiate CacheImpl. */ /*
 	 * This constructor helps to ensure that we are singleton.
 	 */
 	private CacheImpl() {
@@ -76,12 +76,18 @@ public class CacheImpl implements ICacheStore, ApplicationContextAware {
 	// later.
 	private static ApplicationContext applicationContext = null;
 
-	public void setApplicationContext(ApplicationContext context)
+	/** {@inheritDoc} */
+    public void setApplicationContext(ApplicationContext context)
 			throws BeansException {
 		CacheImpl.applicationContext = context;
 	}
 
-	public static ApplicationContext getApplicationContext() {
+	/**
+     * Getter for property 'applicationContext'.
+     *
+     * @return Value for property 'applicationContext'.
+     */
+    public static ApplicationContext getApplicationContext() {
 		return applicationContext;
 	}
 
@@ -96,14 +102,18 @@ public class CacheImpl implements ICacheStore, ApplicationContextAware {
 
 	public void init() {
 		log.info("Loading generic object cache");
-		log.debug("Appcontext: " + applicationContext.toString());
+		if (log.isDebugEnabled()) {
+			log.debug("Appcontext: " + applicationContext.toString());
+		}
 	}
 
-	public Iterator<String> getObjectNames() {
+	/** {@inheritDoc} */
+    public Iterator<String> getObjectNames() {
 		return Collections.unmodifiableSet(CACHE.keySet()).iterator();
 	}
 
-	public Iterator<SoftReference<? extends ICacheable>> getObjects() {
+	/** {@inheritDoc} */
+    public Iterator<SoftReference<? extends ICacheable>> getObjects() {
 		return Collections.unmodifiableCollection(CACHE.values()).iterator();
 	}
 
@@ -111,7 +121,8 @@ public class CacheImpl implements ICacheStore, ApplicationContextAware {
 		return offer(key, new CacheableImpl(obj));
 	}
 
-	public boolean offer(String name, ICacheable obj) {
+	/** {@inheritDoc} */
+    public boolean offer(String name, Object obj) {
 		boolean accepted = false;
 		// check map size
 		if (CACHE.size() < capacity) {
@@ -124,13 +135,19 @@ public class CacheImpl implements ICacheStore, ApplicationContextAware {
 			// log.debug("Softreference value: " + (null == tmp.get()));
 			// }
 			if (null == tmp || null == tmp.get()) {
+				ICacheable cacheable = null;
+				if (obj instanceof ICacheable) {
+					cacheable = (ICacheable) obj;
+				} else {
+					cacheable = new CacheableImpl(obj);
+				}
 				// set the objects name
-				obj.setName(name);
+				cacheable.setName(name);
 				// set a registry entry
 				registry.put(name, 1);
 				// create a soft reference
 				SoftReference<ICacheable> value = new SoftReference<ICacheable>(
-						obj);
+						cacheable);
 				CACHE.put(name, value);
 				// set acceptance
 				accepted = true;
@@ -143,11 +160,16 @@ public class CacheImpl implements ICacheStore, ApplicationContextAware {
 		return accepted;
 	}
 
-	public void put(String name, Object obj) {
-		put(name, new CacheableImpl(obj));
+	/** {@inheritDoc} */
+    public void put(String name, Object obj) {
+		if (obj instanceof ICacheable) {
+			put(name, (ICacheable) obj);
+		} else {
+			put(name, new CacheableImpl(obj));
+		}
 	}
 
-	public void put(String name, ICacheable obj) {
+	protected void put(String name, ICacheable obj) {
 		// set the objects name
 		obj.setName(name);
 		// set a registry entry
@@ -160,9 +182,11 @@ public class CacheImpl implements ICacheStore, ApplicationContextAware {
 				+ CACHE.size());
 	}
 
-	public ICacheable get(String name) {
-		log.debug("Looking up " + name + " in the cache. Current size: "
-				+ CACHE.size());
+	/** {@inheritDoc} */
+    public ICacheable get(String name) {
+		if (log.isDebugEnabled()) {
+			log.debug("Looking up " + name + " in the cache. Current size: " + CACHE.size());
+		}
 		ICacheable ic = null;
 		SoftReference sr = null;
 		if (!CACHE.isEmpty() && null != (sr = CACHE.get(name))) {
@@ -178,34 +202,51 @@ public class CacheImpl implements ICacheStore, ApplicationContextAware {
 			// increment cache misses
 			cacheMiss += 1;
 		}
-		log.debug("Registry on get: " + registry.toString());
+		if (log.isDebugEnabled()) {
+			log.debug("Registry on get: " + registry.toString());
+		}
 		return ic;
 	}
 
-	public boolean remove(ICacheable obj) {
-		log.debug("Looking up " + obj.getName()
-				+ " in the cache. Current size: " + CACHE.size());
+	/** {@inheritDoc} */
+    public boolean remove(ICacheable obj) {
+		if (log.isDebugEnabled()) {
+			log.debug("Looking up " + obj.getName() + " in the cache. Current size: " + CACHE.size());
+		}
 		return remove(obj.getName());
 	}
 
-	public boolean remove(String name) {
+	/** {@inheritDoc} */
+    public boolean remove(String name) {
 		return CACHE.remove(name) != null ? true : false;
 	}
 
-	public static long getCacheHit() {
+	/**
+     * Getter for property 'cacheHit'.
+     *
+     * @return Value for property 'cacheHit'.
+     */
+    public static long getCacheHit() {
 		return cacheHit;
 	}
 
-	public static long getCacheMiss() {
+	/**
+     * Getter for property 'cacheMiss'.
+     *
+     * @return Value for property 'cacheMiss'.
+     */
+    public static long getCacheMiss() {
 		return cacheMiss;
 	}
 
-	public void setMaxEntries(int max) {
+	/** {@inheritDoc} */
+    public void setMaxEntries(int max) {
 		log.info("Setting max entries for this cache to " + max);
 		CacheImpl.capacity = max;
 	}
 
-	public void destroy() {
+	/** {@inheritDoc} */
+    public void destroy() {
 		// Shut down the cache manager
 		try {
 			registry.clear();

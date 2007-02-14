@@ -2,43 +2,61 @@ package org.red5.server.stream;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
- * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
- * 
- * This library is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License as published by the Free Software 
- * Foundation; either version 2.1 of the License, or (at your option) any later 
- * version. 
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ *
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along 
- * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+import java.io.IOException;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
 import org.red5.server.BaseConnection;
 import org.red5.server.api.IBasicScope;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IContext;
 import org.red5.server.api.IScope;
 import org.red5.server.api.Red5;
+import org.red5.server.api.ScopeUtils;
 import org.red5.server.api.stream.IBroadcastStream;
 import org.red5.server.api.stream.IClientBroadcastStream;
 import org.red5.server.api.stream.IClientStream;
 import org.red5.server.api.stream.IPlaylistSubscriberStream;
 import org.red5.server.api.stream.ISingleItemSubscriberStream;
 import org.red5.server.api.stream.IStreamCapableConnection;
+import org.red5.server.api.stream.IStreamPlaybackSecurity;
+import org.red5.server.api.stream.IStreamPublishSecurity;
+import org.red5.server.api.stream.IStreamSecurityService;
 import org.red5.server.api.stream.IStreamService;
 import org.red5.server.api.stream.ISubscriberStream;
 import org.red5.server.api.stream.support.SimplePlayItem;
-import org.red5.server.net.rtmp.RTMPHandler;
+import org.red5.server.net.rtmp.BaseRTMPHandler;
+import org.red5.server.net.rtmp.Channel;
+import org.red5.server.net.rtmp.RTMPConnection;
+import org.red5.server.net.rtmp.status.Status;
+import org.red5.server.net.rtmp.status.StatusCodes;
 
+/**
+ * Stream service
+ */
 public class StreamService implements IStreamService {
 
-	public void closeStream() {
+	private static Logger logger = Logger.getLogger(StreamService.class);
+
+	/** {@inheritDoc} */
+    public void closeStream() {
 		IConnection conn = Red5.getConnectionLocal();
 		if (!(conn instanceof IStreamCapableConnection)) {
 			return;
@@ -60,7 +78,8 @@ public class StreamService implements IStreamService {
 				.deleteStreamById(getCurrentStreamId());
 	}
 
-	public int createStream() {
+	/** {@inheritDoc} */
+    public int createStream() {
 		IConnection conn = Red5.getConnectionLocal();
 		if (!(conn instanceof IStreamCapableConnection)) {
 			return -1;
@@ -68,7 +87,8 @@ public class StreamService implements IStreamService {
 		return ((IStreamCapableConnection) conn).reserveStreamId();
 	}
 
-	public void deleteStream(int streamId) {
+	/** {@inheritDoc} */
+    public void deleteStream(int streamId) {
 		IConnection conn = Red5.getConnectionLocal();
 		if (!(conn instanceof IStreamCapableConnection)) {
 			return;
@@ -77,7 +97,8 @@ public class StreamService implements IStreamService {
 		deleteStream(streamConn, streamId);
 	}
 
-	public void deleteStream(IStreamCapableConnection conn, int streamId) {
+	/** {@inheritDoc} */
+    public void deleteStream(IStreamCapableConnection conn, int streamId) {
 		IClientStream stream = conn.getStreamById(streamId);
 		if (stream != null) {
 			if (stream instanceof IClientBroadcastStream) {
@@ -93,13 +114,18 @@ public class StreamService implements IStreamService {
 		conn.unreserveStreamId(streamId);
 	}
 
-	public void pause(boolean pausePlayback, int position) {
-		pause(new Boolean(pausePlayback), position);
+	/** {@inheritDoc} */
+    public void pause(boolean pausePlayback, int position) {
+		pause(Boolean.valueOf(pausePlayback), position);
 	}
 
-	// Required as "pausePlayback" can be "null" if no flag is passed by the
-	// client
-	public void pause(Boolean pausePlayback, int position) {
+    /**
+     * Pause at given position. Required as "pausePlayback" can be "null" if no flag is passed by the
+	 * client
+     * @param pausePlayback         Pause playback or not
+     * @param position              Pause position
+     */
+    public void pause(Boolean pausePlayback, int position) {
 		IConnection conn = Red5.getConnectionLocal();
 		if (!(conn instanceof IStreamCapableConnection)) {
 			return;
@@ -111,23 +137,21 @@ public class StreamService implements IStreamService {
 			return;
 		}
 		ISubscriberStream subscriberStream = (ISubscriberStream) stream;
-		if (pausePlayback instanceof Boolean) {
-			if (pausePlayback) {
-				subscriberStream.pause(position);
-			} else {
-				subscriberStream.resume(position);
-			}
+		// pausePlayback can be "null" if "pause" is called without any parameters from flash
+		if (pausePlayback == null) {
+			pausePlayback = !subscriberStream.isPaused();
+		}
+		if (pausePlayback) {
+			subscriberStream.pause(position);
 		} else {
-			if (!subscriberStream.isPaused()) {
-				subscriberStream.pause(position);
-			} else {
-				subscriberStream.resume(position);
-			}
+			subscriberStream.resume(position);
 		}
 	}
 
-	// "play" sometimes is called with "null" as last parameter.
-	public void play(String name, int start, int length, Object flushPlaylist) {
+    /**
+     * {@inheritDoc}
+     */
+    public void play(String name, int start, int length, Object flushPlaylist) {
 		if (flushPlaylist instanceof Boolean) {
 			play(name, start, length, ((Boolean) flushPlaylist).booleanValue());
 		} else {
@@ -135,17 +159,40 @@ public class StreamService implements IStreamService {
 		}
 	}
 
-	public void play(String name, int start, int length, boolean flushPlaylist) {
+	/** {@inheritDoc} */
+    public void play(String name, int start, int length, boolean flushPlaylist) {
 		IConnection conn = Red5.getConnectionLocal();
 		if (!(conn instanceof IStreamCapableConnection)) {
 			return;
 		}
+		IScope scope = conn.getScope();
 		IStreamCapableConnection streamConn = (IStreamCapableConnection) conn;
 		int streamId = getCurrentStreamId();
+		IStreamSecurityService security = (IStreamSecurityService) ScopeUtils.getScopeService(scope, IStreamSecurityService.class);
+		if (security != null) {
+			Set<IStreamPlaybackSecurity> handlers = security.getStreamPlaybackSecurity();
+			for (IStreamPlaybackSecurity handler: handlers) {
+				if (!handler.isPlaybackAllowed(scope, name, start, length, flushPlaylist)) {
+					Status accessDenied = new Status(StatusCodes.NS_FAILED);
+					accessDenied.setClientid(streamId);
+					accessDenied.setDesciption("You are not allowed to play the stream.");
+					accessDenied.setDetails(name);
+					accessDenied.setLevel("error");
+
+					// FIXME: there should be a direct way to send the status
+					Channel channel = ((RTMPConnection) streamConn).getChannel((byte) (4 + ((streamId-1) * 5)));
+					channel.sendStatus(accessDenied);
+					return;
+				}
+			}
+		}
+		
 		IClientStream stream = streamConn.getStreamById(streamId);
+		boolean created = false;
 		if (stream == null) {
 			stream = streamConn.newPlaylistSubscriberStream(streamId);
 			stream.start();
+			created = true;
 		}
 		if (!(stream instanceof ISubscriberStream)) {
 			return;
@@ -168,22 +215,42 @@ public class StreamService implements IStreamService {
 			// not supported by this stream service
 			return;
 		}
-		subscriberStream.play();
+		try {
+			subscriberStream.play();
+		} catch (IOException err) {
+			if (created) {
+				stream.close();
+				streamConn.deleteStreamById(streamId);
+			}
+			Status accessDenied = new Status(StatusCodes.NS_PLAY_FAILED);
+			accessDenied.setClientid(streamId);
+			accessDenied.setDesciption(err.getMessage());
+			accessDenied.setDetails(name);
+			accessDenied.setLevel("error");
+
+			// FIXME: there should be a direct way to send the status
+			Channel channel = ((RTMPConnection) streamConn).getChannel((byte) (4 + ((streamId-1) * 5)));
+			channel.sendStatus(accessDenied);
+		}
 	}
 
-	public void play(String name, int start, int length) {
-		play(name, start, length, false);
+	/** {@inheritDoc} */
+    public void play(String name, int start, int length) {
+		play(name, start, length, true);
 	}
 
-	public void play(String name, int start) {
-		play(name, start, -1, false);
+	/** {@inheritDoc} */
+    public void play(String name, int start) {
+		play(name, start, -1, true);
 	}
 
-	public void play(String name) {
-		play(name, -2000, -1, false);
+	/** {@inheritDoc} */
+    public void play(String name) {
+		play(name, -2000, -1, true);
 	}
 
-	public void play(Boolean dontStop) {
+	/** {@inheritDoc} */
+    public void play(Boolean dontStop) {
 		if (!dontStop) {
 			IConnection conn = Red5.getConnectionLocal();
 			if (!(conn instanceof IStreamCapableConnection)) {
@@ -199,7 +266,8 @@ public class StreamService implements IStreamService {
 		}
 	}
 
-	public void publish(Boolean dontStop) {
+	/** {@inheritDoc} */
+    public void publish(Boolean dontStop) {
 		if (!dontStop) {
 			IConnection conn = Red5.getConnectionLocal();
 			if (!(conn instanceof IStreamCapableConnection)) {
@@ -228,23 +296,75 @@ public class StreamService implements IStreamService {
 		}
 	}
 
-	public void publish(String name, String mode) {
+	/** {@inheritDoc} */
+    public void publish(String name, String mode) {
 		IConnection conn = Red5.getConnectionLocal();
 		if (!(conn instanceof IStreamCapableConnection)) {
 			return;
 		}
+		
+		IScope scope = conn.getScope();
 		IStreamCapableConnection streamConn = (IStreamCapableConnection) conn;
 		int streamId = getCurrentStreamId();
+
+		IStreamSecurityService security = (IStreamSecurityService) ScopeUtils.getScopeService(scope, IStreamSecurityService.class);
+		if (security != null) {
+			Set<IStreamPublishSecurity> handlers = security.getStreamPublishSecurity();
+			for (IStreamPublishSecurity handler: handlers) {
+				if (!handler.isPublishAllowed(scope, name, mode)) {
+					Status accessDenied = new Status(StatusCodes.NS_FAILED);
+					accessDenied.setClientid(streamId);
+					accessDenied.setDesciption("You are not allowed to publish the stream.");
+					accessDenied.setDetails(name);
+					accessDenied.setLevel("error");
+
+					// FIXME: there should be a direct way to send the status
+					Channel channel = ((RTMPConnection) streamConn).getChannel((byte) (4 + ((streamId-1) * 5)));
+					channel.sendStatus(accessDenied);
+					return;
+				}
+			}
+		}
+		
+		IBroadcastScope bsScope = getBroadcastScope(scope, name);
+		if (bsScope != null && !bsScope.getProviders().isEmpty()) {
+			// Another stream with that name is already published.
+			Status badName = new Status(StatusCodes.NS_PUBLISH_BADNAME);
+			badName.setClientid(streamId);
+			badName.setDetails(name);
+			badName.setLevel("error");
+
+			// FIXME: there should be a direct way to send the status
+			Channel channel = ((RTMPConnection) streamConn).getChannel((byte) (4 + ((streamId-1) * 5)));
+			channel.sendStatus(badName);
+			return;
+		}
+
 		IClientStream stream = streamConn.getStreamById(streamId);
 		if (stream != null && !(stream instanceof IClientBroadcastStream)) {
 			return;
 		}
+		boolean created = false;
 		if (stream == null) {
 			stream = streamConn.newBroadcastStream(streamId);
+			created = true;
 		}
 
 		IClientBroadcastStream bs = (IClientBroadcastStream) stream;
 		try {
+			bs.setPublishedName(name);
+			IContext context = conn.getScope().getContext();
+			IProviderService providerService = (IProviderService) context
+					.getBean(IProviderService.BEAN_NAME);
+			// TODO handle registration failure
+			if (providerService.registerBroadcastStream(conn.getScope(),
+					name, bs)) {
+				bsScope = getBroadcastScope(conn.getScope(), name);
+				bsScope.setAttribute(IBroadcastScope.STREAM_ATTRIBUTE, bs);
+				if (conn instanceof BaseConnection) {
+					((BaseConnection) conn).registerBasicScope(bsScope);
+				}
+			}
 			if (IClientStream.MODE_RECORD.equals(mode)) {
 				bs.start();
 				bs.saveAs(name, false);
@@ -252,32 +372,34 @@ public class StreamService implements IStreamService {
 				bs.start();
 				bs.saveAs(name, true);
 			} else if (IClientStream.MODE_LIVE.equals(mode)) {
-				IContext context = conn.getScope().getContext();
-				IProviderService providerService = (IProviderService) context
-						.getBean(IProviderService.KEY);
-				bs.setPublishedName(name);
-				// TODO handle registration failure
-				if (providerService.registerBroadcastStream(conn.getScope(),
-						name, bs)) {
-					IBroadcastScope bsScope = getBroadcastScope(
-							conn.getScope(), bs.getPublishedName());
-					bsScope.setAttribute(IBroadcastScope.STREAM_ATTRIBUTE, bs);
-					if (conn instanceof BaseConnection) {
-						((BaseConnection) conn).registerBasicScope(bsScope);
-					}
-				}
 				bs.start();
 			}
+		} catch (IOException e) {
+			Status accessDenied = new Status(StatusCodes.NS_RECORD_NOACCESS);
+			accessDenied.setClientid(streamId);
+			accessDenied.setDesciption("The file could not be created/written to.");
+			accessDenied.setDetails(name);
+			accessDenied.setLevel("error");
+
+			// FIXME: there should be a direct way to send the status
+			Channel channel = ((RTMPConnection) streamConn).getChannel((byte) (4 + ((streamId-1) * 5)));
+			channel.sendStatus(accessDenied);
+			bs.close();
+			if (created)
+				streamConn.deleteStreamById(streamId);
+			return;
 		} catch (Exception e) {
-			// TODO report publish error
+			logger.warn("publish caught Exception");
 		}
 	}
 
-	public void publish(String name) {
+	/** {@inheritDoc} */
+    public void publish(String name) {
 		publish(name, IClientStream.MODE_LIVE);
 	}
 
-	public void seek(int position) {
+	/** {@inheritDoc} */
+    public void seek(int position) {
 		IConnection conn = Red5.getConnectionLocal();
 		if (!(conn instanceof IStreamCapableConnection)) {
 			return;
@@ -292,7 +414,8 @@ public class StreamService implements IStreamService {
 		subscriberStream.seek(position);
 	}
 
-	public void receiveVideo(boolean receive) {
+	/** {@inheritDoc} */
+    public void receiveVideo(boolean receive) {
 		IConnection conn = Red5.getConnectionLocal();
 		if (!(conn instanceof IStreamCapableConnection)) {
 			return;
@@ -307,7 +430,8 @@ public class StreamService implements IStreamService {
 		subscriberStream.receiveVideo(receive);
 	}
 
-	public void receiveAudio(boolean receive) {
+	/** {@inheritDoc} */
+    public void receiveAudio(boolean receive) {
 		IConnection conn = Red5.getConnectionLocal();
 		if (!(conn instanceof IStreamCapableConnection)) {
 			return;
@@ -322,12 +446,23 @@ public class StreamService implements IStreamService {
 		subscriberStream.receiveAudio(receive);
 	}
 
-	private int getCurrentStreamId() {
+	/**
+     * Getter for current stream id.
+     *
+     * @return  Current stream id
+     */
+    private int getCurrentStreamId() {
 		// TODO: this must come from the current connection!
-		return RTMPHandler.getStreamId();
+		return BaseRTMPHandler.getStreamId();
 	}
 
-	public IBroadcastScope getBroadcastScope(IScope scope, String name) {
+    /**
+     * Return broadcast scope object for given scope and child scope name
+     * @param scope          Scope object
+     * @param name           Child scope name
+     * @return               Broadcast scope
+     */
+    public IBroadcastScope getBroadcastScope(IScope scope, String name) {
 		synchronized (scope) {
 			IBasicScope basicScope = scope.getBasicScope(IBroadcastScope.TYPE,
 					name);

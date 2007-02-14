@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.codec;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -30,24 +30,82 @@ import org.red5.server.net.rtmp.event.Unknown;
 import org.red5.server.net.rtmp.event.VideoData;
 import org.red5.server.so.ISharedObjectMessage;
 
+/**
+ * Encodes events to byte buffer
+ */
 public interface IEventEncoder {
+    /**
+     * Encodes Notify event to byte buffer
+     * @param notify         Notify event
+     * @param rtmp			 RTMP protocol state
+     * @return               Byte buffer
+     */
+	public abstract ByteBuffer encodeNotify(Notify notify, RTMP rtmp);
 
-	public abstract ByteBuffer encodeNotify(Notify notify);
+    /**
+     * Encodes Invoke event to byte buffer
+     * @param invoke         Invoke event
+     * @param rtmp			 RTMP protocol state
+     * @return               Byte buffer
+     */
+	public abstract ByteBuffer encodeInvoke(Invoke invoke, RTMP rtmp);
 
-	public abstract ByteBuffer encodeInvoke(Invoke invoke);
+    /**
+     * Encodes Ping event to byte buffer
+     * @param ping           Ping event
+     * @return               Byte buffer
+     */
+    public abstract ByteBuffer encodePing(Ping ping);
 
-	public abstract ByteBuffer encodePing(Ping ping);
+    /**
+     * Encodes BytesRead event to byte buffer
+     * @param streamBytesRead    BytesRead event
+     * @return                   Byte buffer
+     */
+    public abstract ByteBuffer encodeBytesRead(BytesRead streamBytesRead);
 
-	public abstract ByteBuffer encodeBytesRead(BytesRead streamBytesRead);
+    /**
+     * Encodes AudioData event to byte buffer
+     * @param audioData          AudioData event
+     * @return                   Byte buffer
+     */
+    public abstract ByteBuffer encodeAudioData(AudioData audioData);
 
-	public abstract ByteBuffer encodeAudioData(AudioData audioData);
+    /**
+     * Encodes VideoData event to byte buffer
+     * @param videoData          VideoData event
+     * @return                   Byte buffer
+     */
+    public abstract ByteBuffer encodeVideoData(VideoData videoData);
 
-	public abstract ByteBuffer encodeVideoData(VideoData videoData);
+    /**
+     * Encodes Unknown event to byte buffer
+     * @param unknown            Unknown event
+     * @return                   Byte buffer
+     */
+    public abstract ByteBuffer encodeUnknown(Unknown unknown);
 
-	public abstract ByteBuffer encodeUnknown(Unknown unknown);
+    /**
+     * Encodes ChunkSize event to byte buffer
+     * @param chunkSize          ChunkSize event
+     * @return                   Byte buffer
+     */
+    public abstract ByteBuffer encodeChunkSize(ChunkSize chunkSize);
 
-	public abstract ByteBuffer encodeChunkSize(ChunkSize chunkSize);
+    /**
+     * Encodes SharedObjectMessage event to byte buffer
+     * @param so                 ISharedObjectMessage event
+     * @param rtmp			 RTMP protocol state
+     * @return                   Byte buffer
+     */
+    public abstract ByteBuffer encodeSharedObject(ISharedObjectMessage so, RTMP rtmp);
 
-	public abstract ByteBuffer encodeSharedObject(ISharedObjectMessage so);
+    /**
+     * Encodes SharedObjectMessage event to byte buffer using AMF3 encoding
+     * @param so                 ISharedObjectMessage event
+     * @param rtmp			 RTMP protocol state
+     * @return                   Byte buffer
+     */
+    public ByteBuffer encodeFlexSharedObject(ISharedObjectMessage so, RTMP rtmp);
 
 }

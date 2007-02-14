@@ -3,7 +3,7 @@ package org.red5.server.stream.provider;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -52,34 +52,65 @@ import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.stream.ISeekableProvider;
 import org.red5.server.stream.message.RTMPMessage;
 
+/**
+ * Pullable provider for files
+ */
 public class FileProvider implements IPassive, ISeekableProvider,
 		IPullableProvider, IPipeConnectionListener {
-	private static final Log log = LogFactory.getLog(FileProvider.class);
-
+    /**
+     * Logger
+     */
+    private static final Log log = LogFactory.getLog(FileProvider.class);
+    /**
+     * Class name
+     */
 	public static final String KEY = FileProvider.class.getName();
-
+    /**
+     * Provider scope
+     */
 	private IScope scope;
-
+    /**
+     * Source file
+     */
 	private File file;
-
+    /**
+     * Consumer pipe
+     */
 	private IPipe pipe;
-
+    /**
+     * Tag reader
+     */
 	private ITagReader reader;
+    /**
+     * Keyframe metadata
+     */
+	private KeyFrameMeta keyFrameMeta;
+    /**
+     * Position at start
+     */
+	private int start;
 
-	private KeyFrameMeta keyFrameMeta = null;
-
-	private int start = 0;
-
-	public FileProvider(IScope scope, File file) {
+    /**
+     * Create file provider for given file and scope
+     * @param scope            Scope
+     * @param file             File
+     */
+    public FileProvider(IScope scope, File file) {
 		this.scope = scope;
 		this.file = file;
 	}
 
-	public void setStart(int start) {
+	/**
+     * Setter for start position
+     *
+     * @param start Start position
+     */
+    public void setStart(int start) {
 		this.start = start;
 	}
 
-	public IMessage pullMessage(IPipe pipe) {
+	/** {@inheritDoc} */
+    public synchronized IMessage pullMessage(IPipe pipe) throws IOException {
 		if (this.pipe != pipe) {
 			return null;
 		}
@@ -119,11 +150,13 @@ public class FileProvider implements IPassive, ISeekableProvider,
 		return rtmpMsg;
 	}
 
-	public IMessage pullMessage(IPipe pipe, long wait) {
+	/** {@inheritDoc} */
+    public IMessage pullMessage(IPipe pipe, long wait) throws IOException {
 		return pullMessage(pipe);
 	}
 
-	public void onPipeConnectionEvent(PipeConnectionEvent event) {
+	/** {@inheritDoc} */
+    public void onPipeConnectionEvent(PipeConnectionEvent event) {
 		switch (event.getType()) {
 			case PipeConnectionEvent.PROVIDER_CONNECT_PULL:
 				if (pipe == null) {
@@ -145,13 +178,14 @@ public class FileProvider implements IPassive, ISeekableProvider,
 		}
 	}
 
-	public void onOOBControlMessage(IMessageComponent source, IPipe pipe,
+	/** {@inheritDoc} */
+    public void onOOBControlMessage(IMessageComponent source, IPipe pipe,
 			OOBControlMessage oobCtrlMsg) {
 		if (IPassive.KEY.equals(oobCtrlMsg.getTarget())) {
 			if (oobCtrlMsg.getServiceName().equals("init")) {
 				Integer startTS = (Integer) oobCtrlMsg.getServiceParamMap()
 						.get("startTS");
-				setStart(startTS.intValue());
+				setStart(startTS);
 			}
 		}
 		if (ISeekableProvider.KEY.equals(oobCtrlMsg.getTarget())) {
@@ -165,34 +199,37 @@ public class FileProvider implements IPassive, ISeekableProvider,
 		}
 	}
 
-	private void init() {
+    /**
+     * Initializes file provider. Creates streamable file factory and service, seeks to start position
+     */
+    private void init() throws IOException {
 		IStreamableFileFactory factory = (IStreamableFileFactory) ScopeUtils
-				.getScopeService(scope, IStreamableFileFactory.KEY,
+				.getScopeService(scope, IStreamableFileFactory.class,
 						StreamableFileFactory.class);
 		IStreamableFileService service = factory.getService(file);
 		if (service == null) {
 			log.error("No service found for " + file.getAbsolutePath());
 			return;
 		}
-		try {
-			IStreamableFile streamFile = service.getStreamableFile(file);
-			reader = streamFile.getReader();
-		} catch (IOException e) {
-			log.error("error read stream file " + file.getAbsolutePath(), e);
-		}
+		IStreamableFile streamFile = service.getStreamableFile(file);
+		reader = streamFile.getReader();
 		if (start > 0) {
 			seek(start);
 		}
 	}
 
-	private void uninit() {
+    /**
+     * Reset
+     */
+    private synchronized void uninit() {
 		if (this.reader != null) {
 			this.reader.close();
 			this.reader = null;
 		}
 	}
 
-	synchronized public int seek(int ts) {
+	/** {@inheritDoc} */
+    public synchronized int seek(int ts) {
 		if (keyFrameMeta == null) {
 			if (!(reader instanceof IKeyFrameDataAnalyzer)) {
 				// Seeking not supported

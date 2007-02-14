@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -20,10 +20,11 @@ package org.red5.server.api.stream;
  */
 
 import org.red5.server.api.IScope;
+import org.red5.server.api.IScopeService;
 
-public interface IOnDemandStreamService {
+public interface IOnDemandStreamService extends IScopeService {
 
-	public final static String ON_DEMAND_STREAM_SERVICE = "onDemandStreamService";
+	public static String BEAN_NAME = "onDemandStreamService";
 
 	/**
 	 * Has the service an on-demand stream with the passed name?

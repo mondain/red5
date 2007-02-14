@@ -3,7 +3,7 @@ package org.red5.server.stream.codec;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,34 +23,54 @@ import org.red5.server.api.stream.IStreamCodecInfo;
 import org.red5.server.api.stream.IVideoStreamCodec;
 
 public class StreamCodecInfo implements IStreamCodecInfo {
+    /**
+     * Audio support flag
+     */
+	private boolean audio;
+    /**
+     * Video support flag
+     */
+	private boolean video;
+    /**
+     * Video codec
+     */
+	private IVideoStreamCodec videoCodec;
 
-	private boolean audio = false;
-
-	private boolean video = false;
-
-	private IVideoStreamCodec videoCodec = null;
-
-	public boolean hasAudio() {
+	/** {@inheritDoc} */
+    public boolean hasAudio() {
 		return audio;
 	}
 
-	public void setHasAudio(boolean value) {
+	/**
+     * New value for audio support
+     *
+     * @param value Audio support
+     */
+    public void setHasAudio(boolean value) {
 		this.audio = value;
 	}
 
-	public boolean hasVideo() {
+	/** {@inheritDoc} */
+    public boolean hasVideo() {
 		return video;
 	}
 
-	public void setHasVideo(boolean value) {
+	/**
+     * New value for video support
+     *
+     * @param value Video support
+     */
+    public void setHasVideo(boolean value) {
 		this.video = value;
 	}
 
-	public String getAudioCodecName() {
+	/** {@inheritDoc} */
+    public String getAudioCodecName() {
 		return null;
 	}
 
-	public String getVideoCodecName() {
+	/** {@inheritDoc} */
+    public String getVideoCodecName() {
 		if (videoCodec == null) {
 			return null;
 		}
@@ -58,11 +78,17 @@ public class StreamCodecInfo implements IStreamCodecInfo {
 		return videoCodec.getName();
 	}
 
-	public IVideoStreamCodec getVideoCodec() {
+	/** {@inheritDoc} */
+    public IVideoStreamCodec getVideoCodec() {
 		return videoCodec;
 	}
 
-	public void setVideoCodec(IVideoStreamCodec codec) {
+	/**
+     * Setter for video codec
+     *
+     * @param codec  Video codec
+     */
+    public void setVideoCodec(IVideoStreamCodec codec) {
 		this.videoCodec = codec;
 	}
 }

@@ -3,7 +3,7 @@ package org.red5.io.amf3;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -19,47 +19,92 @@ package org.red5.io.amf3;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import java.io.IOException;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
-import org.red5.io.object.BaseInput;
+import org.red5.io.amf.AMF;
 import org.red5.io.object.DataTypes;
+import org.red5.io.object.Deserializer;
+import org.red5.io.utils.ObjectMap;
 
 /**
  * Input for red5 data (AMF3) types
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
+ * @author Joachim Bauch (jojo@struktur.de)
  */
-public class Input extends BaseInput implements org.red5.io.object.Input {
-
-	protected static Log log = LogFactory.getLog(Input.class.getName());
-
-	protected ByteBuffer buf;
-
-	protected byte currentDataType;
+public class Input extends org.red5.io.amf.Input implements org.red5.io.object.Input {
 
 	/**
-	 * Input Constructor
+	 * Holds informations about already deserialized classes.
+	 */
+	protected class ClassReference {
+		
+		/** Name of the deserialized class. */
+		protected String className;
+		/** Names of the attributes of the class. */
+		protected List<String> attributeNames;
+		
+		/** Create new informations about a class. */
+		public ClassReference(String className, List<String> attributeNames) {
+			this.className = className;
+			this.attributeNames = attributeNames;
+		}
+	}
+	
+    /**
+     * Logger
+     */
+	protected static Log log = LogFactory.getLog(Input.class.getName());
+	/**
+	 * Set to a value above <tt>0</tt> to enforce AMF3 decoding mode.
+	 */
+	private int amf3_mode;
+	/**
+	 * List of string values found in the input stream.
+	 */
+	private List<String> stringReferences;
+	/**
+	 * Informations about already deserialized classes.
+	 */
+	private List<ClassReference> classReferences;
+
+	/**
+	 * Creates Input object for AMF3 from byte buffer
 	 * 
-	 * @param buf
+	 * @param buf        Byte buffer
 	 */
 	public Input(ByteBuffer buf) {
-		super();
-		this.buf = buf;
+		super(buf);
+		amf3_mode = 0;
+		stringReferences = new ArrayList<String>();
+		classReferences = new ArrayList<ClassReference>();
 	}
 
 	/**
+	 * Provide access to raw data.
+	 * 
+	 * @return ByteBuffer
+	 */
+	protected ByteBuffer getBuffer() {
+		return buf;
+	}
+	
+	/**
 	 * Reads the data type
 	 * 
-	 * @return byte
+	 * @return byte      Data type
 	 */
+	@Override
 	public byte readDataType() {
 
 		if (buf == null) {
@@ -69,8 +114,14 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 		currentDataType = buf.get();
 		byte coreType;
 
-		switch (currentDataType) {
+		if (currentDataType == AMF.TYPE_AMF3_OBJECT) {
+			currentDataType = buf.get();
+		} else if (amf3_mode == 0) {
+			// AMF0 object
+			return readDataType(currentDataType);
+		}
 
+		switch (currentDataType) {
 			case AMF3.TYPE_NULL:
 				coreType = DataTypes.CORE_NULL;
 				break;
@@ -91,7 +142,7 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 			// TODO check XML_SPECIAL
 			case AMF3.TYPE_XML:
 			case AMF3.TYPE_XML_SPECIAL:
-				coreType = DataTypes.CORE_XML;
+                coreType = DataTypes.CORE_XML;
 				break;
 			case AMF3.TYPE_OBJECT:
 				coreType = DataTypes.CORE_OBJECT;
@@ -119,10 +170,11 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	// Basic
 
 	/**
-	 * Reads a null
+	 * Reads a null (value)
 	 * 
-	 * @return Object
+	 * @return Object    null
 	 */
+	@Override
 	public Object readNull() {
 		return null;
 	}
@@ -130,8 +182,9 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	/**
 	 * Reads a boolean
 	 * 
-	 * @return boolean
+	 * @return boolean     Boolean value
 	 */
+	@Override
 	public Boolean readBoolean() {
 		return (currentDataType == AMF3.TYPE_BOOLEAN_TRUE) ? Boolean.TRUE
 				: Boolean.FALSE;
@@ -140,8 +193,9 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	/**
 	 * Reads a Number
 	 * 
-	 * @return Number
+	 * @return Number      Number
 	 */
+	@Override
 	public Number readNumber() {
 		if (currentDataType == AMF3.TYPE_NUMBER) {
 			return buf.getDouble();
@@ -154,43 +208,45 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	/**
 	 * Reads a string
 	 * 
-	 * @return String
+	 * @return String       String
 	 */
+	@Override
 	public String readString() {
-		int len = buf.getInt();
-		// shift by one bit ?
-		// is it a reference ? if not continue
+		int len = readAMF3Integer();
+		if (len == 1)
+			// Empty string
+			return "";
+		
+		if ((len & 1) == 0) {
+			// Reference
+			return stringReferences.get(len >> 1);
+		}
+		len >>= 1;
 		int limit = buf.limit();
 		final java.nio.ByteBuffer strBuf = buf.buf();
 		strBuf.limit(strBuf.position() + len);
 		final String string = AMF3.CHARSET.decode(strBuf).toString();
 		buf.limit(limit); // Reset the limit
-		// save a reference
+		stringReferences.add(string);
 		return string;
 	}
 
 	/**
 	 * Returns a date
 	 * 
-	 * @return Date
+	 * @return Date        Date object
 	 */
+	@Override
 	public Date readDate() {
-		/*
-		 * Date: 0x0B T7 T6 .. T0 Z1 Z2 T7 to T0 form a 64 bit Big Endian number
-		 * that specifies the number of nanoseconds that have passed since
-		 * 1/1/1970 0:00 to the specified time. This format is ÒUTC 1970Ó. Z1 an
-		 * Z0 for a 16 bit Big Endian number indicating the indicated timeÕs
-		 * timezone in minutes.
-		 */
-		long ms = (long) buf.getDouble();
-		short clientTimeZoneMins = buf.getShort();
-		ms += clientTimeZoneMins * 60 * 1000;
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(new Date(ms - TimeZone.getDefault().getRawOffset()));
-		Date date = cal.getTime();
-		if (cal.getTimeZone().inDaylightTime(date)) {
-			date.setTime(date.getTime() - cal.getTimeZone().getDSTSavings());
+		int ref = readAMF3Integer();
+		if ((ref & 1) == 0) {
+			// Reference to previously found date
+			return (Date) getReference(ref >> 1);
 		}
+		
+		long ms = (long) buf.getDouble();
+		Date date = new Date(ms);
+		storeReference(date);
 		return date;
 	}
 
@@ -199,157 +255,191 @@ public class Input extends BaseInput implements org.red5.io.object.Input {
 	/**
 	 * Returns an array
 	 * 
-	 * @return int
+	 * @return int        Length of array
 	 */
-	public int readStartArray() {
-		return buf.getInt();
+    public Object readArray(Deserializer deserializer) {
+		int count = readAMF3Integer();
+		if ((count & 1) == 0) {
+			// Reference
+			return getReference(count >> 1);
+		}
+		
+		count = (count >> 1);
+		String key = readString();
+		amf3_mode += 1;
+		Object result;
+		if (key.equals("")) {
+			// normal array
+			List<Object> resultList = new ArrayList<Object>(count);
+			storeReference(resultList);
+			for (int i=0; i<count; i++) {
+				final Object value = deserializer.deserialize(this);
+				resultList.add(value);
+			}
+			result = resultList;
+		} else {
+			// associative array
+			Map<Object, Object> resultMap = new HashMap<Object, Object>();
+			storeReference(resultMap);
+			while (!key.equals("")) {
+				final Object value = deserializer.deserialize(this);
+				resultMap.put(key, value);
+				key = readString();
+			}
+			for (int i=0; i<count; i++) {
+				final Object value = deserializer.deserialize(this);
+				resultMap.put(i, value);
+			}
+			result = resultMap;
+		}
+		amf3_mode -= 1;
+		return result;			
 	}
 
-	/**
-	 * Skips elements TODO
-	 */
-	public void skipElementSeparator() {
-		// SKIP
-	}
-
-	/**
-	 * Skips end array TODO
-	 */
-	public void skipEndArray() {
-		// SKIP
-	}
-
+    public Object readMap(Deserializer deserializer) {
+    	throw new RuntimeException("AMF3 doesn't support maps.");
+    }
+    
 	// Object
 
-	/**
-	 * Reads start list
-	 * 
-	 * @return int
-	 */
-	public int readStartMap() {
-		return buf.getInt();
-	}
-
-	/**
-	 * Returns a boolean stating whether this has more items
-	 * 
-	 * @return boolean
-	 */
-	public boolean hasMoreItems() {
-		return hasMoreProperties();
-	}
-
-	/**
-	 * Reads the item index
-	 * 
-	 * @return int
-	 */
-	public String readItemKey() {
-		return "";
-	}
-
-	/**
-	 * Skips item seperator
-	 */
-	public void skipItemSeparator() {
-		// SKIP
-	}
-
-	/**
-	 * Skips end list
-	 */
-	public void skipEndMap() {
-		skipEndObject();
-	}
-
-	// Object
-
-	/**
-	 * Reads start object
-	 * 
-	 * @return String
-	 */
-	public String readStartObject() {
-		return null;
-	}
-
-	/**
-	 * Returns a boolean stating whether there are more properties
-	 * 
-	 * @return boolean
-	 */
-	public boolean hasMoreProperties() {
-		return false;
-	}
-
-	/**
-	 * Reads property name
-	 * 
-	 * @return String
-	 */
-	public String readPropertyName() {
-		return null;
-	}
-
-	/**
-	 * Skips property seperator
-	 */
-	public void skipPropertySeparator() {
-		// SKIP
-	}
-
-	/**
-	 * Skips end object
-	 */
-	public void skipEndObject() {
-		// skip two marker bytes
-		// then end of object byte
-		buf.skip(3);
-		// byte nextType = buf.get();
-	}
-
+    public Object readObject(Deserializer deserializer) {
+		int type = readAMF3Integer();
+		if ((type & 1) == 0) {
+			// Reference
+			return getReference(type >> 1);
+		}
+		
+		type >>= 1;
+		List<String> attributes = null;
+		String className;
+		Object result = null;
+		boolean inlineClass = (type & 1) == 1;
+		if (!inlineClass) {
+			ClassReference info = classReferences.get(type >> 1);
+			className = info.className;
+			attributes = info.attributeNames;
+			type = attributes.size() << 2 | AMF3.TYPE_OBJECT_PROPERTY;
+		} else {
+			type >>= 1;
+			className = readString();
+		}
+		amf3_mode += 1;
+		Map<String, Object> properties = null;
+		switch (type & 0x03) {
+		case AMF3.TYPE_OBJECT_PROPERTY:
+			// Load object properties into map
+			int count = type >> 2;
+			properties = new ObjectMap<String, Object>();
+			if (attributes == null) {
+				attributes = new ArrayList<String>(count);
+				for (int i=0; i<count; i++) {
+					attributes.add(readString());					
+				}
+				classReferences.add(new ClassReference(className, attributes));
+			}
+			for (int i=0; i<count; i++) {
+				properties.put(attributes.get(i), deserializer.deserialize(this));
+			}
+			break;
+		case AMF3.TYPE_OBJECT_EXTERNALIZABLE:
+			// Use custom class to deserialize the object
+			if ("".equals(className))
+				throw new RuntimeException("need a classname to load an externalizable object");
+			
+			result = newInstance(className);
+			if (result == null)
+				throw new RuntimeException("could not instantiate class");
+			
+			if (!(result instanceof IExternalizable))
+				throw new RuntimeException("the class must implement the IExternalizable interface");
+			
+			((IExternalizable) result).readExternal(new DataInput(this, deserializer));
+			break;
+		case AMF3.TYPE_OBJECT_VALUE:
+			// Load object properties into map
+			properties = new ObjectMap<String, Object>();
+			attributes = new LinkedList<String>();
+			String key = readString();
+			while (!"".equals(key)) {
+				attributes.add(key);
+				Object value = deserializer.deserialize(this);
+				properties.put(key, value);
+				key = readString();
+			}
+			classReferences.add(new ClassReference(className, attributes));
+			break;
+		default:
+		case AMF3.TYPE_OBJECT_UNKNOWN:
+			throw new RuntimeException("Unknown object type: " + (type & 0x03));
+		}
+		amf3_mode -= 1;
+		
+		if (result == null) {
+			// Create result object based on classname
+			if ("".equals(className)) {
+				// "anonymous" object, load as Map
+				storeReference(properties);
+				result = properties;
+			} else if ("RecordSet".equals(className)) {
+				// TODO: how are RecordSet objects encoded?
+				throw new RuntimeException("Objects of type " + className + " not supported yet.");
+			} else if ("RecordSetPage".equals(className)) {
+				// TODO: how are RecordSetPage objects encoded?
+				throw new RuntimeException("Objects of type " + className + " not supported yet.");
+			} else {
+				// Apply properties to object
+				result = newInstance(className);
+				if (result != null) {
+					storeReference(properties);
+					Class resultClass = result.getClass();
+					for (Map.Entry<String, Object> entry: properties.entrySet()) {
+						try {
+							try {
+								resultClass.getField(entry.getKey()).set(result, entry.getValue());
+							} catch (Exception e) {
+								BeanUtils.setProperty(result, entry.getKey(), entry.getValue());
+							}
+						} catch (Exception e) {
+							log.error("Error mapping property: " + entry.getKey() + " (" + entry.getValue() + ")");
+						}
+					}
+				} // else fall through
+			}
+		}
+		return result;
+    }
+    
 	// Others
-
-	/**
-	 * Reads xml
-	 * 
-	 * @return String
-	 */
-	public String readXML() {
-		return readString();
-	}
 
 	/**
 	 * Reads Custom
 	 * 
-	 * @return Object
+	 * @return Object     Custom type object
 	 */
+	@Override
 	public Object readCustom() {
 		// Return null for now
 		return null;
 	}
 
-	/**
-	 * Reads Reference
-	 * 
-	 * @return Object
-	 */
+	/** {@inheritDoc} */
 	public Object readReference() {
-		return getReference(buf.getShort());
+		throw new RuntimeException("AMF3 doesn't support direct references.");
 	}
 
 	/**
 	 * Resets map
 	 */
+	@Override
 	public void reset() {
-		this.clearReferences();
+		super.reset();
+		stringReferences.clear();
 	}
 
 	/**
 	 * Parser of AMF3 "compressed" integer data type
 	 * 
 	 * @return a converted integer value
-	 * @throws IOException
 	 * @see <a href="http://osflash.org/amf3/parsing_integers">parsing AMF3
 	 *      integers (external)</a>
 	 */

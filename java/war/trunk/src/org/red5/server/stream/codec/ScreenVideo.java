@@ -3,7 +3,7 @@ package org.red5.server.stream.codec;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -31,46 +31,79 @@ import org.red5.server.api.stream.IVideoStreamCodec;
  * @author Joachim Bauch (jojo@struktur.de)
  */
 public class ScreenVideo implements IVideoStreamCodec {
-
+    /**
+     *
+     */
 	private Log log = LogFactory.getLog(ScreenVideo.class.getName());
-
+    /**
+     * FLV codec name constant
+     */
 	static final String CODEC_NAME = "ScreenVideo";
-
+    /**
+     * FLV frame key marker constant
+     */
 	static final byte FLV_FRAME_KEY = 0x10;
-
+    /**
+     * FLV codec screen marker constant
+     */
 	static final byte FLV_CODEC_SCREEN = 0x03;
-
+    /**
+     * Block data
+     */
 	private byte[] blockData;
-
+    /**
+     * Block size
+     */
 	private int[] blockSize;
-
+    /**
+     * Video width
+     */
 	private int width;
-
+    /**
+     * Video height
+     */
 	private int height;
-
+    /**
+     * Width info
+     */
 	private int widthInfo;
-
+    /**
+     * Height info
+     */
 	private int heightInfo;
-
+    /**
+     * Block width
+     */
 	private int blockWidth;
-
+    /**
+     * Block height
+     */
 	private int blockHeight;
-
+    /**
+     * Number of blocks
+     */
 	private int blockCount;
-
+    /**
+     * Block data size
+     */
 	private int blockDataSize;
-
+    /**
+     * Total block data size
+     */
 	private int totalBlockDataSize;
 
-	public ScreenVideo() {
+	/** Constructs a new ScreenVideo. */
+    public ScreenVideo() {
 		this.reset();
 	}
 
-	public String getName() {
+	/** {@inheritDoc} */
+    public String getName() {
 		return CODEC_NAME;
 	}
 
-	public void reset() {
+	/** {@inheritDoc} */
+    public void reset() {
 		this.blockData = null;
 		this.blockSize = null;
 		this.width = 0;
@@ -84,14 +117,16 @@ public class ScreenVideo implements IVideoStreamCodec {
 		this.totalBlockDataSize = 0;
 	}
 
-	public boolean canHandleData(ByteBuffer data) {
+	/** {@inheritDoc} */
+    public boolean canHandleData(ByteBuffer data) {
 		byte first = data.get();
 		boolean result = ((first & 0x0f) == FLV_CODEC_SCREEN);
 		data.rewind();
 		return result;
 	}
 
-	public boolean canDropFrames() {
+	/** {@inheritDoc} */
+    public boolean canDropFrames() {
 		return false;
 	}
 
@@ -102,6 +137,10 @@ public class ScreenVideo implements IVideoStreamCodec {
 		return size + (size >> 12) + (size >> 14) + 11;
 	}
 
+    /**
+     * Update total block size
+     * @param data      Byte buffer
+     */
 	private void updateSize(ByteBuffer data) {
 		this.widthInfo = data.getShort();
 		this.heightInfo = data.getShort();
@@ -143,7 +182,8 @@ public class ScreenVideo implements IVideoStreamCodec {
 		}
 	}
 
-	public boolean addData(ByteBuffer data) {
+	/** {@inheritDoc} */
+    public boolean addData(ByteBuffer data) {
 		if (!this.canHandleData(data)) {
 			return false;
 		}
@@ -175,7 +215,8 @@ public class ScreenVideo implements IVideoStreamCodec {
 		return true;
 	}
 
-	public ByteBuffer getKeyframe() {
+	/** {@inheritDoc} */
+    public ByteBuffer getKeyframe() {
 		ByteBuffer result = ByteBuffer.allocate(1024);
 		result.setAutoExpand(true);
 

@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,6 +22,10 @@ package org.red5.server.stream;
 import org.red5.server.api.IBasicScope;
 import org.red5.server.messaging.IPipe;
 
+/**
+ * Broadcast scope is marker interface that represents object that works as basic scope and
+ * has pipe connection event dispatching capabilities.
+ */
 public interface IBroadcastScope extends IBasicScope, IPipe {
 	public static final String TYPE = "bs";
 

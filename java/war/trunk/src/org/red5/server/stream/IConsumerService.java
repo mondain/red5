@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,8 +22,17 @@ package org.red5.server.stream;
 import org.red5.server.api.stream.IClientStream;
 import org.red5.server.messaging.IMessageOutput;
 
+/**
+ * Service for consumer objects, used to get pushed messages at consumer endpoint.
+ */
 public interface IConsumerService {
 	public static final String KEY = "consumerService";
 
-	IMessageOutput getConsumerOutput(IClientStream stream);
+    /**
+     * Handles pushed messages
+     *
+     * @param stream       Client stream object
+     * @return             Message object
+     */
+    IMessageOutput getConsumerOutput(IClientStream stream);
 }

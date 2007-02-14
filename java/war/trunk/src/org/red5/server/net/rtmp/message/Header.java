@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.message;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -19,69 +19,145 @@ package org.red5.server.net.rtmp.message;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
+/**
+ * RTMP packet header
+ */
 public class Header implements Constants {
-
-	private byte channelId = 0;
-
-	private int timer = 0;
-
-	private int size = 0;
-
-	private byte dataType = 0;
-
-	private int streamId = 0;
-
+    /**
+     * Channel
+     */
+	private int channelId;
+    /**
+     * Timer
+     */
+	private int timer;
+    /**
+     * Header size
+     */
+	private int size;
+    /**
+     * Type of data
+     */
+	private byte dataType;
+    /**
+     * Stream id
+     */
+	private int streamId;
+    /**
+     * Whether timer value is relative
+     */
 	private boolean timerRelative = true;
 
-	public byte getChannelId() {
+	/**
+     * Getter for channel id
+     *
+     * @return  Channel id
+     */
+    public int getChannelId() {
 		return channelId;
 	}
 
-	public void setChannelId(byte channelId) {
+	/**
+     * Setter for channel id
+     *
+     * @param channelId  Header channel id
+     */
+    public void setChannelId(int channelId) {
 		this.channelId = channelId;
 	}
 
-	public byte getDataType() {
+	/**
+     * Getter for data type
+     *
+     * @return  Data type
+     */
+    public byte getDataType() {
 		return dataType;
 	}
 
-	public void setDataType(byte dataType) {
+	/**
+     * Setter for data type
+     *
+     * @param dataType  Data type
+     */
+    public void setDataType(byte dataType) {
 		this.dataType = dataType;
 	}
 
-	public int getSize() {
+	/**
+     * Getter for size.
+     *
+     * @return  Header size
+     */
+    public int getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
+	/**
+     * Setter for size
+     *
+     * @param size  Header size
+     */
+    public void setSize(int size) {
 		this.size = size;
 	}
 
-	public int getStreamId() {
+	/**
+     * Getter for stream id
+     *
+     * @return  Stream id
+     */
+    public int getStreamId() {
 		return streamId;
 	}
 
-	public void setStreamId(int streamId) {
+	/**
+     * Setter for stream id
+     *
+     * @param streamId  Stream id
+     */
+    public void setStreamId(int streamId) {
 		this.streamId = streamId;
 	}
 
-	public int getTimer() {
+	/**
+     * Getter for timer
+     *
+     * @return  Timer
+     */
+    public int getTimer() {
 		return timer;
 	}
 
-	public void setTimer(int timer) {
+	/**
+     * Setter for timer
+     *
+     * @param timer  Timer
+     */
+    public void setTimer(int timer) {
 		this.timer = timer;
 	}
 
-	public boolean isTimerRelative() {
+	/**
+     * Getter for timer relative flag
+     *
+     * @return  <code>true</code> if timer value is relative, <code>false</code> otherwise
+     */
+    public boolean isTimerRelative() {
 		return timerRelative;
 	}
 
-	public void setTimerRelative(boolean timerRelative) {
+	/**
+     * Setter for timer relative flag
+     *
+     * @param timerRelative <code>true</code> if timer values are relative, <code>false</code> otherwise
+     */
+    public void setTimerRelative(boolean timerRelative) {
 		this.timerRelative = timerRelative;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public boolean equals(Object other) {
 		if (!(other instanceof Header)) {
 			return false;
@@ -92,20 +168,20 @@ public class Header implements Constants {
 				&& header.getTimer() == timer && header.getStreamId() == streamId);
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("ChannelId: ").append(channelId).append(", ");
-		sb.append("Timer: ").append(timer).append(
-				" (" + (timerRelative ? "relative" : "absolute") + ")").append(
-				", ");
+		sb.append("Timer: ").append(timer).append(" (" + (timerRelative ? "relative" : "absolute") + ')').append(", ");
 		sb.append("Size: ").append(size).append(", ");
 		sb.append("DateType: ").append(dataType).append(", ");
 		sb.append("StreamId: ").append(streamId);
 		return sb.toString();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public Object clone() {
 		final Header header = new Header();
 		header.setChannelId(channelId);

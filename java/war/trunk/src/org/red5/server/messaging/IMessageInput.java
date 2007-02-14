@@ -3,7 +3,7 @@ package org.red5.server.messaging;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -50,8 +50,8 @@ public interface IMessageInput {
 	/**
 	 * Connect to a consumer.
 	 * 
-	 * @param consumer
-	 * @param paramMap
+	 * @param consumer         Consumer
+	 * @param paramMap         Parameters map
 	 * @return <tt>true</tt> when successfully subscribed,
 	 * <tt>false</tt> otherwise.
 	 */
@@ -60,13 +60,18 @@ public interface IMessageInput {
 	/**
 	 * Disconnect from a consumer.
 	 * 
-	 * @param consumer
+	 * @param consumer    Consumer to disconnect
 	 * @return <tt>true</tt> when successfully unsubscribed,
 	 * <tt>false</tt> otherwise.
 	 */
 	boolean unsubscribe(IConsumer consumer);
 
-	List<IConsumer> getConsumers();
+	/**
+     * Getter for consumers list.
+     *
+     * @return Consumers.
+     */
+    List<IConsumer> getConsumers();
 
 	/**
 	 * Send OOB Control Message to all providers on the other side of pipe.
@@ -74,6 +79,7 @@ public interface IMessageInput {
 	 * @param consumer
 	 *            The consumer that sends the message
 	 * @param oobCtrlMsg
+     *            Out-of-band control message
 	 */
 	void sendOOBControlMessage(IConsumer consumer, OOBControlMessage oobCtrlMsg);
 }

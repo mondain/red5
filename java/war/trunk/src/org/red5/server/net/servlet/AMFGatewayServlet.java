@@ -3,7 +3,7 @@ package org.red5.server.net.servlet;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -20,7 +20,6 @@ package org.red5.server.net.servlet;
  */
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -50,47 +49,67 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class AMFGatewayServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 7174018823796785619L;
-
-	protected static Log log = LogFactory.getLog(AMFGatewayServlet.class
-			.getName());
-
+    /**
+     * Logger
+     */
+	protected static Log log = LogFactory.getLog(AMFGatewayServlet.class);
+    /**
+     * AMF MIME type
+     */
 	public static final String APPLICATION_AMF = "application/x-amf";
-
+    /**
+     * Web app context
+     */
 	protected WebApplicationContext webAppCtx;
-
+    /**
+     * Web context
+     */
 	protected IContext webContext;
-
+    /**
+     * Bean factory
+     */
 	protected BeanFactory netContext;
-
+    /**
+     * Remoting codec factory
+     */
 	protected RemotingCodecFactory codecFactory;
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void init() throws ServletException {
 		webAppCtx = WebApplicationContextUtils
 				.getWebApplicationContext(getServletContext());
 		if (webAppCtx != null) {
-				webContext = (IContext) webAppCtx.getBean("web.context");
-				codecFactory = (RemotingCodecFactory) webAppCtx
-						.getBean("remotingCodecFactory");
-			} else {
+			webContext = (IContext) webAppCtx.getBean("web.context");
+			codecFactory = (RemotingCodecFactory) webAppCtx
+					.getBean("remotingCodecFactory");
+		} else {
 			log.debug("No web context");
 		}
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void service(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		log.debug("Remoting request" + req.getContextPath() + ""
-				+ req.getServletPath());
-		if (req.getContentType() != null
-				&& req.getContentType().equals(APPLICATION_AMF)) {
+		if (log.isDebugEnabled()) {
+			log.debug("Remoting request" + req.getContextPath() + ' ' + req.getServletPath());
+		}
+		if (req.getContentType() != null && req.getContentType().equals(APPLICATION_AMF)) {
 			serviceAMF(req, resp);
 		} else {
 			resp.getWriter().write("Red5 : Remoting Gateway");
 		}
 	}
 
-	protected void serviceAMF(HttpServletRequest req, HttpServletResponse resp)
+    /**
+     * Works out AMF request
+     * @param req                     Request
+     * @param resp                    Response
+     * @throws ServletException       Servlet exception
+     * @throws IOException            I/O exception
+     */
+    protected void serviceAMF(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		try {
 			RemotingPacket packet = decodeRequest(req);
@@ -108,7 +127,13 @@ public class AMFGatewayServlet extends HttpServlet {
 		}
 	}
 
-	protected RemotingPacket decodeRequest(HttpServletRequest req)
+    /**
+     * Decode request
+     * @param req                    Request
+     * @return                       Remoting packet
+     * @throws Exception             General exception
+     */
+    protected RemotingPacket decodeRequest(HttpServletRequest req)
 			throws Exception {
 		ByteBuffer reqBuffer = ByteBuffer.allocate(req.getContentLength());
 		ServletUtils.copy(req.getInputStream(), reqBuffer.asOutputStream());
@@ -119,38 +144,49 @@ public class AMFGatewayServlet extends HttpServlet {
 		if (req.getPathInfo() != null) {
 			path += req.getPathInfo();
 		}
-		if (path.startsWith("/")) {
+		if (path.charAt(0) == '/') {
 			path = path.substring(1);
 		}
 		packet.setScopePath(path);
-		reqBuffer.release();
+		reqBuffer = null;
 		return packet;
 	}
 
-	protected boolean handleRemotingPacket(HttpServletRequest req,
+    /**
+     * Handles AMF request by making calls
+     * @param req              Request
+     * @param message          Remoting packet
+     * @return                 <code>true</code> on success
+     */
+    protected boolean handleRemotingPacket(HttpServletRequest req,
 			RemotingPacket message) {
 		IScope scope = webContext.resolveScope(message.getScopePath());
 		// Provide a valid IConnection in the Red5 object
 		Red5.setConnectionLocal(new ServletConnection(req, scope));
 
-		Iterator it = message.getCalls().iterator();
-		while (it.hasNext()) {
-			RemotingCall call = (RemotingCall) it.next();
-			webContext.getServiceInvoker().invoke(call, scope);
-		}
-		return true;
+        for (Object o : message.getCalls()) {
+            RemotingCall call = (RemotingCall) o;
+            webContext.getServiceInvoker().invoke(call, scope);
+        }
+        return true;
 	}
 
-	protected void sendResponse(HttpServletResponse resp, RemotingPacket packet)
+    /**
+     * Sends response to client
+     * @param resp             Response
+     * @param packet           Remoting packet
+     * @throws Exception       General exception
+     */
+    protected void sendResponse(HttpServletResponse resp, RemotingPacket packet)
 			throws Exception {
 		ByteBuffer respBuffer = codecFactory.getSimpleEncoder().encode(null,
 				packet);
 		final ServletOutputStream out = resp.getOutputStream();
 		resp.setContentLength(respBuffer.limit());
 		ServletUtils.copy(respBuffer.asInputStream(), out);
-		respBuffer.release();
 		out.flush();
 		out.close();
-	}
+		respBuffer = null;
+    }
 
 }

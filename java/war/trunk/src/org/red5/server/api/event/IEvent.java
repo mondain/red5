@@ -3,7 +3,7 @@ package org.red5.server.api.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,27 +23,27 @@ package org.red5.server.api.event;
  * IEvent interfaces is the essential interface every Event should implement
  */
 public interface IEvent {
-
+	
 	/**
 	 * Returns even type
 	 * 
 	 * @return Event type enumeration
 	 */
 	public Type getType();
-
+	
 	/**
 	 * Returns event context object
 	 * 
 	 * @return Event context object
 	 */
 	public Object getObject();
-
+	
 	/**
 	 * Whether event has source (event listener(s))
 	 * @return	<code>true</code> if so, <code>false</code> otherwise
 	 */
 	public boolean hasSource();
-
+	
 	/**
 	 * Returns event listener
 	 * @return	Event listener object

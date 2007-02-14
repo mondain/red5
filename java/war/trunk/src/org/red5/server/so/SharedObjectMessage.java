@@ -3,7 +3,7 @@ package org.red5.server.so;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -26,22 +26,50 @@ import java.util.List;
 import org.red5.server.api.event.IEventListener;
 import org.red5.server.net.rtmp.event.BaseEvent;
 
+/**
+ * Shared object event
+ */
 public class SharedObjectMessage extends BaseEvent implements
 		ISharedObjectMessage {
 
-	private String name;
+    /**
+     * SO event name
+     */
+    private String name;
 
-	private LinkedList<ISharedObjectEvent> events = new LinkedList<ISharedObjectEvent>();
+    /**
+     * SO events chain
+     */
+    private LinkedList<ISharedObjectEvent> events = new LinkedList<ISharedObjectEvent>();
+    /**
+     * SO version, used for synchronization purposes
+     */
+	private int version;
+    /**
+     * Whether SO persistent
+     */
+	private boolean persistent;
 
-	private int version = 0;
-
-	private boolean persistent = false;
-
-	public SharedObjectMessage(String name, int version, boolean persistent) {
+    /**
+     * Creates Shared Object event with given name, version and persistence flag
+     *
+     * @param name          Event name
+     * @param version       SO version
+     * @param persistent    SO persistence flag
+     */
+    public SharedObjectMessage(String name, int version, boolean persistent) {
 		this(null, name, version, persistent);
 	}
 
-	public SharedObjectMessage(IEventListener source, String name, int version,
+    /**
+     * Creates Shared Object event with given listener, name, SO version and persistence flag
+     *
+     * @param source         Event listener
+     * @param name           Event name
+     * @param version        SO version
+     * @param persistent     SO persistence flag
+     */
+    public SharedObjectMessage(IEventListener source, String name, int version,
 			boolean persistent) {
 		super(Type.SHARED_OBJECT, source);
 		this.name = name;
@@ -49,36 +77,56 @@ public class SharedObjectMessage extends BaseEvent implements
 		this.persistent = persistent;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public byte getDataType() {
 		return TYPE_SHARED_OBJECT;
 	}
 
-	public int getVersion() {
+	/** {@inheritDoc} */
+    public int getVersion() {
 		return version;
 	}
 
-	protected void setVersion(int version) {
+	/**
+     * Setter for version
+     *
+     * @param version  New version
+     */
+    protected void setVersion(int version) {
 		this.version = version;
 	}
 
-	public String getName() {
+	/** {@inheritDoc} */
+    public String getName() {
 		return name;
 	}
 
-	protected void setName(String name) {
+	/**
+     * Setter for name
+     *
+     * @param name  Event name
+     */
+    protected void setName(String name) {
 		this.name = name;
 	}
 
-	public boolean isPersistent() {
+	/** {@inheritDoc} */
+    public boolean isPersistent() {
 		return persistent;
 	}
 
-	protected void setIsPersistent(boolean persistent) {
+	/**
+     * Setter for persistence flag
+     *
+     * @param persistent  Persistence flag
+     */
+    protected void setIsPersistent(boolean persistent) {
 		this.persistent = persistent;
 	}
 
-	public void addEvent(ISharedObjectEvent event) {
+	/** {@inheritDoc} */
+    public void addEvent(ISharedObjectEvent event) {
 		events.add(event);
 	}
 
@@ -86,38 +134,46 @@ public class SharedObjectMessage extends BaseEvent implements
 		this.events.addAll(events);
 	}
 
-	public LinkedList<ISharedObjectEvent> getEvents() {
+	/** {@inheritDoc} */
+    public LinkedList<ISharedObjectEvent> getEvents() {
 		return events;
 	}
 
-	public void addEvent(ISharedObjectEvent.Type type, String key, Object value) {
+	/** {@inheritDoc} */
+    public void addEvent(ISharedObjectEvent.Type type, String key, Object value) {
 		events.add(new SharedObjectEvent(type, key, value));
 	}
 
-	public void clear() {
+	/** {@inheritDoc} */
+    public void clear() {
 		events.clear();
 	}
 
-	public boolean isEmpty() {
+	/** {@inheritDoc} */
+    public boolean isEmpty() {
 		return events.isEmpty();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public Type getType() {
 		return Type.SHARED_OBJECT;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public Object getObject() {
 		return getEvents();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	protected void releaseInternal() {
 
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String toString() {
 		final StringBuffer sb = new StringBuffer();
 		sb.append("SharedObjectMessage: ").append(name).append(" { ");

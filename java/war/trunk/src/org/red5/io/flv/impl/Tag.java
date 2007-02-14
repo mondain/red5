@@ -3,7 +3,7 @@ package org.red5.io.flv.impl;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -30,28 +30,44 @@ import org.red5.io.ITag;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class Tag implements ITag {
-
+    /**
+     * Tag type
+     */
 	private byte type;
-
+    /**
+     * Tag data type
+     */
 	private byte dataType;
-
+    /**
+     * Timestamp
+     */
 	private int timestamp;
-
+    /**
+     * Tag body size
+     */
 	private int bodySize;
-
+    /**
+     * Tag body as byte buffer
+     */
 	private ByteBuffer body;
-
+    /**
+     * Previous tag size
+     */
 	private int previuosTagSize;
 
-	private byte bitflags;
+    /**
+     * Bit flags
+     */
+    private byte bitflags;
 
 	/**
 	 * TagImpl Constructor
 	 * 
-	 * @param dataType
-	 * @param timestamp
-	 * @param bodySize
-	 * @param body
+	 * @param dataType              Tag data type
+	 * @param timestamp             Timestamp
+	 * @param bodySize              Tag body size
+	 * @param body                  Tag body
+     * @param previousTagSize       Previous tag size information
 	 */
 	public Tag(byte dataType, int timestamp, int bodySize, ByteBuffer body,
 			int previousTagSize) {
@@ -62,50 +78,50 @@ public class Tag implements ITag {
 		this.previuosTagSize = previousTagSize;
 	}
 
-	public Tag() {
+	/** Constructs a new Tag. */
+    public Tag() {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.Tag#setBitflags()
+	/**
+     * Getter for bit flags
+     *
+     * @return Value for bit flags
 	 */
 	public byte getBitflags() {
 		return bitflags;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.Tag#setBitflags()
+	/**
+     * Setter for bit flags
+     *
+     * @param bitflags  Bit flags
 	 */
 	public void setBitflags(byte bitflags) {
 		this.bitflags = bitflags;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.Tag#getPreviuosTagSize()
+	/**
+     * Getter for previous tag size
+     *
+     * @return Value for previous tag size
+     *
 	 */
 	public int getPreviuosTagSize() {
 		return previuosTagSize;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.Tag#setPreviuosTagSize()
+	/**
+     * Setter for previous tag size
+     *
+     * @param previuosTagSize Value to set for previous tag size
+     *
 	 */
 	public void setPreviuosTagSize(int previuosTagSize) {
 		this.previuosTagSize = previuosTagSize;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.Tag#getData()
+	/** {@inheritDoc}
 	 */
 	public ByteBuffer getData() {
 		// TODO Auto-generated method stub
@@ -115,7 +131,7 @@ public class Tag implements ITag {
 	/**
 	 * Return the body ByteBuffer
 	 * 
-	 * @return ByteBuffer
+	 * @return         Tag body
 	 */
 	public ByteBuffer getBody() {
 		return body;
@@ -124,7 +140,7 @@ public class Tag implements ITag {
 	/**
 	 * Return the size of the body
 	 * 
-	 * @return int
+	 * @return                Tag body size
 	 */
 	public int getBodySize() {
 		return bodySize;
@@ -133,7 +149,7 @@ public class Tag implements ITag {
 	/**
 	 * Get the data type
 	 * 
-	 * @return byte
+	 * @return               Tag data type
 	 */
 	public byte getDataType() {
 		return dataType;
@@ -142,16 +158,16 @@ public class Tag implements ITag {
 	/**
 	 * Return the timestamp
 	 * 
-	 * @return int
+	 * @return                Tag timestamp
 	 */
 	public int getTimestamp() {
 		return timestamp;
 	}
 
 	/**
-	 * Return the timestamp
+	 * Return previous tag size
 	 * 
-	 * @return int
+	 * @return                Previous tag size
 	 */
 	public int getPreviousTagSize() {
 		return previuosTagSize;
@@ -160,7 +176,7 @@ public class Tag implements ITag {
 	/**
 	 * Prints out the contents of the tag
 	 * 
-	 * @return tag contents
+	 * @return  Tag contents
 	 */
 	@Override
 	public String toString() {
@@ -172,36 +188,54 @@ public class Tag implements ITag {
 		return ret;
 	}
 
-	public byte getType() {
+	/**
+     * Getter for tag type
+     *
+     * @return  Tag type
+     */
+    public byte getType() {
 		return type;
 	}
 
-	public void setType(byte type) {
+	/**
+     * Setter for tag type
+     *
+     * @param type Tag type
+     */
+    public void setType(byte type) {
 		this.type = type;
 	}
 
-	public void setBody(ByteBuffer body) {
+	/** {@inheritDoc} */
+    public void setBody(ByteBuffer body) {
 		this.body = body;
 	}
 
-	public void setBodySize(int bodySize) {
+	/** {@inheritDoc} */
+    public void setBodySize(int bodySize) {
 		this.bodySize = bodySize;
 	}
 
-	public void setDataType(byte dataType) {
+	/** {@inheritDoc} */
+    public void setDataType(byte dataType) {
 		this.dataType = dataType;
 	}
 
-	public void setTimestamp(int timestamp) {
+	/** {@inheritDoc} */
+    public void setTimestamp(int timestamp) {
 		this.timestamp = timestamp;
 	}
 
-	public void setData() {
+    /**
+     * Setter for tag data. Empty method.
+     */
+    public void setData() {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void setPreviousTagSize(int size) {
+	/** {@inheritDoc} */
+    public void setPreviousTagSize(int size) {
 		this.previuosTagSize = size;
 
 	}

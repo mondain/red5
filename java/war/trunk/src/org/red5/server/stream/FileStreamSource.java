@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -33,31 +33,51 @@ import org.red5.server.net.rtmp.event.Unknown;
 import org.red5.server.net.rtmp.event.VideoData;
 import org.red5.server.net.rtmp.message.Constants;
 
+/**
+ * Represents stream source that is file
+ */
 public class FileStreamSource implements ISeekableStreamSource, Constants {
-
+    /**
+     * Logger
+     */
 	protected static Log log = LogFactory.getLog(FileStreamSource.class
 			.getName());
+    /**
+     * Tag reader
+     */
+	private ITagReader reader;
+    /**
+     * Key frame metadata
+     */
+	private KeyFrameMeta keyFrameMeta;
 
-	private ITagReader reader = null;
-
-	private KeyFrameMeta keyFrameMeta = null;
-
+    /**
+     * Creates file stream source with tag reader
+     * @param reader    Tag reader
+     */
 	public FileStreamSource(ITagReader reader) {
 		this.reader = reader;
 	}
 
-	public void close() {
+    /**
+     * Closes tag reader
+     */
+    public void close() {
 		reader.close();
 	}
 
-	public IRTMPEvent dequeue() {
+    /**
+     * Get tag from queue and convert to message
+     * @return  RTMP event
+     */
+    public IRTMPEvent dequeue() {
 
 		if (!reader.hasMoreTags()) {
 			return null;
 		}
 		ITag tag = reader.readTag();
 
-		IRTMPEvent msg = null;
+		IRTMPEvent msg;
 		switch (tag.getDataType()) {
 			case TYPE_AUDIO_DATA:
 				msg = new AudioData(tag.getBody());
@@ -81,11 +101,13 @@ public class FileStreamSource implements ISeekableStreamSource, Constants {
 		return msg;
 	}
 
-	public boolean hasMore() {
+	/** {@inheritDoc} */
+    public boolean hasMore() {
 		return reader.hasMoreTags();
 	}
 
-	synchronized public int seek(int ts) {
+	/** {@inheritDoc} */
+    public synchronized int seek(int ts) {
 		if (keyFrameMeta == null) {
 			if (!(reader instanceof IKeyFrameDataAnalyzer)) {
 				// Seeking not supported

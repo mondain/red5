@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -51,27 +51,51 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class BalancedFlowControlService extends TimerTask implements
 		IFlowControlService, ApplicationContextAware {
-	private static final Log log = LogFactory
+    /**
+     *
+     */
+    private static final Log log = LogFactory
 			.getLog(BalancedFlowControlService.class);
-
+    /**
+     *
+     */
 	private static final int maxDepth = 10;
-
+    /**
+     *
+     */
 	private long interval = 10;
-
+    /**
+     *
+     */
 	private long defaultCapacity = 1024 * 100;
-
+    /**
+     *
+     */
 	private Map<IFlowControllable, FcData> fcMap = new HashMap<IFlowControllable, FcData>();
-
+    /**
+     *
+     */
 	private List<FcData>[] fcListArray;
-
+    /**
+     *
+     */
 	private Timer timer;
-
+    /**
+     *
+     */
 	private Thread cbThread = new Thread(new CallbackRunnable());
-
+    /**
+     *
+     */
 	private BlockingQueue<FcData> wakeUpQueue = new LinkedBlockingQueue<FcData>();
-
+    /**
+     *
+     */
 	private ReadWriteLock lock = new ReentrantReadWriteLock();
 
+    /**
+     *
+     */
 	public BalancedFlowControlService() {
 		fcListArray = (List<FcData>[]) Array.newInstance(List.class, maxDepth);
 		for (int i = 0; i < maxDepth; i++) {
@@ -79,6 +103,9 @@ public class BalancedFlowControlService extends TimerTask implements
 		}
 	}
 
+    /**
+     *
+     */
 	public void init() {
 		timer = new Timer("FlowControlService", true);
 		timer.scheduleAtFixedRate(this, interval, interval);
@@ -87,6 +114,9 @@ public class BalancedFlowControlService extends TimerTask implements
 		cbThread.start();
 	}
 
+    /**
+     *
+     */
 	@Override
 	public void run() {
 		// re-sort the fc list
@@ -117,8 +147,9 @@ public class BalancedFlowControlService extends TimerTask implements
 							if (parentResource == null) {
 								thisResource.addToken(tokenCount);
 							} else {
-								if (parentResource.acquireToken(tokenCount)) {
-									thisResource.addToken(tokenCount);
+								double acquired = parentResource.acquireTokenBestEffort(tokenCount);
+								if (acquired > 0) {
+									thisResource.addToken(acquired);
 									gotToken = true;
 								}
 							}
@@ -139,6 +170,10 @@ public class BalancedFlowControlService extends TimerTask implements
 		}
 	}
 
+    /**
+     *
+     * @param fc
+     */
 	public void releaseFlowControllable(IFlowControllable fc) {
 		int depth = getFCDepth(fc);
 		lock.writeLock().lock();
@@ -152,6 +187,10 @@ public class BalancedFlowControlService extends TimerTask implements
 		}
 	}
 
+    /**
+     *
+     * @param fc
+     */
 	public void updateBWConfigure(IFlowControllable fc) {
 		lock.readLock().lock();
 		try {
@@ -220,11 +259,20 @@ public class BalancedFlowControlService extends TimerTask implements
 		}
 	}
 
+    /**
+     *
+     * @param fc
+     */
 	public void resetTokenBuckets(IFlowControllable fc) {
 		getAudioTokenBucket(fc).reset();
 		getVideoTokenBucket(fc).reset();
 	}
 
+    /**
+     *
+     * @param fc
+     * @return
+     */
 	public ITokenBucket getAudioTokenBucket(IFlowControllable fc) {
 		lock.readLock().lock();
 		try {
@@ -234,6 +282,11 @@ public class BalancedFlowControlService extends TimerTask implements
 		}
 	}
 
+    /**
+     *
+     * @param fc
+     * @return
+     */
 	public ITokenBucket getVideoTokenBucket(IFlowControllable fc) {
 		lock.readLock().lock();
 		try {
@@ -243,15 +296,29 @@ public class BalancedFlowControlService extends TimerTask implements
 		}
 	}
 
+    /**
+     *
+     * @param arg0
+     * @throws BeansException
+     */
 	public void setApplicationContext(ApplicationContext arg0)
 			throws BeansException {
 	}
 
-	public void setInterval(long interval) {
+    /**
+     *
+     * @param interval
+     */
+    public void setInterval(long interval) {
 		this.interval = interval;
 	}
 
-	public void setDefaultCapacity(long defaultCapacity) {
+	/**
+     * Setter for property 'defaultCapacity'.
+     *
+     * @param defaultCapacity Value to set for property 'defaultCapacity'.
+     */
+    public void setDefaultCapacity(long defaultCapacity) {
 		this.defaultCapacity = defaultCapacity;
 	}
 
@@ -289,14 +356,19 @@ public class BalancedFlowControlService extends TimerTask implements
 		data.fc = fc;
 		data.videoBucket = new Bucket(data, 0);
 		data.audioBucket = new Bucket(data, 1);
-		fcListArray[depth].add(data);
-		fcMap.put(fc, data);
+		lock.writeLock().lock();
+		try {
+			fcListArray[depth].add(data);
+			fcMap.put(fc, data);
+		} finally {
+			lock.writeLock().unlock();
+		}
 		updateBWConfigure(fc);
 	}
 
 	/**
 	 * Get the FC depth in the tree.
-	 * 
+	 *
 	 * @param fc
 	 * @return
 	 */
@@ -315,7 +387,7 @@ public class BalancedFlowControlService extends TimerTask implements
 
 	/**
 	 * Put a request object to sleep state.
-	 * 
+	 *
 	 * @param fcData
 	 * @param reqObj
 	 * @param channelId
@@ -352,7 +424,11 @@ public class BalancedFlowControlService extends TimerTask implements
 		}
 	}
 
-	private void wakeUpCallback(FcData fcData) {
+    /**
+     *
+     * @param fcData
+     */
+    private void wakeUpCallback(FcData fcData) {
 		try {
 			wakeUpQueue.put(fcData);
 		} catch (InterruptedException e) {
@@ -384,7 +460,7 @@ public class BalancedFlowControlService extends TimerTask implements
 
 	/**
 	 * Bit per second to Byte per millisecond.
-	 * 
+	 *
 	 * @param bps
 	 *            Bit per second.
 	 * @return Byte per millisecond.
@@ -393,7 +469,10 @@ public class BalancedFlowControlService extends TimerTask implements
 		return bps / 1000.0 / 8.0;
 	}
 
-	private class BandwidthResource {
+    /**
+     *
+     */
+    private class BandwidthResource {
 		private double speed;
 
 		private long capacity;
@@ -445,7 +524,8 @@ public class BalancedFlowControlService extends TimerTask implements
 	 * Note: this class has a natural ordering that is inconsistent with equals.
 	 */
 	private class FcData implements Comparable {
-		private IFlowControllable fc;
+        // Bandwidth configuration aware
+        private IFlowControllable fc;
 
 		private Bucket audioBucket;
 
@@ -467,20 +547,24 @@ public class BalancedFlowControlService extends TimerTask implements
 			return bwResources.length > 0;
 		}
 
-		public int compareTo(Object o) {
+		/** {@inheritDoc} */
+        public int compareTo(Object o) {
 			FcData toCompare = (FcData) o;
-			if (hungry < toCompare.hungry) {
-				return 1;
+			if (toCompare == null || hungry > toCompare.hungry) {
+				return -1;
 			} else if (hungry == toCompare.hungry) {
 				return 0;
 			} else {
-				return -1;
+				return 1;
 			}
 		}
 
 	}
 
-	private class Bucket implements ITokenBucket {
+    /**
+     * {@inheritDoc}
+     */
+    private class Bucket implements ITokenBucket {
 		private int channelId; // 0 for video and 1 for audio
 
 		private FcData fcData;
@@ -493,7 +577,8 @@ public class BalancedFlowControlService extends TimerTask implements
 			this.isReset = false;
 		}
 
-		public boolean acquireToken(double tokenCount, long wait) {
+		/** {@inheritDoc} */
+        public boolean acquireToken(double tokenCount, long wait) {
 			if (wait != 0) {
 				// XXX not support waiting for now
 				return false;
@@ -668,8 +753,14 @@ public class BalancedFlowControlService extends TimerTask implements
 		}
 	}
 
-	private class CallbackRunnable implements Runnable {
-		public void run() {
+    /**
+     * Callback runnable object
+     */
+    private class CallbackRunnable implements Runnable {
+        /**
+         * {@inheritDoc}
+         */
+        public void run() {
 			try {
 				while (true) {
 					FcData data = wakeUpQueue.take();

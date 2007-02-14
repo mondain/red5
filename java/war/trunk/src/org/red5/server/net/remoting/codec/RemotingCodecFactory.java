@@ -3,7 +3,7 @@ package org.red5.server.net.remoting.codec;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -25,36 +25,62 @@ import org.red5.server.net.protocol.SimpleProtocolCodecFactory;
 import org.red5.server.net.protocol.SimpleProtocolDecoder;
 import org.red5.server.net.protocol.SimpleProtocolEncoder;
 
+/**
+ * Factory for remoting codec
+ */
 public class RemotingCodecFactory implements SimpleProtocolCodecFactory {
-
+    /**
+     * Deserializer
+     */
 	protected Deserializer deserializer;
-
+    /**
+     * Serializers
+     */
 	protected Serializer serializer;
-
+    /**
+     * Remoting protocol decoder
+     */
 	protected RemotingProtocolDecoder decoder;
-
+    /**
+     * Remoting protocol encoder
+     */
 	protected RemotingProtocolEncoder encoder;
 
-	public void init() {
+    /**
+     * Initialization, creates and binds encoder and decoder to serializer and deserializer
+     */
+    public void init() {
 		decoder = new RemotingProtocolDecoder();
 		decoder.setDeserializer(deserializer);
 		encoder = new RemotingProtocolEncoder();
 		encoder.setSerializer(serializer);
 	}
 
-	public void setDeserializer(Deserializer deserializer) {
+	/**
+     * Setter for deserializer.
+     *
+     * @param deserializer Deserializer.
+     */
+    public void setDeserializer(Deserializer deserializer) {
 		this.deserializer = deserializer;
 	}
 
-	public void setSerializer(Serializer serializer) {
+	/**
+     * Setter for serializer.
+     *
+     * @param serializer Sserializer.
+     */
+    public void setSerializer(Serializer serializer) {
 		this.serializer = serializer;
 	}
 
-	public SimpleProtocolDecoder getSimpleDecoder() {
+	/** {@inheritDoc} */
+    public SimpleProtocolDecoder getSimpleDecoder() {
 		return decoder;
 	}
 
-	public SimpleProtocolEncoder getSimpleEncoder() {
+	/** {@inheritDoc} */
+    public SimpleProtocolEncoder getSimpleEncoder() {
 		return encoder;
 	}
 

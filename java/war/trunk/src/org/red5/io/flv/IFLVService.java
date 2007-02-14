@@ -3,7 +3,7 @@ package org.red5.io.flv;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -36,14 +36,14 @@ public interface IFLVService extends IStreamableFileService {
 	/**
 	 * Sets the serializer
 	 * 
-	 * @param serializer
+	 * @param serializer        Serializer object
 	 */
 	public void setSerializer(Serializer serializer);
 
 	/**
 	 * Sets the deserializer
 	 * 
-	 * @param deserializer
+	 * @param deserializer      Deserializer object
 	 */
 	public void setDeserializer(Deserializer deserializer);
 

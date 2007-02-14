@@ -3,7 +3,7 @@ package org.red5.server.api.cache;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -28,10 +28,10 @@ import java.util.Iterator;
  * 
  * <p>
  * 
- * @see http://www-128.ibm.com/developerworks/java/library/j-jtp01246.html
- * @see http://java.sun.com/developer/technicalArticles/ALT/RefObj/
- * @see http://www.onjava.com/pub/a/onjava/2002/10/02/javanio.html?page=3
- * @see http://csci.csusb.edu/turner/archive/courses/aiit2004/proxy_cache_solution.html
+ * @see <a href="http://www-128.ibm.com/developerworks/java/library/j-jtp01246.html">Soft references provide for quick-and-dirty caching</a>
+ * @see <a href="http://java.sun.com/developer/technicalArticles/ALT/RefObj/">Reference Objects and Garbage Collection</a>
+ * @see <a href="http://www.onjava.com/pub/a/onjava/2002/10/02/javanio.html?page=3">Top Ten New Things You Can Do with NIO</a>
+ * @see <a href="http://csci.csusb.edu/turner/archive/courses/aiit2004/proxy_cache_solution.html">http://csci.csusb.edu/turner/archive/courses/aiit2004/proxy_cache_solution.html</a>
  *      </p>
  * 
  * @author The Red5 Project (red5@osflash.org)
@@ -41,6 +41,7 @@ public interface ICacheStore {
 
 	/**
 	 * Offer an object to the cache with an associated key.
+	 * If the named object exists in cache, it will not be accepted.
 	 * 
 	 * @param name
 	 *            string name representing the object
@@ -48,7 +49,7 @@ public interface ICacheStore {
 	 *            cacheable object
 	 * @return true if accepted, false otherwise
 	 */
-	public boolean offer(String name, ICacheable obj);
+	public boolean offer(String name, Object obj);
 
 	/**
 	 * Puts an object in the cache with the associated key.
@@ -59,16 +60,6 @@ public interface ICacheStore {
 	 *            cacheable object
 	 */
 	public void put(String name, Object obj);
-
-	/**
-	 * Puts an object in the cache with the associated key.
-	 * 
-	 * @param name
-	 *            string name representing the object
-	 * @param obj
-	 *            cacheable object
-	 */
-	public void put(String name, ICacheable obj);
 
 	/**
 	 * Return a cached object with the given name.
@@ -84,6 +75,7 @@ public interface ICacheStore {
 	 * 
 	 * @param obj
 	 *            the object to delete
+     * @return
 	 */
 	public boolean remove(ICacheable obj);
 
@@ -92,6 +84,7 @@ public interface ICacheStore {
 	 * 
 	 * @param name
 	 *            the name of the object to delete
+     * @return
 	 */
 	public boolean remove(String name);
 

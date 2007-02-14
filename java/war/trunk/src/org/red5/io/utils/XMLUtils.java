@@ -3,7 +3,7 @@ package org.red5.io.utils;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -37,15 +37,24 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 /**
+ *Misc XML utils
  *
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class XMLUtils {
-
+    /**
+     * Logger
+     */
 	protected static Log log = LogFactory.getLog(XMLUtils.class.getName());
 
-	public static Document stringToDoc(String str) throws IOException {
+    /**
+     * Converts string representation of XML into Document
+     * @param str              String representation of XML
+     * @return                 DOM object
+     * @throws IOException     I/O exception
+     */
+    public static Document stringToDoc(String str) throws IOException {
 		try {
 			DocumentBuilder db = DocumentBuilderFactory.newInstance()
 					.newDocumentBuilder();
@@ -56,13 +65,20 @@ public class XMLUtils {
 		}
 	}
 
-	public static String docToString(Document dom) {
+    /**
+     * Converts doc to String
+     * @param dom            DOM object to convert
+     * @return               XML as String
+     */
+    public static String docToString(Document dom) {
 		return XMLUtils.docToString1(dom);
 	}
 
 	/**
 	 * Convert a DOM tree into a String using Dom2Writer
-	 */
+     * @return               XML as String
+     * @param dom            DOM object to convert
+     */
 	public static String docToString1(Document dom) {
 		StringWriter sw = new StringWriter();
 		DOM2Writer.serializeAsXML(dom, sw);
@@ -71,7 +87,10 @@ public class XMLUtils {
 
 	/**
 	 * Convert a DOM tree into a String using transform
-	 */
+     * @param domDoc                  DOM object
+     * @throws java.io.IOException    I/O exception
+     * @return                        XML as String
+     */
 	public static String docToString2(Document domDoc) throws IOException {
 		try {
 			TransformerFactory transFact = TransformerFactory.newInstance();

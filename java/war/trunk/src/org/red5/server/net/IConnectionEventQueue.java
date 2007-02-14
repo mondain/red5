@@ -3,7 +3,7 @@ package org.red5.server.net;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -24,10 +24,22 @@ import java.util.Iterator;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.event.IEvent;
 
+/**
+ * Queue of connection events
+ */
 public interface IConnectionEventQueue {
-
+    /**
+     * Whether queue has waiting connection events
+     * @param conn       Connection
+     * @return           <code>true</code> if queue has waiting events for connection, <code>false</code> otherwise
+     */
 	public boolean hasEventsWaiting(IConnection conn);
 
-	public Iterator<IEvent> pickupEvents(IConnection conn);
+    /**
+     * Return iterator over waiting events
+     * @param conn       Connection
+     * @return           Iterator over events
+     */
+    public Iterator<IEvent> pickupEvents(IConnection conn);
 
 }

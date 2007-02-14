@@ -3,7 +3,7 @@ package org.red5.server.net.protocol;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,17 +23,16 @@ import org.apache.mina.common.ByteBuffer;
 
 /**
  *  Every protocol encoder should implement this
- *
  */
 public interface SimpleProtocolEncoder {
-
+	
 	/**
 	 * Encodes object with given protocol state to byte buffer
 	 * 
 	 * @param state			Protocol state
 	 * @param out			Object to encode
 	 * @return				Byte buffer with encoded data
-	 * @throws Exception
+	 * @throws Exception    Any decoding exception
 	 */
 	public ByteBuffer encode(ProtocolState state, Object out) throws Exception;
 

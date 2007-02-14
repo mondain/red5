@@ -3,7 +3,7 @@ package org.red5.io.mp3.impl;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -27,24 +27,36 @@ import org.red5.io.ITagReader;
 import org.red5.io.ITagWriter;
 import org.red5.io.mp3.IMP3;
 
+/**
+ * Represents MP3 file
+ */
 public class MP3 implements IMP3 {
-
+    /**
+     * Actual file object
+     */
 	private File file;
 
-	public MP3(File file) {
+    /**
+     * Creates MP3 object using given file
+     * @param file           File object to use
+     */
+    public MP3(File file) {
 		this.file = file;
 	}
 
-	public ITagReader getReader() throws IOException {
+	/** {@inheritDoc} */
+    public ITagReader getReader() throws IOException {
 		FileInputStream stream = new FileInputStream(file);
 		return new MP3Reader(stream);
 	}
 
-	public ITagWriter getWriter() throws IOException {
+	/** {@inheritDoc} */
+    public ITagWriter getWriter() throws IOException {
 		return null;
 	}
 
-	public ITagWriter getAppendWriter() throws IOException {
+	/** {@inheritDoc} */
+    public ITagWriter getAppendWriter() throws IOException {
 		return null;
 	}
 

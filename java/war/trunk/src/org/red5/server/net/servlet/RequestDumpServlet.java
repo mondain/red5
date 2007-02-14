@@ -3,7 +3,7 @@ package org.red5.server.net.servlet;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -32,14 +32,24 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.utils.HexDump;
 
+/**
+ * Servlet that dumps request data
+ */
 public class RequestDumpServlet extends HttpServlet {
 
-	protected static Log log = LogFactory.getLog(RequestDumpServlet.class
-			.getName());
+	private static final long serialVersionUID = -7805924991663536258L;
 
+    /**
+     * Logger
+     */
+    protected static Log log = LogFactory.getLog(RequestDumpServlet.class.getName());
+    /**
+     * AMF MIME type
+     */
 	public static final String APPLICATION_AMF = "application/x-amf";
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
@@ -62,11 +72,7 @@ public class RequestDumpServlet extends HttpServlet {
 			log.info(HexDump.formatHexDump(reqBuffer.getHexDump()));
 
 		} catch (IOException e) {
-
-			e.printStackTrace();
-
-		} finally {
-
+			log.error(e);
 		}
 		log.info("End");
 	}

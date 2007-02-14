@@ -3,7 +3,7 @@ package org.red5.server.adapter;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -41,116 +41,207 @@ import org.springframework.core.io.Resource;
 public class StatefulScopeWrappingAdapter extends AbstractScopeAdapter
 		implements IScopeAware, IAttributeStore {
 
-	protected IScope scope;
+    /**
+     * Wrapped scope
+     */
+    protected IScope scope;
 
-	public void setScope(IScope scope) {
+	/** {@inheritDoc} */
+    public void setScope(IScope scope) {
 		this.scope = scope;
 	}
 
-	public IScope getScope() {
+	/**
+     * Getter for wrapped scope
+     *
+     * @return  Wrapped scope
+     */
+    public IScope getScope() {
 		return scope;
 	}
 
-	public Object getAttribute(String name) {
+	/** {@inheritDoc} */
+    public Object getAttribute(String name) {
 		return scope.getAttribute(name);
 	}
 
-	public Object getAttribute(String name, Object defaultValue) {
+	/** {@inheritDoc} */
+    public Object getAttribute(String name, Object defaultValue) {
 		return scope.getAttribute(name, defaultValue);
 	}
 
-	public Set<String> getAttributeNames() {
+	/** {@inheritDoc} */
+    public Set<String> getAttributeNames() {
 		return scope.getAttributeNames();
 	}
 
-	public boolean hasAttribute(String name) {
+    /**
+     * Wrapper for Scope#getAttributes
+     * @return       Scope attributes map
+     */
+    public Map<String, Object> getAttributes() {
+        return scope.getAttributes();
+    }
+
+    /** {@inheritDoc} */
+    public boolean hasAttribute(String name) {
 		return scope.hasAttribute(name);
 	}
 
-	public boolean removeAttribute(String name) {
+	/** {@inheritDoc} */
+    public boolean removeAttribute(String name) {
 		return scope.removeAttribute(name);
 	}
 
-	public void removeAttributes() {
+	/** {@inheritDoc} */
+    public void removeAttributes() {
 		scope.removeAttributes();
 	}
 
-	public boolean setAttribute(String name, Object value) {
+	/** {@inheritDoc} */
+    public boolean setAttribute(String name, Object value) {
 		return scope.setAttribute(name, value);
 	}
 
-	public void setAttributes(IAttributeStore values) {
+	/** {@inheritDoc} */
+    public void setAttributes(IAttributeStore values) {
 		scope.setAttributes(values);
 	}
 
-	public void setAttributes(Map<String, Object> values) {
+	/** {@inheritDoc} */
+    public void setAttributes(Map<String, Object> values) {
 		scope.setAttributes(values);
 	}
 
-	public boolean createChildScope(String name) {
+    /**
+     * Creates child scope
+     * @param name        Child scope name
+     * @return            <code>true</code> on success, <code>false</code> otherwise
+     */
+    public boolean createChildScope(String name) {
 		return scope.createChildScope(name);
 	}
 
-	public IScope getChildScope(String name) {
+    /**
+     * Return child scope
+     * @param name        Child scope name
+     * @return            Child scope with given name
+     */
+    public IScope getChildScope(String name) {
 		return scope.getScope(name);
 	}
 
-	public Iterator<String> getChildScopeNames() {
+	/**
+     * Iterator for child scope names
+     *
+     * @return  Iterator for child scope names
+     */
+    public Iterator<String> getChildScopeNames() {
 		return scope.getScopeNames();
 	}
 
-	public Set<IClient> getClients() {
+	/**
+     * Getter for set of clients
+     *
+     * @return  Set of clients
+     */
+    public Set<IClient> getClients() {
 		return scope.getClients();
 	}
 
-	public Iterator<IConnection> getConnections() {
+	/**
+     * Return for connections iterator
+     *
+     * @return  Connections
+     */
+    public Iterator<IConnection> getConnectionsIter() {
 		return scope.getConnections();
 	}
 
-	public IContext getContext() {
+
+    /**
+     * Getter for context
+     *
+     * @return Value for context
+     */
+    public IContext getContext() {
 		return scope.getContext();
 	}
 
-	public int getDepth() {
+	/**
+     * Getter for depth
+     *
+     * @return Value for depth
+     */
+    public int getDepth() {
 		return scope.getDepth();
 	}
 
-	public String getName() {
+	/**
+     * Getter for name
+     *
+     * @return Value for name
+     */
+    public String getName() {
 		return scope.getName();
 	}
 
-	public IScope getParent() {
+	/**
+     * Return  parent scope
+     *
+     * @return  Parent scope
+     */
+    public IScope getParent() {
 		return scope.getParent();
 	}
 
-	public String getPath() {
+	/**
+     * Getter for stateful scope path
+     *
+     * @return Value for path
+     */
+    public String getPath() {
 		return scope.getPath();
 	}
 
-	public boolean hasChildScope(String name) {
+    /**
+     * Whether this scope has a child scope with given name
+     * @param name       Child scope name
+     * @return           <code>true</code> if it does have it, <code>false</code> otherwise
+     */
+    public boolean hasChildScope(String name) {
 		return scope.hasChildScope(name);
 	}
 
-	public boolean hasParent() {
+    /**
+     * If this scope has a parent
+     * @return            <code>true</code> if this scope has a parent scope, <code>false</code> otherwise
+     */
+    public boolean hasParent() {
 		return scope.hasParent();
 	}
-
+	
 	public Set<IConnection> lookupConnections(IClient client) {
 		return scope.lookupConnections(client);
 	}
-
+	
 	/**
 	 * Returns array of resources (as Spring core Resource class instances)
 	 * 
 	 * @param pattern			Resource pattern
 	 * @return					Returns array of resources
-	 * @throws IOException		IO exxception
+	 * @throws IOException		I/O exception
 	 */
 	public Resource[] getResources(String pattern) throws IOException {
 		return scope.getResources(pattern);
 	}
 
-	public Resource getResource(String path) {
+    /**
+     * Return resource by name
+     * @param path              Resource name
+     * @return                  Resource with given name
+     */
+    public Resource getResource(String path) {
 		return scope.getResource(path);
 	}
 

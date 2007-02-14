@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,21 +23,38 @@ import org.apache.mina.common.ByteBuffer;
 import org.red5.io.IoConstants;
 import org.red5.server.stream.IStreamData;
 
+/**
+ * Video data event
+ */
 public class VideoData extends BaseEvent implements IoConstants, IStreamData {
 
-	public static enum FrameType {
+    /**
+     * Videoframe type
+     */
+    public static enum FrameType {
 		UNKNOWN, KEYFRAME, INTERFRAME, DISPOSABLE_INTERFRAME,
 	}
 
-	protected ByteBuffer data = null;
+    /**
+     * Video data
+     */
+    protected ByteBuffer data;
 
-	private FrameType frameType = FrameType.UNKNOWN;
+    /**
+     * Frame type, unknown by default
+     */
+    private FrameType frameType = FrameType.UNKNOWN;
 
-	public VideoData() {
+	/** Constructs a new VideoData. */
+    public VideoData() {
 		this(ByteBuffer.allocate(0).flip());
 	}
 
-	public VideoData(ByteBuffer data) {
+    /**
+     * Create video data event with given data buffer
+     * @param data            Video data
+     */
+    public VideoData(ByteBuffer data) {
 		super(Type.STREAM_DATA);
 		this.data = data;
 		if (data != null && data.limit() > 0) {
@@ -57,28 +74,36 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData {
 		}
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public byte getDataType() {
 		return TYPE_VIDEO_DATA;
 	}
 
-	public ByteBuffer getData() {
+	/** {@inheritDoc} */
+    public ByteBuffer getData() {
 		return data;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String toString() {
 		return "Video  ts: " + getTimestamp();
 	}
 
-	public FrameType getFrameType() {
+	/**
+     * Getter for frame type
+     *
+     * @return  Type of video frame
+     */
+    public FrameType getFrameType() {
 		return frameType;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	protected void releaseInternal() {
 		if (data != null) {
-			data.release();
 			data = null;
 		}
 	}

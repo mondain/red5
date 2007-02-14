@@ -3,7 +3,7 @@ package org.red5.io.mp3.impl;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -26,20 +26,26 @@ import org.red5.io.BaseStreamableFileService;
 import org.red5.io.IStreamableFile;
 import org.red5.io.mp3.IMP3Service;
 
+/**
+ * Streamable file service extension for MP3
+ */
 public class MP3Service extends BaseStreamableFileService implements
 		IMP3Service {
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String getPrefix() {
 		return "mp3";
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String getExtension() {
 		return ".mp3";
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public IStreamableFile getStreamableFile(File file) throws IOException {
 		return new MP3(file);
 	}

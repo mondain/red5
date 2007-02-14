@@ -3,7 +3,7 @@ package org.red5.server.net.remoting.message;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -24,29 +24,59 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Packet of remote calls. Used by RemoteProtocolDecoder.
+ */
 public class RemotingPacket {
-
+    /**
+     * HTTP request object
+     */
 	protected HttpServletRequest request;
-
+    /**
+     * Byte buffer data
+     */
 	protected ByteBuffer data;
-
+    /**
+     * List of calls
+     */
 	protected List calls;
-
+    /**
+     * Scope path
+     */
 	protected String scopePath;
 
-	public RemotingPacket(List calls) {
+    /**
+     * Create remoting packet from list of pending calls
+     * @param calls              List of call objects
+     */
+    public RemotingPacket(List calls) {
 		this.calls = calls;
 	}
 
-	public List getCalls() {
+	/**
+     * Getter for calls.
+     *
+     * @return   List of remote calls
+     */
+    public List getCalls() {
 		return calls;
 	}
 
-	public void setScopePath(String path) {
+	/**
+     * Setter for scope path.
+     *
+     * @param path Value to set for property 'scopePath'.
+     */
+    public void setScopePath(String path) {
 		scopePath = path;
 	}
 
-	public String getScopePath() {
+	/**
+     * Getter for property scope path.
+     *
+     * @return  Scope path to set
+     */
+    public String getScopePath() {
 		return scopePath;
 	}
 

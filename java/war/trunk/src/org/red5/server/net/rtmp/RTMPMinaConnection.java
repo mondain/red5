@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -29,14 +29,28 @@ import org.apache.mina.common.IoSession;
 import org.red5.server.net.rtmp.message.Packet;
 
 public class RTMPMinaConnection extends RTMPConnection {
-
+    /**
+     * Logger
+     */
 	protected static Log log = LogFactory.getLog(RTMPMinaConnection.class
 			.getName());
 
-	private IoSession ioSession;
+    /**
+     * MINA I/O session, connection between two endpoints
+     */
+    private IoSession ioSession;
 
-	public RTMPMinaConnection(IoSession protocolSession) {
+	/** Constructs a new RTMPMinaConnection. */
+    RTMPMinaConnection() {
 		super(PERSISTENT);
+	}
+
+	/**
+     * Setter for MINA I/O session (connection)
+     *
+     * @param protocolSession  Protocol session
+     */
+    void setIoSession(IoSession protocolSession) {
 		SocketAddress remote = protocolSession.getRemoteAddress();
 		if (remote instanceof InetSocketAddress) {
 			remoteAddress = ((InetSocketAddress) remote).getAddress()
@@ -48,45 +62,63 @@ public class RTMPMinaConnection extends RTMPConnection {
 		}
 		this.ioSession = protocolSession;
 	}
-
-	public IoSession getIoSession() {
+	
+	/**
+     * Return MINA I/O session
+     *
+     * @return MINA O/I session, connection between two endpoints
+     */
+    public IoSession getIoSession() {
 		return ioSession;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void rawWrite(ByteBuffer out) {
 		ioSession.write(out);
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void write(Packet out) {
 		writingMessage(out);
 		ioSession.write(out);
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public boolean isConnected() {
 		return super.isConnected() && ioSession.isConnected();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public long getReadBytes() {
 		return ioSession.getReadBytes();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public long getWrittenBytes() {
 		return ioSession.getWrittenBytes();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public long getPendingMessages() {
-		return ioSession.getScheduledWriteRequests();
+		return ioSession.getScheduledWriteMessages();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void close() {
 		super.close();
 		ioSession.close();
+	}
+	
+	/** {@inheritDoc} */
+    @Override
+	protected void onInactive() {
+		this.close();
 	}
 }

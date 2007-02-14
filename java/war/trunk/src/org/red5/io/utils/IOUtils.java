@@ -3,7 +3,7 @@ package org.red5.io.utils;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -24,11 +24,22 @@ import java.nio.charset.Charset;
 import org.apache.commons.logging.Log;
 import org.apache.mina.common.ByteBuffer;
 
+/**
+ * Misc I/O util methods
+ */
 public class IOUtils {
 
-	public static final Charset CHARSET = Charset.forName("UTF-8");
+    /**
+     * UTF-8 is used
+     */
+    public static final Charset CHARSET = Charset.forName("UTF-8");
 
-	public static void writeReverseInt(ByteBuffer out, int value) {
+    /**
+     * Writes integer in reverse order
+     * @param out         Data buffer to fill
+     * @param value       Integer
+     */
+    public static void writeReverseInt(ByteBuffer out, int value) {
 		byte[] bytes = new byte[4];
 		ByteBuffer rev = ByteBuffer.allocate(4);
 		rev.putInt(value);
@@ -37,10 +48,15 @@ public class IOUtils {
 		bytes[2] = rev.get();
 		bytes[1] = rev.get();
 		bytes[0] = rev.get();
-		rev.release();
 		out.put(bytes);
-	}
+		rev = null;
+    }
 
+    /**
+     * Writes medium integer
+     * @param out           Output buffer
+     * @param value         Integer to write
+     */
 	public static void writeMediumInt(ByteBuffer out, int value) {
 		byte[] bytes = new byte[3];
 		bytes[0] = (byte) ((value >>> 16) & 0x000000FF);
@@ -49,7 +65,12 @@ public class IOUtils {
 		out.put(bytes);
 	}
 
-	public static int readUnsignedMediumInt(ByteBuffer in) {
+    /**
+     * Reads unsigned medium integer
+     * @param in              Unsigned medium int source
+     * @return                int value
+     */
+    public static int readUnsignedMediumInt(ByteBuffer in) {
 		//byte[] bytes = new byte[3];
 		//in.get(bytes);
 		int val = 0;
@@ -59,7 +80,12 @@ public class IOUtils {
 		return val;
 	}
 
-	public static int readMediumInt(ByteBuffer in) {
+    /**
+     * Reads medium int
+     * @param in       Source
+     * @return         int value
+     */
+    public static int readMediumInt(ByteBuffer in) {
 		ByteBuffer buf = ByteBuffer.allocate(4);
 		buf.put((byte) 0x00);
 		buf.put(in.get());
@@ -69,7 +95,12 @@ public class IOUtils {
 		return buf.getInt();
 	}
 
-	public static int readMediumInt2(ByteBuffer in) {
+    /**
+     * Alternate method for reading medium int
+     * @param in       Source
+     * @return         int value
+     */
+    public static int readMediumInt2(ByteBuffer in) {
 		byte[] bytes = new byte[3];
 		in.get(bytes);
 		int val = 0;
@@ -82,7 +113,12 @@ public class IOUtils {
 		return val;
 	}
 
-	public static int readReverseInt(ByteBuffer in) {
+    /**
+     * Reads reverse int
+     * @param in       Source
+     * @return         int
+     */
+    public static int readReverseInt(ByteBuffer in) {
 		byte[] bytes = new byte[4];
 		in.get(bytes);
 		int val = 0;
@@ -93,7 +129,13 @@ public class IOUtils {
 		return val;
 	}
 
-	public static void debug(Log log, String msg, ByteBuffer buf) {
+    /**
+     * Format debug message
+     * @param log          Logger
+     * @param msg          Message
+     * @param buf          Byte buffer to debug
+     */
+    public static void debug(Log log, String msg, ByteBuffer buf) {
 		if (log.isDebugEnabled()) {
 
 			log.debug(msg);
@@ -108,7 +150,12 @@ public class IOUtils {
 		}
 	}
 
-	public static String toString(ByteBuffer buf) {
+    /**
+     * String representation of byte buffer
+     * @param buf           Byte buffer
+     * @return              String representation
+     */
+    public static String toString(ByteBuffer buf) {
 		int pos = buf.position();
 		int limit = buf.limit();
 		final java.nio.ByteBuffer strBuf = buf.buf();

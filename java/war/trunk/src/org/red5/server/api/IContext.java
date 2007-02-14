@@ -3,7 +3,7 @@ package org.red5.server.api;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -25,7 +25,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 /**
- * The current context, this object basically wraps the spring context
+ * The current context, this object basically wraps the Spring context
  * or in the case of the .Net version, any similar system.
  * 
  */
@@ -33,7 +33,12 @@ public interface IContext extends ResourcePatternResolver {
 
 	public static final String ID = "red5.context";
 
-	public ApplicationContext getApplicationContext();
+	/**
+     * Getter for application context
+     *
+     * @return  Application context
+     */
+    ApplicationContext getApplicationContext();
 
 	// public IScopeResolver getScopeResolver();
 	/**
@@ -42,7 +47,7 @@ public interface IContext extends ResourcePatternResolver {
 	 * 
 	 * @return	Client registry object
 	 */
-	public IClientRegistry getClientRegistry();
+    IClientRegistry getClientRegistry();
 
 	/**
 	 * Returns service invoker object. Service invokers are objects that make
@@ -50,25 +55,25 @@ public interface IContext extends ResourcePatternResolver {
 	 * 
 	 * @return		Service invoker object
 	 */
-	public IServiceInvoker getServiceInvoker();
+    IServiceInvoker getServiceInvoker();
 
 	/**
 	 * Returns persistence store object, a storage for persistent objects like
 	 * persistent SharedObjects.
 	 * 
-	 * @return	persistence store object
+	 * @return	Persistence store object
 	 */
-	public IPersistenceStore getPersistanceStore();
+    IPersistenceStore getPersistanceStore();
 
 	/**
-	 * Returns scope handler (object that handler all actions related to the
+	 * Returns scope handler (object that handle all actions related to the
 	 * scope) by path. See {@link IScopeHandler} for details.
 	 * 
 	 * @param path
 	 *            Path of scope handler
 	 * @return		Scope handler
 	 */
-	public IScopeHandler lookupScopeHandler(String path);
+    IScopeHandler lookupScopeHandler(String path);
 
 	/**
 	 * Returns scope by path. You can think of IScope as of tree items, used to
@@ -79,14 +84,14 @@ public interface IContext extends ResourcePatternResolver {
 	 *            Path of scope
 	 * @return		IScope object
 	 */
-	public IScope resolveScope(String path);
+    IScope resolveScope(String path);
 
 	/**
 	 * Returns global scope reference
 	 * 
 	 * @return	global scope reference
 	 */
-	public IScope getGlobalScope();
+    IScope getGlobalScope();
 
 	/**
 	 * Returns service by name. 
@@ -95,7 +100,7 @@ public interface IContext extends ResourcePatternResolver {
 	 *            Name of service
 	 * @return				Service object
 	 */
-	public Object lookupService(String serviceName);
+    Object lookupService(String serviceName);
 
 	/**
 	 * Returns bean by ID
@@ -104,7 +109,7 @@ public interface IContext extends ResourcePatternResolver {
 	 *            Bean ID
 	 * @return			Given bean instance
 	 */
-	public Object getBean(String beanId);
+    Object getBean(String beanId);
 
 	/**
 	 * Returns core service by bean id
@@ -113,7 +118,7 @@ public interface IContext extends ResourcePatternResolver {
 	 *            Bean ID
 	 * @return			Core service
 	 */
-	public Object getCoreService(String beanId);
+    Object getCoreService(String beanId);
 
 	/**
 	 * Returns IMappingStrategy object

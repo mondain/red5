@@ -3,7 +3,7 @@ package org.red5.server;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -29,15 +29,38 @@ import org.red5.server.api.ScopeUtils;
 import org.red5.server.api.event.IEvent;
 import org.red5.server.api.event.IEventListener;
 
-public class BasicScope extends PersistableAttributeStore implements
+/**
+ *  Generalizations of one of main Red5 object types, Scope.
+ *  Basic scope is a persistable attribute store with event handling functionality
+ *
+ * @see org.red5.server.api.IScope
+ * @see org.red5.server.Scope
+ */
+public abstract class BasicScope extends PersistableAttributeStore implements
 		IBasicScope {
-
+    /**
+     * Parent scope. Scopes can be nested.
+     *
+     * @see org.red5.server.api.IScope
+     */
 	protected IScope parent;
-
+    /**
+     * List of event listeners
+     */
 	protected Set<IEventListener> listeners;
+    /**
+     * Scope persistence storate type
+     */
+	protected String persistenceClass;
 
-	protected String persistenceClass = null;
-
+    /**
+     * Constructor for basic scope
+     *
+     * @param parent           Parent scope
+     * @param type             Scope type
+     * @param name             Scope name. Used to identify scopes in application, must be unique among scopes of one level
+     * @param persistent       Whether scope is persistent
+     */
 	public BasicScope(IScope parent, String type, String name,
 			boolean persistent) {
 		super(type, name, null, persistent);
@@ -45,27 +68,47 @@ public class BasicScope extends PersistableAttributeStore implements
 		this.listeners = new HashSet<IEventListener>();
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public boolean hasParent() {
 		return true;
 	}
 
+    /**
+     *{@inheritDoc}
+     */
 	public IScope getParent() {
 		return parent;
 	}
 
+    /**
+     *{@inheritDoc}
+     */
 	public int getDepth() {
 		return parent.getDepth() + 1;
 	}
 
+    /**
+     *{@inheritDoc}
+     */
 	@Override
 	public String getPath() {
-		return parent.getPath() + "/" + parent.getName();
+		return parent.getPath() + '/' + parent.getName();
 	}
 
+    /**
+     * Add event listener to list of notified objects
+     * @param listener        Listening object
+     */
 	public void addEventListener(IEventListener listener) {
 		listeners.add(listener);
 	}
 
+    /**
+     * Remove event listener from list of listeners
+     * @param listener            Listener to remove
+     */
 	public void removeEventListener(IEventListener listener) {
 		listeners.remove(listener);
 		if (ScopeUtils.isRoom(this) && isPersistent() && listeners.isEmpty()) {
@@ -74,26 +117,49 @@ public class BasicScope extends PersistableAttributeStore implements
 		}
 	}
 
+    /**
+     * Return listeners list iterator
+     *
+     * @return  Listeners list iterator
+     */
 	public Iterator<IEventListener> getEventListeners() {
 		return listeners.iterator();
 	}
 
-	@Override
+    /**
+     * Setter for persistent property
+     * @param persistent       Persistence flag value
+     */
+    @Override
 	public void setPersistent(boolean persistent) {
 		this.persistent = persistent;
 	}
 
-	public boolean handleEvent(IEvent event) {
+    /**
+     * Handles event. To be implemented in subclass realization
+     *
+     * @param event          Event context
+     * @return               Event handling result
+     */
+    public boolean handleEvent(IEvent event) {
 		// do nothing.
 		return false;
 	}
 
+    /**
+     * Notifies listeners on event. Current implementation is empty. To be implemented in subclass realization
+     * @param event      Event to broadcast
+     */
 	public void notifyEvent(IEvent event) {
-		// TODO Auto-generated method stub
 
 	}
 
-	public void dispatchEvent(IEvent event) {
+    /**
+     * Dispatches event (notifies all listeners)
+     *
+     * @param event        Event to dispatch
+     */
+    public void dispatchEvent(IEvent event) {
 		for (IEventListener listener : listeners) {
 			if (event.getSource() == null || event.getSource() != listener) {
 				listener.notifyEvent(event);
@@ -101,22 +167,32 @@ public class BasicScope extends PersistableAttributeStore implements
 		}
 	}
 
-	public Iterator<IBasicScope> iterator() {
-		// TODO Auto-generated method stub
+    /**
+     * Getter for subscopes list iterator. Returns null because this is a base implementation
+     *
+     * @return           Iterator for subscopes
+     */
+    public Iterator<IBasicScope> iterator() {
 		return null;
 	}
 
-	public class EmptyBasicScopeIterator implements Iterator<IBasicScope> {
+    /**
+     * Iterator for basic scope
+     */
+    public class EmptyBasicScopeIterator implements Iterator<IBasicScope> {
 
-		public boolean hasNext() {
+		/** {@inheritDoc} */
+        public boolean hasNext() {
 			return false;
 		}
 
-		public IBasicScope next() {
+		/** {@inheritDoc} */
+        public IBasicScope next() {
 			return null;
 		}
 
-		public void remove() {
+		/** {@inheritDoc} */
+        public void remove() {
 			// nothing
 		}
 

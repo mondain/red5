@@ -3,7 +3,7 @@ package org.red5.server.messaging;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -36,7 +36,8 @@ public class InMemoryPushPushPipe extends AbstractPipe {
 	private static final Log log = LogFactory
 			.getLog(InMemoryPushPushPipe.class);
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public boolean subscribe(IConsumer consumer, Map paramMap) {
 		if (!(consumer instanceof IPushableConsumer)) {
 			throw new IllegalArgumentException(
@@ -50,7 +51,8 @@ public class InMemoryPushPushPipe extends AbstractPipe {
 		return success;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public boolean subscribe(IProvider provider, Map paramMap) {
 		boolean success = super.subscribe(provider, paramMap);
 		if (success) {
@@ -60,15 +62,18 @@ public class InMemoryPushPushPipe extends AbstractPipe {
 		return success;
 	}
 
-	public IMessage pullMessage() {
+	/** {@inheritDoc} */
+    public IMessage pullMessage() {
 		return null;
 	}
 
-	public IMessage pullMessage(long wait) {
+	/** {@inheritDoc} */
+    public IMessage pullMessage(long wait) {
 		return null;
 	}
 
-	public void pushMessage(IMessage message) {
+	/** {@inheritDoc} */
+    public void pushMessage(IMessage message) {
 		IPushableConsumer[] consumerArray = null;
 		synchronized (consumers) {
 			consumerArray = consumers.toArray(new IPushableConsumer[] {});

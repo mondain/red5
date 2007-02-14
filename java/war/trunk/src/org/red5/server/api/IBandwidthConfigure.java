@@ -3,7 +3,7 @@ package org.red5.server.api;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -36,7 +36,12 @@ public interface IBandwidthConfigure {
 	 */
 	void setAudioBandwidth(long bw);
 
-	long getAudioBandwidth();
+	/**
+     * Return bandwidth available for audio streaming
+     *
+     * @return  Audio bandwidth
+     */
+    long getAudioBandwidth();
 
 	/**
 	 * Set bandwidth available for video streaming
@@ -46,7 +51,12 @@ public interface IBandwidthConfigure {
 	 */
 	void setVideoBandwidth(long bw);
 
-	long getVideoBandwidth();
+	/**
+     * Return bandwidth available for video streaming
+     *
+     * @return  Video bandwidth
+     */
+    long getVideoBandwidth();
 
 	/**
 	 * Set overall bandwidth available
@@ -56,7 +66,12 @@ public interface IBandwidthConfigure {
 	 */
 	void setOverallBandwidth(long bw);
 
-	long getOverallBandwidth();
+	/**
+     * Getter for overall bandwidth
+     *
+     * @return  Overall bandwidth
+     */
+    long getOverallBandwidth();
 
 	/**
 	 * Set the upstream bandwidth to be notified to the client.
@@ -71,8 +86,7 @@ public interface IBandwidthConfigure {
 	 * Get the upstream bandwidth to be notified to the client.
 	 * Upstream is the data that is sent from the client to the server.
 	 * 
-	 * @param bw
-	 *            Bandwidth
+     * @return      Upstream (from client to server) bandwidth configuration
 	 */
 	long getUpstreamBandwidth();
 
@@ -85,7 +99,12 @@ public interface IBandwidthConfigure {
 	 */
 	void setDownstreamBandwidth(long bw);
 
-	long getDownstreamBandwidth();
+	/**
+     * Getter for downstream bandwidth
+     *
+     * @return Downstream bandwidth, from server to client
+     */
+    long getDownstreamBandwidth();
 
 	/**
 	 * Set the maximum amount of burst in Byte.
@@ -96,7 +115,12 @@ public interface IBandwidthConfigure {
 	 */
 	void setMaxBurst(long maxBurst);
 
-	long getMaxBurst();
+	/**
+     * Getter for max burst value
+     *
+     * @return Max burst value
+     */
+    long getMaxBurst();
 
 	/**
 	 * Set the burst amount in Byte. The burst amount controls
@@ -108,7 +132,13 @@ public interface IBandwidthConfigure {
 	 */
 	void setBurst(long burst);
 
-	long getBurst();
+	/**
+     * Getter for burst.
+     *
+     * @return  Burst value
+     */
+    long getBurst();
 
-	IBandwidthConfigure clone();
+	/** {@inheritDoc} */
+    IBandwidthConfigure clone() throws CloneNotSupportedException;
 }

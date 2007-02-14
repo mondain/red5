@@ -3,7 +3,7 @@ package org.red5.server.api.stream.support;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,13 +22,25 @@ package org.red5.server.api.stream.support;
 import org.red5.server.api.stream.IPlayItem;
 import org.red5.server.messaging.IMessageInput;
 
+/**
+ * Simple playlist item implementation
+ */
 public class SimplePlayItem implements IPlayItem {
-	private long length = -1;
-
+    /**
+     * Length
+     */
+    private long length = -1;
+    /**
+     * Playlist item name
+     */
 	private String name;
-
+    /**
+     * Start mark
+     */
 	private long start = -2;
-
+    /**
+     * Message source
+     */
 	private IMessageInput msgInput;
 
 	/**
@@ -69,25 +81,45 @@ public class SimplePlayItem implements IPlayItem {
 	/**
 	 * Alias for getMessageInput
 	 * 
-	 * @return
+	 * @return      Message input source
 	 */
 	public IMessageInput getMsgInput() {
 		return msgInput;
 	}
 
-	public void setMsgInput(IMessageInput msgInput) {
+	/**
+     * Setter for message input
+     *
+     * @param msgInput Message input
+     */
+    public void setMsgInput(IMessageInput msgInput) {
 		this.msgInput = msgInput;
 	}
 
-	public void setLength(long length) {
+	/**
+     * Setter for length
+     *
+     * @param length Item length.
+     */
+    public void setLength(long length) {
 		this.length = length;
 	}
 
-	public void setName(String name) {
+	/**
+     * Setter name
+     *
+     * @param name Item name
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 
-	public void setStart(long start) {
+	/**
+     * Setter for start.
+     *
+     * @param start Start position.
+     */
+    public void setStart(long start) {
 		this.start = start;
 	}
 

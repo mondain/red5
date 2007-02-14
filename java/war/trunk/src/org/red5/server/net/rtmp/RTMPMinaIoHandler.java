@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -31,33 +31,77 @@ import org.apache.mina.transport.socket.nio.SocketSessionConfig;
 import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.message.Constants;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
-public class RTMPMinaIoHandler extends IoHandlerAdapter {
-
+/**
+ * Handles all RTMP protocol events fired by MINA framework
+ */
+public class RTMPMinaIoHandler extends IoHandlerAdapter
+implements ApplicationContextAware {
+    /**
+     * Logger
+     */
 	protected static Log log = LogFactory.getLog(RTMPMinaIoHandler.class
 			.getName());
 
-	protected RTMPHandler handler;
+    /**
+     * RTMP events handler
+     */
+    protected IRTMPHandler handler;
+    /**
+     * Mode
+     */
+    protected boolean mode = RTMP.MODE_SERVER;
+    /**
+     * Application context
+     */
+	protected ApplicationContext appCtx;
 
-	public void setHandler(RTMPHandler handler) {
+    /**
+     * RTMP protocol codec factory
+     */
+    private ProtocolCodecFactory codecFactory = null;
+
+    /**
+     * Setter for handler.
+     *
+     * @param handler  RTMP events handler
+     */
+    public void setHandler(IRTMPHandler handler) {
 		this.handler = handler;
 	}
+	
+	/**
+     * Setter for mode.
+     *
+     * @param mode     <code>true</code> if handler should work in server mode, <code>false</code> otherwise
+     */
+    public void setMode(boolean mode) {
+		this.mode = mode;
+	}
 
-	private ProtocolCodecFactory codecFactory = null;
-
-	public void setCodecFactory(ProtocolCodecFactory codecFactory) {
+	/**
+     * Setter for codec factory.
+     *
+     * @param codecFactory  RTMP protocol codec factory
+     */
+    public void setCodecFactory(ProtocolCodecFactory codecFactory) {
 		this.codecFactory = codecFactory;
 	}
 
 	//	 ------------------------------------------------------------------------------
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void exceptionCaught(IoSession session, Throwable cause)
 			throws Exception {
 		log.debug("Exception caught", cause);
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void messageReceived(IoSession session, Object in) throws Exception {
 		log.debug("messageRecieved");
 		final RTMPMinaConnection conn = (RTMPMinaConnection) session
@@ -73,40 +117,68 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		handler.messageReceived(conn, state, in);
 	}
 
-	private void rawBufferRecieved(ProtocolState state, ByteBuffer in,
+    /**
+     * Handle raw buffer receiving event
+     * @param state        Protocol state
+     * @param in           Data buffer
+     * @param session      I/O session, that is, connection between two endpoints
+     */
+    private void rawBufferRecieved(ProtocolState state, ByteBuffer in,
 			IoSession session) {
 
 		final RTMP rtmp = (RTMP) state;
+		if (rtmp.getMode() == RTMP.MODE_SERVER) {
+			if (rtmp.getState() != RTMP.STATE_HANDSHAKE) {
+				log.warn("Raw buffer after handshake, something odd going on");
+			}
 
-		if (rtmp.getState() != RTMP.STATE_HANDSHAKE) {
-			log.warn("Raw buffer after handshake, something odd going on");
+			if (log.isDebugEnabled()){
+				log.debug("Handshake 2nd phase");
+				log.debug("handshake size:"+in.remaining());
+			}
+			ByteBuffer out = ByteBuffer.allocate((Constants.HANDSHAKE_SIZE*2)+1);
+			out.put((byte)0x03);
+			out.fill((byte)0x00,Constants.HANDSHAKE_SIZE);
+			out.put(in);
+			out.flip();
+			//in.release();
+			session.write(out); 
+		} else {
+			if (log.isDebugEnabled()) {
+				log.debug("Handshake 3d phase");
+				log.debug("handshake size:"+in.remaining());
+			}
+			in.skip(1);
+			ByteBuffer out = ByteBuffer.allocate(Constants.HANDSHAKE_SIZE);
+			int limit=in.limit();
+			in.limit(in.position()+Constants.HANDSHAKE_SIZE);
+			out.put(in); 
+			out.flip();
+			in.limit(limit);
+			in.skip(Constants.HANDSHAKE_SIZE);
+			session.write(out);
 		}
-
-		ByteBuffer out = ByteBuffer
-				.allocate((Constants.HANDSHAKE_SIZE * 2) + 1);
-
-		if (log.isDebugEnabled()) {
-			log.debug("Writing handshake reply");
-			log.debug("handskake size:" + in.remaining());
-		}
-
-		out.put((byte) 0x03);
-		out.fill((byte) 0x00, Constants.HANDSHAKE_SIZE);
-		out.put(in).flip();
-		//in.release();
-		session.write(out);
-
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void messageSent(IoSession session, Object message) throws Exception {
 		log.debug("messageSent");
+		session.getAttribute(ProtocolState.SESSION_KEY);
 		final RTMPMinaConnection conn = (RTMPMinaConnection) session
 				.getAttachment();
 		handler.messageSent(conn, message);
+		if (mode == RTMP.MODE_CLIENT) {
+			if (message instanceof ByteBuffer) {
+				if (((ByteBuffer)message).limit() == Constants.HANDSHAKE_SIZE) {
+					handler.connectionOpened((RTMPMinaConnection)session.getAttachment(), (RTMP)session.getAttribute(ProtocolState.SESSION_KEY));
+				}
+			}
+		}
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void sessionOpened(IoSession session) throws Exception {
 		// TODO Auto-generated method stub
 
@@ -117,37 +189,61 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		cfg.setTcpNoDelay(true);
 		super.sessionOpened(session);
 
+		RTMP rtmp=(RTMP)session.getAttribute(ProtocolState.SESSION_KEY);
+		if (rtmp.getMode()==RTMP.MODE_CLIENT) {
+			if (log.isDebugEnabled()){
+				log.debug("Handshake 1st phase");
+			}
+			ByteBuffer out = ByteBuffer.allocate(Constants.HANDSHAKE_SIZE+1);
+			out.put((byte)0x03);
+			out.fill((byte)0x00,Constants.HANDSHAKE_SIZE);
+			out.flip();
+			session.write(out);
+		}
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void sessionClosed(IoSession session) throws Exception {
 		final RTMP rtmp = (RTMP) session
 				.getAttribute(ProtocolState.SESSION_KEY);
 		ByteBuffer buf = (ByteBuffer) session.getAttribute("buffer");
 		if (buf != null) {
-			buf.release();
+			buf = null;
 		}
 		final RTMPMinaConnection conn = (RTMPMinaConnection) session
 				.getAttachment();
 		this.handler.connectionClosed(conn, rtmp);
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void sessionCreated(IoSession session) throws Exception {
 		if (log.isDebugEnabled()) {
 			log.debug("Session created");
 		}
 
 		// moved protocol state from connection object to rtmp object
-		session.setAttribute(ProtocolState.SESSION_KEY, new RTMP(
-				RTMP.MODE_SERVER));
+		session.setAttribute(ProtocolState.SESSION_KEY, new RTMP(mode));
 
 		session.getFilterChain().addFirst("protocolFilter",
 				new ProtocolCodecFilter(this.codecFactory));
 		if (log.isDebugEnabled()) {
 			session.getFilterChain().addLast("logger", new LoggingFilter());
 		}
-		session.setAttachment(new RTMPMinaConnection(session));
+		RTMPMinaConnection conn;
+		if (appCtx != null) {
+			conn = (RTMPMinaConnection) appCtx.getBean("rtmpMinaConnection");
+		} else {
+			conn = new RTMPMinaConnection();
+		}
+		conn.setIoSession(session);
+		session.setAttachment(conn);
+	}
+
+	/** {@inheritDoc} */
+    public void setApplicationContext(ApplicationContext appCtx) throws BeansException {
+		this.appCtx = appCtx;
 	}
 
 }

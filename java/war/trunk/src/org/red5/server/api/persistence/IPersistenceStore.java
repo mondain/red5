@@ -3,7 +3,7 @@ package org.red5.server.api.persistence;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -32,10 +32,11 @@ import java.util.Iterator;
 public interface IPersistenceStore {
 
 	/**
-	 * Make the passed object persistent.
+	 * Persist given object.
 	 *  
 	 * @param obj
-	 * 		the object to store
+	 * 		Object to store
+     * @return     <code>true</code> on success, <code>false</code> otherwise
 	 */
 	public boolean save(IPersistable obj);
 
@@ -46,7 +47,7 @@ public interface IPersistenceStore {
 	 * 
 	 * @param name
 	 * 		the name of the object to load
-	 * @return the loaded object or <code>null</code> if no such object was
+	 * @return The loaded object or <code>null</code> if no such object was
 	 *         found
 	 */
 	public IPersistable load(String name);
@@ -65,6 +66,7 @@ public interface IPersistenceStore {
 	 *  
 	 * @param obj
 	 * 		the object to delete
+     * @return        <code>true</code> if object was persisted and thus can be removed, <code>false</code> otherwise
 	 */
 	public boolean remove(IPersistable obj);
 
@@ -73,6 +75,7 @@ public interface IPersistenceStore {
 	 *  
 	 * @param name
 	 * 		the name of the object to delete
+     * @return        <code>true</code> if object was persisted and thus can be removed, <code>false</code> otherwise
 	 */
 	public boolean remove(String name);
 
@@ -80,14 +83,14 @@ public interface IPersistenceStore {
 	 * Return iterator over the names of all already loaded objects in the
 	 * storage.
 	 * 
-	 * @return iterator over all objects
+	 * @return Iterator over all object names
 	 */
 	public Iterator<String> getObjectNames();
 
 	/**
 	 * Return iterator over the already loaded objects in the storage.
 	 * 
-	 * @return iterator over all objects
+	 * @return Iterator over all objects
 	 */
 	public Iterator<IPersistable> getObjects();
 

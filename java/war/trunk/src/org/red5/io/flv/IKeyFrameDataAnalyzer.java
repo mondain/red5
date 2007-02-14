@@ -3,7 +3,7 @@ package org.red5.io.flv;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -21,15 +21,29 @@ package org.red5.io.flv;
 
 import java.io.Serializable;
 
+/**
+ * Analyzes key frame data
+ */
 public interface IKeyFrameDataAnalyzer {
 
-	public KeyFrameMeta analyzeKeyFrames();
+    /**
+     * Analyze and return keyframe metadata
+     * @return           Metadata object
+     */
+    public KeyFrameMeta analyzeKeyFrames();
 
-	public static class KeyFrameMeta implements Serializable {
+    /**
+     * Keyframe metadata
+     */
+    public static class KeyFrameMeta implements Serializable {
 		private static final long serialVersionUID = 5436632873705625365L;
-
+        /**
+         * Keyframe timestamps
+         */
 		public int timestamps[];
-
-		public int positions[];
+        /**
+         * Keyframe positions
+         */
+		public long positions[];
 	}
 }
