@@ -7,8 +7,9 @@ versions of Red5.
 Red5 0.6    (unreleased)
 ------------------------
 Bugfixes:
-- serialization of Maps with non-number keys fixed (APPSERVER-60)
+- serialization of Maps with non-number keys fixed (Jira APPSERVER-60)
 - multiple IO processor threads are used by default
+- memory leak when closing RTMPT connections fixed (Jira APPSERVER-61)
 
 
 Red5 0.6rc2 (2007-02-12)
