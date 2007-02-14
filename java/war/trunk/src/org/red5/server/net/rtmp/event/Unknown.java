@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,28 +22,47 @@ package org.red5.server.net.rtmp.event;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.io.utils.HexDump;
 
+/**
+ * Unknown event
+ */
 public class Unknown extends BaseEvent {
-
-	protected ByteBuffer data = null;
-
+    /**
+     * Event data
+     */
+	protected ByteBuffer data;
+    /**
+     * Type of data
+     */
 	protected byte dataType;
 
-	public Unknown(byte dataType, ByteBuffer data) {
+    /**
+     * Create new unknown event with given data and data type
+     * @param dataType             Data type
+     * @param data                 Event data
+     */
+    public Unknown(byte dataType, ByteBuffer data) {
 		super(Type.SYSTEM);
 		this.dataType = dataType;
 		this.data = data;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public byte getDataType() {
 		return dataType;
 	}
 
-	public ByteBuffer getData() {
+	/**
+     * Getter for data
+     *
+     * @return  Data
+     */
+    public ByteBuffer getData() {
 		return data;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String toString() {
 		final ByteBuffer buf = getData();
 		StringBuffer sb = new StringBuffer();
@@ -52,10 +71,10 @@ public class Unknown extends BaseEvent {
 		return sb.toString();
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	protected void releaseInternal() {
 		if (data != null) {
-			data.release();
 			data = null;
 		}
 	}

@@ -3,7 +3,7 @@ package org.red5.server.net.proxy;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -49,21 +49,32 @@ public class DebugProxyHandler extends IoHandlerAdapter implements
 
 	private ResourceLoader loader;
 
-	private ProtocolCodecFactory codecFactory = null;
+	private ProtocolCodecFactory codecFactory;
 
-	private InetSocketAddress forward = null;
+	private InetSocketAddress forward;
 
 	private String dumpTo = "./dumps/";
 
-	public void setResourceLoader(ResourceLoader loader) {
+	/** {@inheritDoc} */
+    public void setResourceLoader(ResourceLoader loader) {
 		this.loader = loader;
 	}
 
-	public void setCodecFactory(ProtocolCodecFactory codecFactory) {
+	/**
+     * Setter for property 'codecFactory'.
+     *
+     * @param codecFactory Value to set for property 'codecFactory'.
+     */
+    public void setCodecFactory(ProtocolCodecFactory codecFactory) {
 		this.codecFactory = codecFactory;
 	}
 
-	public void setForward(String forward) {
+	/**
+     * Setter for property 'forward'.
+     *
+     * @param forward Value to set for property 'forward'.
+     */
+    public void setForward(String forward) {
 		int split = forward.indexOf(':');
 		String host = forward.substring(0, split);
 		int port = Integer.parseInt(forward.substring(split + 1, forward
@@ -71,11 +82,17 @@ public class DebugProxyHandler extends IoHandlerAdapter implements
 		this.forward = new InetSocketAddress(host, port);
 	}
 
-	public void setDumpTo(String dumpTo) {
+	/**
+     * Setter for property 'dumpTo'.
+     *
+     * @param dumpTo Value to set for property 'dumpTo'.
+     */
+    public void setDumpTo(String dumpTo) {
 		this.dumpTo = dumpTo;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void sessionOpened(IoSession session) throws Exception {
 		// TODO Auto-generated method stub
 
@@ -88,7 +105,8 @@ public class DebugProxyHandler extends IoHandlerAdapter implements
 
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void sessionCreated(IoSession session) throws Exception {
 
 		boolean isClient = session.getRemoteAddress().equals(forward);
@@ -108,8 +126,8 @@ public class DebugProxyHandler extends IoHandlerAdapter implements
 
 		if (true) {
 
-			String fileName = System.currentTimeMillis() + "_"
-					+ forward.getHostName() + "_" + forward.getPort() + "_"
+			String fileName = System.currentTimeMillis() + '_'
+					+ forward.getHostName() + '_' + forward.getPort() + '_'
 					+ (isClient ? "DOWNSTREAM" : "UPSTREAM");
 
 			File headersFile = loader.getResource(dumpTo + fileName + ".cap")
@@ -141,10 +159,13 @@ public class DebugProxyHandler extends IoHandlerAdapter implements
 		if (!isClient) {
 			log.debug("Connecting..");
 			SocketConnector connector = new SocketConnector();
-			ConnectFuture future = connector.connect(forward, this);
+			connector.setHandler(this);
+			ConnectFuture future = connector.connect(forward); //, this);
 			future.join(); // wait for connect, or timeout
 			if (future.isConnected()) {
-				log.debug("Connected: " + forward);
+				if (log.isDebugEnabled()) {
+					log.debug("Connected: " + forward);
+				}
 				IoSession client = future.getSession();
 				client.setAttribute(ProxyFilter.FORWARD_KEY, session);
 				session.setAttribute(ProxyFilter.FORWARD_KEY, client);
@@ -153,16 +174,11 @@ public class DebugProxyHandler extends IoHandlerAdapter implements
 		super.sessionCreated(session);
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void messageReceived(IoSession session, Object in) {
 
 		if (!log.isDebugEnabled()) {
-			if (false) {
-				if (in instanceof ByteBuffer) {
-					ByteBuffer buf = (ByteBuffer) in;
-					buf.release();
-				}
-			}
 			return;
 		}
 

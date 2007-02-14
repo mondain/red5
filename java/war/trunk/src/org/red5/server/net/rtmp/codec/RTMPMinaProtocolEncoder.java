@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.codec;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -26,10 +26,14 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.red5.server.net.protocol.ProtocolState;
 
+/**
+ * Mina protocol encoder for RTMP
+ */
 public class RTMPMinaProtocolEncoder extends RTMPProtocolEncoder implements
 		ProtocolEncoder {
 
-	public void encode(IoSession session, Object message,
+	/** {@inheritDoc} */
+    public void encode(IoSession session, Object message,
 			ProtocolEncoderOutput out) throws ProtocolCodecException {
 		try {
 			final ProtocolState state = (ProtocolState) session
@@ -43,7 +47,8 @@ public class RTMPMinaProtocolEncoder extends RTMPProtocolEncoder implements
 		}
 	}
 
-	public void dispose(IoSession ioSession) throws Exception {
+	/** {@inheritDoc} */
+    public void dispose(IoSession ioSession) throws Exception {
 		// TODO Auto-generated method stub		
 	}
 }

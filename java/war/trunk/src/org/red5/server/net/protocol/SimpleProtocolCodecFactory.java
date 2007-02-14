@@ -3,7 +3,7 @@ package org.red5.server.net.protocol;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -19,10 +19,23 @@ package org.red5.server.net.protocol;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
+/**
+ * Simple protocol codec factory
+ */
 public interface SimpleProtocolCodecFactory {
 
-	public SimpleProtocolDecoder getSimpleDecoder();
+	/**
+     * Getter for simple decoder.
+     *
+     * @return Value for property 'simpleDecoder'.
+     */
+    public SimpleProtocolDecoder getSimpleDecoder();
 
-	public SimpleProtocolEncoder getSimpleEncoder();
+	/**
+     * Getter for simple encoder.
+     *
+     * @return Value for property 'simpleEncoder'.
+     */
+    public SimpleProtocolEncoder getSimpleEncoder();
 
 }

@@ -3,7 +3,7 @@ package org.red5.io.flv.meta;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,6 +22,21 @@ package org.red5.io.flv.meta;
 import java.util.HashMap;
 
 /**
+ * Cue point is metadata marker used to control and accompany video playback with client-side application
+ * events. Each cue point have at least one attribute, timestamp. Timestamp specifies position of cue point in
+ * FLV file.
+ *
+ * <p>Cue points are usually used as event triggers down video flow or navigation points in a file. Cue points are
+ * of two types:
+ * <ul>
+ *  <li>Embedded into FLV or SWF</li>
+ *  <li>External, or added on fly (e.g. with FLVPlayback component or ActionScript) on both server-side and client-side.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>To add cue point trigger event listener at client-side in Flex/Flash application, use NetStream.onCuePoint event
+ * handler.</p>
+ *
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
@@ -40,61 +55,44 @@ public class MetaCue<K, V> extends HashMap<String, Object> implements IMetaCue {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.ICuePoint#setName(java.lang.String)
+	/** {@inheritDoc}
 	 */
 	public void setName(String name) {
 		this.put("name", name);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.ICuePoint#getName()
+	/** {@inheritDoc}
 	 */
 	public String getName() {
 		return (String) this.get("name");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.ICuePoint#setType(java.lang.String)
+	/** {@inheritDoc}
 	 */
 	public void setType(String type) {
 		this.put("type", type);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.ICuePoint#getType()
+	/** {@inheritDoc}
 	 */
 	public String getType() {
 		return (String) this.get("type");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.ICuePoint#setTime(double)
+	/** {@inheritDoc}
 	 */
 	public void setTime(double d) {
 		this.put("time", d);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.ICuePoint#getTime()
+	/** {@inheritDoc}
 	 */
 	public double getTime() {
 		return (Double) this.get("time");
 	}
 
-	public int compareTo(Object arg0) {
+	/** {@inheritDoc} */
+    public int compareTo(Object arg0) {
 		MetaCue cp = (MetaCue) arg0;
 		double cpTime = cp.getTime();
 		double thisTime = this.getTime();
@@ -108,8 +106,9 @@ public class MetaCue<K, V> extends HashMap<String, Object> implements IMetaCue {
 		return 0;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String toString() {
-		return "MetaCue{" + this + "}";
+		return "MetaCue{" + this + '}';
 	}
 }

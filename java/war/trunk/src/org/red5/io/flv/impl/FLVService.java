@@ -3,7 +3,7 @@ package org.red5.io.flv.impl;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -39,61 +39,80 @@ import org.red5.io.object.Serializer;
  */
 public class FLVService extends BaseStreamableFileService implements
 		IFLVService {
-	private Serializer serializer;
 
-	private Deserializer deserializer;
+    /**
+     * Serializer
+     */
+    private Serializer serializer;
 
-	private boolean generateMetadata = false;
+    /**
+     * Deserializer
+     */
+    private Deserializer deserializer;
 
-	@Override
+    /**
+     * Generate FLV metadata?
+     */
+    private boolean generateMetadata;
+
+	/** {@inheritDoc} */
+    @Override
 	public String getPrefix() {
 		return "flv";
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String getExtension() {
 		return ".flv";
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.FLVService#setSerializer(org.red5.io.object.Serializer)
+	/** 
+     * {@inheritDoc}
 	 */
 	public void setSerializer(Serializer serializer) {
 		this.serializer = serializer;
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.FLVService#setDeserializer(org.red5.io.object.Deserializer)
+	/** {@inheritDoc}
 	 */
 	public void setDeserializer(Deserializer deserializer) {
 		this.deserializer = deserializer;
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
+	/** {@inheritDoc}
 	 */
 	@Override
 	public IStreamableFile getStreamableFile(File file) throws IOException {
 		return new FLV(file, generateMetadata);
 	}
 
-	public void setGenerateMetadata(boolean generate) {
+	/**
+     * Generate metadata or not
+     *
+     * @param generate  <code>true</code> if there's need to generate metadata, <code>false</code> otherwise
+     */
+    public void setGenerateMetadata(boolean generate) {
 		generateMetadata = generate;
 	}
 
-	public Serializer getSerializer() {
+	/**
+     * Getter for serializer
+     *
+     * @return  Serializer
+     */
+    public Serializer getSerializer() {
 		return serializer;
 	}
 
-	public Deserializer getDeserializer() {
+	/**
+     * Getter for deserializer
+     *
+     * @return  Deserializer
+     */
+    public Deserializer getDeserializer() {
 		return deserializer;
 	}
 }

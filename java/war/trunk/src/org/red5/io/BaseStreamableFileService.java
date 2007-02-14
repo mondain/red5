@@ -3,7 +3,7 @@ package org.red5.io;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -31,12 +31,15 @@ import java.io.IOException;
 public abstract class BaseStreamableFileService implements
 		IStreamableFileService {
 
-	public abstract String getPrefix();
+	/** {@inheritDoc} */
+    public abstract String getPrefix();
 
-	public abstract String getExtension();
+	/** {@inheritDoc} */
+    public abstract String getExtension();
 
-	public String prepareFilename(String name) {
-		if (name.startsWith(getPrefix() + ":")) {
+	/** {@inheritDoc} */
+    public String prepareFilename(String name) {
+		if (name.startsWith(getPrefix() + ':')) {
 			name = name.substring(getPrefix().length() + 1);
 			if (!name.endsWith(getExtension())) {
 				name = name + getExtension();
@@ -46,13 +49,15 @@ public abstract class BaseStreamableFileService implements
 		return name;
 	}
 
-	public boolean canHandle(File file) {
+	/** {@inheritDoc} */
+    public boolean canHandle(File file) {
 		return file.exists()
 				&& file.getAbsolutePath().toLowerCase()
 						.endsWith(getExtension());
 	}
 
-	public abstract IStreamableFile getStreamableFile(File file)
+	/** {@inheritDoc} */
+    public abstract IStreamableFile getStreamableFile(File file)
 			throws IOException;
 
 }

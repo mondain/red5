@@ -3,7 +3,7 @@ package org.red5.server.net.servlet;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -40,122 +40,169 @@ import org.red5.server.api.event.IEvent;
  * @author Joachim Bauch (jojo@struktur.de)
  */
 public class ServletConnection extends AttributeStore implements IConnection {
-
+    /**
+     * Scope
+     */
 	protected IScope scope;
-
+    /**
+     * Servlet request
+     */
 	protected HttpServletRequest request;
 
-	public ServletConnection(HttpServletRequest request, IScope scope) {
+    /**
+     * Create servlet connection from request and scope
+     * @param request           Servlet request
+     * @param scope             Scope
+     */
+    public ServletConnection(HttpServletRequest request, IScope scope) {
 		this.request = request;
 		this.scope = scope;
 	}
 
-	private void notSupported() {
+    /**
+     * Throws Not supported runtime exception
+     */
+    private void notSupported() {
 		throw new RuntimeException("not supported for this type of connection");
 	}
 
-	public String getType() {
+    /**
+     * Return encoding (AMF0 or AMF3)
+     * @return        Encoding, currently AMF0
+     */
+    public Encoding getEncoding() {
+		return Encoding.AMF0;
+	}
+
+    /** {@inheritDoc} */
+    public String getType() {
 		return IConnection.TRANSIENT;
 	}
 
-	public void initialize(IClient client) {
+	/** {@inheritDoc} */
+    public void initialize(IClient client) {
 		notSupported();
 	}
 
-	public boolean connect(IScope scope) {
-		notSupported();
-		return false;
-	}
-
-	public boolean connect(IScope scope, Object[] params) {
+	/** {@inheritDoc} */
+    public boolean connect(IScope scope) {
 		notSupported();
 		return false;
 	}
 
-	public boolean isConnected() {
+	/** {@inheritDoc} */
+    public boolean connect(IScope scope, Object[] params) {
+		notSupported();
 		return false;
 	}
 
-	public void close() {
+	/** {@inheritDoc} */
+    public boolean isConnected() {
+		return false;
+	}
+
+	/** {@inheritDoc} */
+    public void close() {
 		// Nothing to do.
 	}
 
-	public Map<String, String> getConnectParams() {
-		return new HashMap<String, String>();
+	public Map<String, Object> getConnectParams() {
+		return new HashMap<String, Object>();
 	}
 
-	public IClient getClient() {
+	/** {@inheritDoc} */
+    public IClient getClient() {
 		return null;
 	}
 
-	public String getHost() {
+	/** {@inheritDoc} */
+    public String getHost() {
 		return request.getLocalName();
 	}
 
-	public String getRemoteAddress() {
+	/** {@inheritDoc} */
+    public String getRemoteAddress() {
 		return request.getRemoteAddr();
 	}
 
-	public int getRemotePort() {
+	/** {@inheritDoc} */
+    public int getRemotePort() {
 		return request.getRemotePort();
 	}
 
-	public String getPath() {
+	/** {@inheritDoc} */
+    public String getPath() {
 		String path = request.getContextPath();
 		if (request.getPathInfo() != null) {
 			path += request.getPathInfo();
 		}
-		if (path.startsWith("/")) {
+		if (path.charAt(0) == '/') {
 			path = path.substring(1);
 		}
 		return path;
 	}
 
-	public String getSessionId() {
+	/** {@inheritDoc} */
+    public String getSessionId() {
 		return null;
 	}
 
-	public long getReadBytes() {
+	/** {@inheritDoc} */
+    public long getReadBytes() {
 		return request.getContentLength();
 	}
 
-	public long getWrittenBytes() {
+	/** {@inheritDoc} */
+    public long getWrittenBytes() {
 		return 0;
 	}
 
-	public long getPendingMessages() {
+	/** {@inheritDoc} */
+    public long getPendingMessages() {
 		return 0;
 	}
 
-	public long getPendingVideoMessages() {
+	/**
+     * Return pending video messages number.
+     *
+     * @return  Pending video messages number
+     */
+    public long getPendingVideoMessages() {
 		return 0;
 	}
 
-	public long getReadMessages() {
+	/** {@inheritDoc} */
+    public long getReadMessages() {
 		return 1;
 	}
 
-	public long getWrittenMessages() {
+	/** {@inheritDoc} */
+    public long getWrittenMessages() {
 		return 0;
 	}
 
-	public long getDroppedMessages() {
+	/** {@inheritDoc} */
+    public long getDroppedMessages() {
 		return 0;
 	}
 
-	public void ping() {
+	/** {@inheritDoc} */
+    public void ping() {
 		notSupported();
 	}
 
-	public int getLastPingTime() {
+	/** {@inheritDoc} */
+    public int getLastPingTime() {
 		return -1;
 	}
 
-	public IScope getScope() {
+	/** {@inheritDoc} */
+    public IScope getScope() {
 		return scope;
 	}
 
-	public Iterator<IBasicScope> getBasicScopes() {
+	/** {@inheritDoc} */
+    public Iterator<IBasicScope> getBasicScopes() {
 		notSupported();
 		return null;
 	}
@@ -164,16 +211,19 @@ public class ServletConnection extends AttributeStore implements IConnection {
 		notSupported();
 	}
 
-	public void dispatchEvent(IEvent event) {
+	/** {@inheritDoc} */
+    public void dispatchEvent(IEvent event) {
 		notSupported();
 	}
 
-	public boolean handleEvent(IEvent event) {
+	/** {@inheritDoc} */
+    public boolean handleEvent(IEvent event) {
 		notSupported();
 		return false;
 	}
 
-	public void notifyEvent(IEvent event) {
+	/** {@inheritDoc} */
+    public void notifyEvent(IEvent event) {
 		notSupported();
 	}
 

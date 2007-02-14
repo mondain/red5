@@ -3,7 +3,7 @@ package org.red5.io.mp3.impl;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -28,7 +28,9 @@ package org.red5.io.mp3.impl;
  */
 
 public class MP3Header {
-
+    /**
+     * MP3 bitrates
+     */
 	private static final int[][] BITRATES = {
 			{ 0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416,
 					448, -1 },
@@ -40,7 +42,10 @@ public class MP3Header {
 					256, -1 },
 			{ 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, -1 }, };
 
-	private static final int[][] SAMPLERATES = {
+    /**
+     * Sample rates
+     */
+    private static final int[][] SAMPLERATES = {
 	// Version 2.5
 			{ 11025, 12000, 8000, -1 },
 			// Unknown version
@@ -50,25 +55,54 @@ public class MP3Header {
 			// Version 1
 			{ 44100, 44800, 32000, -1 }, };
 
-	private int data;
+    /**
+     * Frame sync data
+     */
+    private int data;
 
-	private byte audioVersionId;
+    /**
+     * Audio version id
+     */
+    private byte audioVersionId;
 
-	private byte layerDescription;
+    /**
+     * Layer description
+     */
+    private byte layerDescription;
 
-	private boolean protectionBit;
+    /**
+     * Protection bit
+     */
+    private boolean protectionBit;
 
-	private byte bitRateIndex;
+    /**
+     * Bitrate used (index in array of bitrates)
+     */
+    private byte bitRateIndex;
 
-	private byte samplingRateIndex;
+    /**
+     * Sampling rate used (index in array of sample rates)
+     */
+    private byte samplingRateIndex;
 
-	private boolean paddingBit;
+    /**
+     * Padding bit
+     */
+    private boolean paddingBit;
 
-	private byte channelMode;
+    /**
+     * Channel mode
+     */
+    private byte channelMode;
 
-	public MP3Header(int data) throws Exception {
+    /**
+     * Creates MP3 header from frame sync value
+     * @param data              Frame sync data
+     * @throws Exception        On invalid frame synchronization
+     */
+    public MP3Header(int data) throws Exception {
 		if ((data & 0xffe00000) != 0xffe00000) {
-			throw new Exception("invalid frame sync");
+			throw new Exception("invalid frame sync word");
 		}
 
 		this.data = data;
@@ -83,19 +117,39 @@ public class MP3Header {
 		channelMode = (byte) ((data >> 6) & 3);
 	}
 
-	public int getData() {
+	/**
+     * Getter for frame sync word data
+     *
+     * @return  Frame sync word data
+     */
+    public int getData() {
 		return data;
 	}
 
-	public boolean isStereo() {
+	/**
+     * Whether stereo playback mode is used
+     *
+     * @return  <code>true</code> if stereo mode is used, <code>false</code> otherwise
+     */
+    public boolean isStereo() {
 		return (channelMode != 3);
 	}
 
-	public boolean isProtected() {
+	/**
+     * Whether MP3 has protection bit
+     *
+     * @return  <code>true</code> if MP3 has protection bit, <code>false</code> otherwise
+     */
+    public boolean isProtected() {
 		return protectionBit;
 	}
 
-	public int getBitRate() {
+	/**
+     * Getter for bitrate
+     *
+     * @return  File bitrate
+     */
+    public int getBitRate() {
 		int result;
 		switch (audioVersionId) {
 			case 1:
@@ -142,7 +196,12 @@ public class MP3Header {
 		return result * 1000;
 	}
 
-	public int getSampleRate() {
+	/**
+     * Getter for sample rate
+     *
+     * @return  Sampling rate
+     */
+    public int getSampleRate() {
 		return SAMPLERATES[audioVersionId][samplingRateIndex];
 	}
 
@@ -180,7 +239,7 @@ public class MP3Header {
 	/**
 	 * Return the duration of the frame for this header.
 	 * 
-	 * @return the duration in milliseconds
+	 * @return The duration in milliseconds
 	 */
 	public double frameDuration() {
 		switch (layerDescription) {

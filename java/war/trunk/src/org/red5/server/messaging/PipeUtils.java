@@ -3,7 +3,7 @@ package org.red5.server.messaging;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -29,9 +29,9 @@ public class PipeUtils {
 	/**
 	 * Connect a provider/consumer with a pipe.
 	 * 
-	 * @param provider
-	 * @param pipe
-	 * @param consumer
+	 * @param provider         Provider
+	 * @param pipe             Pipe that used to estabilish connection
+	 * @param consumer         Consumer
 	 */
 	public static void connect(IProvider provider, IPipe pipe,
 			IConsumer consumer) {
@@ -42,9 +42,9 @@ public class PipeUtils {
 	/**
 	 * Disconnect a provider/consumer from a pipe.
 	 * 
-	 * @param provider
-	 * @param pipe
-	 * @param consumer
+	 * @param provider         Provider
+	 * @param pipe             Pipe to disconnect from
+	 * @param consumer         Consumer
 	 */
 	public static void disconnect(IProvider provider, IPipe pipe,
 			IConsumer consumer) {

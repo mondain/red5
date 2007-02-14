@@ -3,7 +3,7 @@ package org.red5.server.net.remoting.codec;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -32,19 +32,26 @@ import org.red5.server.net.protocol.SimpleProtocolEncoder;
 import org.red5.server.net.remoting.message.RemotingCall;
 import org.red5.server.net.remoting.message.RemotingPacket;
 
+/**
+ * Remoting protocol encoder
+ */
 public class RemotingProtocolEncoder implements SimpleProtocolEncoder {
+    /**
+     * Logger
+     */
+	protected static Log log = LogFactory.getLog(RemotingProtocolEncoder.class.getName());
+    /**
+     * I/O logger
+     */
+	protected static Log ioLog = LogFactory.getLog(RemotingProtocolEncoder.class.getName() + ".out");
 
-	protected static Log log = LogFactory.getLog(RemotingProtocolEncoder.class
-			.getName());
+    /**
+     * Data serializer
+     */
+    private Serializer serializer;
 
-	protected static Log ioLog = LogFactory
-			.getLog(RemotingProtocolEncoder.class.getName() + ".out");
-
-	private Serializer serializer = null;
-
-	public ByteBuffer encode(ProtocolState state, Object message)
-			throws Exception {
-
+	/** {@inheritDoc} */
+    public ByteBuffer encode(ProtocolState state, Object message) throws Exception {
 		RemotingPacket resp = (RemotingPacket) message;
 		Iterator it = resp.getCalls().iterator();
 		ByteBuffer buf = ByteBuffer.allocate(1024);
@@ -69,12 +76,21 @@ public class RemotingProtocolEncoder implements SimpleProtocolEncoder {
 
 	}
 
+    /**
+     * Dispose I/O session, not implemented yet
+     * @param ioSession         I/O session
+     * @throws Exception        Exception
+     */
 	public void dispose(IoSession ioSession) throws Exception {
 		// TODO Auto-generated method stub
-
 	}
 
-	public void setSerializer(Serializer serializer) {
+	/**
+     * Setter for serializer.
+     *
+     * @param serializer  New serializer
+     */
+    public void setSerializer(Serializer serializer) {
 		this.serializer = serializer;
 	}
 

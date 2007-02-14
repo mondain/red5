@@ -3,7 +3,7 @@ package org.red5.server.stream.message;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -25,11 +25,21 @@ import org.red5.server.net.rtmp.status.Status;
 public class StatusMessage extends AbstractMessage {
 	private Status body;
 
-	public Status getBody() {
+	/**
+     * Getter for property 'body'.
+     *
+     * @return Value for property 'body'.
+     */
+    public Status getBody() {
 		return body;
 	}
 
-	public void setBody(Status body) {
+	/**
+     * Setter for property 'body'.
+     *
+     * @param body Value to set for property 'body'.
+     */
+    public void setBody(Status body) {
 		this.body = body;
 	}
 

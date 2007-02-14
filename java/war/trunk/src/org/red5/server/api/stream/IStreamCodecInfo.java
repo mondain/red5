@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -19,14 +19,40 @@ package org.red5.server.api.stream;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
+/**
+ * Stream codec information
+ */
 public interface IStreamCodecInfo {
-	boolean hasAudio();
+    /**
+     * Has audio support?
+     * @return           <code>true</code> if stream codec has audio support, <code>false</code> otherwise
+     */
+    boolean hasAudio();
 
+    /**
+     * Has video support?
+     * @return           <code>true</code> if stream codec has video support, <code>false</code> otherwise
+     */
 	boolean hasVideo();
 
-	String getAudioCodecName();
+	/**
+     * Getter for audio codec name
+     *
+     * @return Audio codec name
+     */
+    String getAudioCodecName();
 
-	String getVideoCodecName();
+	/**
+     * Getter for video codec name
+     *
+     * @return Video codec name
+     */
+    String getVideoCodecName();
 
-	IVideoStreamCodec getVideoCodec();
+	/**
+     * Return video codec
+     *
+     * @return Video codec used by stream codec
+     */
+    IVideoStreamCodec getVideoCodec();
 }

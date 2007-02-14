@@ -3,7 +3,7 @@ package org.red5.server.api;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -24,22 +24,28 @@ package org.red5.server.api;
  * <p>
  * A flow-controlled object has the bandwidth config property and a link to the
  * parent controllable object.
+ * </p>
  * <p>
  * The parent controllable object acts as the bandwidth provider
  * for this object, thus generates a tree structure, in which
  * the <tt>null</tt> parent means the host. The next depth level
  * is the <tt>IClient</tt>. The following is
  * <tt>IStreamCapableConnection</tt>. The deepest level is
- * <tt>IClientStream</tt>.
+ * <tt>IClientStream</tt>. That is, bandwidth can be separately configured for
+ * client stream or connection, or client or the whole application.
+ * </p>
  * <p>
  * The child node consumes the parent's bandwidth. We say that
  * the child node is the bandwidth consumer while the parent is
  * the bandwidth provider.
+ * </p>
  * <p>
  * We predefine the bandwidth configure for host and the host is
- * always a bandwidth provider. While the streams are always the
+ * always the root bandwidth provider. While the streams are always the
  * bandwidth consumer. The internal node is both provider and
  * consumer.
+ * </p>
+ * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Steven Gong (steven.gong@gmail.com)
  */
@@ -47,7 +53,7 @@ public interface IFlowControllable {
 	/**
 	 * Return parent IFlowControllable object
 	 * 
-	 * @return	parent
+	 * @return	parent     Parent flow controllable
 	 */
 	IFlowControllable getParentFlowControllable();
 
@@ -55,9 +61,14 @@ public interface IFlowControllable {
 	 * Return bandwidth configuration object. Bandwidth configuration
 	 * allows you to set bandwidth size for audio, video and total amount.
 	 * 
-	 * @return	bandwidth configuration object
+	 * @return	Bandwidth configuration object
 	 */
 	IBandwidthConfigure getBandwidthConfigure();
 
-	void setBandwidthConfigure(IBandwidthConfigure config);
+	/**
+     * Setter for bandwidth configuration
+     *
+     * @param config Value to set for bandwidth configuration
+     */
+    void setBandwidthConfigure(IBandwidthConfigure config);
 }

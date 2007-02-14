@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.codec;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -20,6 +20,7 @@ package org.red5.server.net.rtmp.codec;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +28,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mina.common.ByteBuffer;
-import org.red5.io.amf.Input;
+import org.red5.io.amf.AMF;
 import org.red5.io.object.Deserializer;
+import org.red5.io.object.Input;
 import org.red5.io.utils.BufferUtils;
+import org.red5.server.api.IConnection.Encoding;
 import org.red5.server.net.protocol.ProtocolException;
 import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.protocol.SimpleProtocolDecoder;
@@ -38,6 +41,7 @@ import org.red5.server.net.rtmp.event.AudioData;
 import org.red5.server.net.rtmp.event.BytesRead;
 import org.red5.server.net.rtmp.event.ChunkSize;
 import org.red5.server.net.rtmp.event.ClientBW;
+import org.red5.server.net.rtmp.event.FlexMessage;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.event.Invoke;
 import org.red5.server.net.rtmp.event.Notify;
@@ -51,31 +55,51 @@ import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.net.rtmp.message.SharedObjectTypeMapping;
 import org.red5.server.service.Call;
 import org.red5.server.service.PendingCall;
+import org.red5.server.so.FlexSharedObjectMessage;
 import org.red5.server.so.ISharedObjectEvent;
 import org.red5.server.so.ISharedObjectMessage;
 import org.red5.server.so.SharedObjectMessage;
 
+/**
+ * RTMP protocol decoder
+ */
 public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		IEventDecoder {
 
-	protected static Log log = LogFactory.getLog(RTMPProtocolDecoder.class
+    /**
+     * Logger
+     */
+    protected static Log log = LogFactory.getLog(RTMPProtocolDecoder.class
 			.getName());
 
-	protected static Log ioLog = LogFactory.getLog(RTMPProtocolDecoder.class
+    /**
+     * I/O logger
+     */
+    protected static Log ioLog = LogFactory.getLog(RTMPProtocolDecoder.class
 			.getName()
 			+ ".in");
 
-	private Deserializer deserializer = null;
+    /**
+     * Deserializer
+     */
+    private Deserializer deserializer;
 
-	public RTMPProtocolDecoder() {
+	/** Constructs a new RTMPProtocolDecoder. */
+    public RTMPProtocolDecoder() {
 
 	}
 
-	public void setDeserializer(Deserializer deserializer) {
+    /**
+     * Setter for deserializer
+     *
+     * @param deserializer  Deserializer
+     */
+    public void setDeserializer(Deserializer deserializer) {
 		this.deserializer = deserializer;
 	}
 
-	public List decodeBuffer(ProtocolState state, ByteBuffer buffer) {
+	/** {@inheritDoc} */
+    public List decodeBuffer(ProtocolState state, ByteBuffer buffer) {
 
 		final List<Object> result = new LinkedList<Object>();
 
@@ -113,7 +137,14 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		return result;
 	}
 
-	public Object decode(ProtocolState state, ByteBuffer in)
+    /**
+     * Decodes byte buffer
+     * @param state                   Protocol state
+     * @param in                      Input byte buffer
+     * @return                        Decoded object
+     * @throws ProtocolException      Exception during decoding
+     */
+    public Object decode(ProtocolState state, ByteBuffer in)
 			throws ProtocolException {
 		int start = in.position();
 		try {
@@ -122,7 +153,7 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 				case RTMP.STATE_CONNECTED:
 					return decodePacket(rtmp, in);
 				case RTMP.STATE_ERROR:
-					// attempt to correct error 
+					// attempt to correct error
 				case RTMP.STATE_CONNECT:
 				case RTMP.STATE_HANDSHAKE:
 					return decodeHandshake(rtmp, in);
@@ -135,7 +166,13 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		}
 	}
 
-	public ByteBuffer decodeHandshake(RTMP rtmp, ByteBuffer in) {
+    /**
+     * Decodes handshake message
+     * @param rtmp                    RTMP protocol state
+     * @param in                      Byte buffer
+     * @return                        Byte buffer
+     */
+    public ByteBuffer decodeHandshake(RTMP rtmp, ByteBuffer in) {
 
 		final int remaining = in.remaining();
 
@@ -144,9 +181,9 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 			if (rtmp.getState() == RTMP.STATE_CONNECT) {
 
 				if (remaining < HANDSHAKE_SIZE + 1) {
-					log
-							.debug("Handshake init too small, buffering. remaining: "
-									+ remaining);
+					if (log.isDebugEnabled()) {
+						log.debug("Handshake init too small, buffering. remaining: " + remaining);
+					}
 					rtmp.bufferDecoding(HANDSHAKE_SIZE + 1);
 					return null;
 				} else {
@@ -162,9 +199,9 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 			if (rtmp.getState() == RTMP.STATE_HANDSHAKE) {
 				log.debug("Handshake reply");
 				if (remaining < HANDSHAKE_SIZE) {
-					log
-							.debug("Handshake reply too small, buffering. remaining: "
-									+ remaining);
+					if (log.isDebugEnabled()) {
+						log.debug("Handshake reply too small, buffering. remaining: " + remaining);
+					}
 					rtmp.bufferDecoding(HANDSHAKE_SIZE);
 					return null;
 				} else {
@@ -176,13 +213,13 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 			}
 
 		} else {
-			// else, this is client mode. 
+			// else, this is client mode.
 			if (rtmp.getState() == RTMP.STATE_CONNECT) {
 				final int size = (2 * HANDSHAKE_SIZE) + 1;
 				if (remaining < size) {
-					log
-							.debug("Handshake init too small, buffering. remaining: "
-									+ remaining);
+					if (log.isDebugEnabled()) {
+						log.debug("Handshake init too small, buffering. remaining: " + remaining);
+					}
 					rtmp.bufferDecoding(size);
 					return null;
 				} else {
@@ -197,7 +234,13 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		return null;
 	}
 
-	public Packet decodePacket(RTMP rtmp, ByteBuffer in) {
+    /**
+     * Decodes packet
+     * @param rtmp                    RTMP protocol state
+     * @param in                      Byte buffer
+     * @return                        Byte buffer
+     */
+    public Packet decodePacket(RTMP rtmp, ByteBuffer in) {
 
 		final int remaining = in.remaining();
 
@@ -208,19 +251,35 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		}
 
 		final int position = in.position();
-		final byte headerByte = in.get();
-		final byte channelId = RTMPUtils.decodeChannelId(headerByte);
+		byte headerByte = in.get();
+		int headerValue;
+		int byteCount;
+		if ((headerByte & 0x3f) == 0) {
+			// Two byte header
+			headerValue = ((int) headerByte & 0xff) << 8 | ((int) in.get() & 0xff); 
+			byteCount = 2;
+		} else if ((headerByte & 0x3f) == 1) {
+			// Three byte header
+			headerValue = ((int) headerByte & 0xff) << 16 | ((int) in.get() & 0xff) << 8 | ((int) in.get() & 0xff); 
+			byteCount = 3;
+		} else {
+			// Single byte header
+			headerValue = (int) headerByte & 0xff;
+			byteCount = 1;
+		}
+		final int channelId = RTMPUtils.decodeChannelId(headerValue, byteCount);
 
 		if (channelId < 0) {
 			throw new ProtocolException("Bad channel id: " + channelId);
 		}
 
 		// Get the header size and length
-		final byte headerSize = RTMPUtils.decodeHeaderSize(headerByte);
-		int headerLength = RTMPUtils.getHeaderLength(headerSize);
+		int headerLength = RTMPUtils.getHeaderLength(RTMPUtils.decodeHeaderSize(headerValue, byteCount));
 
 		if (headerLength > remaining) {
-			log.debug("Header too small, buffering. remaining: " + remaining);
+			if (log.isDebugEnabled()) {
+				log.debug("Header too small, buffering. remaining: " + remaining);
+			}
 			in.position(position);
 			rtmp.bufferDecoding(headerLength);
 			return null;
@@ -257,12 +316,12 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 
 		if (in.remaining() < readAmount) {
 			if (log.isDebugEnabled()) {
-				log.debug("Chunk too small, buffering (" + in.remaining() + ","
+				log.debug("Chunk too small, buffering (" + in.remaining() + ','
 						+ readAmount);
 			}
 			// skip the position back to the start
 			in.position(position);
-			rtmp.bufferDecoding(headerSize + readAmount);
+			rtmp.bufferDecoding(headerLength + readAmount);
 			return null;
 		}
 
@@ -287,11 +346,32 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 
 	}
 
-	public Header decodeHeader(ByteBuffer in, Header lastHeader) {
+    /**
+     * Decides packet header
+     * @param in                      Input byte buffer
+     * @param lastHeader              Previous header
+     * @return                        Decoded header
+     */
+    public Header decodeHeader(ByteBuffer in, Header lastHeader) {
 
-		final byte headerByte = in.get();
-		final byte channelId = RTMPUtils.decodeChannelId(headerByte);
-		final byte headerSize = RTMPUtils.decodeHeaderSize(headerByte);
+		byte headerByte = in.get();
+		int headerValue;
+		int byteCount = 1;
+		if ((headerByte & 0x3f) == 0) {
+			// Two byte header
+			headerValue = ((int) headerByte & 0xff) << 8 | ((int) in.get() & 0xff); 
+			byteCount = 2;
+		} else if ((headerByte & 0x3f) == 1) {
+			// Three byte header
+			headerValue = ((int) headerByte & 0xff) << 16 | ((int) in.get() & 0xff) << 8 | ((int) in.get() & 0xff); 
+			byteCount = 3;
+		} else {
+			// Single byte header
+			headerValue = (int) headerByte & 0xff;
+			byteCount = 1;
+		}
+		final int channelId = RTMPUtils.decodeChannelId(headerValue, byteCount);
+		final int headerSize = RTMPUtils.decodeHeaderSize(headerValue, byteCount);
 		Header header = new Header();
 		header.setChannelId(channelId);
 		header.setTimerRelative(headerSize != HEADER_NEW);
@@ -334,12 +414,21 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		return header;
 	}
 
-	public IRTMPEvent decodeMessage(RTMP rtmp, Header header, ByteBuffer in) {
-		IRTMPEvent message = null;
+    /**
+     * Decodes RTMP message event
+     * @param rtmp                    RTMP protocol state
+     * @param header                  RTMP header
+     * @param in                      Input byte buffer
+     * @return                        RTMP event
+     */
+    public IRTMPEvent decodeMessage(RTMP rtmp, Header header, ByteBuffer in) {
+		IRTMPEvent message;
 		if (header.getTimer() == 0xffffff) {
 			// Skip first four bytes
 			int unknown = in.getInt();
-			log.debug("Unknown 4 bytes: " + unknown);
+			if (log.isDebugEnabled()) {
+				log.debug("Unknown 4 bytes: " + unknown);
+			}
 		}
 
 		switch (header.getDataType()) {
@@ -347,7 +436,7 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 				message = decodeChunkSize(in);
 				break;
 			case TYPE_INVOKE:
-				message = decodeInvoke(in);
+				message = decodeInvoke(in, rtmp);
 				break;
 			case TYPE_NOTIFY:
 				message = decodeNotify(in, header, rtmp);
@@ -364,8 +453,11 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 			case TYPE_VIDEO_DATA:
 				message = decodeVideoData(in);
 				break;
+			case TYPE_FLEX_SHARED_OBJECT:
+				message = decodeFlexSharedObject(in, rtmp);
+				break;
 			case TYPE_SHARED_OBJECT:
-				message = decodeSharedObject(in);
+				message = decodeSharedObject(in, rtmp);
 				break;
 			case TYPE_SERVER_BANDWIDTH:
 				message = decodeServerBW(in);
@@ -373,7 +465,11 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 			case TYPE_CLIENT_BANDWIDTH:
 				message = decodeClientBW(in);
 				break;
+			case TYPE_FLEX_MESSAGE:
+				message = decodeFlexMessage(in, rtmp);
+				break;
 			default:
+				log.warn("Unknown object type: " + header.getDataType());
 				message = decodeUnknown(header.getDataType(), in);
 				break;
 		}
@@ -382,41 +478,40 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		return message;
 	}
 
-	private IRTMPEvent decodeServerBW(ByteBuffer in) {
+    /**
+     * Decodes server bandwidth
+     * @param in                      Byte buffer
+     * @return                        RTMP event
+     */
+    private IRTMPEvent decodeServerBW(ByteBuffer in) {
 		return new ServerBW(in.getInt());
 	}
 
-	private IRTMPEvent decodeClientBW(ByteBuffer in) {
+    /**
+     * Decodes client bandwidth
+     * @param in                      Byte buffer
+     * @return                        RTMP event
+     */
+    private IRTMPEvent decodeClientBW(ByteBuffer in) {
 		return new ClientBW(in.getInt(), in.get());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.server.net.rtmp.codec.IEventDecoder#decodeUnknown(org.apache.mina.common.ByteBuffer)
-	 */
+	/** {@inheritDoc} */
 	public Unknown decodeUnknown(byte dataType, ByteBuffer in) {
 		return new Unknown(dataType, in.asReadOnlyBuffer());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.server.net.rtmp.codec.IEventDecoder#decodeChunkSize(org.apache.mina.common.ByteBuffer)
-	 */
+	/** {@inheritDoc} */
 	public ChunkSize decodeChunkSize(ByteBuffer in) {
 		return new ChunkSize(in.getInt());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.server.net.rtmp.codec.IEventDecoder#decodeSharedObject(org.apache.mina.common.ByteBuffer)
-	 */
-	public ISharedObjectMessage decodeSharedObject(ByteBuffer in) {
-
-		final Input input = new Input(in);
-		String name = Input.getString(in);
+	/** {@inheritDoc} */
+	public ISharedObjectMessage decodeFlexSharedObject(ByteBuffer in, RTMP rtmp) {
+		// Unknown byte, always 0?
+		in.skip(1);
+		final Input input = new org.red5.io.amf.Input(in);
+		String name = input.getString();
 		// Read version of SO to modify
 		int version = in.getInt();
 		// Read persistence informations
@@ -424,9 +519,37 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		// Skip unknown bytes
 		in.skip(4);
 
-		final SharedObjectMessage so = new SharedObjectMessage(null, name,
+		final SharedObjectMessage so = new FlexSharedObjectMessage(null, name,
 				version, persistent);
+		doDecodeSharedObject(so, in, input);
+		return so;
+	}
+	
+	/** {@inheritDoc} */
+	public ISharedObjectMessage decodeSharedObject(ByteBuffer in, RTMP rtmp) {
+		final Input input = new org.red5.io.amf.Input(in);
+		String name = input.getString();
+		// Read version of SO to modify
+		int version = in.getInt();
+		// Read persistence informations
+		boolean persistent = in.getInt() == 2;
+		// Skip unknown bytes
+		in.skip(4);
 
+		final SharedObjectMessage so = new FlexSharedObjectMessage(null, name,
+				version, persistent);
+		doDecodeSharedObject(so, in, input);
+		return so;
+	}
+
+	/**
+	 * Perform the actual decoding of the shared object contents.
+	 * 
+	 * @param so
+	 * @param in
+	 * @param rtmp
+	 */
+	protected void doDecodeSharedObject(SharedObjectMessage so, ByteBuffer in, Input input) {
 		// Parse request body
 		while (in.hasRemaining()) {
 
@@ -435,20 +558,30 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 			String key = null;
 			Object value = null;
 
-			//if(log.isDebugEnabled()) 
+			//if(log.isDebugEnabled())
 			//	log.debug("type: "+SharedObjectTypeMapping.toString(type));
 
 			//SharedObjectEvent event = new SharedObjectEvent(,null,null);
 			final int length = in.getInt();
 			if (type == ISharedObjectEvent.Type.CLIENT_STATUS) {
 				// Status code
-				key = Input.getString(in);
+				key = input.getString();
 				// Status level
-				value = Input.getString(in);
+				value = input.getString();
+			} else if (type == ISharedObjectEvent.Type.CLIENT_UPDATE_DATA) {
+				key = null;
+				// Map containing new attribute values
+				final Map<String, Object> map = new HashMap<String, Object>();
+				final int start = in.position();
+				while (in.position() - start < length) {
+					String tmp = input.getString();
+					map.put(tmp, deserializer.deserialize(input));
+				}
+				value = map;
 			} else if (type != ISharedObjectEvent.Type.SERVER_SEND_MESSAGE
 					&& type != ISharedObjectEvent.Type.CLIENT_SEND_MESSAGE) {
 				if (length > 0) {
-					key = Input.getString(in);
+					key = input.getString();
 					if (length > key.length() + 2) {
 						value = deserializer.deserialize(input);
 					}
@@ -469,36 +602,27 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 			}
 			so.addEvent(type, key, value);
 		}
-		return so;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.server.net.rtmp.codec.IEventDecoder#decodeNotify(org.apache.mina.common.ByteBuffer)
-	 */
-	public Notify decodeNotify(ByteBuffer in) {
-		return decodeNotify(in, null, null);
+	/** {@inheritDoc} */
+	public Notify decodeNotify(ByteBuffer in, RTMP rtmp) {
+		return decodeNotify(in, null, rtmp);
 	}
 
 	public Notify decodeNotify(ByteBuffer in, Header header, RTMP rtmp) {
 		return decodeNotifyOrInvoke(new Notify(), in, header, rtmp);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.server.net.rtmp.codec.IEventDecoder#decodeInvoke(org.apache.mina.common.ByteBuffer)
-	 */
-	public Invoke decodeInvoke(ByteBuffer in) {
-		return (Invoke) decodeNotifyOrInvoke(new Invoke(), in, null, null);
+	/** {@inheritDoc} */
+	public Invoke decodeInvoke(ByteBuffer in, RTMP rtmp) {
+		return (Invoke) decodeNotifyOrInvoke(new Invoke(), in, null, rtmp);
 	}
 
 	/**
 	 * Checks if the passed action is a reserved stream method.
-	 * 
-	 * @param action
-	 * @return
+	 *
+	 * @param action          Action to check
+	 * @return                <code>true</code> if passed action is a reserved stream method, <code>false</code> otherwise
 	 */
 	private boolean isStreamCommand(String action) {
 		return (ACTION_CREATE_STREAM.equals(action)
@@ -510,11 +634,22 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 				.equals(action));
 	}
 
-	protected Notify decodeNotifyOrInvoke(Notify notify, ByteBuffer in,
-			Header header, RTMP rtmp) {
+    /**
+     * Decodes notification event
+     * @param notify             Notify event
+     * @param in                 Byte buffer
+     * @param header             Header
+     * @param rtmp               RTMP protocol state
+     * @return                   Notification event
+     */
+    protected Notify decodeNotifyOrInvoke(Notify notify, ByteBuffer in, Header header, RTMP rtmp) {
 		// TODO: we should use different code depending on server or client mode
 		int start = in.position();
-		Input input = new Input(in);
+		Input input;
+		if (rtmp.getEncoding() == Encoding.AMF3)
+			input = new org.red5.io.amf3.Input(in);
+		else
+			input = new org.red5.io.amf.Input(in);
 
 		String action = (String) deserializer.deserialize(input);
 
@@ -532,8 +667,7 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		}
 
 		if (header == null || header.getStreamId() == 0) {
-			int invokeId = ((Number) deserializer.deserialize(input))
-					.intValue();
+			int invokeId = ((Number) deserializer.deserialize(input)).intValue();
 			notify.setInvokeId(invokeId);
 		}
 
@@ -548,7 +682,7 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 				// Before the actual parameters we sometimes (connect) get a map
 				// of parameters, this is usually null, but if set should be
 				// passed
-				// to the connection object. 
+				// to the connection object.
 				final Map connParams = (Map) obj;
 				notify.setConnectionParams(connParams);
 			} else if (obj != null) {
@@ -567,7 +701,7 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 			}
 		}
 
-		final int dotIndex = action.lastIndexOf(".");
+		final int dotIndex = action.lastIndexOf('.');
 		String serviceName = (dotIndex == -1) ? null : action.substring(0,
 				dotIndex);
 		String serviceMethod = (dotIndex == -1) ? action : action.substring(
@@ -585,11 +719,11 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		return notify;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.server.net.rtmp.codec.IEventDecoder#decodePing(org.apache.mina.common.ByteBuffer)
-	 */
+    /**
+     * Decodes ping event
+     * @param in            Byte buffer
+     * @return              Ping event
+     */
 	public Ping decodePing(ByteBuffer in) {
 		final Ping ping = new Ping();
 		ping.setDebug(in.getHexDump());
@@ -604,31 +738,75 @@ public class RTMPProtocolDecoder implements Constants, SimpleProtocolDecoder,
 		return ping;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.server.net.rtmp.codec.IEventDecoder#decodeStreamBytesRead(org.apache.mina.common.ByteBuffer)
-	 */
+	/** {@inheritDoc} */
 	public BytesRead decodeBytesRead(ByteBuffer in) {
 		return new BytesRead(in.getInt());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.server.net.rtmp.codec.IEventDecoder#decodeAudioData(org.apache.mina.common.ByteBuffer)
-	 */
+	/** {@inheritDoc} */
 	public AudioData decodeAudioData(ByteBuffer in) {
 		return new AudioData(in.asReadOnlyBuffer());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.server.net.rtmp.codec.IEventDecoder#decodeVideoData(org.apache.mina.common.ByteBuffer)
-	 */
+	/** {@inheritDoc} */
 	public VideoData decodeVideoData(ByteBuffer in) {
 		return new VideoData(in.asReadOnlyBuffer());
+	}
+
+    /**
+     * Decodes FlexMessage event
+     * @param in               Byte buffer
+     * @param rtmp			   RTMP protocol state
+     * @return                 FlexMessage event
+     */
+    public FlexMessage decodeFlexMessage(ByteBuffer in, RTMP rtmp) {
+		// Unknown byte, always 0?
+		in.skip(1);
+		Input input = new org.red5.io.amf.Input(in);
+		String action = (String) deserializer.deserialize(input);
+		int invokeId = ((Number) deserializer.deserialize(input)).intValue();
+		FlexMessage msg = new FlexMessage();
+		msg.setInvokeId(invokeId);
+		Object[] params = new Object[] {};
+
+		if (in.hasRemaining()) {
+			ArrayList paramList = new ArrayList();
+
+			final Object obj = deserializer.deserialize(input);
+			if (obj != null) {
+				paramList.add(obj);
+			}
+
+			if (in.hasRemaining()) {
+				// Check for AMF3 encoding of parameters
+				byte tmp = in.get();
+				in.position(in.position()-1);
+				if (tmp == AMF.TYPE_AMF3_OBJECT) {
+					// All further parameters are encoded using AMF3
+					input = new org.red5.io.amf3.Input(in);
+				}
+				while (in.hasRemaining()) {
+					paramList.add(deserializer.deserialize(input));
+				}
+			}
+			params = paramList.toArray();
+			if (log.isDebugEnabled()) {
+				log.debug("Num params: " + paramList.size());
+				for (int i = 0; i < params.length; i++) {
+					log.debug(" > " + i + ": " + params[i]);
+				}
+			}
+		}
+
+		final int dotIndex = action.lastIndexOf('.');
+		String serviceName = (dotIndex == -1) ? null : action.substring(0,
+				dotIndex);
+		String serviceMethod = (dotIndex == -1) ? action : action.substring(
+				dotIndex + 1, action.length());
+
+		PendingCall call = new PendingCall(serviceName, serviceMethod, params);
+		msg.setCall(call);
+		return msg;
 	}
 
 }

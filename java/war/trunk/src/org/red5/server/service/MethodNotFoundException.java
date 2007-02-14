@@ -3,7 +3,7 @@ package org.red5.server.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -20,13 +20,23 @@ package org.red5.server.service;
  */
 
 /**
+ * Thrown if service method is not found so call throws exception
  *
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class MethodNotFoundException extends RuntimeException {
 
-	public MethodNotFoundException(String methodName) {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7559230924102506068L;
+
+    /**
+     * Creates exception with given method name
+     * @param methodName      Service method name that can't be found
+     */
+    public MethodNotFoundException(String methodName) {
 		super("Method not found: " + methodName);
 	}
 

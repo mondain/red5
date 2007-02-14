@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -18,6 +18,8 @@ package org.red5.server.api.stream;
  * with this library; if not, write to the Free Software Foundation, Inc., 
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
+
+import java.io.IOException;
 
 import org.red5.server.messaging.IProvider;
 
@@ -40,14 +42,24 @@ public interface IBroadcastStream extends IStream {
 	 *            The path of the file relative to the scope.
 	 * @param isAppend
 	 *            Whether to append to the end of file.
+	 * @throws IOException
+	 * 			   File could not be created/written to.
 	 * @throws ResourceExistException
 	 *             Resource exist when trying to create.
 	 * @throws ResourceNotFoundException
 	 *             Resource not exist when trying to append.
 	 */
 	void saveAs(String filePath, boolean isAppend)
-			throws ResourceNotFoundException, ResourceExistException;
+            throws IOException, ResourceNotFoundException, ResourceExistException;
 
+	/**
+	 * Get the filename the stream is being saved as.
+	 * 
+	 * @return	The filename relative to the scope or <code>null</code>
+	 * 			if the stream is not being saved. 
+	 */
+	String getSaveFilename();
+	
 	/**
 	 * Get the provider corresponding to this stream. Provider objects are
 	 * object that

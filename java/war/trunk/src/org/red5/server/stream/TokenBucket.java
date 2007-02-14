@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -20,22 +20,37 @@ package org.red5.server.stream;
  */
 
 public class TokenBucket implements ITokenBucket {
-	private double speed;
-
+    /**
+     *
+     */
+    private double speed;
+    /**
+     *
+     */
 	private long capacity;
+    /**
+     * 
+     */
+	private double tokens;
+    /**
+     *
+     */
+	private WaitObject waitObject;
 
-	private double tokens = 0;
-
-	private WaitObject waitObject = null;
-
-	public TokenBucket() {
+	/** Constructs a new TokenBucket. */
+    public TokenBucket() {
 	}
 
+    /**
+     * Creates new Token bucket with initial tockens
+     * @param initialTokens    Initial tokens
+     */
 	public TokenBucket(double initialTokens) {
 		tokens = initialTokens;
 	}
 
-	synchronized public boolean acquireToken(double tokenCount, long wait) {
+	/** {@inheritDoc} */
+    public synchronized boolean acquireToken(double tokenCount, long wait) {
 		if (wait > 0) {
 			// as of now, we don't support blocking mode
 			throw new IllegalArgumentException("blocking wait unsupported");
@@ -48,7 +63,8 @@ public class TokenBucket implements ITokenBucket {
 		}
 	}
 
-	synchronized public boolean acquireTokenNonblocking(double tokenCount,
+	/** {@inheritDoc} */
+    public synchronized boolean acquireTokenNonblocking(double tokenCount,
 			ITokenBucketCallback callback) {
 		// TODO use a wait queue instead
 		if (waitObject != null) {
@@ -67,7 +83,8 @@ public class TokenBucket implements ITokenBucket {
 		}
 	}
 
-	synchronized public double acquireTokenBestEffort(double upperLimitCount) {
+	/** {@inheritDoc} */
+    public synchronized double acquireTokenBestEffort(double upperLimitCount) {
 		if (waitObject != null) {
 			return 0;
 		}
@@ -81,31 +98,44 @@ public class TokenBucket implements ITokenBucket {
 		}
 	}
 
-	public long getCapacity() {
+	/** {@inheritDoc} */
+    public long getCapacity() {
 		return capacity;
 	}
 
-	public double getSpeed() {
+	/** {@inheritDoc} */
+    public double getSpeed() {
 		return speed;
 	}
 
-	synchronized public void reset() {
+	/** {@inheritDoc} */
+    public synchronized void reset() {
 		waitObject = null;
 		tokens = 0;
 	}
 
-	void setCapacity(long capacity) {
+	/**
+     * Setter for capacity
+     *
+     * @param capacity  New capacity
+     */
+    void setCapacity(long capacity) {
 		this.capacity = capacity;
 	}
 
-	void setSpeed(double speed) {
+	/**
+     * Setter for speed
+     *
+     * @param speed  New speed
+     */
+    void setSpeed(double speed) {
 		this.speed = speed;
 	}
 
 	/**
 	 * Add some tokens to this bucket.
 	 * 
-	 * @param token
+	 * @param token        Token to add
 	 */
 	synchronized void addToken(double token) {
 		if (tokens + token > capacity) {
@@ -121,9 +151,17 @@ public class TokenBucket implements ITokenBucket {
 		}
 	}
 
-	private class WaitObject {
-		private ITokenBucketCallback callback;
-
+    /**
+     * Wait object with token bucket callback and token count
+     */
+    private class WaitObject {
+        /**
+         * Token item bucket callback
+         */
+        private ITokenBucketCallback callback;
+        /**
+         * Token count
+         */
 		private double tokenCount;
 	}
 }

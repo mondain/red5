@@ -3,7 +3,7 @@ package org.red5.io;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,15 +23,24 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Creates streamable file services
+ */
 public class StreamableFileFactory implements IStreamableFileFactory {
 
 	private Set<IStreamableFileService> services = new HashSet<IStreamableFileService>();
 
-	public void setServices(Set<IStreamableFileService> services) {
+	/**
+     * Setter for services
+     *
+     * @param services Set of streamable file services
+     */
+    public void setServices(Set<IStreamableFileService> services) {
 		this.services = services;
 	}
 
-	public IStreamableFileService getService(File fp) {
+	/** {@inheritDoc} */
+    public IStreamableFileService getService(File fp) {
 		// Return first service that can handle the passed file
 		for (IStreamableFileService service : this.services) {
 			if (service.canHandle(fp)) {
@@ -42,7 +51,8 @@ public class StreamableFileFactory implements IStreamableFileFactory {
 		return null;
 	}
 
-	public Set<IStreamableFileService> getServices() {
+	/** {@inheritDoc} */
+    public Set<IStreamableFileService> getServices() {
 		return services;
 	}
 }

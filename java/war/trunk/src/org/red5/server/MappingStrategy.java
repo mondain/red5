@@ -3,7 +3,7 @@ package org.red5.server;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -21,22 +21,46 @@ package org.red5.server;
 
 import org.red5.server.api.IMappingStrategy;
 
+/**
+ * Basic mapping strategy implementation. This one uses slash as filesystem path separator,
+ * '.service' postfix for services naming, '.handler' for handlers naming and 'default' string as
+ * default application name.
+ */
 public class MappingStrategy implements IMappingStrategy {
-
+    /**
+     *  Root constant
+     */
 	private static final String ROOT = "";
-
+    /**
+     *  Handler extension constant
+     */
 	private static final String HANDLER = ".handler";
-
+    /**
+     *  Dir separator constant
+     */
 	private static final String DIR = "/";
-
+    /**
+     *  Service extension constant
+     */
 	private static final String SERVICE = ".service";
-
+    /**
+     *  Default application name
+     */
 	private String defaultApp = "default";
 
+    /**
+     * Setter for default application name ('default' by default).
+     * @param defaultApp     Default application
+     */
 	public void setDefaultApp(String defaultApp) {
 		this.defaultApp = defaultApp;
 	}
 
+    /**
+     * Resolves resource prefix from path. Default application used as root when path is specified
+     * @param path          Path
+     * @return              Resource prefix according to this naming strategy
+     */
 	public String mapResourcePrefix(String path) {
 		if (path == null || path.equals(ROOT)) {
 			return defaultApp + DIR;
@@ -45,6 +69,11 @@ public class MappingStrategy implements IMappingStrategy {
 		}
 	}
 
+    /**
+     * Resolves scope handler name for path& Default application used as root when path is specified
+     * @param path         Path
+     * @return             Scope handler name according to this naming strategy
+     */
 	public String mapScopeHandlerName(String path) {
 		if (path == null || path.equals(ROOT)) {
 			return defaultApp + HANDLER;
@@ -53,6 +82,11 @@ public class MappingStrategy implements IMappingStrategy {
 		}
 	}
 
+    /**
+     * Resolves service filename name from name
+     * @param name      Service name
+     * @return          Service filename according to this naming strategy
+     */
 	public String mapServiceName(String name) {
 		return name + SERVICE;
 	}

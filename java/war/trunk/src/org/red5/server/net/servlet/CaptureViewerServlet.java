@@ -20,21 +20,29 @@ import org.apache.mina.common.ByteBuffer;
 import org.red5.io.object.Deserializer;
 import org.red5.io.utils.HexDump;
 import org.red5.server.net.protocol.ProtocolException;
-import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.codec.RTMPProtocolDecoder;
 import org.red5.server.net.rtmp.message.Packet;
 
 public class CaptureViewerServlet extends HttpServlet {
 
-	private static Log log = LogFactory.getLog(CaptureViewerServlet.class
-			.getName());
 
+	private static final long serialVersionUID = -1306102075849918166L;
+    /**
+	 * Logger
+	 */
+	private static Log log = LogFactory.getLog(CaptureViewerServlet.class.getName());
+    /**
+	 *
+	 */
 	private RTMPProtocolDecoder decoder;
-
+    /**
+	 *
+	 */
 	private Deserializer deserializer;
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public void init() throws ServletException {
 		super.init();
 		try {
@@ -43,11 +51,12 @@ public class CaptureViewerServlet extends HttpServlet {
 			decoder.setDeserializer(deserializer);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);
 		}
 	}
 
-	@Override
+	/** Writes HTML out of dump */
+    @Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException {
 
@@ -59,12 +68,10 @@ public class CaptureViewerServlet extends HttpServlet {
 					.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"capture.css\" />");
 			out.write("</head><body>");
 
-			String capFileName = req.getRequestURI().substring(
-					req.getContextPath().length() + 1);
-			String rawFileName = capFileName.substring(0,
-					capFileName.length() - 4)
-					+ ".raw";
-			File capFile = new File(getServletContext()
+			String capFileName = req.getRequestURI().substring(req.getContextPath().length() + 1);
+			String rawFileName = capFileName.substring(0, capFileName.length() - 4) + ".raw";
+
+            File capFile = new File(getServletContext()
 					.getRealPath(capFileName));
 			File rawFile = new File(getServletContext()
 					.getRealPath(rawFileName));
@@ -157,43 +164,51 @@ public class CaptureViewerServlet extends HttpServlet {
 					log.error("Error decoding buffer", pvx);
 				} catch (Exception ex) {
 					log.error("Error decoding buffer", ex);
-				} finally {
-					// dont compact.
 				}
 
 			} catch (RuntimeException e) {
 				log.error("Error", e);
-
 			}
 			out.flush();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);
 		}
 
 	}
 
-	public void decodeBuffer(PrintWriter out, ProtocolState state,
-			ByteBuffer buffer, long time, int id) {
 
-	}
+    //public void decodeBuffer(PrintWriter out, ProtocolState state,
+	//		ByteBuffer buffer, long time, int id) {
+    //
+	//}
 
-	public String formatHTML(Packet packet, int id, long time) {
-		StringBuffer out = new StringBuffer();
-		String classes = "";
-		classes += "channel_" + packet.getHeader().getChannelId() + " ";
-		classes += "datatype_" + packet.getHeader().getDataType() + " ";
+    /**
+     * Formats HTML
+     *
+     * @param packet         RTMP packet
+     * @param id             id
+     * @param time           Time
+     * @return               Formatted packet representation in HTML
+     */
+    public String formatHTML(Packet packet, int id, long time) {
+		StringBuilder out = new StringBuilder();
 		// classes += "sec_"+ time +
-		out.append("<div id=\"packet_").append(id).append("\" class=").append(
-				classes).append("\">\n");
-		out.append("<pre>\n");
-		out.append(packet.getHeader().toString()).append("\n");
-		out.append(packet.getMessage().toString()).append("\n");
-		out.append("<pre>\n");
-		out.append("</div>\n\n");
+		out.append("<div id=\"packet_");
+		out.append(id);
+		out.append("\" class=");
+		
+		out.append("channel_");
+		out.append(packet.getHeader().getChannelId());
+		out.append(" datatype_");
+		out.append(packet.getHeader().getDataType());
+		
+		out.append("\">\n<pre>\n");
+		out.append(packet.getHeader().toString());
+		out.append("\n");
+		out.append(packet.getMessage().toString());
+		out.append("\n<pre>\n</div>\n\n");
 		return out.toString();
 	}
 

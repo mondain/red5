@@ -2,21 +2,21 @@ package org.red5.server.net.remoting;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
- * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
- * 
- * This library is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License as published by the Free Software 
- * Foundation; either version 2.1 of the License, or (at your option) any later 
- * version. 
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ *
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along 
- * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 import java.util.HashMap;
@@ -43,20 +43,22 @@ import org.red5.server.pooling.WorkerThread;
 
 /**
  * Client interface for remoting calls.
- * 
+ *
  * @author The Red5 Project (red5@osflash.org)
  * @author Joachim Bauch (jojo@struktur.de)
  *
  */
 public class RemotingClient {
-
+    /**
+     * Logger
+     */
 	protected static Log log = LogFactory
 			.getLog(RemotingClient.class.getName());
 
 	/** Default timeout to use. */
 	public static final int DEFAULT_TIMEOUT = 30000;
 
-	/** Content type for HTTP requests. */
+	/** Content MIME type for HTTP requests. */
 	private static final String CONTENT_TYPE = "application/x-amf";
 
 	/** Name of the bean defining the thread pool. */
@@ -79,7 +81,7 @@ public class RemotingClient {
 
 	/**
 	 * Create new remoting client for the given url.
-	 * 
+	 *
 	 * @param url
 	 * 			url to connect to
 	 */
@@ -89,7 +91,7 @@ public class RemotingClient {
 
 	/**
 	 * Create new remoting client for the given url and given timeout.
-	 * 
+	 *
 	 * @param url
 	 * 			url to connect to
 	 * @param timeout
@@ -104,21 +106,20 @@ public class RemotingClient {
 
 	/**
 	 * Encode the method call.
-	 * 
-	 * @param method
-	 * @param params
-	 * @return
+	 *
+	 * @param method              Remote method being called
+	 * @param params              Method parameters
+	 * @return                    Byte buffer with data to perform remoting call
 	 */
 	private synchronized ByteBuffer encodeInvoke(String method, Object[] params) {
 		ByteBuffer result = ByteBuffer.allocate(1024);
 		result.setAutoExpand(true);
-		Output out = new Output(result);
 
 		// XXX: which is the correct version?
 		result.putShort((short) 0);
 		// Headers
 		result.putShort((short) headers.size());
-		for (RemotingHeader header : headers.values()) {
+        for (RemotingHeader header : headers.values()) {
 			Output.putString(result, header.name);
 			result.put(header.required ? (byte) 0x01 : (byte) 0x00);
 
@@ -132,7 +133,7 @@ public class RemotingClient {
 			result.putInt(tmp.limit());
 			// Header data
 			result.put(tmp);
-			tmp.release();
+			tmp = null;
 		}
 		// One body
 		result.putShort((short) 1);
@@ -147,18 +148,13 @@ public class RemotingClient {
 		ByteBuffer tmp = ByteBuffer.allocate(1024);
 		tmp.setAutoExpand(true);
 		Output tmpOut = new Output(tmp);
-		Serializer serializer = new Serializer();
-		tmpOut.writeStartArray(params.length);
-		for (Object param : params) {
-			serializer.serialize(tmpOut, param);
-		}
-		tmpOut.markEndArray();
+		tmpOut.writeArray(params, new Serializer());
 		tmp.flip();
 
 		// Store size and parameters
 		result.putInt(tmp.limit());
 		result.put(tmp);
-		tmp.release();
+		tmp = null;
 
 		result.flip();
 		return result;
@@ -166,18 +162,18 @@ public class RemotingClient {
 
 	/**
 	 * Process any headers sent in the response.
-	 * 
-	 * @param in
+	 *
+	 * @param in                  Byte buffer with response data
 	 */
 	protected void processHeaders(ByteBuffer in) {
-		int version = in.getUnsignedShort(); // skip the version
+		@SuppressWarnings("unused") int version = in.getUnsignedShort(); // skip the version by now, AMF3 is not yet implemented
 		int count = in.getUnsignedShort();
 		Deserializer deserializer = new Deserializer();
 		Input input = new Input(in);
 		for (int i = 0; i < count; i++) {
 			String name = Input.getString(in);
-			boolean required = (in.get() == 0x01);
-			int len = in.getInt();
+			@SuppressWarnings("unused") boolean required = (in.get() == 0x01);
+			@SuppressWarnings("unused") int len = in.getInt();
 			Object value = deserializer.deserialize(input);
 
 			// XXX: this is pretty much untested!!!
@@ -191,7 +187,7 @@ public class RemotingClient {
 			} else if (name.equals(RemotingHeader.PERSISTENT_HEADER)) {
 				// Send a new header with each following request
 				if (value instanceof Map) {
-					Map<String, Object> valueMap = (Map) value;
+					@SuppressWarnings("unchecked") Map<String, Object> valueMap = (Map<String, Object>) value;
 					RemotingHeader header = new RemotingHeader(
 							(String) valueMap.get("name"), (Boolean) valueMap
 									.get("mustUnderstand"), valueMap
@@ -209,9 +205,9 @@ public class RemotingClient {
 
 	/**
 	 * Decode response received from remoting server.
-	 * 
-	 * @param data
-	 * @return
+	 *
+	 * @param data                Result data to decode
+	 * @return                    Object deserialized from byte buffer data
 	 */
 	private synchronized Object decodeResult(ByteBuffer data) {
 		processHeaders(data);
@@ -222,19 +218,15 @@ public class RemotingClient {
 		}
 
 		// Read return value
-		Input input = new Input(data);
 		Deserializer deserializer = new Deserializer();
-		String target = Input.getString(data);
-		String response = Input.getString(data); // "null"
-		int tmp = data.getInt(); // -1
-		return deserializer.deserialize(input);
+		return deserializer.deserialize(new Input(data));
 	}
 
 	/**
 	 * Send authentication data with each remoting request.
-	 * 
-	 * @param userid
-	 * @param password
+	 *
+	 * @param userid              User identifier
+	 * @param password            Password
 	 */
 	public synchronized void setCredentials(String userid, String password) {
 		Map<String, String> data = new HashMap<String, String>();
@@ -247,7 +239,6 @@ public class RemotingClient {
 
 	/**
 	 * Stop sending authentication data.
-	 *
 	 */
 	public synchronized void resetCredentials() {
 		removeHeader(RemotingHeader.CREDENTIALS);
@@ -255,21 +246,20 @@ public class RemotingClient {
 
 	/**
 	 * Send an additional header to the server.
-	 * 
-	 * @param name
-	 * @param required
-	 * @param value
+	 *
+	 * @param name                 Header name
+	 * @param required             Header required?
+	 * @param value                Header body
 	 */
-	public synchronized void addHeader(String name, boolean required,
-			Object value) {
+	public synchronized void addHeader(String name, boolean required, Object value) {
 		RemotingHeader header = new RemotingHeader(name, required, value);
 		headers.put(name, header);
 	}
 
 	/**
 	 * Stop sending a given header.
-	 * 
-	 * @param name
+	 *
+	 * @param name                 Header name
 	 */
 	public synchronized void removeHeader(String name) {
 		headers.remove(name);
@@ -277,9 +267,9 @@ public class RemotingClient {
 
 	/**
 	 * Invoke a method synchronously on the remoting server.
-	 * 
-	 * @param method
-	 * @param params
+	 *
+	 * @param method               Method name
+	 * @param params               Parameters passed to method
 	 * @return the result of the method call
 	 */
 	public Object invokeMethod(String method, Object[] params) {
@@ -311,22 +301,21 @@ public class RemotingClient {
 		} finally {
 			post.releaseConnection();
 			if (resultBuffer != null) {
-				resultBuffer.release();
+				resultBuffer = null;
 			}
-			data.release();
+			data = null;
 		}
 		return null;
 	}
 
 	/**
 	 * Invoke a method asynchronously on the remoting server.
-	 * 
-	 * @param method
-	 * @param params
-	 * @param callback
+	 *
+	 * @param method               Method name
+	 * @param methodParams         Parameters passed to method
+	 * @param callback             Callback
 	 */
-	public void invokeMethod(String method, Object[] methodParams,
-			IRemotingCallback callback) {
+	public void invokeMethod(String method, Object[] methodParams, IRemotingCallback callback) {
 		IScope scope = Red5.getConnectionLocal().getScope();
 
 		ThreadPool pool = (ThreadPool) scope.getContext().getBean(POOL_BEAN_ID);
@@ -350,7 +339,14 @@ public class RemotingClient {
 	 */
 	public static class RemotingWorker {
 
-		public void executeTask(RemotingClient client, String method,
+        /**
+         * Execute task
+         * @param client            Remoting client
+         * @param method            Method name
+         * @param params            Parameters to pass to method on call
+         * @param callback          Callback
+         */
+        public void executeTask(RemotingClient client, String method,
 				Object[] params, IRemotingCallback callback) {
 			try {
 				Object result = client.invokeMethod(method, params);

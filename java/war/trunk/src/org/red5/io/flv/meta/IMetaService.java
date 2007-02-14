@@ -3,7 +3,7 @@ package org.red5.io.flv.meta;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -51,15 +51,15 @@ public interface IMetaService {
 	/**
 	 * Initiates writing of the MetaData
 	 * 
-	 * @param meta 
-	 * @throws IOException 
+	 * @param meta              Metadata
+	 * @throws IOException      I/O exception
 	 */
 	public void write(IMetaData meta) throws IOException;
 
 	/**
 	 * Writes the MetaData
 	 * 
-	 * @param metaData
+	 * @param metaData          Metadata
 	 */
 	public void writeMetaData(IMetaData metaData);
 
@@ -71,19 +71,30 @@ public interface IMetaService {
 	/**
 	 * Read the MetaData
 	 * 
-	 * @return metaData
+	 * @return metaData         Metadata
+     * @param buffer            Byte buffer source
 	 */
 	public MetaData readMetaData(ByteBuffer buffer);
 
 	/**
 	 * Read the Meta Cue Points
 	 * 
-	 * @return IMetaCue[] metaCue[]
+	 * @return  Meta cue points
 	 */
 	public IMetaCue[] readMetaCue();
 
-	public void setInStream(FileInputStream fis);
+	/**
+     * Setter for  input stream
+     *
+     * @param fis  File input stream
+     */
+    public void setInStream(FileInputStream fis);
 
-	public void setOutStream(FileOutputStream fos);
+	/**
+     * Setter for output stream
+     *
+     * @param fos  File output stream
+     */
+    public void setOutStream(FileOutputStream fos);
 
 }

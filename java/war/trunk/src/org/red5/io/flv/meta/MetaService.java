@@ -2,21 +2,21 @@ package org.red5.io.flv.meta;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
- * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
- * 
- * This library is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License as published by the Free Software 
- * Foundation; either version 2.1 of the License, or (at your option) any later 
- * version. 
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ *
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along 
- * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 import java.io.File;
@@ -38,24 +38,42 @@ import org.red5.io.object.Serializer;
 
 /**
  * MetaService represents a MetaData service in Spring
- * 
+ *
  * @author The Red5 Project (red5@osflash.org)
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class MetaService implements IMetaService {
 
-	File file = null;
+    /**
+     * Source file
+     */
+    File file;
 
-	private FileInputStream fis;
+    /**
+     * File input stream
+     */
+    private FileInputStream fis;
 
-	private FileOutputStream fos;
+    /**
+     * File output stream
+     */
+    private FileOutputStream fos;
 
-	private Serializer serializer;
+    /**
+     * Serializer
+     */
+    private Serializer serializer;
 
-	private Deserializer deserializer;
+    /**
+     * Deserializer
+     */
+    private Deserializer deserializer;
 
-	private Resolver resolver;
+    /**
+     * Merges metadata objects
+     */
+    private Resolver resolver;
 
 	/**
 	 * @return Returns the resolver.
@@ -109,30 +127,32 @@ public class MetaService implements IMetaService {
 		super();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.meta.IMetaService#write()
+	/** {@inheritDoc}
 	 */
 	public void write(IMetaData meta) throws IOException {
-
+        // Get cue points, FLV reader and writer
 		IMetaCue[] metaArr = meta.getMetaCue();
 		FLVReader reader = new FLVReader(fis);
 		FLVWriter writer = new FLVWriter(fos);
-		writer.writeHeader();
+
+        // Write header (version, data offset, etc)
+        writer.writeHeader();
 
 		IMetaData metaData = null;
 		ITag tag = null;
 		// Read first tag
 		if (reader.hasMoreTags()) {
 			tag = reader.readTag();
-			if (tag.getDataType() == IoConstants.TYPE_METADATA) {
+            // If tag is metadata, parse it's body
+            if (tag.getDataType() == IoConstants.TYPE_METADATA) {
 				metaData = this.readMetaData(tag.getBody());
 			}
 		}
 
-		IMetaData mergedMeta = (IMetaData) mergeMeta(metaData, meta);
-		ITag injectedTag = injectMetaData(mergedMeta, tag);
+        // Merged metadata
+        IMetaData mergedMeta = (IMetaData) mergeMeta(metaData, meta);
+        // Inject metadata
+        ITag injectedTag = injectMetaData(mergedMeta, tag);
 		//		System.out.println("tag: \n--------\n" + injectedTag);
 		writer.writeTag(injectedTag);
 
@@ -176,16 +196,22 @@ public class MetaService implements IMetaService {
 
 	/**
 	 * Merges the two Meta objects according to user
-	 * 
-	 * @param metaData
-	 * @param md
-	 * @return
+	 *
+	 * @param metaData        First metadata object
+	 * @param md              Second metadata object
+	 * @return                Merged metadata
 	 */
 	private IMeta mergeMeta(IMetaData metaData, IMetaData md) {
 		return resolver.resolve(metaData, md);
 	}
 
-	private ITag injectMetaData(IMetaData meta, ITag tag) {
+    /**
+     * Injects metadata (other than Cue points) into a tag
+     * @param meta           Metadata
+     * @param tag            Tag
+     * @return               New tag with injected metadata
+     */
+    private ITag injectMetaData(IMetaData meta, ITag tag) {
 
 		Output out = new Output(ByteBuffer.allocate(1000));
 		Serializer ser = new Serializer();
@@ -204,10 +230,10 @@ public class MetaService implements IMetaService {
 
 	/**
 	 * Injects metadata (Cue Points) into a tag
-	 * 
-	 * @param meta
-	 * @param tag
-	 * @return ITag tag
+	 *
+	 * @param meta           Metadata (cue points)
+	 * @param tag            Tag
+	 * @return ITag tag      New tag with injected metadata
 	 */
 	private ITag injectMetaCue(IMetaCue meta, ITag tag) {
 
@@ -229,20 +255,17 @@ public class MetaService implements IMetaService {
 	}
 
 	/**
-	 * Returns a timestamp in milliseconds
-	 * 
-	 * @param metaCue
-	 * @return int time
+	 * Returns a timestamp of cue point in milliseconds
+	 *
+	 * @param metaCue          Cue point
+	 * @return int time        Timestamp of given cue point (in milliseconds)
 	 */
 	private int getTimeInMilliseconds(IMetaCue metaCue) {
 		return (int) (metaCue.getTime() * 1000.00);
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.meta.IMetaService#writeMetaData()
+	/** {@inheritDoc}
 	 */
 	public void writeMetaData(IMetaData metaData) {
 		IMetaCue meta = (MetaCue) metaData;
@@ -252,10 +275,7 @@ public class MetaService implements IMetaService {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.meta.IMetaService#writeMetaCue()
+	/** {@inheritDoc}
 	 */
 	public void writeMetaCue() {
 
@@ -276,26 +296,28 @@ public class MetaService implements IMetaService {
 		this.file = file;
 	}
 
-	public void setInStream(FileInputStream fis) {
+	/** {@inheritDoc} */
+    public void setInStream(FileInputStream fis) {
 		this.fis = fis;
 	}
 
-	public void setOutStream(FileOutputStream fos) {
+	/** {@inheritDoc} */
+    public void setOutStream(FileOutputStream fos) {
 		this.fos = fos;
 	}
 
-	// TODO need to fix
+	/** {@inheritDoc} */ // TODO need to fix
 	public MetaData readMetaData(ByteBuffer buffer) {
 		MetaData retMeta = new MetaData();
 		Input input = new Input(buffer);
-		String metaType = (String) deserializer.deserialize(input);
+		@SuppressWarnings("unused") String metaType = (String) deserializer.deserialize(input);
 		Map m = (Map) deserializer.deserialize(input);
 		retMeta.putAll(m);
-
 		return retMeta;
 	}
 
-	public IMetaCue[] readMetaCue() {
+	/** {@inheritDoc} */
+    public IMetaCue[] readMetaCue() {
 		// TODO Auto-generated method stub
 		return null;
 	}

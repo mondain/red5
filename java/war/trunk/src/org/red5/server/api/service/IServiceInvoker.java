@@ -3,7 +3,7 @@ package org.red5.server.api.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,7 +22,7 @@ package org.red5.server.api.service;
 import org.red5.server.api.IScope;
 
 /**
- * Interface for objects that execute service calls.
+ * Interface for objects that execute service calls (remote calls from client).
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard (luke@codegent.com)
@@ -37,8 +37,9 @@ public interface IServiceInvoker {
 	 * 			the call to invoke
 	 * @param scope
 	 * 			the scope to search for a handler
+	 * @return <code>true</code> if the call was performed, otherwise <code>false</code>
 	 */
-	public void invoke(IServiceCall call, IScope scope);
+    boolean invoke(IServiceCall call, IScope scope);
 
 	/**
 	 * Execute the passed service call in the given object.
@@ -47,7 +48,8 @@ public interface IServiceInvoker {
 	 * 			the call to invoke
 	 * @param service
 	 * 			the service to use
+	 * @return <code>true</code> if the call was performed, otherwise <code>false</code>
 	 */
-	public void invoke(IServiceCall call, Object service);
+    boolean invoke(IServiceCall call, Object service);
 
 }

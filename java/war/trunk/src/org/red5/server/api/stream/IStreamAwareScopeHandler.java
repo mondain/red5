@@ -3,7 +3,7 @@ package org.red5.server.api.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -35,6 +35,14 @@ public interface IStreamAwareScopeHandler extends IScopeHandler {
 	 * @param stream
 	 */
 	public void streamPublishStart(IBroadcastStream stream);
+
+	/**
+	 * A broadcast stream starts being recorded. This will be called
+	 * when the first video packet has been received.
+	 * 
+	 * @param stream
+	 */
+	public void streamRecordStart(IBroadcastStream stream);
 
 	/**
 	 * Notified when a broadcaster starts.
@@ -89,6 +97,7 @@ public interface IStreamAwareScopeHandler extends IScopeHandler {
 	 * 
 	 * @param stream
 	 * @param item
+     * @param position
 	 */
 	public void streamPlaylistVODItemPause(IPlaylistSubscriberStream stream,
 			IPlayItem item, int position);
@@ -98,6 +107,7 @@ public interface IStreamAwareScopeHandler extends IScopeHandler {
 	 * 
 	 * @param stream
 	 * @param item
+     * @param position
 	 */
 	public void streamPlaylistVODItemResume(IPlaylistSubscriberStream stream,
 			IPlayItem item, int position);
@@ -107,6 +117,7 @@ public interface IStreamAwareScopeHandler extends IScopeHandler {
 	 * 
 	 * @param stream
 	 * @param item
+     * @param position
 	 */
 	public void streamPlaylistVODItemSeek(IPlaylistSubscriberStream stream,
 			IPlayItem item, int position);

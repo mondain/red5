@@ -3,7 +3,7 @@ package org.red5.server.cache;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -38,7 +38,7 @@ import com.whirlycott.cache.RecordKeeper;
 /**
  * Provides an implementation of an object cache using whirlycache.
  * 
- * @see https://whirlycache.dev.java.net/
+ * @see <a href="https://whirlycache.dev.java.net/">whirlycache homepage</a>
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Paul Gregoire (mondain@gmail.com)
@@ -54,13 +54,14 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 
 	// We store the application context in a ThreadLocal so we can access it
 	// later.
-	private static ApplicationContext applicationContext = null;
+	private static ApplicationContext applicationContext;
 
-	public void setApplicationContext(ApplicationContext context)
+	/** {@inheritDoc} */
+    public void setApplicationContext(ApplicationContext context)
 			throws BeansException {
 		WhirlyCacheImpl.applicationContext = context;
 	}
-
+	
 	/**
 	 * Returns Spring application context used by this class
 	 * @return	Spring application context object
@@ -68,7 +69,7 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 	public static ApplicationContext getApplicationContext() {
 		return applicationContext;
 	}
-
+	
 	/**
 	 * Initialazing method
 	 *
@@ -82,7 +83,9 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 			// get the default cache that is created when a config file is not
 			// found - we want to wire ours via Spring
 			for (String nm : cm.getCacheNames()) {
-				log.debug("Cache name: " + nm);
+				if (log.isDebugEnabled()) {
+					log.debug("Cache name: " + nm);
+				}
 				if (nm.equals("default")) {
 					// destroy the default cache
 					cm.destroy("default");
@@ -94,7 +97,7 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 			log.warn("Error on cache init", e);
 		}
 	}
-
+	
 	/**
 	 * Returns cachable object by name
 	 * @param	name	Object name
@@ -102,7 +105,7 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 	public ICacheable get(String name) {
 		return (ICacheable) cache.retrieve(name);
 	}
-
+	
 	/**
 	 * Puts object in cache under given name, overloaded method.
 	 * 
@@ -111,20 +114,13 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 	 */
 	public void put(String name, Object obj) {
 		// Put an object into the cache
-		cache.store(name, new CacheableImpl(obj));
+		if (obj instanceof ICacheable) {
+			cache.store(name, obj);
+		} else {
+			cache.store(name, new CacheableImpl(obj));
+		}
 	}
-
-	/**
-	 * Puts object in cache under given name, overloaded method.
-	 * 
-	 * @param	name	Name
-	 * @param	obj		Object to store in cache
-	 */
-	public void put(String name, ICacheable obj) {
-		// Put an object into the cache
-		cache.store(name, obj);
-	}
-
+	
 	/**
 	 * Iterate thru names of objects in cache. To be implemented!
 	 * @return		Iterator
@@ -133,7 +129,7 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	/**
 	 * Iterate thru names of objects in cache with soft reference. To be implemented!
 	 */
@@ -141,19 +137,19 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	/**
 	 * Stores object in the cache
 	 * @param	name	Name of stored object
 	 * @param	obj		Object to store
 	 */
-	public boolean offer(String name, ICacheable obj) {
+	public boolean offer(String name, Object obj) {
 		// Put an object into the cache
 		cache.store(name, obj);
 		// almost always returns true because store does not return a status
 		return true;
 	}
-
+	
 	/**
 	 * Removes object from cache
 	 * @param	obj		Object to remove from cache
@@ -161,7 +157,7 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 	public boolean remove(ICacheable obj) {
 		return (null != cache.remove(obj.getName()));
 	}
-
+	
 	/**
 	 * Removes object from cache by name
 	 * @param	name	Name of object to remove
@@ -169,7 +165,7 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 	public boolean remove(String name) {
 		return (null != cache.remove(name));
 	}
-
+	
 	/**
 	 * Sets cache configuration
 	 * @param cacheConfig	Cache configuration
@@ -177,14 +173,16 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 	public void setCacheConfig(CacheConfiguration cacheConfig) {
 		this.cacheConfig = cacheConfig;
 	}
-
+	
 	/**
 	 * 
 	 */
 	public void setMaxEntries(int capacity) {
-		log.debug("Setting max entries for this cache to " + capacity);
+		if (log.isDebugEnabled()) {
+			log.debug("Setting max entries for this cache to " + capacity);
+		}
 	}
-
+	
 	/**
 	 * Returns cache hits stats
 	 * 
@@ -194,7 +192,7 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 		RecordKeeper rec = new RecordKeeper();
 		return rec.getHits();
 	}
-
+	
 	/**
 	 * Returns cache misses stats
 	 * 
@@ -205,7 +203,9 @@ public class WhirlyCacheImpl implements ICacheStore, ApplicationContextAware {
 		RecordKeeper rec = new RecordKeeper();
 		long hits = rec.getHits();		
 		long ops = rec.getTotalOperations();
-		log.debug("Hits: " + hits + " Operations: " + ops);
+		if (log.isDebugEnabled()) {
+			log.debug("Hits: " + hits + " Operations: " + ops);
+		}
 		if (hits > 0 && ops > 0) {
 			if (ops > hits) {
 				misses = ops - hits;

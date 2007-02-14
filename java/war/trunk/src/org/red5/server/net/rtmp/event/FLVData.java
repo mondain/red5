@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -50,55 +50,106 @@ public class FLVData {
 
 	protected int timestamp = -1;
 
-	public boolean isDisposable() {
+	/**
+     * Getter for disposable state
+     *
+     * @return  <code>true</code> if FVL data is disposable, <code>false</code> otherwise
+     */
+    public boolean isDisposable() {
 		return false;
 	}
 
-	public static final int TYPE_AUDIO = 8;
-
+    /**
+     * Audio data
+     */
+    public static final int TYPE_AUDIO = 8;
+    /**
+     * Video data
+     */
 	public static final int TYPE_VIDEO = 9;
-
+    /**
+     * Metadata
+     */
 	public static final int TYPE_METADATA = 12;
-
+    /**
+     * Sorensen H263 codec marker
+     */
 	public static final int VIDEO_SORENSEN_H263 = 2;
-
+    /**
+     * Screen video
+     */
 	public static final int VIDEO_SCREEN_VIDEO = 3;
-
+    /**
+     * ON2 VP6 codec marker
+     */
 	public static final int VIDEO_ON2_VP6 = 4;
-
+    /**
+     * Keyframe
+     */
 	public static final int FRAMETYPE_KEYFRAME = 1;
-
+    /**
+     * Interframe
+     */
 	public static final int FRAMETYPE_INTERFRAME = 2;
-
+    /**
+     * Disposable
+     */
 	public static final int FRAMETYPE_DISPOSABLE = 3;
-
+    /**
+     * Uncompressed
+     */
 	public static final int AUDIO_UNCOMPRESSED = 0;
-
+    /**
+     * ADPCM data
+     */
 	public static final int AUDIO_ADPCM = 1;
-
+    /**
+     * MP3 data
+     */
 	public static final int AUDIO_MP3 = 2;
-
+    /**
+     * Nellymoser 8khz rate data
+     */
 	public static final int AUDIO_NELLYMOOSER_8KHZ = 5;
-
+    /**
+     * Nellymoser encoded data
+     */
 	public static final int AUDIO_NELLYMOOSER = 6;
-
+    /**
+     * Sound size when 8 khz quality marker
+     */
 	public static final int SOUND_SIZE_8_BIT = 0;
-
+    /**
+     * Sound size when 16 khz quality marker
+     */
 	public static final int SOUND_SIZE_16_BIT = 2;
-
+    /**
+     * Sound size when 5.5 khz rate marker
+     */
 	public static final int SOUND_RATE_5_5_KHZ = 1;
-
+    /**
+     * Sound size when 11 khz rate marker
+     */
 	public static final int SOUND_RATE_11_KHZ = 2;
-
+    /**
+     * Sound size when 22 khz rate marker
+     */
 	public static final int SOUND_RATE_22_KHZ = 3;
-
+    /**
+     * Sound size when 44 khz rate marker
+     */
 	public static final int SOUND_RATE_44_KHZ = 4;
 
 	/*
 	 * 0: Uncompressed, 1: ADPCM, 2: MP3, 5: Nellymoser 8kHz mono, 6: Nellymoser
 	 */
 
-	public int getCodec() {
+	/**
+     * Getter for codec. Returns 0 by now.
+     *
+     * @return  Codec
+     */
+    public int getCodec() {
 		return 0;
 	}
 

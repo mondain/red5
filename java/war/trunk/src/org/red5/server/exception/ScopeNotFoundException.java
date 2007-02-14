@@ -3,7 +3,7 @@ package org.red5.server.exception;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -21,9 +21,22 @@ package org.red5.server.exception;
 
 import org.red5.server.api.IScope;
 
+/**
+ * Scope not found, thrown when child scope wasn't found.
+ */
 public class ScopeNotFoundException extends RuntimeException {
 
-	public ScopeNotFoundException(IScope scope, String childName) {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8512088658139018041L;
+
+    /**
+     * Create exception from given scope object and given child subscope
+     * @param scope             Scope
+     * @param childName         Subscope name
+     */
+    public ScopeNotFoundException(IScope scope, String childName) {
 		super("Scope not found: " + childName + " in " + scope);
 	}
 

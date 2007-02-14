@@ -4,26 +4,44 @@ import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.message.Constants;
 
 public class StreamTracker implements Constants {
-
+    /**
+     * Last audio flag
+     */
 	private int lastAudio;
-
+    /**
+     * Last video flag
+     */
 	private int lastVideo;
-
+    /**
+     * Last notification flag
+     */
 	private int lastNotify;
-
+    /**
+     * Relative flag
+     */
 	private boolean relative;
-
+    /**
+     * First video flag
+     */
 	private boolean firstVideo;
-
+    /**
+     * First audio flag
+     */
 	private boolean firstAudio;
-
+    /**
+     * First notification flag
+     */
 	private boolean firstNotify;
 
-	public StreamTracker() {
+	/** Constructs a new StreamTracker. */
+    public StreamTracker() {
 		reset();
 	}
 
-	public void reset() {
+    /**
+     * Reset state
+     */
+    public void reset() {
 		lastAudio = 0;
 		lastVideo = 0;
 		lastNotify = 0;
@@ -32,7 +50,12 @@ public class StreamTracker implements Constants {
 		firstNotify = true;
 	}
 
-	public int add(IRTMPEvent event) {
+    /**
+     * RTMP event handler
+     * @param event      RTMP event
+     * @return           Timeframe since last notification (or auido or video packet sending)
+     */
+    public int add(IRTMPEvent event) {
 		relative = true;
 		int timestamp = event.getTimestamp();
 		int tsOut = 0;
@@ -81,7 +104,12 @@ public class StreamTracker implements Constants {
 		return tsOut;
 	}
 
-	public boolean isRelative() {
+	/**
+     * Getter for property 'relative'.
+     *
+     * @return Value for property 'relative'.
+     */
+    public boolean isRelative() {
 		return relative;
 	}
 }

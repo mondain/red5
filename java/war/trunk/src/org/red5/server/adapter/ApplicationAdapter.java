@@ -3,7 +3,7 @@ package org.red5.server.adapter;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -50,14 +51,20 @@ import org.red5.server.api.so.ISharedObject;
 import org.red5.server.api.so.ISharedObjectService;
 import org.red5.server.api.stream.IBroadcastStream;
 import org.red5.server.api.stream.IBroadcastStreamService;
+import org.red5.server.api.stream.IClientBroadcastStream;
 import org.red5.server.api.stream.IOnDemandStream;
 import org.red5.server.api.stream.IOnDemandStreamService;
 import org.red5.server.api.stream.IStreamAwareScopeHandler;
+import org.red5.server.api.stream.IStreamPlaybackSecurity;
+import org.red5.server.api.stream.IStreamPublishSecurity;
+import org.red5.server.api.stream.IStreamSecurityService;
+import org.red5.server.api.stream.IStreamService;
 import org.red5.server.api.stream.ISubscriberStream;
 import org.red5.server.api.stream.ISubscriberStreamService;
 import org.red5.server.exception.ClientRejectedException;
 import org.red5.server.scheduling.QuartzSchedulingService;
 import org.red5.server.so.SharedObjectService;
+import org.red5.server.stream.IBroadcastScope;
 import org.red5.server.stream.IProviderService;
 import org.red5.server.stream.ProviderService;
 import org.red5.server.stream.StreamService;
@@ -76,28 +83,34 @@ import org.red5.server.stream.StreamService;
  * method. Unlike to Flash Media server which requires you to keep methods on Client object at server side, Red5
  * offers much more convenient way to add methods for remote invocation to your applications.
  * 
- * EXAMPLE:
- * 
+ * <p><strong>EXAMPLE:</strong></p>
+ * <p>
  * <code>
- * public List<String> getLiveStreams() {
- *   // Implementation goes here, say, use Red5 object to obtain scope and all it's streams
- * }
+ * public List<String> getLiveStreams() {<br />
+ *   // Implementation goes here, say, use Red5 object to obtain scope and all it's streams<br />
+ * }<br />
  * </code>
  * 
- * This methos added to ApplicationAdapter sublass can be called from client side with the following code:
+ * <p>This method added to ApplicationAdapter sublass can be called from client side with the following code:</p>
  * 
  * <code>
- * var nc:NetConnection = new NetConnection();
- * nc.connect(...);
- * nc.call("getLiveStreams", resultHandlerObj);
+ * var nc:NetConnection = new NetConnection();<br />
+ * nc.connect(...);<br />
+ * nc.call("getLiveStreams", resultHandlerObj);<br />
  * </code>
- * 
- * If you want to build a server-side framework this is a place to start and wrap it around ApplicationAdapter subclass.
  *
+ * 
+ *
+ * <p>If you want to build a server-side framework this is a place to start and wrap it around ApplicationAdapter subclass.</p>
+ * </p>
+ *
+ *
+ * @author Joachim Bauch
+ * @author Michael Klishin
  */
 public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 		ISharedObjectService, IBroadcastStreamService, IOnDemandStreamService,
-		ISubscriberStreamService, ISchedulingService {
+		ISubscriberStreamService, ISchedulingService, IStreamSecurityService {
 
 	/**
 	 * Logger object
@@ -110,7 +123,37 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	private Set<IApplication> listeners = new HashSet<IApplication>();
 
-	/**
+    /**
+     * Scheduling service. Uses Quartz. Adds and removes scheduled jobs.
+     */
+    protected ISchedulingService schedulingService;
+
+    /**
+     * Client time to live is max allowed ping return time, in seconds
+     */
+    private int clientTTL = 2;
+
+    /**
+     * Ghost connections (disconnected users listed as connected) cleanup period in seconds
+     */
+    private int ghostConnsCleanupPeriod = 5;
+
+    /**
+     * Ghost connections cleanup job name. Needed to cancel this job.
+     */
+    private String ghostCleanupJobName;
+
+    /**
+     * List of handlers that protect stream publishing.
+     */
+    private Set<IStreamPublishSecurity> publishSecurity = new HashSet<IStreamPublishSecurity>();
+
+    /**
+     * List of handlers that protect stream playback.
+     */
+    private Set<IStreamPlaybackSecurity> playbackSecurity = new HashSet<IStreamPlaybackSecurity>();
+
+    /**
 	 * Register listener that will get notified about application events. Please
 	 * note that return values (e.g. from {@link IApplication#appStart(IScope)})
 	 * will be ignored for listeners.
@@ -142,12 +185,44 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 		return Collections.unmodifiableSet(listeners);
 	}
 
+	/** {@inheritDoc} */
+	public void registerStreamPublishSecurity(IStreamPublishSecurity handler) {
+		publishSecurity.add(handler);
+	}
+
+	/** {@inheritDoc} */
+	public void unregisterStreamPublishSecurity(IStreamPublishSecurity handler) {
+		publishSecurity.remove(handler);
+	}
+	
+	/** {@inheritDoc} */
+	public Set<IStreamPublishSecurity> getStreamPublishSecurity() {
+		return publishSecurity;
+	}
+
+	/** {@inheritDoc} */
+	public void registerStreamPlaybackSecurity(IStreamPlaybackSecurity handler) {
+		playbackSecurity.add(handler);
+	}
+	
+	/** {@inheritDoc} */
+	public void unregisterStreamPlaybackSecurity(IStreamPlaybackSecurity handler) {
+		playbackSecurity.remove(handler);
+	}
+	
+	/** {@inheritDoc} */
+	public Set<IStreamPlaybackSecurity> getStreamPlaybackSecurity() {
+		return playbackSecurity;
+	}
+	
 	/**
 	 * Reject the currently connecting client without a special error message.
 	 * This method throws {@link ClientRejectedException} exception.
 	 *
-	 */
-	protected void rejectClient() {
+     * @throws org.red5.server.exception.ClientRejectedException
+     *                  Thrown when client connection must be rejected by application logic
+     */
+	protected void rejectClient() throws ClientRejectedException {
 		throw new ClientRejectedException();
 	}
 
@@ -158,9 +233,12 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 * information object that is returned to the caller. 
 	 * 
 	 * @param reason
-	 * 			additional error message to return
+	 * 			Additional error message to return to client-side Flex/Flash application
+     *
+     * @throws org.red5.server.exception.ClientRejectedException
+     *                  Thrown when client connection must be rejected by application logic
 	 */
-	protected void rejectClient(Object reason) {
+	protected void rejectClient(Object reason) throws ClientRejectedException{
 		throw new ClientRejectedException(reason);
 	}
 
@@ -168,8 +246,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 * Returns connection result for given scope and parameters. Whether the
 	 * scope is room or app level scope, this method distinguishes it and acts
 	 * accordingly. You override
-	 * {@link ApplicationAdapter#appConnect(IConnection, Object[]))} or
-	 * {@link ApplicationAdapter#roomConnect(IConnection, Object[])}} in your
+	 * {@link ApplicationAdapter#appConnect(IConnection, Object[])} or
+	 * {@link ApplicationAdapter#roomConnect(IConnection, Object[])} in your
 	 * application to make it act the way you want.
 	 * 
 	 * @param conn
@@ -186,7 +264,7 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 		/*
 		 * try { Thread.currentThread().sleep(3000); } catch
 		 * (InterruptedException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); }
+		 * log.error(e); }
 		 */
 		if (!super.connect(conn, scope, params)) {
 			return false;
@@ -216,12 +294,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 		}
 		if (isApp(scope)) {
 			return appStart(scope);
-		} else if (isRoom(scope)) {
-			return roomStart(scope);
-		} else {
-			return false;
-		}
-	}
+		} else return isRoom(scope) && roomStart(scope);
+    }
 
 	/**
 	 * Returns disconnection result for given scope and parameters. Whether the
@@ -232,10 +306,6 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 *            Connection object
 	 * @param scope
 	 *            Scope
-	 * @param params
-	 *            List of params passed to connection handler
-	 * @return <code>true</code> if disconnect is successful,
-	 *         <code>false</code> otherwise
 	 */
 	@Override
 	public void disconnect(IConnection conn, IScope scope) {
@@ -252,7 +322,7 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 * Stops scope handling (that is, stops application if given scope is app
 	 * level scope and stops room handling if given scope has lower scope
 	 * level). This method calls {@link ApplicationAdapter#appStop(IScope)} or
-	 * {@link ApplicationAdapter#roomStop(IScope))} handlers respectively.
+	 * {@link ApplicationAdapter#roomStop(IScope)} handlers respectively.
 	 * 
 	 * @param scope
 	 *            Scope to stop
@@ -271,7 +341,7 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 * Adds client to scope. Scope can be both application or room. Can be
 	 * applied to both application scope and scopes of lower level. This method
 	 * calls {@link ApplicationAdapter#appJoin(IClient, IScope)} or
-	 * {@link ApplicationAdapter#roomJoin(IClient, IScope))} handlers
+	 * {@link ApplicationAdapter#roomJoin(IClient, IScope)} handlers
 	 * respectively.
 	 * 
 	 * @param client
@@ -286,12 +356,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 		}
 		if (isApp(scope)) {
 			return appJoin(client, scope);
-		} else if (isRoom(scope)) {
-			return roomJoin(client, scope);
-		} else {
-			return false;
-		}
-	}
+		} else return isRoom(scope) && roomJoin(client, scope);
+    }
 
 	/**
 	 * Disconnects client from scope. Can be applied to both application scope
@@ -322,13 +388,14 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 * {@link ApplicationAdapter#roomStart(IScope)}} in your application to
 	 * make it act the way you want.
 	 * 
-	 * @param scope
-	 *            Scope object
+     * @param app Application scope object
 	 * @return <code>true</code> if scope can be started, <code>false</code>
 	 *         otherwise
 	 */
 	public boolean appStart(IScope app) {
-		log.debug("appStart: " + app);
+		if (log.isDebugEnabled()) {
+			log.debug("appStart: " + app);
+		}
 		for (IApplication listener : listeners) {
 			listener.appStart(app);
 		}
@@ -342,7 +409,9 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 *            Scope object
 	 */
 	public void appStop(IScope app) {
-		log.debug("appStop: " + app);
+		if (log.isDebugEnabled()) {
+			log.debug("appStop: " + app);
+		}
 		for (IApplication listener : listeners) {
 			listener.appStop(app);
 		}
@@ -356,7 +425,9 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 * @return		Boolean value
 	 */
 	public boolean roomStart(IScope room) {
-		log.debug("roomStart: " + room);
+		if (log.isDebugEnabled()) {
+			log.debug("roomStart: " + room);
+		}
 		// TODO : Get to know what does roomStart return mean
 		for (IApplication listener : listeners) {
 			listener.roomStart(room);
@@ -371,7 +442,9 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 *            Room scope.
 	 */
 	public void roomStop(IScope room) {
-		log.debug("roomStop: " + room);
+		if (log.isDebugEnabled()) {
+			log.debug("roomStop: " + room);
+		}
 		for (IApplication listener : listeners) {
 			listener.roomStop(room);
 		}
@@ -385,18 +458,15 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 * You override this method to pass additional data from client to server
 	 * application using <code>NetConnection.connect</code> method.
 	 * 
-	 * EXAMPLE: 
-	 * 
+	 * <p><strong>EXAMPLE:</strong><br /> 
 	 * In this simple example we pass user's skin of choice identifier from
-	 * client to th server.
+	 * client to th server.</p>
 	 * 
-	 * Client-side: 
+	 * <p><strong>Client-side:</strong><br />
+	 * <code>NetConnection.connect("rtmp://localhost/killerred5app", "silver");</code></p>
 	 * 
-	 * <code>NetConnection.connect( "rtmp://localhost/killerred5app", "silver" );</code>
-	 * 
-	 * Server-side:
-	 * 
-	 * <code>if (params.length > 0) System.out.println( "Theme selected: " + params[0] );</code>
+	 * <p><strong>Server-side:</strong><br /> 
+	 * <code>if (params.length > 0) System.out.println("Theme selected: " + params[0]);</code></p>
 	 * 
 	 * @param conn
 	 *            Connection object
@@ -406,7 +476,9 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 * @return			Boolean value
 	 */
 	public boolean appConnect(IConnection conn, Object[] params) {
-		log.debug("appConnect: " + conn);
+		if (log.isDebugEnabled()) {
+			log.debug("appConnect: " + conn);
+		}
 		for (IApplication listener : listeners) {
 			listener.appConnect(conn, params);
 		}
@@ -431,7 +503,9 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 * @return			Boolean value
 	 */
 	public boolean roomConnect(IConnection conn, Object[] params) {
-		log.debug("roomConnect: " + conn);
+		if (log.isDebugEnabled()) {
+			log.debug("roomConnect: " + conn);
+		}
 		for (IApplication listener : listeners) {
 			listener.roomConnect(conn, params);
 		}
@@ -446,7 +520,9 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 *            Disconnected connection object
 	 */
 	public void appDisconnect(IConnection conn) {
-		log.debug("appDisconnect: " + conn);
+		if (log.isDebugEnabled()) {
+			log.debug("appDisconnect: " + conn);
+		}
 		for (IApplication listener : listeners) {
 			listener.appDisconnect(conn);
 		}
@@ -459,14 +535,18 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 *            Disconnected connection object
 	 */
 	public void roomDisconnect(IConnection conn) {
-		log.debug("roomDisconnect: " + conn);
+		if (log.isDebugEnabled()) {
+			log.debug("roomDisconnect: " + conn);
+		}
 		for (IApplication listener : listeners) {
 			listener.roomDisconnect(conn);
 		}
 	}
 
 	public boolean appJoin(IClient client, IScope app) {
-		log.debug("appJoin: " + client + " >> " + app);
+		if (log.isDebugEnabled()) {
+			log.debug("appJoin: " + client + " >> " + app);
+		}
 		for (IApplication listener : listeners) {
 			listener.appJoin(client, app);
 		}
@@ -482,14 +562,18 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 *            Application scope
 	 */
 	public void appLeave(IClient client, IScope app) {
-		log.debug("appLeave: " + client + " << " + app);
+		if (log.isDebugEnabled()) {
+			log.debug("appLeave: " + client + " << " + app);
+		}
 		for (IApplication listener : listeners) {
 			listener.appLeave(client, app);
 		}
 	}
 
 	public boolean roomJoin(IClient client, IScope room) {
-		log.debug("roomJoin: " + client + " >> " + room);
+		if (log.isDebugEnabled()) {
+			log.debug("roomJoin: " + client + " >> " + room);
+		}
 		for (IApplication listener : listeners) {
 			listener.roomJoin(client, room);
 		}
@@ -499,11 +583,13 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	/**
 	 * Handler method. Called every time client leaves room scope.
 	 * 
-	 * @param conn
-	 *            Disconnected connection object
+	 * @param client    Disconnected client object
+     * @param room      Room scope
 	 */
 	public void roomLeave(IClient client, IScope room) {
-		log.debug("roomLeave: " + client + " << " + room);
+		if (log.isDebugEnabled()) {
+			log.debug("roomLeave: " + client + " << " + room);
+		}
 		for (IApplication listener : listeners) {
 			listener.roomLeave(client, room);
 		}
@@ -568,17 +654,17 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 *            Name of SharedObject
 	 * @param persistent
 	 *            Whether SharedObject instance should be persistent or not
-	 * @return					New shared object instance
+	 * @return					<code>true</code> if SO was created, <code>false</code> otherwise
 	 */
 	public boolean createSharedObject(IScope scope, String name,
 			boolean persistent) {
 		ISharedObjectService service = (ISharedObjectService) getScopeService(
-				scope, ISharedObjectService.SHARED_OBJECT_SERVICE,
-				SharedObjectService.class);
+				scope, ISharedObjectService.class,
+				SharedObjectService.class, false);
 		return service.createSharedObject(scope, name, persistent);
-	}
+    }
 
-	/**
+    /**
 	 * Returns shared object from given scope by name.
 	 * 
 	 * @param scope
@@ -589,8 +675,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public ISharedObject getSharedObject(IScope scope, String name) {
 		ISharedObjectService service = (ISharedObjectService) getScopeService(
-				scope, ISharedObjectService.SHARED_OBJECT_SERVICE,
-				SharedObjectService.class);
+				scope, ISharedObjectService.class,
+				SharedObjectService.class, false);
 		return service.getSharedObject(scope, name);
 	}
 
@@ -608,8 +694,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	public ISharedObject getSharedObject(IScope scope, String name,
 			boolean persistent) {
 		ISharedObjectService service = (ISharedObjectService) getScopeService(
-				scope, ISharedObjectService.SHARED_OBJECT_SERVICE,
-				SharedObjectService.class);
+				scope, ISharedObjectService.class,
+				SharedObjectService.class, false);
 		return service.getSharedObject(scope, name, persistent);
 	}
 
@@ -621,8 +707,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public Set<String> getSharedObjectNames(IScope scope) {
 		ISharedObjectService service = (ISharedObjectService) getScopeService(
-				scope, ISharedObjectService.SHARED_OBJECT_SERVICE,
-				SharedObjectService.class);
+				scope, ISharedObjectService.class,
+				SharedObjectService.class, false);
 		return service.getSharedObjectNames(scope);
 	}
 
@@ -636,26 +722,30 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public boolean hasSharedObject(IScope scope, String name) {
 		ISharedObjectService service = (ISharedObjectService) getScopeService(
-				scope, ISharedObjectService.SHARED_OBJECT_SERVICE,
-				SharedObjectService.class);
+				scope, ISharedObjectService.class,
+				SharedObjectService.class, false);
 		return service.hasSharedObject(scope, name);
 	}
 
 	/* Wrapper around the stream interfaces */
 
-	public boolean hasBroadcastStream(IScope scope, String name) {
+	/** {@inheritDoc} */
+    public boolean hasBroadcastStream(IScope scope, String name) {
 		IProviderService service = (IProviderService) getScopeService(scope,
-				IProviderService.KEY, ProviderService.class);
+				IProviderService.class, ProviderService.class);
 		return (service.getLiveProviderInput(scope, name, false) != null);
 	}
 
-	public IBroadcastStream getBroadcastStream(IScope scope, String name) {
-		log
-				.warn("This won't work until the refactoring of the streaming code is complete.");
-		IBroadcastStreamService service = (IBroadcastStreamService) getScopeService(
-				scope, IBroadcastStreamService.BROADCAST_STREAM_SERVICE,
+	/** {@inheritDoc} */
+    public IBroadcastStream getBroadcastStream(IScope scope, String name) {
+		IStreamService service = (IStreamService) getScopeService(
+				scope, IStreamService.class,
 				StreamService.class);
-		return service.getBroadcastStream(scope, name);
+		if (!(service instanceof StreamService))
+			return null;
+		
+		IBroadcastScope bs = ((StreamService) service).getBroadcastScope(scope, name);
+        return (IClientBroadcastStream) bs.getAttribute(IBroadcastScope.STREAM_ATTRIBUTE);
 	}
 
 	/**
@@ -668,7 +758,7 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public List<String> getBroadcastStreamNames(IScope scope) {
 		IProviderService service = (IProviderService) getScopeService(scope,
-				IProviderService.KEY, ProviderService.class);
+				IProviderService.class, ProviderService.class);
 		return service.getBroadcastStreamNames(scope);
 	}
 
@@ -685,7 +775,7 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public boolean hasOnDemandStream(IScope scope, String name) {
 		IProviderService service = (IProviderService) getScopeService(scope,
-				IProviderService.KEY, ProviderService.class);
+				IProviderService.class, ProviderService.class);
 		return (service.getVODProviderInput(scope, name) != null);
 	}
 
@@ -702,11 +792,10 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 *         details.
 	 */
 	public IOnDemandStream getOnDemandStream(IScope scope, String name) {
-		log
-				.warn("This won't work until the refactoring of the streaming code is complete.");
+		log.warn("This won't work until the refactoring of the streaming code is complete.");
 		IOnDemandStreamService service = (IOnDemandStreamService) getScopeService(
-				scope, IOnDemandStreamService.ON_DEMAND_STREAM_SERVICE,
-				StreamService.class);
+				scope, IOnDemandStreamService.class,
+				StreamService.class, false);
 		return service.getOnDemandStream(scope, name);
 	}
 
@@ -722,11 +811,10 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 * @return	ISubscriberStream object
 	 */
 	public ISubscriberStream getSubscriberStream(IScope scope, String name) {
-		log
-				.warn("This won't work until the refactoring of the streaming code is complete.");
+		log.warn("This won't work until the refactoring of the streaming code is complete.");
 		ISubscriberStreamService service = (ISubscriberStreamService) getScopeService(
-				scope, ISubscriberStreamService.SUBSCRIBER_STREAM_SERVICE,
-				StreamService.class);
+				scope, ISubscriberStreamService.class,
+				StreamService.class, false);
 		return service.getSubscriberStream(scope, name);
 	}
 
@@ -744,8 +832,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public String addScheduledJob(int interval, IScheduledJob job) {
 		ISchedulingService service = (ISchedulingService) getScopeService(
-				scope, ISchedulingService.SCHEDULING_SERVICE,
-				QuartzSchedulingService.class);
+				scope, ISchedulingService.class,
+				QuartzSchedulingService.class, false);
 		return service.addScheduledJob(interval, job);
 	}
 
@@ -763,8 +851,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public String addScheduledOnceJob(long timeDelta, IScheduledJob job) {
 		ISchedulingService service = (ISchedulingService) getScopeService(
-				scope, ISchedulingService.SCHEDULING_SERVICE,
-				QuartzSchedulingService.class);
+				scope, ISchedulingService.class,
+				QuartzSchedulingService.class, false);
 		return service.addScheduledOnceJob(timeDelta, job);
 	}
 
@@ -781,8 +869,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public String addScheduledOnceJob(Date date, IScheduledJob job) {
 		ISchedulingService service = (ISchedulingService) getScopeService(
-				scope, ISchedulingService.SCHEDULING_SERVICE,
-				QuartzSchedulingService.class);
+				scope, ISchedulingService.class,
+				QuartzSchedulingService.class, false);
 		return service.addScheduledOnceJob(date, job);
 	}
 
@@ -794,8 +882,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public void removeScheduledJob(String name) {
 		ISchedulingService service = (ISchedulingService) getScopeService(
-				scope, ISchedulingService.SCHEDULING_SERVICE,
-				QuartzSchedulingService.class);
+				scope, ISchedulingService.class,
+				QuartzSchedulingService.class, false);
 		service.removeScheduledJob(name);
 	}
 
@@ -806,8 +894,8 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public List<String> getScheduledJobNames() {
 		ISchedulingService service = (ISchedulingService) getScopeService(
-				scope, ISchedulingService.SCHEDULING_SERVICE,
-				QuartzSchedulingService.class);
+				scope, ISchedulingService.class,
+				QuartzSchedulingService.class, false);
 		return service.getScheduledJobNames();
 	}
 
@@ -822,7 +910,7 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 	 */
 	public double getStreamLength(String name) {
 		IProviderService provider = (IProviderService) getScopeService(scope,
-				IProviderService.KEY, ProviderService.class);
+				IProviderService.class, ProviderService.class);
 		File file = provider.getVODProviderFile(scope, name);
 		if (file == null) {
 			return 0;
@@ -831,7 +919,7 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 		double duration = 0;
 
 		IStreamableFileFactory factory = (IStreamableFileFactory) ScopeUtils
-				.getScopeService(scope, IStreamableFileFactory.KEY,
+				.getScopeService(scope, IStreamableFileFactory.class,
 						StreamableFileFactory.class);
 		IStreamableFileService service = factory.getService(file);
 		if (service == null) {
@@ -850,9 +938,91 @@ public class ApplicationAdapter extends StatefulScopeWrappingAdapter implements
 		return duration;
 	}
 
-	public boolean clearSharedObjects(IScope scope, String name) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	/** {@inheritDoc} */
+    public boolean clearSharedObjects(IScope scope, String name) {
+		ISharedObjectService service = (ISharedObjectService) getScopeService(
+                scope,
+                ISharedObjectService.class,
+                SharedObjectService.class,
+                false
+        );
 
+        return service.clearSharedObjects(scope, name);
+    }
+
+    /**
+     * Client time to live is max allowed connection ping return time in seconds
+     * @return              TTL value used in seconds
+     */
+    public long getClientTTL() {
+        return clientTTL;
+    }
+
+    /**
+     * Client time to live is max allowed connection ping return time in seconds
+     * @param clientTTL     New TTL value in seconds
+     */
+    public void setClientTTL(int clientTTL) {
+        this.clientTTL = clientTTL;
+    }
+
+    /**
+     * Return period of ghost connections cleanup task call
+     * @return              Ghost connections cleanup period
+     */
+    public int getGhostConnsCleanupPeriod() {
+        return ghostConnsCleanupPeriod;
+    }
+
+    /**
+     * Set new ghost connections cleanup period
+     * @param ghostConnsCleanupPeriod      New ghost connections cleanup period
+     */
+    public void setGhostConnsCleanupPeriod(int ghostConnsCleanupPeriod) {
+        this.ghostConnsCleanupPeriod = ghostConnsCleanupPeriod;
+    }
+
+    /**
+     * Schedules new ghost connections cleanup using current cleanup period
+     */
+    public void scheduleGhostConnectionsCleanup() {
+        IScheduledJob job = new IScheduledJob(){
+            public void execute(ISchedulingService service) throws CloneNotSupportedException {
+                killGhostConnections();
+            }
+        };
+
+        // Cancel previous if was scheduled
+        cancelGhostConnectionsCleanup();
+
+        // Store name so we can cancel it later
+        ghostCleanupJobName = schedulingService.addScheduledJob( ghostConnsCleanupPeriod * 1000, job );
+    }
+
+    /**
+     * Cancel ghost connections cleanup period
+     */
+    public void cancelGhostConnectionsCleanup() {
+        if( ghostCleanupJobName != null ){
+            schedulingService.removeScheduledJob( ghostCleanupJobName );
+        }
+    }
+
+    /**
+     * Cleans up ghost connections
+     */
+    protected void killGhostConnections() {
+        Iterator iter = getConnectionsIter();
+        while(iter.hasNext()) {
+            IConnection conn = (IConnection) iter.next();
+
+            // Ping client
+            conn.ping();
+
+            // Time to live exceeded, disconnect
+            if( conn.getLastPingTime() > clientTTL * 1000 ){
+                disconnect( conn, scope );    
+            }
+        }
+    }
 }

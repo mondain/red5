@@ -3,7 +3,7 @@ package org.red5.server.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -34,28 +34,43 @@ import org.red5.server.api.service.IServiceCall;
 import org.red5.server.api.service.IServiceInvoker;
 
 /**
+ * Makes remote calls, invoking services, resolves service handlers
  *
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class ServiceInvoker implements IServiceInvoker {
 
-	private static final Log log = LogFactory.getLog(ServiceInvoker.class);
+    /**
+     * Logger
+     */
+    private static final Log log = LogFactory.getLog(ServiceInvoker.class);
 
-	public static final String SERVICE_NAME = "serviceInvoker";
+    /**
+     * Service name
+     */
+    public static final String SERVICE_NAME = "serviceInvoker";
 
-	private Set<IServiceResolver> serviceResolvers = new HashSet<IServiceResolver>();
+    /**
+     * Service resolvers set
+     */
+    private Set<IServiceResolver> serviceResolvers = new HashSet<IServiceResolver>();
 
-	public void setServiceResolvers(Set<IServiceResolver> resolvers) {
+	/**
+     * Setter for service resolvers.
+     *
+     * @param resolvers  Service resolvers
+     */
+    public void setServiceResolvers(Set<IServiceResolver> resolvers) {
 		serviceResolvers = resolvers;
 	}
 
 	/**
 	 * Lookup a handler for the passed service name in the given scope.
 	 * 
-	 * @param scope
-	 * @param serviceName
-	 * @return
+	 * @param scope              Scope
+	 * @param serviceName        Service name
+	 * @return                   Service handler
 	 */
 	private Object getServiceHandler(IScope scope, String serviceName) {
 		// Get application scope handler first
@@ -77,35 +92,43 @@ public class ServiceInvoker implements IServiceInvoker {
 		return null;
 	}
 
-	public void invoke(IServiceCall call, IScope scope) {
+	/** {@inheritDoc} */
+    public boolean invoke(IServiceCall call, IScope scope) {
 		String serviceName = call.getServiceName();
-
-		log.debug("Service name " + serviceName);
-		Object service = getServiceHandler(scope, serviceName);
-
-		if (service == null) {
-			call.setException(new ServiceNotFoundException(serviceName));
-			call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
-			log.warn("Service not found: " + serviceName);
-			return;
-		} else {
-			log.debug("Service found: " + serviceName);
+		if (log.isDebugEnabled()) {
+			log.debug("Service name " + serviceName);
 		}
-
-		invoke(call, service);
+		Object service = getServiceHandler(scope, serviceName);
+		if (service == null) {
+            // Exception must be thrown if service was not found
+            call.setException(new ServiceNotFoundException(serviceName));
+            // Set call status
+            call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
+			log.warn("Service not found: " + serviceName);
+			return false;
+		} else {
+			if (log.isDebugEnabled()) {
+				log.debug("Service found: " + serviceName);
+			}
+		}
+        // Invoke if everything is ok
+        return invoke(call, service);
 	}
 
-	public void invoke(IServiceCall call, Object service) {
+	/** {@inheritDoc} */
+    public boolean invoke(IServiceCall call, Object service) {
 		IConnection conn = Red5.getConnectionLocal();
 		String methodName = call.getServiceMethodName();
 
 		Object[] args = call.getArguments();
-		Object[] argsWithConnection = null;
+		Object[] argsWithConnection;
 		if (args != null) {
 			argsWithConnection = new Object[args.length + 1];
 			argsWithConnection[0] = conn;
 			for (int i = 0; i < args.length; i++) {
-				log.debug("   " + i + " => " + args[i]);
+				if (log.isDebugEnabled()) {
+					log.debug("   " + i + " => " + args[i]);
+				}
 				argsWithConnection[i + 1] = args[i];
 			}
 		} else {
@@ -137,7 +160,7 @@ public class ServiceInvoker implements IServiceInvoker {
 						call.setStatus(Call.STATUS_METHOD_NOT_FOUND);
 						call.setException(new MethodNotFoundException(
 								methodName));
-						return;
+						return false;
 					}
 				}
 			}
@@ -148,13 +171,17 @@ public class ServiceInvoker implements IServiceInvoker {
 		Object[] params = (Object[]) methodResult[1];
 
 		try {
-			log.debug("Invoking method: " + method.toString());
+			if (log.isDebugEnabled()) {
+				log.debug("Invoking method: " + method.toString());
+			}
 			if (method.getReturnType() == Void.class) {
 				method.invoke(service, params);
 				call.setStatus(Call.STATUS_SUCCESS_VOID);
 			} else {
 				result = method.invoke(service, params);
-				log.debug("result: " + result);
+				if (log.isDebugEnabled()) {
+					log.debug("result: " + result);
+				}
 				call.setStatus(result == null ? Call.STATUS_SUCCESS_NULL
 						: Call.STATUS_SUCCESS_RESULT);
 			}
@@ -166,17 +193,21 @@ public class ServiceInvoker implements IServiceInvoker {
 			call.setStatus(Call.STATUS_ACCESS_DENIED);
 			log.error("Error executing call: " + call);
 			log.error("Service invocation error", accessEx);
+			return false;
 		} catch (InvocationTargetException invocationEx) {
 			call.setException(invocationEx);
 			call.setStatus(Call.STATUS_INVOCATION_EXCEPTION);
 			log.error("Error executing call: " + call);
 			log.error("Service invocation error", invocationEx);
+			return false;
 		} catch (Exception ex) {
 			call.setException(ex);
 			call.setStatus(Call.STATUS_GENERAL_EXCEPTION);
 			log.error("Error executing call: " + call);
 			log.error("Service invocation error", ex);
+			return false;
 		}
+		return true;
 	}
 
 }

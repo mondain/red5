@@ -3,7 +3,7 @@ package org.red5.server.messaging;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,12 +23,23 @@ package org.red5.server.messaging;
  * A pipe is an object that connects message providers and
  * message consumers. Its main function is to transport messages
  * in kind of ways it provides.
+ *
+ * Pipes fire events as they go, these events are common way to work with pipes for
+ * higher level parts of server.
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Steven Gong (steven.gong@gmail.com)
  */
 public interface IPipe extends IMessageInput, IMessageOutput {
-	void addPipeConnectionListener(IPipeConnectionListener listener);
+    /**
+     * Add connection event listener to pipe
+     * @param listener          Connection event listener
+     */
+    void addPipeConnectionListener(IPipeConnectionListener listener);
 
+    /**
+     * Add connection event listener to pipe
+     * @param listener          Connection event listener
+     */
 	void removePipeConnectionListener(IPipeConnectionListener listener);
 }

@@ -3,7 +3,7 @@ package org.red5.io.mp3;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,7 +22,7 @@ package org.red5.io.mp3;
 import org.red5.io.IStreamableFile;
 
 /**
- * Informations about a MP3 file.
+ * Informations about a MP3 file. Marker interface by now.
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Joachim Bauch (jojo@struktur.de)

@@ -3,7 +3,7 @@ package org.red5.server.messaging;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -28,5 +28,9 @@ package org.red5.server.messaging;
  * @author Steven Gong (steven.gong@gmail.com)
  */
 public interface IPipeConnectionListener {
-	void onPipeConnectionEvent(PipeConnectionEvent event);
+    /**
+     * Pipe connection event handler
+     * @param event        Pipe connection event
+     */
+    void onPipeConnectionEvent(PipeConnectionEvent event);
 }

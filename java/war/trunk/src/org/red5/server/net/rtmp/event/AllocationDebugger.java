@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.event;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -33,40 +33,67 @@ import org.apache.commons.logging.LogFactory;
  * @author Steven Gong (steven.gong@gmail.com) on behalf of (ce@publishing-etc.de)
  */
 public class AllocationDebugger {
-
+    /**
+     * Information on references count
+     */
 	private class Info {
-
+        /**
+         * References count
+         */
 		public int refcount;
 
-		public Info() {
+		/** Constructs a new Info. */
+        public Info() {
 			refcount = 1;
 		}
 
 	}
 
-	private static AllocationDebugger instance;
+    /**
+     * Allocation debugger istance
+     */
+    private static AllocationDebugger instance;
 
-	public static AllocationDebugger getInstance() {
+	/**
+     * Getter for instance
+     *
+     * @return  Allocation debugger instance
+     */
+    public static AllocationDebugger getInstance() {
 		if (instance == null) {
 			instance = new AllocationDebugger();
 		}
 		return instance;
 	}
 
-	private Log log;
-
+    /**
+     * Logger
+     */
+    private Log log;
+    /**
+     * Events-to-information objects map
+     */
 	private Map<BaseEvent, Info> events;
 
-	private AllocationDebugger() {
+	/** Do not instantiate AllocationDebugger. */
+    private AllocationDebugger() {
 		log = LogFactory.getLog(getClass().getName());
 		events = new HashMap<BaseEvent, Info>();
 	}
 
-	protected synchronized void create(BaseEvent event) {
+    /**
+     * Add event to map
+     * @param event         Event
+     */
+    protected synchronized void create(BaseEvent event) {
 		events.put(event, new Info());
 	}
 
-	protected synchronized void retain(BaseEvent event) {
+    /**
+     * Retain event
+     * @param event         Event
+     */
+    protected synchronized void retain(BaseEvent event) {
 		Info info = events.get(event);
 		if (info != null) {
 			info.refcount++;
@@ -75,7 +102,11 @@ public class AllocationDebugger {
 		}
 	}
 
-	protected synchronized void release(BaseEvent event) {
+    /**
+     * Release event if there's no more references to it
+     * @param event         Event
+     */
+    protected synchronized void release(BaseEvent event) {
 		Info info = events.get(event);
 		if (info != null) {
 			info.refcount--;
@@ -87,10 +118,15 @@ public class AllocationDebugger {
 		}
 	}
 
-	public synchronized void dump() {
-		log.debug("dumping allocations " + events.size());
-		for (Entry<BaseEvent, Info> entry : events.entrySet()) {
-			log.debug(entry.getKey() + " " + entry.getValue().refcount);
+    /**
+     * Dumps allocations
+     */
+    public synchronized void dump() {
+		if (log.isDebugEnabled()) {
+			log.debug("dumping allocations " + events.size());
+			for (Entry<BaseEvent, Info> entry : events.entrySet()) {
+				log.debug(entry.getKey() + " " + entry.getValue().refcount);
+			}
 		}
 	}
 

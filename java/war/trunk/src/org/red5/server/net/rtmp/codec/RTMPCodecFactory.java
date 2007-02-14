@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.codec;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -28,45 +28,77 @@ import org.red5.server.net.protocol.SimpleProtocolCodecFactory;
 import org.red5.server.net.protocol.SimpleProtocolDecoder;
 import org.red5.server.net.protocol.SimpleProtocolEncoder;
 
+/**
+ * RTMP codec factory creates RTMP encoders/decoders
+ */
 public class RTMPCodecFactory implements ProtocolCodecFactory,
 		SimpleProtocolCodecFactory {
 
-	protected Deserializer deserializer = null;
+    /**
+     * Deserializer
+     */
+    protected Deserializer deserializer;
 
-	protected Serializer serializer = null;
+    /**
+     * Serializer
+     */
+    protected Serializer serializer;
 
-	protected RTMPMinaProtocolDecoder decoder;
+    /**
+     * Mina protocol decoder for RTMP
+     */
+    protected RTMPMinaProtocolDecoder decoder;
 
-	protected RTMPMinaProtocolEncoder encoder;
+    /**
+     * Mina protocol encoder for RTMP
+     */
+    protected RTMPMinaProtocolEncoder encoder;
 
-	public void init() {
+    /**
+     * Initialization
+     */
+    public void init() {
 		decoder = new RTMPMinaProtocolDecoder();
 		decoder.setDeserializer(deserializer);
 		encoder = new RTMPMinaProtocolEncoder();
 		encoder.setSerializer(serializer);
 	}
 
-	public void setDeserializer(Deserializer deserializer) {
+	/**
+     * Setter for deserializer
+     *
+     * @param deserializer  Deserializer
+     */
+    public void setDeserializer(Deserializer deserializer) {
 		this.deserializer = deserializer;
 	}
 
-	public void setSerializer(Serializer serializer) {
+	/**
+     * Setter for serializer
+     *
+     * @param serializer  Serializer
+     */
+    public void setSerializer(Serializer serializer) {
 		this.serializer = serializer;
 	}
 
-	public ProtocolDecoder getDecoder() {
+	/** {@inheritDoc} */
+    public ProtocolDecoder getDecoder() {
 		return decoder;
 	}
 
-	public ProtocolEncoder getEncoder() {
+	/** {@inheritDoc} */
+    public ProtocolEncoder getEncoder() {
 		return encoder;
 	}
 
-	public SimpleProtocolDecoder getSimpleDecoder() {
+	/** {@inheritDoc} */
+    public SimpleProtocolDecoder getSimpleDecoder() {
 		return decoder;
 	}
 
-	public SimpleProtocolEncoder getSimpleEncoder() {
+	/** {@inheritDoc} */
+    public SimpleProtocolEncoder getSimpleEncoder() {
 		return encoder;
 	}
 

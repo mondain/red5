@@ -3,7 +3,7 @@ package org.red5.server.so;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,6 +23,9 @@ import java.util.List;
 
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 
+/**
+ * Shared object message
+ */
 public interface ISharedObjectMessage extends IRTMPEvent {
 
 	/**
@@ -55,12 +58,30 @@ public interface ISharedObjectMessage extends IRTMPEvent {
 	 */
 	public List<ISharedObjectEvent> getEvents();
 
-	public void addEvent(ISharedObjectEvent.Type type, String key, Object value);
+    /**
+     * Addition event handler
+     * @param type           Event type
+     * @param key            Handler key
+     * @param value          Event value (like arguments)
+     */
+    public void addEvent(ISharedObjectEvent.Type type, String key, Object value);
 
+    /**
+     * Add event handler
+     * @param event          SO event
+     */
 	public void addEvent(ISharedObjectEvent event);
 
-	public void clear();
+    /**
+     * Clear shared object
+     */
+    public void clear();
 
-	public boolean isEmpty();
+	/**
+     * Is empty?
+     *
+     * @return  <code>true</code> if shared object is empty, <code>false</code> otherwise
+     */
+    public boolean isEmpty();
 
 }

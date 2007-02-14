@@ -3,7 +3,7 @@ package org.red5.io.object;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -19,17 +19,8 @@ package org.red5.io.object;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.red5.io.utils.XMLUtils;
-import org.w3c.dom.Document;
 
 /**
  * The Deserializer class reads data input and handles the data 
@@ -61,7 +52,7 @@ public class Deserializer {
 			log.debug("Datatype: " + DataTypes.toStringValue(type));
 		}
 
-		Object result = null;
+		Object result;
 
 		switch (type) {
 			case DataTypes.CORE_NULL:
@@ -80,19 +71,19 @@ public class Deserializer {
 				result = in.readDate();
 				break;
 			case DataTypes.CORE_ARRAY:
-				result = readArray(in);
+				result = in.readArray(this);
 				break;
 			case DataTypes.CORE_MAP:
-				result = readMixedArray(in);
+				result = in.readMap(this);
 				break;
 			case DataTypes.CORE_XML:
-				result = readXML(in);
+				result = in.readXML();
 				break;
 			case DataTypes.CORE_OBJECT:
-				result = readObject(in);
+				result = in.readObject(this);
 				break;
 			case DataTypes.OPT_REFERENCE:
-				result = readReference(in);
+				result = in.readReference();
 				break;
 			default:
 				result = in.readCustom();
@@ -107,224 +98,11 @@ public class Deserializer {
 	}
 
 	/**
-	 * Reads the input and returns an array of Objects
-	 * 
-	 * @param in
-	 * @return ArrayList
-	 */
-	protected ArrayList readArray(Input in) {
-		if (log.isDebugEnabled()) {
-			log.debug("Read array");
-		}
-		final int arraySize = in.readStartArray();
-		ArrayList list = new ArrayList(arraySize);
-		in.storeReference(list);
-		for (int i = 0; i < arraySize; i++) {
-			list.add(deserialize(in));
-			in.skipElementSeparator();
-		}
-		in.skipEndArray();
-		return list;
-	}
-
-	/**
-	 * Reads the input and returns a List.
-	 * 
-	 * @param in
-	 * @return List
-	 */
-	protected List readMixedArray(Input in) {
-		if (log.isDebugEnabled()) {
-			log.debug("read map");
-		}
-
-		int size = in.readStartMap();
-
-		if (log.isDebugEnabled()) {
-			log.debug("Read start mixed array: " + size);
-		}
-
-		final List result = new ArrayList(size);
-		// Initialize array with null values
-		for (int i = 0; i < size; i++) {
-			result.add(null);
-		}
-
-		in.storeReference(result);
-		while (in.hasMoreItems()) {
-			String key = in.readItemKey();
-			if (log.isDebugEnabled()) {
-				log.debug("key: " + key);
-			}
-			Object item = deserialize(in);
-			if (log.isDebugEnabled()) {
-				log.debug("item: " + item);
-			}
-			result.set(Integer.parseInt(key), item);
-			if (in.hasMoreItems()) {
-				in.skipItemSeparator();
-			}
-		}
-		in.skipEndMap();
-		return result;
-	}
-
-	/**
-	 * Reads the input as xml and returns an object
-	 * 
-	 * @param in
-	 * @return the xml document
-	 */
-	protected Object readXML(Input in) {
-		final String xmlString = in.readString();
-		Document doc = null;
-		try {
-			doc = XMLUtils.stringToDoc(xmlString);
-		} catch (IOException ioex) {
-			log.error("IOException converting xml to dom", ioex);
-		}
-		in.storeReference(doc);
-		return doc;
-	}
-
-	/**
-	 * Reads the input as and object and returns an Object
-	 * 
-	 * @param in
-	 * @return Object
-	 */
-	protected Object readObject(Input in) {
-		if (log.isDebugEnabled()) {
-			log.debug("read object");
-		}
-		final String className = in.readStartObject();
-		if (className != null) {
-			if (log.isDebugEnabled()) {
-				log.debug("read class object");
-			}
-			Object instance;
-			if (className.equals("RecordSet")) {
-				return new RecordSet(in);
-			} else if (className.equals("RecordSetPage")) {
-				return new RecordSetPage(in);
-			} else {
-				instance = newInstance(className);
-				if (instance != null) {
-					return readBean(in, instance);
-				} // else fall through
-			}
-		}
-		return readSimpleObject(in);
-	}
-
-	/**
-	 * Reads the input as a bean and returns an object
-	 * 
-	 * @param in
-	 * @param bean
-	 * @return Object
-	 */
-	protected Object readBean(Input in, Object bean) {
-		if (log.isDebugEnabled()) {
-			log.debug("read bean");
-		}
-		in.storeReference(bean);
-		while (in.hasMoreProperties()) {
-			String name = in.readPropertyName();
-			if (log.isDebugEnabled()) {
-				log.debug("property: " + name);
-			}
-			Object property = deserialize(in);
-			if (log.isDebugEnabled()) {
-				log.debug("val: " + property);
-			}
-			//log.debug("val: "+property.getClass().getName());
-			try {
-				if (property != null) {
-					BeanUtils.setProperty(bean, name, property);
-				} else {
-					if (log.isDebugEnabled()) {
-						log.debug("Skipping null property: " + name);
-					}
-				}
-			} catch (Exception ex) {
-				log.error("Error mapping property: " + name);
-			}
-			if (in.hasMoreProperties()) {
-				in.skipPropertySeparator();
-			}
-		}
-		in.skipEndObject();
-		return bean;
-	}
-
-	/**
-	 * Reads the input as a map and returns a Map
-	 * 
-	 * @param in
-	 * @return Map
-	 */
-	protected Map readSimpleObject(Input in) {
-		if (log.isDebugEnabled()) {
-			log.debug("read map");
-		}
-		Map map = new HashMap();
-		in.storeReference(map);
-		while (in.hasMoreProperties()) {
-			String name = in.readPropertyName();
-			if (log.isDebugEnabled()) {
-				log.debug("property: " + name);
-			}
-			Object property = deserialize(in);
-			if (log.isDebugEnabled()) {
-				log.debug("val: " + property);
-			}
-			//log.debug("val: "+property.getClass().getName());
-			map.put(name, property);
-			if (in.hasMoreProperties()) {
-				in.skipPropertySeparator();
-			}
-		}
-		in.skipEndObject();
-		return map;
-	}
-
-	/**
-	 * Creats a new instance of the className parameter and 
-	 * returns as an Object
-	 * @param className
-	 * @return Object
-	 */
-	protected Object newInstance(String className) {
-		Object instance = null;
-		try {
-			Class clazz = Thread.currentThread().getContextClassLoader()
-					.loadClass(className);
-			instance = clazz.newInstance();
-		} catch (Exception ex) {
-			log.error("Error loading class: " + className, ex);
-		}
-		return instance;
-	}
-
-	/**
-	 * Reads the input as a reference and returns an Object
-	 * 
-	 * @param in
-	 * @return Object
-	 */
-	protected Object readReference(Input in) {
-		final Object ref = in.readReference();
-		if (ref == null) {
-			log.error("Reference returned by input is null");
-		}
-		return ref;
-	}
-
-	/**
 	 * Post processes the result
 	 * TODO Extension Point
-	 */
+     * @param result
+     * @return
+     */
 	protected Object postProcessExtension(Object result) {
 		// does nothing at the moment, but will later!
 		return result;

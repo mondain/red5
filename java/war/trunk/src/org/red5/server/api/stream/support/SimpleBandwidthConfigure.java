@@ -3,7 +3,7 @@ package org.red5.server.api.stream.support;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,7 +23,7 @@ import org.red5.server.api.IBandwidthConfigure;
 import org.springframework.core.style.ToStringCreator;
 
 /**
- * This class is the only IBandwidthConfigure implementation in 0.5. It's a kind
+ * This class is the only IBandwidthConfigure implementation provided in 0.6. It's a kind
  * of ValueObject (item with a set of values that just stores data) that is used
  * to configure Red5 application bandwidth settings.
  * 
@@ -36,25 +36,53 @@ import org.springframework.core.style.ToStringCreator;
  * parameters.
  */
 public class SimpleBandwidthConfigure implements IBandwidthConfigure {
-	private long audioBandwidth;
+    /**
+     *  Audio bandwidth limit
+     */
+    private long audioBandwidth;
 
-	private long videoBandwidth;
+    /**
+     *  Video bandwidth limit
+     */
+    private long videoBandwidth;
 
-	private long overallBandwidth = -1;
+    /**
+     *  Overall bandwidth limit
+     */
+    private long overallBandwidth = -1;
 
-	private long upstreamBandwidth = -1;
+    /**
+     *  Upstream (from client to server) banwidth limit
+     */
+    private long upstreamBandwidth = -1;
 
-	private long downstreamBandwidth = -1;
+    /**
+     *  Downstream (from client to server) banwidth limit
+     */
+    private long downstreamBandwidth = -1;
 
-	private long burst = 0;
+    /**
+     *  Burst value
+     */
+    private long burst = 0;
 
-	private long maxBurst = 0;
+    /**
+     *  Max burst value
+     */
+    private long maxBurst = 0;
 
-	public SimpleBandwidthConfigure() {
+    /**
+     *
+     */
+    public SimpleBandwidthConfigure() {
 
 	}
 
-	public SimpleBandwidthConfigure(IBandwidthConfigure config) {
+    /**
+     * Create SimpleBandwidthConfigure from bandwidth configuration context
+     * @param config
+     */
+    public SimpleBandwidthConfigure(IBandwidthConfigure config) {
 		this.audioBandwidth = config.getAudioBandwidth();
 		this.videoBandwidth = config.getVideoBandwidth();
 		this.overallBandwidth = config.getOverallBandwidth();
@@ -62,70 +90,120 @@ public class SimpleBandwidthConfigure implements IBandwidthConfigure {
 		this.downstreamBandwidth = config.getDownstreamBandwidth();
 	}
 
-	public long getAudioBandwidth() {
+    /**
+     * Getter for audio bandwidth limit
+     * @return            Audio bandwidth limit
+     */
+    public long getAudioBandwidth() {
 		return audioBandwidth;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public void setAudioBandwidth(long audioBandwidth) {
 		this.audioBandwidth = audioBandwidth;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public long getVideoBandwidth() {
 		return videoBandwidth;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public void setVideoBandwidth(long videoBandwidth) {
 		this.videoBandwidth = videoBandwidth;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public long getOverallBandwidth() {
 		return overallBandwidth;
 	}
 
+    /**
+     * {@inheritDoc} 
+     */
 	public void setOverallBandwidth(long overallBandwidth) {
 		this.overallBandwidth = overallBandwidth;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public long getUpstreamBandwidth() {
 		return upstreamBandwidth;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public void setUpstreamBandwidth(long upstreamBandwidth) {
 		this.upstreamBandwidth = upstreamBandwidth;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public long getDownstreamBandwidth() {
 		return downstreamBandwidth;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public void setDownstreamBandwidth(long downstreamBandwidth) {
 		this.downstreamBandwidth = downstreamBandwidth;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public long getBurst() {
 		return burst;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public void setBurst(long burst) {
 		this.burst = burst;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public long getMaxBurst() {
 		return maxBurst;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	public void setMaxBurst(long maxBurst) {
 		this.maxBurst = maxBurst;
 	}
 
-	@Override
+    /**
+     * {@inheritDoc}
+     */
+    @Override
 	public String toString() {
 		return new ToStringCreator(this).append("ALL", getOverallBandwidth())
 				.append("BURST", getBurst()).append("MAX", getMaxBurst())
 				.toString();
 	}
 
-	@Override
+    /**
+     * Clone bandwidth configuration object
+     * @return            Clone of current bandwidth configuration
+     */
+    @Override
 	public IBandwidthConfigure clone() {
 		IBandwidthConfigure clone = new SimpleBandwidthConfigure();
 		clone.setOverallBandwidth(getOverallBandwidth());

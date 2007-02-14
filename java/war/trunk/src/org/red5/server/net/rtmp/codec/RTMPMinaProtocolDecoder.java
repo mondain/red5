@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.codec;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -19,7 +19,6 @@ package org.red5.server.net.rtmp.codec;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.mina.common.ByteBuffer;
@@ -27,16 +26,27 @@ import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecException;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import org.red5.server.api.IConnection;
+import org.red5.server.api.Red5;
 import org.red5.server.net.protocol.ProtocolState;
 
+/**
+ * RTMP protocol decoder
+ */
 public class RTMPMinaProtocolDecoder extends RTMPProtocolDecoder implements
 		ProtocolDecoder {
 
-	public void decode(IoSession session, ByteBuffer in,
+	/** {@inheritDoc} */
+    public void decode(IoSession session, ByteBuffer in,
 			ProtocolDecoderOutput out) throws ProtocolCodecException {
 
 		final ProtocolState state = (ProtocolState) session
 				.getAttribute(ProtocolState.SESSION_KEY);
+
+		IConnection conn = (IConnection) session.getAttachment();
+		
+		// Set thread local here so we have the connection during decoding of packets
+		Red5.setConnectionLocal(conn);
 
 		ByteBuffer buf = (ByteBuffer) session.getAttribute("buffer");
 		if (buf == null) {
@@ -52,17 +62,18 @@ public class RTMPMinaProtocolDecoder extends RTMPProtocolDecoder implements
 			return;
 		}
 
-		Iterator it = objects.iterator();
-		while (it.hasNext()) {
-			out.write(it.next());
-		}
-	}
+        for (Object object : objects) {
+            out.write(object);
+        }
+    }
 
-	public void dispose(IoSession ioSession) throws Exception {
+	/** {@inheritDoc} */
+    public void dispose(IoSession ioSession) throws Exception {
 		// TODO Auto-generated method stub
 	}
 
-	public void finishDecode(IoSession session, ProtocolDecoderOutput out)
+	/** {@inheritDoc} */
+    public void finishDecode(IoSession session, ProtocolDecoderOutput out)
 			throws Exception {
 		// TODO Auto-generated method stub	
 	}

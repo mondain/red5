@@ -3,7 +3,7 @@ package org.red5.server.stream;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -21,39 +21,122 @@ package org.red5.server.stream;
 
 import org.red5.server.stream.message.RTMPMessage;
 
+/**
+ * Stream flow object contains information about buffering, bit rate of stream, segmentation, etc
+ */
 public interface IStreamFlow {
 
-	public int getMaxTimeBuffer();
+	/**
+     * Getter for property 'maxTimeBuffer'.
+     *
+     * @return Value for property 'maxTimeBuffer'.
+     */
+    public int getMaxTimeBuffer();
 
-	public void setMaxTimeBuffer(int maxTimeBuffer);
+	/**
+     * Setter for property 'maxTimeBuffer'.
+     *
+     * @param maxTimeBuffer Value to set for property 'maxTimeBuffer'.
+     */
+    public void setMaxTimeBuffer(int maxTimeBuffer);
 
-	public int getMinTimeBuffer();
+	/**
+     * Getter for property 'minTimeBuffer'.
+     *
+     * @return Value for property 'minTimeBuffer'.
+     */
+    public int getMinTimeBuffer();
 
-	public void setMinTimeBuffer(int minTimeBuffer);
+	/**
+     * Setter for property 'minTimeBuffer'.
+     *
+     * @param minTimeBuffer Value to set for property 'minTimeBuffer'.
+     */
+    public void setMinTimeBuffer(int minTimeBuffer);
 
-	public long getClientTimeBuffer();
+	/**
+     * Getter for property 'clientTimeBuffer'.
+     *
+     * @return Value for property 'clientTimeBuffer'.
+     */
+    public long getClientTimeBuffer();
 
-	public void setClientTimeBuffer(long clientTimeBuffer);
+	/**
+     * Setter for property 'clientTimeBuffer'.
+     *
+     * @param clientTimeBuffer Value to set for property 'clientTimeBuffer'.
+     */
+    public void setClientTimeBuffer(long clientTimeBuffer);
 
-	public int getDataBitRate();
+	/**
+     * Getter for property 'dataBitRate'.
+     *
+     * @return Value for property 'dataBitRate'.
+     */
+    public int getDataBitRate();
 
-	public int getSegmentBytesTransfered();
+	/**
+     * Getter for property 'segmentBytesTransfered'.
+     *
+     * @return Value for property 'segmentBytesTransfered'.
+     */
+    public int getSegmentBytesTransfered();
 
-	public int getSegmentDataTime();
+	/**
+     * Getter for property 'segmentDataTime'.
+     *
+     * @return Value for property 'segmentDataTime'.
+     */
+    public int getSegmentDataTime();
 
-	public long getSegmentStreamTime();
+	/**
+     * Getter for property 'segmentStreamTime'.
+     *
+     * @return Value for property 'segmentStreamTime'.
+     */
+    public long getSegmentStreamTime();
 
-	public int getStreamBitRate();
+	/**
+     * Getter for property 'streamBitRate'.
+     *
+     * @return Value for property 'streamBitRate'.
+     */
+    public int getStreamBitRate();
 
-	public boolean isBufferTimeIncreasing();
+	/**
+     * Getter for property 'bufferTimeIncreasing'.
+     *
+     * @return Value for property 'bufferTimeIncreasing'.
+     */
+    public boolean isBufferTimeIncreasing();
 
-	public long getTotalBytesTransfered();
+	/**
+     * Getter for property 'totalBytesTransfered'.
+     *
+     * @return Value for property 'totalBytesTransfered'.
+     */
+    public long getTotalBytesTransfered();
 
-	public long getTotalDataTime();
+	/**
+     * Getter for property 'totalDataTime'.
+     *
+     * @return Value for property 'totalDataTime'.
+     */
+    public long getTotalDataTime();
 
-	public long getTotalStreamTime();
+	/**
+     * Getter for property 'totalStreamTime'.
+     *
+     * @return Value for property 'totalStreamTime'.
+     */
+    public long getTotalStreamTime();
 
-	public int getBufferTime();
+	/**
+     * Getter for property 'bufferTime'.
+     *
+     * @return Value for property 'bufferTime'.
+     */
+    public int getBufferTime();
 
 	public void reset();
 
@@ -65,6 +148,11 @@ public interface IStreamFlow {
 
 	public void update(RTMPMessage msg);
 
-	public long getZeroToStreamTime();
+	/**
+     * Getter for property 'zeroToStreamTime'.
+     *
+     * @return Value for property 'zeroToStreamTime'.
+     */
+    public long getZeroToStreamTime();
 
 }

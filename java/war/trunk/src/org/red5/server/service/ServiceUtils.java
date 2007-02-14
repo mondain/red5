@@ -3,7 +3,7 @@ package org.red5.server.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -32,9 +32,13 @@ public class ServiceUtils {
 	private static final Log log = LogFactory.getLog(ServiceUtils.class);
 
 	/**
-	 * Returns (method, params) for the given service or (null, null) if not
+	 * Returns (method, params) for the given service or (null, null) if no
 	 * method was found.
-	 */
+     * @param args             Arguments
+     * @return                 Method/params pairs
+     * @param service          Service
+     * @param methodName       Method name
+     */
 	public static Object[] findMethodWithExactParameters(Object service,
 			String methodName, List args) {
 		Object[] arguments = new Object[args.size()];
@@ -49,13 +53,19 @@ public class ServiceUtils {
 	 * Returns (method, params) for the given service or (null, null) if not
 	 * method was found. XXX use ranking for method matching rather than exact
 	 * type matching plus type conversion.
-	 */
+     * @param service          Service
+     * @param methodName       Method name
+     * @return                 Method/params pairs
+     * @param args             Arguments
+     */
 	public static Object[] findMethodWithExactParameters(Object service,
 			String methodName, Object[] args) {
 		int numParams = (args == null) ? 0 : args.length;
 		List methods = ConversionUtils.findMethodsByNameAndNumParams(service,
 				methodName, numParams);
-		log.debug("Found " + methods.size() + " methods");
+		if (log.isDebugEnabled()) {
+			log.debug("Found " + methods.size() + " methods");
+		}
 		if (methods.isEmpty()) {
 			return new Object[] { null, null };
 		} else if (methods.size() > 1) {
@@ -110,7 +120,11 @@ public class ServiceUtils {
 	/**
 	 * Returns (method, params) for the given service or (null, null) if not
 	 * method was found.
-	 */
+     * @param args              Arguments
+     * @param methodName        Method name
+     * @return                  Method/params pairs
+     * @param service           Service
+     */
 	public static Object[] findMethodWithListParameters(Object service,
 			String methodName, List args) {
 		Object[] arguments = new Object[args.size()];
@@ -124,17 +138,22 @@ public class ServiceUtils {
 	/**
 	 * Returns (method, params) for the given service or (null, null) if not
 	 * method was found.
-	 */
+     * @param methodName       Method name
+     * @return                 Method/params pairs
+     * @param args             Arguments
+     * @param service          Service
+     */
 	public static Object[] findMethodWithListParameters(Object service,
 			String methodName, Object[] args) {
 		List methods = ConversionUtils.findMethodsByNameAndNumParams(service,
 				methodName, 1);
-		log.debug("Found " + methods.size() + " methods");
+		if (log.isDebugEnabled()) {
+			log.debug("Found " + methods.size() + " methods");
+		}
 		if (methods.isEmpty()) {
 			return new Object[] { null, null };
 		} else if (methods.size() > 1) {
-			log
-					.debug("Multiple methods found with same name and parameter count.");
+			log.debug("Multiple methods found with same name and parameter count.");
 			log.debug("Parameter conversion will be attempted in order.");
 		}
 

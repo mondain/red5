@@ -3,7 +3,7 @@ package org.red5.server.api;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -43,7 +43,7 @@ public final class Red5 {
 
 	/**
 	 * Current connection thread. Each connection of Red5 application runs in a
-	 * separate thread. This method returns thread object associated with
+	 * separate thread. This is thread object associated with
 	 * current connection.
 	 */
 	private static ThreadLocal<IConnection> connThreadLocal = new ThreadLocal<IConnection>();
@@ -51,7 +51,7 @@ public final class Red5 {
 	/**
 	 * Connection local to the current thread
 	 */
-	public IConnection conn = null;
+	public IConnection conn;
 
 	/**
 	 * Create a new Red5 object using given connection
@@ -71,7 +71,12 @@ public final class Red5 {
 		conn = Red5.getConnectionLocal();
 	}
 
-	public static void setConnectionLocal(IConnection connection) {
+	/**
+     * Setter for connection
+     *
+     * @param connection     Thread local connection
+     */
+    public static void setConnectionLocal(IConnection connection) {
 		connThreadLocal.set(connection);
 	}
 
@@ -81,7 +86,7 @@ public final class Red5 {
 	 * get a connection associated with event handler and so forth, this method
 	 * provides you with it.
 	 * 
-	 * @return connection object
+	 * @return Connection object
 	 */
 	public static IConnection getConnectionLocal() {
 		return connThreadLocal.get();
@@ -90,7 +95,7 @@ public final class Red5 {
 	/**
 	 * Get the connection object
 	 * 
-	 * @return connection object
+	 * @return Connection object
 	 */
 	public IConnection getConnection() {
 		return conn;
@@ -99,7 +104,7 @@ public final class Red5 {
 	/**
 	 * Get the scope
 	 * 
-	 * @return scope object
+	 * @return Scope object
 	 */
 	public IScope getScope() {
 		return conn.getScope();
@@ -108,7 +113,7 @@ public final class Red5 {
 	/**
 	 * Get the client
 	 * 
-	 * @return client object
+	 * @return Client object
 	 */
 	public IClient getClient() {
 		return conn.getClient();
@@ -117,7 +122,7 @@ public final class Red5 {
 	/**
 	 * Get the spring application context
 	 * 
-	 * @return application context
+	 * @return Application context
 	 */
 	public IContext getContext() {
 		return conn.getScope().getContext();

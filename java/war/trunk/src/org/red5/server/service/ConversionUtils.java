@@ -3,7 +3,7 @@ package org.red5.server.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -21,7 +21,6 @@ package org.red5.server.service;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,7 +39,8 @@ import org.red5.io.object.Deserializer;
 import org.red5.server.api.IConnection;
 
 /**
- *
+ * Misc utils for convertions
+ * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
@@ -56,7 +56,10 @@ public class ConversionUtils {
 			Character.class, Short.class, Integer.class, Long.class,
 			Float.class, Double.class };
 
-	private static final Class[][] PARAMETER_CHAINS = {
+    /**
+     * Parameter chains
+     */
+    private static final Class[][] PARAMETER_CHAINS = {
 			{ boolean.class, null }, { byte.class, Short.class },
 			{ char.class, Integer.class }, { short.class, Integer.class },
 			{ int.class, Long.class }, { long.class, Float.class },
@@ -75,9 +78,6 @@ public class ConversionUtils {
 	 */
 	private static Map<Class, Class[]> parameterMap = new HashMap<Class, Class[]>();
 
-	/** Default number format */
-	private static NumberFormat NUMBER_FORMAT = NumberFormat.getInstance();
-
 	static {
 		for (int i = 0; i < PRIMITIVES.length; i++) {
 			primitiveMap.put(PRIMITIVES[i], WRAPPERS[i]);
@@ -86,7 +86,15 @@ public class ConversionUtils {
 		}
 	}
 
-	public static Object convert(Object source, Class target)
+    /**
+     * Convert source to given class
+     * @param source         Source object
+     * @param target         Target class
+     * @return               Converted object
+     * @throws ConversionException           If object can't be converted
+     *
+     */
+    public static Object convert(Object source, Class target)
 			throws ConversionException {
 		if (target == null) {
 			throw new ConversionException("Unable to perform conversion");
@@ -97,7 +105,12 @@ public class ConversionUtils {
 						"Unable to convert null to primitive value");
 			}
 			return source;
+		} else if ((source instanceof Float && ((Float) source).isNaN()) || 
+				   (source instanceof Double && ((Double) source).isNaN())) {
+			// Don't convert NaN values
+			return source;
 		}
+		
 		if (IConnection.class.isAssignableFrom(source.getClass())
 				&& !target.equals(IConnection.class)) {
 			throw new ConversionException("IConnection must match exact.");
@@ -133,7 +146,14 @@ public class ConversionUtils {
 		throw new ConversionException("Unable to preform conversion");
 	}
 
-	public static Object convertToArray(Object source, Class target)
+    /**
+     * Convert to array
+     * @param source         Source object
+     * @param target         Target class
+     * @return               Converted object
+     * @throws ConversionException           If object can't be converted
+     */
+    public static Object convertToArray(Object source, Class target)
 			throws ConversionException {
 		try {
 			Object[] targetInstance = (Object[]) Array.newInstance(target
@@ -157,7 +177,13 @@ public class ConversionUtils {
 		}
 	}
 
-	public static Object convertToWrappedPrimitive(Object source, Class wrapper) {
+    /**
+     * Convert to wrapped primitive
+     * @param source            Source object
+     * @param wrapper           Primitive wrapper type
+     * @return                  Converted object
+     */
+    public static Object convertToWrappedPrimitive(Object source, Class wrapper) {
 		if (source == null || wrapper == null) {
 			return null;
 		}
@@ -174,7 +200,13 @@ public class ConversionUtils {
 		}
 	}
 
-	public static Object convertStringToWrapper(String str, Class wrapper) {
+    /**
+     * Convert string to primitive wrapper like Boolean or Float
+     * @param str               String to convert
+     * @param wrapper           Primitive wrapper type
+     * @return                  Converted object
+     */
+    public static Object convertStringToWrapper(String str, Class wrapper) {
 		if (wrapper.equals(String.class)) {
 			return str;
 		} else if (wrapper.equals(Boolean.class)) {
@@ -195,33 +227,49 @@ public class ConversionUtils {
 		throw new ConversionException("Unable to convert string to: " + wrapper);
 	}
 
-	public static Object convertNumberToWrapper(Number num, Class wrapper) {
+    /**
+     * Convert number to primitive wrapper like Boolean or Float
+     * @param num               Number to conver
+     * @param wrapper           Primitive wrapper type
+     * @return                  Converted object
+     */
+    public static Object convertNumberToWrapper(Number num, Class wrapper) {
+		//XXX Paul: Using valueOf will reduce object creation
 		if (wrapper.equals(String.class)) {
 			return num.toString();
 		} else if (wrapper.equals(Boolean.class)) {
-			return new Boolean(num.intValue() == 1);
+			return Boolean.valueOf(num.intValue() == 1);
 		} else if (wrapper.equals(Double.class)) {
-			return new Double(num.doubleValue());
+			return Double.valueOf(num.doubleValue());
 		} else if (wrapper.equals(Long.class)) {
-			return new Long(num.longValue());
+			return Long.valueOf(num.longValue());
 		} else if (wrapper.equals(Float.class)) {
-			return new Float(num.floatValue());
+			return Float.valueOf(num.floatValue());
 		} else if (wrapper.equals(Integer.class)) {
-			return new Integer(num.intValue());
+			return Integer.valueOf(num.intValue());
 		} else if (wrapper.equals(Short.class)) {
-			return new Short(num.shortValue());
+			return Short.valueOf(num.shortValue());
 		} else if (wrapper.equals(Byte.class)) {
-			return new Byte(num.byteValue());
+			return Byte.valueOf(num.byteValue());
 		}
 		throw new ConversionException("Unable to convert number to: " + wrapper);
 	}
 
-	public static List findMethodsByNameAndNumParams(Object object,
+    /**
+     * Find method by name and number of parameters
+     * @param object            Object to find method on
+     * @param method            Method name
+     * @param numParam          Number of parameters
+     * @return                  List of methods that match by name and number of parameters
+     */
+    public static List<Method> findMethodsByNameAndNumParams(Object object,
 			String method, int numParam) {
-		LinkedList list = new LinkedList();
+		LinkedList<Method> list = new LinkedList<Method>();
 		Method[] methods = object.getClass().getMethods();
 		for (Method m : methods) {
-			log.debug("Method name: " + m.getName());
+			if (log.isDebugEnabled()) {
+				log.debug("Method name: " + m.getName());
+			}
 			if (!m.getName().equals(method)) {
 				log.debug("Method name not the same");
 				continue;
@@ -235,7 +283,14 @@ public class ConversionUtils {
 		return list;
 	}
 
-	public static Object[] convertParams(Object[] source, Class[] target)
+    /**
+     * Convert parameters using methods of this utility class
+     * @param source                Array of source object
+     * @param target                Array of target classes
+     * @return                      Array of converted objects
+     * @throws ConversionException  If object can't be converted
+     */
+    public static Object[] convertParams(Object[] source, Class[] target)
 			throws ConversionException {
 		Object[] converted = new Object[target.length];
 		for (int i = 0; i < target.length; i++) {
@@ -244,7 +299,13 @@ public class ConversionUtils {
 		return converted;
 	}
 
-	public static List convertArrayToList(Object[] source)
+    /**
+     *
+     * @param source
+     * @return
+     * @throws ConversionException
+     */
+    public static List convertArrayToList(Object[] source)
 			throws ConversionException {
 		ArrayList list = new ArrayList(source.length);
 		for (Object element : source) {
@@ -253,7 +314,14 @@ public class ConversionUtils {
 		return list;
 	}
 
-	public static Object convertMapToBean(Map source, Class target)
+    /**
+     * Convert map to bean
+     * @param source                Source map
+     * @param target                Target class
+     * @return                      Bean of that class
+     * @throws ConversionException
+     */
+    public static Object convertMapToBean(Map source, Class target)
 			throws ConversionException {
 		Object bean = newInstance(target.getClass().getName());
 		if (bean == null) {
@@ -268,11 +336,21 @@ public class ConversionUtils {
 		return bean;
 	}
 
-	public static Map convertBeanToMap(Object source) {
+    /**
+     * Convert bean to map
+     * @param source      Source bean
+     * @return            Converted map
+     */
+    public static Map convertBeanToMap(Object source) {
 		return new BeanMap(source);
 	}
 
-	public static Set convertArrayToSet(Object[] source) {
+    /**
+     * Convert array to set, removing duplicates
+     * @param source      Source array
+     * @return            Set
+     */
+    public static Set convertArrayToSet(Object[] source) {
 		HashSet set = new HashSet();
 		for (Object element : source) {
 			set.add(element);
@@ -280,10 +358,15 @@ public class ConversionUtils {
 		return set;
 	}
 
-	protected static Object newInstance(String className) {
+    /**
+     * Create new class instance
+     * @param className   Class name; may not be loaded by JVM yet
+     * @return            Instance of given class
+     */
+    protected static Object newInstance(String className) {
 		Object instance = null;
 		try {
-			Class clazz = Thread.currentThread().getContextClassLoader()
+			Class<?> clazz = Thread.currentThread().getContextClassLoader()
 					.loadClass(className);
 			instance = clazz.newInstance();
 		} catch (Exception ex) {

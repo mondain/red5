@@ -30,7 +30,8 @@ public class WorkerThread extends Thread {
 
 	private static Log log = LogFactory.getLog(WorkerThread.class);
 
-	public WorkerThread() {
+	/** Constructs a new WorkerThread. */
+    public WorkerThread() {
 		// default constructor
 	}
 
@@ -38,14 +39,14 @@ public class WorkerThread extends Thread {
 	 * Keeps the thread running when false. When set to true, completes the
 	 * execution of the thread and stops.
 	 */
-	private boolean stopped = false;
+	private boolean stopped;
 
 	/**
 	 * Manages the thread's state. When the thread is first created, running is
 	 * set to false. When the thread is assigned a task for the first time, the
 	 * thread continues to be in the running state until stopped.
 	 */
-	private boolean running = false;
+	private boolean running;
 
 	/**
 	 * Manages the thread's internal state with respect to the task. When the
@@ -76,19 +77,19 @@ public class WorkerThread extends Thread {
 	/**
 	 * The object to synchronize upon for notifying the completion of task.
 	 */
-	private Object syncObject = null;
+	private Object syncObject;
 
 	/**
 	 * The result of our execution.
 	 */
-	private Object result = null;
+	private Object result;
 
 	/**
 	 * The pool being used. We use this if we need to return the object back to
 	 * the pool. If this is not set, we assume that the client will take care of
 	 * returning the object back to the pool.
 	 */
-	private ThreadPool pool = null;
+	private ThreadPool pool;
 
 	/**
 	 * @param pool
@@ -239,7 +240,9 @@ public class WorkerThread extends Thread {
 	 * @param clsName
 	 * @param methName
 	 * @param params
+     * @param paramTypes
 	 * @param synObj
+     * @param paramTypes
 	 */
 	public synchronized void execute(String clsName, String methName,
 			Object[] params, Class[] paramTypes, Object synObj) {
@@ -259,7 +262,7 @@ public class WorkerThread extends Thread {
 		}
 	}
 
-	/*
+	/** {@inheritDoc} */ /*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.lang.Runnable#run()
@@ -357,7 +360,9 @@ public class WorkerThread extends Thread {
 			this.result = MethodUtils.invokeExactMethod(obj, this
 					.getMethodName(), this.getMethodParams(), this
 					.getParmTypes());
-			log.debug(" #### Execution Result = " + result + " for : " + this);
+			if (log.isDebugEnabled()) {
+				log.debug(" #### Execution Result = " + result + " for : " + this);
+			}
 		} catch (ClassNotFoundException e) {
 			log.error("ClassNotFoundException - " + e);
 		} catch (NoSuchMethodException e) {

@@ -3,7 +3,7 @@ package org.red5.io.flv.meta;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -19,7 +19,6 @@ package org.red5.io.flv.meta;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,146 +42,107 @@ import java.util.TreeSet;
  *          //	private double duration = 7.347;
  */
 public class MetaData<K, V> extends HashMap<String, Object> implements
-		IMetaData, Serializable {
+		IMetaData {
 
 	/** serialVersionUID = -5681069577717669925L; */
 	private static final long serialVersionUID = -5681069577717669925L;
 
-	IMetaCue cuePoints[] = null; //CuePoint array
+    /**
+     * Cue points array. Cue points can be injected on fly like any other data even on client-side.
+     */
+    IMetaCue cuePoints[]; //CuePoint array
 
 	/** MetaData constructor */
 	public MetaData() {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#getCanSeekToEnd()
+	/** {@inheritDoc}
 	 */
 	public boolean getCanSeekToEnd() {
 		return (Boolean) this.get("canSeekToEnd");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#setCanSeekToEnd(boolean)
+	/** {@inheritDoc}
 	 */
 	public void setCanSeekToEnd(boolean b) {
 		this.put("canSeekToEnd", b);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#getVideoCodecId()
+	/** {@inheritDoc}
 	 */
 	public int getVideoCodecId() {
 		return (Integer) this.get("videocodecid");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#setVideoCodecId(int)
+	/** {@inheritDoc}
 	 */
 	public void setVideoCodecId(int id) {
 		this.put("videocodecid", id);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#getframeRate()
+	/** {@inheritDoc}
 	 */
 	public int getframeRate() {
 		return (Integer) this.get("framerate");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#setframeRate(int)
+	/** {@inheritDoc}
 	 */
 	public void setframeRate(int rate) {
 		this.put("framerate", rate);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#getVideoDataRate()
+	/** {@inheritDoc}
 	 */
 	public int getVideoDataRate() {
 		return (Integer) this.get("videodatarate");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#setVideoDataRate(int)
+	/** {@inheritDoc}
 	 */
 	public void setVideoDataRate(int rate) {
 		this.put("videodatarate", rate);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#getWidth()
+	/** {@inheritDoc}
 	 */
 	public int getWidth() {
 		return (Integer) this.get("width");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#setWidth(int)
+	/** {@inheritDoc}
 	 */
 	public void setWidth(int w) {
 		this.put("width", w);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#getDuration()
+	/** {@inheritDoc}
 	 */
 	public double getDuration() {
 		return (Double) this.get("duration");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#setDuration(int)
+	/** {@inheritDoc}
 	 */
 	public void setDuration(double d) {
 		this.put("duration", d);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#getHeight()
+	/** {@inheritDoc}
 	 */
 	public int getHeight() {
 		return (Integer) this.get("height");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.red5.io.flv.MetaData#setHeight(int)
+	/** {@inheritDoc}
 	 */
 	public void setHeight(int h) {
 		this.put("height", h);
 	}
 
 	/**
-	 * Sets the MetaCue Points
+	 * Sets the Meta Cue Points
 	 *
 	 * @param cuePoints
 	 *            The cuePoints to set.
@@ -208,11 +168,11 @@ public class MetaData<K, V> extends HashMap<String, Object> implements
 		}
 
 		//		"CuePoints", cuePointData
-		//					"0",	MetaCue
+		//					'0',	MetaCue
 		//							name, "test"
 		//							type, "event"
 		//							time, "0.1"
-		//					"1",	MetaCue
+		//					'1',	MetaCue
 		//							name, "test1"
 		//							type, "event1"
 		//							time, "0.5"
@@ -222,9 +182,9 @@ public class MetaData<K, V> extends HashMap<String, Object> implements
 	}
 
 	/**
-	 * Return array of MetaCue
+	 * Return array of cue points
 	 *
-	 * @return IMetaCue[] metaCue
+	 * @return  Array of cue points
 	 */
 	public IMetaCue[] getMetaCue() {
 		IMetaCue ret[];
@@ -241,7 +201,8 @@ public class MetaData<K, V> extends HashMap<String, Object> implements
 		return ret;
 	}
 
-	@Override
+	/** {@inheritDoc} */
+    @Override
 	public String toString() {
 		return "MetaData{" + "cuePoints="
 				+ (cuePoints == null ? null : Arrays.asList(cuePoints)) + '}';

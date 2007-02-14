@@ -3,7 +3,7 @@ package org.red5.server.stream.consumer;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -45,26 +45,53 @@ import org.red5.server.stream.message.RTMPMessage;
 import org.red5.server.stream.message.ResetMessage;
 import org.red5.server.stream.message.StatusMessage;
 
+/**
+ * RTMP connection consumer.
+ */
 public class ConnectionConsumer implements IPushableConsumer,
 		IPipeConnectionListener {
-	private static final Log log = LogFactory.getLog(ConnectionConsumer.class);
-
+    /**
+     * Logger
+     */
+    private static final Log log = LogFactory.getLog(ConnectionConsumer.class);
+    /**
+     * Connection consumer class name
+     */
 	public static final String KEY = ConnectionConsumer.class.getName();
-
+    /**
+     * Connection object
+     */
 	private RTMPConnection conn;
-
+    /**
+     * Video channel
+     */
 	private Channel video;
-
+    /**
+     * Audio channel
+     */
 	private Channel audio;
-
+    /**
+     * Data channel
+     */
 	private Channel data;
-
+    /**
+     * Chunk size. Packets are sent chunk-by-chunk.
+     */
 	private int chunkSize = -1;
-
+    /**
+     * Stream tracker
+     */
 	private StreamTracker streamTracker;
 
-	public ConnectionConsumer(RTMPConnection conn, byte videoChannel,
-			byte audioChannel, byte dataChannel) {
+    /**
+     * Create rtmp connection consumer for given connection and channels
+     * @param conn                 RTMP connection
+     * @param videoChannel         Video channel
+     * @param audioChannel         Audio channel
+     * @param dataChannel          Data channel
+     */
+    public ConnectionConsumer(RTMPConnection conn, int videoChannel,
+    		int audioChannel, int dataChannel) {
 		this.conn = conn;
 		this.video = conn.getChannel(videoChannel);
 		this.audio = conn.getChannel(audioChannel);
@@ -72,7 +99,8 @@ public class ConnectionConsumer implements IPushableConsumer,
 		streamTracker = new StreamTracker();
 	}
 
-	public void pushMessage(IPipe pipe, IMessage message) {
+	/** {@inheritDoc} */
+    public void pushMessage(IPipe pipe, IMessage message) {
 		if (message instanceof ResetMessage) {
 			streamTracker.reset();
 		} else if (message instanceof StatusMessage) {
@@ -138,11 +166,22 @@ public class ConnectionConsumer implements IPushableConsumer,
 		}
 	}
 
-	public void onPipeConnectionEvent(PipeConnectionEvent event) {
-		// TODO close channels on pipe disconnect
+	/** {@inheritDoc} */
+    public void onPipeConnectionEvent(PipeConnectionEvent event) {
+    	switch (event.getType()) {
+    		case PipeConnectionEvent.PROVIDER_DISCONNECT:
+    			// XXX should put the channel release code in ConsumerService
+    			conn.closeChannel(this.video.getId());
+    			conn.closeChannel(this.audio.getId());
+    			conn.closeChannel(this.data.getId());
+    			break;
+    		default:
+    			break;
+    	}
 	}
 
-	public void onOOBControlMessage(IMessageComponent source, IPipe pipe,
+	/** {@inheritDoc} */
+    public void onOOBControlMessage(IMessageComponent source, IPipe pipe,
 			OOBControlMessage oobCtrlMsg) {
 		if (!"ConnectionConsumer".equals(oobCtrlMsg.getTarget())) {
 			return;
@@ -156,7 +195,7 @@ public class ConnectionConsumer implements IPushableConsumer,
 				oobCtrlMsg.setResult(conn.getPendingVideoMessages(stream
 						.getStreamId()));
 			} else {
-				oobCtrlMsg.setResult(0);
+				oobCtrlMsg.setResult((long) 0);
 			}
 		} else if ("chunkSize".equals(oobCtrlMsg.getServiceName())) {
 			int newSize = (Integer) oobCtrlMsg.getServiceParamMap().get(

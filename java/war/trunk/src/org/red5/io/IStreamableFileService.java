@@ -3,7 +3,7 @@ package org.red5.io;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -27,14 +27,44 @@ import java.io.IOException;
  */
 public interface IStreamableFileService {
 
-	public String getPrefix();
+	/**
+     * Getter for prefix. Prefix is used in filename composition to fetch real file name.
+     *
+     * @return  Prefix
+     */
+    public String getPrefix();
 
-	public String getExtension();
+	/**
+     * Getter for extension of file
+     *
+     * @return  File extension that is used
+     */
+    public String getExtension();
 
-	public String prepareFilename(String name);
+    /**
+     * Prepair given string to conform filename requirements, for example, add
+     * extension to the end if missing.
+     * @param name            String to format
+     * @return                Correct filename
+     */
+    public String prepareFilename(String name);
 
-	public boolean canHandle(File file);
+    /**
+     * Check whether file can be used by file service, that is, it does exist and have valid extension
+     * @param file            File object
+     * @return                <code>true</code> if file exist and has valid extension,
+     *                        <code>false</code> otherwise
+     */
+    public boolean canHandle(File file);
 
-	public IStreamableFile getStreamableFile(File file) throws IOException;
+    /**
+     * Return streamable file reference. For FLV files returned streamable file already has
+     * generated metadata injected.
+     *
+     * @param file             File resource
+     * @return                 Streamable file resource
+     * @throws IOException     Thrown if there were problems accessing given file
+     */
+    public IStreamableFile getStreamableFile(File file) throws IOException;
 
 }

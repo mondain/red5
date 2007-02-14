@@ -3,7 +3,7 @@ package org.red5.server.persistence;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -35,25 +35,45 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Joachim Bauch (jojo@struktur.de)
+ * @author Michael Klishin (michael@novemberain.com)
  */
 public class RamPersistence implements IPersistenceStore {
 
 	/** This is used in the id for objects that have a name of <code>null</code> **/
 	protected static final String PERSISTENCE_NO_NAME = "__null__";
 
-	protected Map<String, IPersistable> objects = new HashMap<String, IPersistable>();
+    /**
+     * Map for persistable objects
+     */
+    protected Map<String, IPersistable> objects = new HashMap<String, IPersistable>();
 
-	protected ResourcePatternResolver resources;
+    /**
+     * Resource pattern resolver. Resolves resources from patterns, loads resources.
+     */
+    protected ResourcePatternResolver resources;
 
-	public RamPersistence(ResourcePatternResolver resources) {
+    /**
+     * Creates RAM persistence object from resource pattern resolvers
+     * @param resources            Resource pattern resolver and loader
+     */
+    public RamPersistence(ResourcePatternResolver resources) {
 		this.resources = resources;
 	}
 
+    /**
+     * Creates RAM persistence object from scope
+     * @param scope                Scope
+     */
 	public RamPersistence(IScope scope) {
 		this((ResourcePatternResolver) ScopeUtils.findApplication(scope));
 	}
 
-	protected String getObjectName(String id) {
+    /**
+     * Get resource name from path
+     * @param id                   Object ID. The format of the object id is <type>/<path>/<objectName>.
+     * @return                     Resource name
+     */
+    protected String getObjectName(String id) {
 		// The format of the object id is <type>/<path>/<objectName>
 		String result = id.substring(id.lastIndexOf('/') + 1);
 		if (result.equals(PERSISTENCE_NO_NAME)) {
@@ -62,57 +82,76 @@ public class RamPersistence implements IPersistenceStore {
 		return result;
 	}
 
+    /**
+     * Get object path for given id and name
+     * @param id                   Object ID. The format of the object id is <type>/<path>/<objectName>
+     * @param name                 Object name
+     * @return                     Resource path
+     */
 	protected String getObjectPath(String id, String name) {
 		// The format of the object id is <type>/<path>/<objectName>
 		id = id.substring(id.indexOf('/') + 1);
-		if (id.startsWith("/")) {
+		if (id.charAt(0) == '/') {
 			id = id.substring(1);
 		}
-		if (id.lastIndexOf(name) == -1)
+		if (id.lastIndexOf(name) <= 0) {
 			return id;
-		return id.substring(0, id.lastIndexOf(name) - 1);
+		}
+		return id.substring(0, id.lastIndexOf(name)-1);
 	}
 
+    /**
+     * Get object id
+     * @param object               Persistable object whose id is asked for
+     * @return                     Given persistable object id
+     */
 	protected String getObjectId(IPersistable object) {
 		// The format of the object id is <type>/<path>/<objectName>
 		String result = object.getType();
-		if (!object.getPath().startsWith("/")) {
-			result += "/";
+		if (object.getPath().charAt(0) != '/') {
+			result += '/';
 		}
 		result += object.getPath();
 		if (!result.endsWith("/")) {
-			result += "/";
+			result += '/';
 		}
 		String name = object.getName();
 		if (name == null) {
 			name = PERSISTENCE_NO_NAME;
 		}
-		if (name.startsWith("/")) {
+		if (name.charAt(0) == '/') {
 			// "result" already ends with a slash
 			name = name.substring(1);
 		}
 		return result + name;
 	}
 
-	public synchronized boolean save(IPersistable object) {
-		objects.put(getObjectId(object), object);
-		object.setPersistent(true);
-		return true;
-	}
+	/** {@inheritDoc} */
+    public synchronized boolean save(IPersistable object) {
+        final String key = getObjectId(object);
+        
+        objects.put(key, object);
+        object.setPersistent(true);
+        return true;
+    }
 
-	public synchronized IPersistable load(String name) {
+	/** {@inheritDoc} */
+    public synchronized IPersistable load(String name) {
 		return objects.get(name);
 	}
 
-	public boolean load(IPersistable obj) {
+	/** {@inheritDoc} */
+    public boolean load(IPersistable obj) {
 		return obj.isPersistent();
 	}
 
-	public synchronized boolean remove(IPersistable object) {
+	/** {@inheritDoc} */
+    public synchronized boolean remove(IPersistable object) {
 		return remove(getObjectId(object));
 	}
 
-	public synchronized boolean remove(String name) {
+	/** {@inheritDoc} */
+    public synchronized boolean remove(String name) {
 		if (!objects.containsKey(name)) {
 			return false;
 		}
@@ -122,11 +161,13 @@ public class RamPersistence implements IPersistenceStore {
 		return true;
 	}
 
-	public Iterator<String> getObjectNames() {
+	/** {@inheritDoc} */
+    public Iterator<String> getObjectNames() {
 		return objects.keySet().iterator();
 	}
 
-	public Iterator<IPersistable> getObjects() {
+	/** {@inheritDoc} */
+    public Iterator<IPersistable> getObjects() {
 		return objects.values().iterator();
 	}
 }

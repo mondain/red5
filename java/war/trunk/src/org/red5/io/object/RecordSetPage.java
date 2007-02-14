@@ -3,7 +3,7 @@ package org.red5.io.object;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -24,19 +24,27 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Result of paged request.
+ * Result of pageable request, one page of data.
  *
  * @author The Red5 Project (red5@osflash.org)
  * @author Joachim Bauch (jojo@struktur.de)
  * @see <a href="http://www.osflash.org/amf/recordset">osflash.org documentation</a>
  */
 public class RecordSetPage {
-
+    /**
+     * Recordset cursor
+     */
 	private int cursor;
-
+    /**
+     * Data as List
+     */
 	private List<List<Object>> data;
 
-	public RecordSetPage(Input input) {
+    /**
+     * Creates recordset page from Input object
+     * @param input       Input object to use as source for data that has to be deserialized
+     */
+    public RecordSetPage(Input input) {
 		Deserializer deserizalizer = new Deserializer();
 		Object result = deserizalizer.deserialize(input);
 		if (!(result instanceof Map)) {
@@ -48,11 +56,21 @@ public class RecordSetPage {
 		data = (List<List<Object>>) mapResult.get("Page");
 	}
 
-	protected int getCursor() {
+	/**
+     * Getter for recordset cursor
+     *
+     * @return  Recordset cursor
+     */
+    protected int getCursor() {
 		return cursor;
 	}
 
-	protected List<List<Object>> getData() {
+	/**
+     * Getter for page data
+     *
+     * @return Page data as unmodifiable list
+     */
+    protected List<List<Object>> getData() {
 		return Collections.unmodifiableList(data);
 	}
 

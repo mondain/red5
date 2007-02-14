@@ -3,7 +3,7 @@ package org.red5.server.net.servlet;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -36,6 +36,8 @@ public class ServletUtils {
 	 * default buffer size of 2048 bytes.
 	 * 
 	 * @throws java.io.IOException
+     * @param input
+     * @param output
 	 */
 	public static void copy(InputStream input, OutputStream output)
 			throws IOException {
@@ -47,6 +49,9 @@ public class ServletUtils {
 	 * specified buffer size
 	 * 
 	 * @throws java.io.IOException
+     * @param input
+     * @param bufferSize
+     * @param output
 	 */
 	public static void copy(InputStream input, OutputStream output,
 			int bufferSize) throws IOException {
@@ -64,6 +69,8 @@ public class ServletUtils {
 	 * streams.
 	 * 
 	 * @throws java.io.IOException
+     * @param output
+     * @param input
 	 */
 	public static void copyThenClose(InputStream input, OutputStream output)
 			throws IOException {
@@ -76,6 +83,8 @@ public class ServletUtils {
 	 * @returns a byte[] containing the information contained in the specified
 	 *          InputStream.
 	 * @throws java.io.IOException
+     * @return
+     * @param input
 	 */
 	public static byte[] getBytes(InputStream input) throws IOException {
 		ByteArrayOutputStream result = new ByteArrayOutputStream();

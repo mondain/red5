@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,23 +22,17 @@ package org.red5.server.net.rtmp;
 import static org.red5.server.api.ScopeUtils.getScopeService;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.mina.common.ByteBuffer;
 import org.red5.server.api.IContext;
 import org.red5.server.api.IGlobalScope;
 import org.red5.server.api.IScope;
 import org.red5.server.api.IScopeHandler;
 import org.red5.server.api.IServer;
-import org.red5.server.api.Red5;
-import org.red5.server.api.event.IEventDispatcher;
+import org.red5.server.api.IConnection.Encoding;
 import org.red5.server.api.service.IPendingServiceCall;
-import org.red5.server.api.service.IPendingServiceCallback;
 import org.red5.server.api.service.IServiceCall;
 import org.red5.server.api.so.ISharedObject;
 import org.red5.server.api.so.ISharedObjectService;
@@ -49,19 +43,12 @@ import org.red5.server.exception.ClientRejectedException;
 import org.red5.server.exception.ScopeNotFoundException;
 import org.red5.server.messaging.IConsumer;
 import org.red5.server.messaging.OOBControlMessage;
-import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.codec.RTMP;
-import org.red5.server.net.rtmp.event.BytesRead;
 import org.red5.server.net.rtmp.event.ChunkSize;
-import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.event.Invoke;
 import org.red5.server.net.rtmp.event.Notify;
 import org.red5.server.net.rtmp.event.Ping;
-import org.red5.server.net.rtmp.event.Unknown;
-import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmp.message.Header;
-import org.red5.server.net.rtmp.message.Packet;
-import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.net.rtmp.status.StatusObject;
 import org.red5.server.net.rtmp.status.StatusObjectService;
 import org.red5.server.service.Call;
@@ -71,155 +58,46 @@ import org.red5.server.so.SharedObjectMessage;
 import org.red5.server.so.SharedObjectService;
 import org.red5.server.stream.IBroadcastScope;
 import org.red5.server.stream.IStreamFlow;
-import org.red5.server.stream.PlaylistSubscriberStream;
 import org.red5.server.stream.StreamService;
 
-public class RTMPHandler implements Constants, StatusCodes {
-
+/**
+ * RTMP events handler
+ */
+public class RTMPHandler extends BaseRTMPHandler {
+    /**
+     * Logger
+     */
 	protected static Log log = LogFactory.getLog(RTMPHandler.class.getName());
-
+    /**
+     * Status object service
+     */
 	protected StatusObjectService statusObjectService;
-
+    /**
+     * Red5 server instance
+     */
 	protected IServer server;
 
-	// XXX: HACK HACK HACK to support stream ids
-	private static ThreadLocal<Integer> streamLocal = new ThreadLocal<Integer>();
-
-	public void setServer(IServer server) {
+	/**
+     * Setter for server object.
+     *
+     * @param server  Red5 server instance
+     */
+    public void setServer(IServer server) {
 		this.server = server;
 	}
 
-	public void setStatusObjectService(StatusObjectService statusObjectService) {
+	/**
+     * Setter for status object service.
+     *
+     * @param statusObjectService Status object service.
+     */
+    public void setStatusObjectService(StatusObjectService statusObjectService) {
 		this.statusObjectService = statusObjectService;
 	}
 
-	// XXX: HACK HACK HACK to support stream ids
-	public static int getStreamId() {
-		return streamLocal.get().intValue();
-	}
-
-	private static void setStreamId(int id) {
-		streamLocal.set(id);
-	}
-
-	public void messageReceived(RTMPConnection conn, ProtocolState state,
-			Object in) throws Exception {
-
-		IRTMPEvent message = null;
-		try {
-
-			final Packet packet = (Packet) in;
-			message = packet.getMessage();
-			final Header header = packet.getHeader();
-			final Channel channel = conn.getChannel(header.getChannelId());
-			final IClientStream stream = conn.getStreamById(header
-					.getStreamId());
-
-			if (log.isDebugEnabled()) {
-				log.debug("Message recieved");
-				log.debug("Stream Id: " + header);
-				log.debug("Channel: " + channel);
-			}
-
-			// Thread local performance ? Should we benchmark
-			Red5.setConnectionLocal(conn);
-
-			// XXX: HACK HACK HACK to support stream ids
-			RTMPHandler.setStreamId(header.getStreamId());
-
-			// Increase number of received messages
-			conn.messageReceived();
-
-			if (message instanceof IRTMPEvent) {
-				message.setSource(conn);
-			}
-
-			switch (header.getDataType()) {
-				case TYPE_CHUNK_SIZE:
-					onChunkSize(conn, channel, header, (ChunkSize) message);
-					break;
-
-				case TYPE_INVOKE:
-					onInvoke(conn, channel, header, (Invoke) message);
-					if(message.getHeader().getStreamId()!=0  
-							&& ((Invoke)message).getCall().getServiceName()==null
-							&& ACTION_PUBLISH.equals(((Invoke)message).getCall().getServiceMethodName())) {
-						IClientStream s = conn.getStreamById(header.getStreamId());
-						((IEventDispatcher) s).dispatchEvent(message);
-					}
-					break;
-
-				case TYPE_NOTIFY: // just like invoke, but does not return
-					if (((Notify) message).getData() != null && stream != null) {
-						// Stream metadata
-						((IEventDispatcher) stream).dispatchEvent(message);
-					} else {
-						onInvoke(conn, channel, header, (Notify) message);
-					}
-					break;
-				case TYPE_PING:
-					onPing(conn, channel, header, (Ping) message);
-					break;
-
-				case TYPE_BYTES_READ:
-					onStreamBytesRead(conn, channel, header,
-							(BytesRead) message);
-					break;
-
-				case TYPE_AUDIO_DATA:
-				case TYPE_VIDEO_DATA:
-					// log.info("in packet: "+source.getSize()+"
-					// ts:"+source.getTimer());
-					try {
-						((IEventDispatcher) stream).dispatchEvent(message);
-					} catch (NullPointerException e) {
-						//e.printStackTrace();
-					}
-					break;
-				case TYPE_SHARED_OBJECT:
-					onSharedObject(conn, channel, header,
-							(SharedObjectMessage) message);
-					break;
-			}
-			if (message instanceof Unknown) {
-				log.info(message);
-			}
-		} catch (RuntimeException e) {
-			// TODO Auto-generated catch block
-			log.error("Exception", e);
-		}
-		if (message != null) {
-			message.release();
-		}
-	}
-
-	public void messageSent(RTMPConnection conn, Object message) {
-		if (log.isDebugEnabled()) {
-			log.debug("Message sent");
-		}
-
-		if (message instanceof ByteBuffer) {
-			return;
-		}
-
-		// Increase number of sent messages
-		conn.messageSent((Packet) message);
-
-		Packet sent = (Packet) message;
-		final byte channelId = sent.getHeader().getChannelId();
-		final IClientStream stream = conn.getStreamByChannelId(channelId);
-		// XXX we'd better use new event model for notification
-		if (stream != null && (stream instanceof PlaylistSubscriberStream)) {
-			((PlaylistSubscriberStream) stream).written(sent.getMessage());
-		}
-	}
-
-	public void connectionClosed(RTMPConnection conn, RTMP state) {
-		state.setState(RTMP.STATE_DISCONNECTED);
-		conn.close();
-	}
-
-	public void onChunkSize(RTMPConnection conn, Channel channel,
+	/** {@inheritDoc} */
+    @Override
+	protected void onChunkSize(RTMPConnection conn, Channel channel,
 			Header source, ChunkSize chunkSize) {
 		for (IClientStream stream : conn.getStreams()) {
 			if (stream instanceof IClientBroadcastStream) {
@@ -240,18 +118,26 @@ public class RTMPHandler implements Constants, StatusCodes {
 				setChunkSize.getServiceParamMap().put("chunkSize",
 						chunkSize.getSize());
 				scope.sendOOBControlMessage((IConsumer) null, setChunkSize);
-				log.debug("Sending chunksize " + chunkSize + " to "
-						+ bs.getProvider());
+				if (log.isDebugEnabled()) {
+					log.debug("Sending chunksize " + chunkSize + " to " + bs.getProvider());
+				}
 			}
 		}
 	}
 
-	public void invokeCall(RTMPConnection conn, IServiceCall call) {
+    /**
+     * Remoting call invocation handler
+     * @param conn             RTMP connection
+     * @param call             Service call
+     */
+    protected void invokeCall(RTMPConnection conn, IServiceCall call) {
 		final IScope scope = conn.getScope();
 		if (scope.hasHandler()) {
 			final IScopeHandler handler = scope.getHandler();
-			log.debug("Scope: " + scope);
-			log.debug("Handler: " + handler);
+			if (log.isDebugEnabled()) {
+				log.debug("Scope: " + scope);
+				log.debug("Handler: " + handler);
+			}
 			if (!handler.serviceCall(conn, call)) {
 				// XXX: What do do here? Return an error?
 				return;
@@ -259,70 +145,48 @@ public class RTMPHandler implements Constants, StatusCodes {
 		}
 
 		final IContext context = scope.getContext();
-		log.debug("Context: " + context);
+		if (log.isDebugEnabled()) {
+			log.debug("Context: " + context);
+		}
 		context.getServiceInvoker().invoke(call, scope);
 	}
 
-	private void invokeCall(RTMPConnection conn, IServiceCall call,
+    /**
+     * Remoting call invocation handler
+     * @param conn             RTMP connection
+     * @param call             Service call
+     * @param service          Server-side service object
+     * @return <code>true</code> if the call was performed, otherwise <code>false</code>
+     */
+    private boolean invokeCall(RTMPConnection conn, IServiceCall call,
 			Object service) {
 		final IScope scope = conn.getScope();
 		final IContext context = scope.getContext();
-		log.debug("Scope: " + scope);
-		log.debug("Service: " + service);
-		log.debug("Context: " + context);
-		context.getServiceInvoker().invoke(call, service);
+		if (log.isDebugEnabled()) {
+			log.debug("Scope: " + scope);
+			log.debug("Service: " + service);
+			log.debug("Context: " + context);
+		}
+		return context.getServiceInvoker().invoke(call, service);
 	}
 
 	// ------------------------------------------------------------------------------
 
-	protected String getHostname(String url) {
-		log.debug("url: " + url);
-		String[] parts = url.split("/");
-		if (parts.length == 2) {
-			// TODO: is this a good default hostname?
-			return "";
-		} else {
-			return parts[2];
-		}
-	}
-
-	public void onInvoke(RTMPConnection conn, Channel channel, Header source,
-			Notify invoke) {
+	/** {@inheritDoc} */
+    @Override
+	protected void onInvoke(RTMPConnection conn, Channel channel, Header source,
+			Notify invoke, RTMP rtmp) {
 
 		log.debug("Invoke");
 
-		final IServiceCall call = invoke.getCall();
-		if (call.getServiceMethodName().equals("_result")
+        // Get call
+        final IServiceCall call = invoke.getCall();
+
+        // If it's a callback for server remote call then pass it over to callbacks handler
+        // and return
+        if (call.getServiceMethodName().equals("_result")
 				|| call.getServiceMethodName().equals("_error")) {
-			final IPendingServiceCall pendingCall = conn.getPendingCall(invoke
-					.getInvokeId());
-			if (pendingCall != null) {
-				// The client sent a response to a previously made call.
-				Object[] args = call.getArguments();
-				if ((args != null) && (args.length > 0)) {
-					// TODO: can a client return multiple results?
-					pendingCall.setResult(args[0]);
-				}
-
-				Set<IPendingServiceCallback> callbacks = pendingCall
-						.getCallbacks();
-				if (callbacks.isEmpty()) {
-					return;
-				}
-
-				HashSet<IPendingServiceCallback> tmp = new HashSet<IPendingServiceCallback>();
-				tmp.addAll(callbacks);
-				Iterator<IPendingServiceCallback> it = tmp.iterator();
-				while (it.hasNext()) {
-					IPendingServiceCallback callback = it.next();
-					try {
-						callback.resultReceived(pendingCall);
-					} catch (Exception e) {
-						log.error("Error while executing callback " + callback,
-								e);
-					}
-				}
-			}
+			handlePendingCallResult(conn, invoke);
 			return;
 		}
 
@@ -334,35 +198,47 @@ public class RTMPHandler implements Constants, StatusCodes {
 		}
 
 		boolean disconnectOnReturn = false;
-		if (call.getServiceName() == null) {
+
+        // If this is not a service call then handle connection...
+        if (call.getServiceName() == null) {
 			log.info("call: " + call);
 			final String action = call.getServiceMethodName();
 			log.info("--" + action);
 			if (!conn.isConnected()) {
-
+                // Handle connection
 				if (action.equals(ACTION_CONNECT)) {
 					log.debug("connect");
-					final Map params = invoke.getConnectionParams();
-					String host = getHostname((String) params.get("tcUrl"));
-					if (host.endsWith(":1935")) {
+
+                    // Get parameters passed from client to NetConnection#connection
+                    final Map params = invoke.getConnectionParams();
+
+                    // Get hostname
+                    String host = getHostname((String) params.get("tcUrl"));
+
+                    // Check up port
+                    if (host.endsWith(":1935")) {
 						// Remove default port from connection string
 						host = host.substring(0, host.length() - 5);
 					}
-					final String path = (String) params.get("app");
+
+                    // App name as path
+                    final String path = (String) params.get("app");
 					final String sessionId = null;
 					conn.setup(host, path, sessionId, params);
 					try {
-						final IGlobalScope global = server.lookupGlobal(host,
-								path);
+                        // Lookup server scope when connected
+                        // Use host and application name
+                        final IGlobalScope global = server.lookupGlobal(host, path);
 						if (global == null) {
 							call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
 							if (call instanceof IPendingServiceCall) {
-								((IPendingServiceCall) call)
-										.setResult(getStatus(NC_CONNECT_FAILED));
+								StatusObject status = getStatus(NC_CONNECT_INVALID_APPLICATION);
+								status.setDescription("No scope \""+path+"\" on this server.");
+								((IPendingServiceCall) call).setResult(status);
 							}
-							log.info("No global scope found for " + path
-									+ " on " + host);
-							conn.close();
+							log.info("No application scope found for " + path
+									+ " on host " + host + ". Mispelled or missing application folder?");
+							disconnectOnReturn = true;
 						} else {
 							final IContext context = global.getContext();
 							IScope scope = null;
@@ -371,8 +247,9 @@ public class RTMPHandler implements Constants, StatusCodes {
 							} catch (ScopeNotFoundException err) {
 								call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
 								if (call instanceof IPendingServiceCall) {
-									((IPendingServiceCall) call)
-											.setResult(getStatus(NC_CONNECT_FAILED));
+									StatusObject status = getStatus(NC_CONNECT_REJECTED);
+									status.setDescription("No scope \""+path+"\" on this server.");
+									((IPendingServiceCall) call).setResult(status);
 								}
 								log.info("Scope " + path + " not found on "
 										+ host);
@@ -389,20 +266,29 @@ public class RTMPHandler implements Constants, StatusCodes {
 										okayToConnect = conn.connect(scope);
 									}
 									if (okayToConnect) {
-										log.debug("connected");
-										log
-												.debug("client: "
-														+ conn.getClient());
-										call
-												.setStatus(Call.STATUS_SUCCESS_RESULT);
+										if (log.isDebugEnabled()) {
+											log.debug("connected");
+											log.debug("client: " + conn.getClient());
+										}
+										call.setStatus(Call.STATUS_SUCCESS_RESULT);
 										if (call instanceof IPendingServiceCall) {
-											((IPendingServiceCall) call)
-													.setResult(getStatus(NC_CONNECT_SUCCESS));
+											IPendingServiceCall pc = (IPendingServiceCall) call;
+											Map<String, Object> result = new HashMap<String, Object>();
+											StatusObject status = getStatus(NC_CONNECT_SUCCESS);
+											result.put("code", status.getCode());
+											result.put("description", status.getDescription());
+											result.put("application", status.getApplication());
+											result.put("level", status.getLevel());
+											if (params.get("objectEncoding") == Integer.valueOf(3)) {
+												// Client wants to use AMF3 encoding
+												result.put("objectEncoding", 3);
+												rtmp.setEncoding(Encoding.AMF3);
+											}
+											pc.setResult(result);
 										}
 										// Measure initial roundtrip time after connecting
-										conn.getChannel((byte) 2).write(
-												new Ping((short) 0, 0, -1));
-										conn.ping();
+										conn.getChannel((byte) 2).write(new Ping((short) 0, 0, -1));
+										conn.startRoundTripMeasurement();
 									} else {
 										log.debug("connect failed");
 										call
@@ -417,7 +303,7 @@ public class RTMPHandler implements Constants, StatusCodes {
 									log.debug("connect rejected");
 									call.setStatus(Call.STATUS_ACCESS_DENIED);
 									if (call instanceof IPendingServiceCall) {
-										StatusObject status = (StatusObject) getStatus(NC_CONNECT_REJECTED);
+										StatusObject status = getStatus(NC_CONNECT_REJECTED);
 										status.setApplication(rejected
 												.getReason());
 										((IPendingServiceCall) call)
@@ -448,9 +334,13 @@ public class RTMPHandler implements Constants, StatusCodes {
 					|| action.equals(ACTION_RECEIVE_VIDEO)
 					|| action.equals(ACTION_RECEIVE_AUDIO)) {
 				IStreamService streamService = (IStreamService) getScopeService(
-						conn.getScope(), IStreamService.STREAM_SERVICE,
+						conn.getScope(), IStreamService.class,
 						StreamService.class);
-				invokeCall(conn, call, streamService);
+				if (!invokeCall(conn, call, streamService)) {
+					StatusObject status = getStatus(NS_INVALID_ARGUMENT);
+					status.setDescription("Failed to " + action + " (stream ID: " + source.getStreamId() + ")");
+					channel.sendStatus(status.asStatus());
+				}
 			} else {
 				invokeCall(conn, call);
 			}
@@ -472,23 +362,42 @@ public class RTMPHandler implements Constants, StatusCodes {
 				return;
 			}
 
-			// The client expects a result for the method call.
-			Invoke reply = new Invoke();
-			reply.setCall(call);
-			reply.setInvokeId(invoke.getInvokeId());
-			log.debug("sending reply");
-			channel.write(reply);
-			if (disconnectOnReturn) {
-				conn.close();
+			boolean sendResult = true;
+			if (call instanceof IPendingServiceCall) {
+				IPendingServiceCall psc = (IPendingServiceCall) call;
+				Object result = psc.getResult();
+				if (result instanceof DeferredResult) {
+					// Remember the deferred result to be sent later
+					DeferredResult dr = (DeferredResult) result;
+					dr.setServiceCall(psc);
+					dr.setChannel(channel);
+					dr.setInvokeId(invoke.getInvokeId());
+					conn.registerDeferredResult(dr);
+					sendResult = false;
+				}
+			};
+			
+			if (sendResult) {
+				// The client expects a result for the method call.
+				Invoke reply = new Invoke();
+				reply.setCall(call);
+				reply.setInvokeId(invoke.getInvokeId());
+				log.debug("sending reply");
+				channel.write(reply);
+				if (disconnectOnReturn) {
+					conn.close();
+				}
 			}
 		}
 	}
 
-	public Object getStatus(String code) {
+	public StatusObject getStatus(String code) {
 		return statusObjectService.getStatusObject(code);
 	}
 
-	public void onPing(RTMPConnection conn, Channel channel, Header source,
+	/** {@inheritDoc} */
+    @Override
+	protected void onPing(RTMPConnection conn, Channel channel, Header source,
 			Ping ping) {
 		switch (ping.getValue1()) {
 			case 3:
@@ -531,12 +440,9 @@ public class RTMPHandler implements Constants, StatusCodes {
 
 	}
 
-	public void onStreamBytesRead(RTMPConnection conn, Channel channel,
-			Header source, BytesRead streamBytesRead) {
-		conn.receivedBytesRead(streamBytesRead.getBytesRead());
-	}
-
-	public void onSharedObject(RTMPConnection conn, Channel channel,
+	/** {@inheritDoc} */
+    @Override
+	protected void onSharedObject(RTMPConnection conn, Channel channel,
 			Header source, SharedObjectMessage object) {
 		final ISharedObject so;
 		final String name = object.getName();
@@ -553,8 +459,8 @@ public class RTMPHandler implements Constants, StatusCodes {
 		}
 
 		ISharedObjectService sharedObjectService = (ISharedObjectService) getScopeService(
-				scope, ISharedObjectService.SHARED_OBJECT_SERVICE,
-				SharedObjectService.class);
+				scope, ISharedObjectService.class,
+				SharedObjectService.class, false);
 		if (!sharedObjectService.hasSharedObject(scope, name)) {
 			if (!sharedObjectService.createSharedObject(scope, name, object
 					.isPersistent())) {

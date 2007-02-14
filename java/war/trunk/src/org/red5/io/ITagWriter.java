@@ -3,7 +3,7 @@ package org.red5.io;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -23,61 +23,64 @@ import java.io.IOException;
 
 import org.apache.mina.common.ByteBuffer;
 
+/**
+ * Writes tags to FLV file
+ */
 public interface ITagWriter {
 
 	/**
 	 * Return the file that is written.
 	 * 
-	 * @return the file to be written
+	 * @return the File to be written
 	 */
 	public IStreamableFile getFile();
 
 	/**
 	 * Return the offset
 	 * 
-	 * @return int offset
+	 * @return  Offset value
 	 */
 	public int getOffset();
 
 	/**
 	 * Return the bytes written
 	 * 
-	 * @return long bytesWritten
+	 * @return  Number of bytes written
 	 */
 	public long getBytesWritten();
 
 	/**
 	 * Writes the header bytes
 	 * 
-	 * @throws IOException 
+	 * @throws IOException           I/O exception
 	 */
 	public void writeHeader() throws IOException;
 
 	/**
 	 * Writes a Tag object
 	 * 
-	 * @param tag
-	 * @return boolean 
-	 * @throws IOException
+	 * @param tag                    Tag to write
+	 * @return                       <code>true</code> on success, <code>false</code> otherwise
+	 * @throws IOException           I/O exception
 	 */
 	public boolean writeTag(ITag tag) throws IOException;
 
 	/**
 	 * Write a Tag using bytes
 	 * 
-	 * @param type
-	 * @param data
-	 * @return boolean
-	 * @throws IOException
+	 * @param type                   Tag type
+	 * @param data                   Byte data
+	 * @return                       <code>true</code> on success, <code>false</code> otherwise
+	 * @throws IOException           I/O exception
 	 */
 	public boolean writeTag(byte type, ByteBuffer data) throws IOException;
 
 	/**
 	 * Write a Stream to disk using bytes
 	 * 
-	 * @param b
-	 * @return boolean
-	 * @throws IOException
+	 * @param b                      Array of bytes to write
+	 * @return                       <code>true</code> on success, <code>false</code> otherwise
+	 * @throws IOException           I/O exception
 	 */
 	public boolean writeStream(byte[] b);
 

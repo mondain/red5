@@ -3,7 +3,7 @@ package org.red5.server.net.rtmp.message;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,42 +22,85 @@ package org.red5.server.net.rtmp.message;
 import org.apache.mina.common.ByteBuffer;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 
+/**
+ * RTMP packet. Consists of packet header, data and event context.
+ */
 public class Packet {
-
+    /**
+     * Header
+     */
 	protected Header header;
-
+    /**
+     * RTMP event
+     */
 	protected IRTMPEvent message;
-
+    /**
+     * Packet data
+     */
 	protected ByteBuffer data;
 
-	public Packet(Header header) {
+    /**
+     * Create packet with given header
+     * @param header       Packet header
+     */
+    public Packet(Header header) {
 		this.header = header;
 		data = ByteBuffer.allocate(header.getSize()
 				+ (header.getTimer() == 0xffffff ? 4 : 0));
 	}
 
-	public Packet(Header header, IRTMPEvent event) {
+    /**
+     * Create packet with given header and event context
+     * @param header     RTMP header
+     * @param event      RTMP message
+     */
+    public Packet(Header header, IRTMPEvent event) {
 		this.header = header;
 		this.message = event;
 	}
 
-	public Header getHeader() {
+	/**
+     * Getter for header
+     *
+     * @return  Packet header
+     */
+    public Header getHeader() {
 		return header;
 	}
 
-	public void setMessage(IRTMPEvent message) {
+	/**
+     * Setter for event context
+     *
+     * @param message  RTMP event context
+     */
+    public void setMessage(IRTMPEvent message) {
 		this.message = message;
 	}
 
-	public IRTMPEvent getMessage() {
+	/**
+     * Getter for event context
+     *
+     * @return RTMP event context
+     */
+    public IRTMPEvent getMessage() {
 		return message;
 	}
 
-	public void setData(ByteBuffer data) {
+	/**
+     * Setter for data
+     *
+     * @param data Packet data
+     */
+    public void setData(ByteBuffer data) {
 		this.data = data;
 	}
 
-	public ByteBuffer getData() {
+	/**
+     * Getter for data
+     *
+     * @return Packet data
+     */
+    public ByteBuffer getData() {
 		return data;
 	}
 

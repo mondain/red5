@@ -3,7 +3,7 @@ package org.red5.io;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,12 +22,22 @@ package org.red5.io;
 import java.io.File;
 import java.util.Set;
 
-public interface IStreamableFileFactory {
+import org.red5.server.api.IScopeService;
 
-	public static final String KEY = "streamableFileFactory";
+/**
+ * Scope service extension that provides method to get streamable file services set
+ */
+public interface IStreamableFileFactory extends IScopeService {
+
+	public static String BEAN_NAME = "streamableFileFactory";
 
 	public abstract IStreamableFileService getService(File fp);
 
-	public abstract Set<IStreamableFileService> getServices();
+	/**
+     * Getter for services
+     *
+     * @return  Set of streamable file services
+     */
+    public abstract Set<IStreamableFileService> getServices();
 
 }

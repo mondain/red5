@@ -3,7 +3,7 @@ package org.red5.server.api.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -31,11 +31,16 @@ public interface IPendingServiceCall extends IServiceCall {
 	/**
 	 * Returns service call result
 	 * 
-	 * @return	
+	 * @return	       Remote call result
 	 */
 	public abstract Object getResult();
 
-	public abstract void setResult(Object result);
+	/**
+     * Setter for property 'result'.
+     *
+     * @param result Value to set for property 'result'.
+     */
+    public abstract void setResult(Object result);
 
 	/**
 	 * Registers callback object usually represented as an anonymous class
@@ -60,8 +65,7 @@ public interface IPendingServiceCall extends IServiceCall {
 	 * an anonymous class instance that implements IPendingServiceCallback
 	 * interface.
 	 *  
-	 * @param callback
-	 *            Callback object
+     * @return         Set of pending operations callbacks
 	 */
 	public Set<IPendingServiceCallback> getCallbacks();
 }

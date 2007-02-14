@@ -2,61 +2,58 @@ package org.red5.io.object;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
- * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
- * 
- * This library is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License as published by the Free Software 
- * Foundation; either version 2.1 of the License, or (at your option) any later 
- * version. 
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ *
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along 
- * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.collections.BeanMap;
-import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.red5.io.utils.ObjectMap;
 import org.red5.io.utils.XMLUtils;
 import org.w3c.dom.Document;
 
 /**
  * The Serializer class writes data output and handles the data according to the
  * core data types
- * 
+ *
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
-public class Serializer implements SerializerOpts {
+public class Serializer {
 
-	// Initialize Logging
+    /**
+     * Logger
+     */
 	protected static Log log = LogFactory.getLog(Serializer.class.getName());
 
 	/**
-	 * serializes output to a core data type object
-	 * 
-	 * @param out
-	 * @param any
+	 * Serializes output to a core data type object
+	 *
+	 * @param out          Output writer
+	 * @param any          Object to serialize
 	 */
 	public void serialize(Output out, Object any) {
-		// TODO Auto-generated method stub
 		if (log.isDebugEnabled()) {
 			log.debug("serialize");
 		}
@@ -67,19 +64,6 @@ public class Serializer implements SerializerOpts {
 			return;
 		}
 
-		// Extension point
-		if (out.hasReference(any)) {
-			if (log.isDebugEnabled()) {
-				log.debug("write ref");
-			}
-			out.writeReference(any);
-			return;
-		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("Store reference: " + any);
-		}
-		out.storeReference(any);
 		if (!writeComplex(out, any)) {
 			if (log.isDebugEnabled()) {
 				log.debug("Unable to serialize: " + any);
@@ -89,10 +73,10 @@ public class Serializer implements SerializerOpts {
 
 	/**
 	 * Writes a primitive out as an object
-	 * 
-	 * @param out
-	 * @param basic
-	 * @return boolean
+	 *
+	 * @param out              Output writer
+	 * @param basic            Primitive
+	 * @return boolean         true if object was successfully serialized, false otherwise
 	 */
 	protected boolean writeBasic(Output out, Object basic) {
 		if (basic == null) {
@@ -112,11 +96,11 @@ public class Serializer implements SerializerOpts {
 	}
 
 	/**
-	 * Writes a complex type out as an object
-	 * 
-	 * @param out
-	 * @param complex
-	 * @return boolean
+	 * Writes a complex type object out
+	 *
+	 * @param out        Output writer
+	 * @param complex    Complex datatype object
+	 * @return boolean   true if object was successfully serialized, false otherwise
 	 */
 	public boolean writeComplex(Output out, Object complex) {
 		if (log.isDebugEnabled()) {
@@ -139,10 +123,10 @@ public class Serializer implements SerializerOpts {
 
 	/**
 	 * Writes Lists out as a data type
-	 * 
-	 * @param out
-	 * @param listType
-	 * @return boolean
+	 *
+	 * @param out             Output write
+	 * @param listType        List type
+	 * @return boolean        true if object was successfully serialized, false otherwise
 	 */
 	protected boolean writeListType(Output out, Object listType) {
 		if (log.isDebugEnabled()) {
@@ -158,14 +142,14 @@ public class Serializer implements SerializerOpts {
 
 	/**
 	 * Writes a List out as an Object
-	 * 
-	 * @param out
-	 * @param list
+	 *
+	 * @param out             Output writer
+	 * @param list            List to write as Object
 	 */
 	protected void writeList(Output out, List list) {
 		// if its a small list, write it as an array
 		if (list.size() < 100) {
-			writeListAsMap(out, list);
+			out.writeArray(list, this);
 			return;
 		}
 		// else we should check for lots of null values,
@@ -178,60 +162,34 @@ public class Serializer implements SerializerOpts {
 			}
 		}
 		if (nullCount > (size * 0.8)) {
-			writeListAsMap(out, list);
+			out.writeMap(list, this);
 		} else {
-			writeListAsArray(out, list);
+			out.writeArray(list, this);
 		}
-	}
-
-	protected void writeListAsMap(Output out, List list) {
-		int size = list.size();
-		out.writeStartMap(size);
-		for (int i = 0; i < size; i++) {
-			Object item = list.get(i);
-			if (item != null) {
-				out.writeItemKey(Integer.toString(i));
-				serialize(out, item);
-				out.markItemSeparator();
-			}
-		}
-		out.markEndMap();
-	}
-
-	protected void writeListAsArray(Output out, List list) {
-		int size = list.size();
-		out.writeStartArray(size);
-		for (int i = 0; i < size; i++) {
-			if (i > 0) {
-				out.markElementSeparator();
-			}
-			//log.info(i);
-			serialize(out, list.get(i));
-		}
-		out.markEndArray();
 	}
 
 	/**
-	 * Writes an Array type out as output Arrays, Collections, etc
-	 * 
-	 * @param out
-	 * @param arrType
+	 * Writes array (or collection) out as output Arrays, Collections, etc
+	 *
+	 * @param out               Output object
+	 * @param arrType           Array or collection type
 	 * @return <code>true</code> if the object has been written, otherwise
 	 *         <code>false</code>
 	 */
+	@SuppressWarnings("all")
 	protected boolean writeArrayType(Output out, Object arrType) {
 		if (log.isDebugEnabled()) {
 			log.debug("writeArrayType");
 		}
 		if (arrType instanceof Collection) {
-			writeCollection(out, (Collection) arrType);
+			out.writeArray((Collection<Object>) arrType, this);
 		} else if (arrType instanceof Iterator) {
-			writeIterator(out, (Iterator) arrType);
+			writeIterator(out, (Iterator<Object>) arrType);
 		} else if (arrType.getClass().isArray()
 				&& arrType.getClass().getComponentType().isPrimitive()) {
-			writePrimitiveArray(out, arrType);
+			out.writeArray(arrType, this);
 		} else if (arrType instanceof Object[]) {
-			writeObjectArray(out, (Object[]) arrType);
+			out.writeArray((Object[]) arrType, this);
 		} else {
 			return false;
 		}
@@ -239,105 +197,38 @@ public class Serializer implements SerializerOpts {
 	}
 
 	/**
-	 * Writes a collection to the output
-	 * 
-	 * @param out
-	 * @param col
-	 */
-	protected void writeCollection(Output out, Collection col) {
-		if (log.isDebugEnabled()) {
-			log.debug("writeCollection");
-		}
-		out.writeStartArray(col.size());
-		Iterator it = col.iterator();
-		boolean isFirst = true;
-		while (it.hasNext()) {
-			if (!isFirst) {
-				out.markElementSeparator();
-			} else {
-				isFirst = false;
-			}
-			serialize(out, it.next());
-		}
-		out.markEndArray();
-	}
-
-	/**
-	 * Writes a primitive array to the output
-	 * 
-	 * @param out
-	 * @param array
-	 */
-	protected void writePrimitiveArray(Output out, Object array) {
-		//out.writeS
-		if (log.isDebugEnabled()) {
-			log.debug("write primitive array");
-		}
-		out.writeStartArray(Array.getLength(array));
-		Iterator it = IteratorUtils.arrayIterator(array);
-		while (it.hasNext()) {
-			serialize(out, it.next());
-			if (it.hasNext()) {
-				out.markElementSeparator();
-			}
-		}
-		out.markEndArray();
-	}
-
-	/**
-	 * Writes an object array out to the output
-	 * 
-	 * @param out
-	 * @param array
-	 */
-	protected void writeObjectArray(Output out, Object[] array) {
-		//out.writeS
-		if (log.isDebugEnabled()) {
-			log.debug("write object array");
-		}
-		out.writeStartArray(array.length);
-
-		for (int i = 0; i < array.length; i++) {
-			if (i > 0) {
-				out.markElementSeparator();
-			}
-			//log.info(i);
-			serialize(out, array[i]);
-		}
-
-		out.markEndArray();
-	}
-
-	/**
 	 * Writes an iterator out to the output
-	 * 
-	 * @param out
-	 * @param it
+	 *
+	 * @param out          Output writer
+	 * @param it           Iterator to write
 	 */
-	protected void writeIterator(Output out, Iterator it) {
+	protected void writeIterator(Output out, Iterator<Object> it) {
 		if (log.isDebugEnabled()) {
 			log.debug("writeIterator");
 		}
-		LinkedList list = new LinkedList();
+        // Create LinkedList of collection we iterate thru and write it out later
+        LinkedList<Object> list = new LinkedList<Object>();
 		while (it.hasNext()) {
 			list.addLast(it.next());
 		}
-		writeCollection(out, list);
+        // Write out collection
+		out.writeArray(list, this);
 	}
 
 	/**
 	 * Writes an xml type out to the output
-	 * 
-	 * @param out
-	 * @param xml
-	 * @return boolean
+	 *
+	 * @param out          Output writer
+	 * @param xml          XML
+	 * @return boolean     <code>true</code> if object was successfully written, <code>false</code> otherwise
 	 */
 	protected boolean writeXMLType(Output out, Object xml) {
 		if (log.isDebugEnabled()) {
 			log.debug("writeXMLType");
 		}
-		if (xml instanceof Document) {
-			writeDocument(out, (Document) xml);
+        // If it's a Document write it as Document
+        if (xml instanceof Document) {
+            writeDocument(out, (Document) xml);
 		} else {
 			return false;
 		}
@@ -346,208 +237,101 @@ public class Serializer implements SerializerOpts {
 
 	/**
 	 * Writes a document to the output
-	 * 
-	 * @param out
-	 * @param doc
+	 *
+	 * @param out           Output writer
+	 * @param doc           Document to write
 	 */
 	protected void writeDocument(Output out, Document doc) {
-		out.writeXML(XMLUtils.docToString(doc));
+        // Write Document converted to String
+        out.writeXML(XMLUtils.docToString(doc));
 	}
 
 	/**
-	 * Writes an object to the output
-	 * 
-	 * @param out
-	 * @param obj
+	 * Write typed object to the output
+	 *
+	 * @param out           Output writer
+	 * @param obj           Object type to write
 	 * @return <code>true</code> if the object has been written, otherwise
 	 *         <code>false</code>
 	 */
+	@SuppressWarnings("all")
 	protected boolean writeObjectType(Output out, Object obj) {
-		if (obj instanceof Map) {
-			writeMap(out, (Map) obj);
+		if (obj instanceof ObjectMap || obj instanceof BeanMap) {
+			out.writeObject((Map) obj, this);
+		} else if (obj instanceof Map) {
+			out.writeMap((Map) obj, this);
 		} else if (obj instanceof RecordSet) {
-			writeRecordSet(out, (RecordSet) obj);
-		} else if (!writeBean(out, obj)) {
-			writeObject(out, obj);
+			out.writeRecordSet((RecordSet) obj, this);
+		} else {
+			out.writeObject(obj, this);
 		}
 		return true;
-	}
-
-	/**
-	 * Writes a RecordSet to the output.
-	 * 
-	 * @param out
-	 * @param set
-	 */
-	protected void writeRecordSet(Output out, RecordSet set) {
-		if (log.isDebugEnabled()) {
-			log.debug("writeRecordSet");
-		}
-		out.writeStartObject("RecordSet");
-		Map info = set.serialize();
-		out.writeItemKey("serverInfo");
-		serialize(out, info);
-		out.markEndObject();
-	}
-
-	/**
-	 * Writes a map to the output
-	 * 
-	 * @param out
-	 * @param map
-	 */
-	public void writeMap(Output out, Map map) {
-		if (log.isDebugEnabled()) {
-			log.debug("writeMap");
-		}
-
-		final Set set = map.entrySet();
-		// NOTE: we encode maps as objects so the flash client
-		//       can access the entries through attributes
-		out.writeStartObject(null);
-		Iterator it = set.iterator();
-		boolean isBeanMap = (map instanceof BeanMap);
-		while (it.hasNext()) {
-			Map.Entry entry = (Map.Entry) it.next();
-			if (isBeanMap && ((String) entry.getKey()).equals("class")) {
-				continue;
-			}
-			out.writeItemKey(entry.getKey().toString());
-			serialize(out, entry.getValue());
-			if (it.hasNext()) {
-				out.markPropertySeparator();
-			}
-		}
-		out.markEndMap();
-	}
-
-	/**
-	 * Write object as bean to the output.
-	 * 
-	 * @param out
-	 * @param bean
-	 */
-	public boolean writeBean(Output out, Object bean) {
-		BeanMap beanMap = new BeanMap(bean);
-		Set set = beanMap.entrySet();
-		if ((set.size() == 0)
-				|| (set.size() == 1 && beanMap.containsKey("class"))) {
-			// BeanMap is empty or can only access "class" attribute, skip it
-			return false;
-		}
-
-		if (isOptEnabled(bean, SerializerOption.SerializeClassName)) {
-			out.writeStartObject(bean.getClass().getName());
-		} else {
-			out.writeStartObject(null);
-		}
-		Iterator it = set.iterator();
-		while (it.hasNext()) {
-			BeanMap.Entry entry = (BeanMap.Entry) it.next();
-			if (entry.getKey().toString().equals("class")) {
-				continue;
-			}
-
-			out.writePropertyName(entry.getKey().toString());
-			//log.info(entry.getKey().toString()+" = "+entry.getValue());
-			serialize(out, entry.getValue());
-			if (it.hasNext()) {
-				out.markPropertySeparator();
-			}
-		}
-
-		out.markEndObject();
-		return true;
-	}
-
-	/**
-	 * Writes an arbitrary object to the output.
-	 * 
-	 * @param out
-	 * @param object
-	 */
-	public void writeObject(Output out, Object object) {
-		if (log.isDebugEnabled()) {
-			log.debug("writeObject");
-		}
-		if (isOptEnabled(object, SerializerOption.SerializeClassName)) {
-			out.writeStartObject(object.getClass().getName());
-		} else {
-			out.writeStartObject(null);
-		}
-
-		// Get public field values
-		Map<String, Object> values = new HashMap<String, Object>();
-		for (Field field : object.getClass().getFields()) {
-			Object value;
-			try {
-				value = field.get(object);
-			} catch (IllegalAccessException err) {
-				continue;
-			}
-			values.put(field.getName(), value);
-		}
-
-		// Output public values
-		Iterator<Map.Entry<String, Object>> it = values.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<String, Object> entry = it.next();
-			out.writePropertyName(entry.getKey());
-			serialize(out, entry.getValue());
-			if (it.hasNext()) {
-				out.markPropertySeparator();
-			}
-		}
-
-		out.markEndObject();
 	}
 
 	// Extension points
 	/**
-	 * Pre processes an object TODO must be implemented
-	 */
+	 * Pre processes an object
+     * TODO // must be implemented
+     *
+     * @return              Prerocessed object
+     * @param any           Object to preprocess
+     */
 	public Object preProcessExtension(Object any) {
 		// Does nothing right now but will later
 		return any;
 	}
 
 	/**
-	 * Writes a custom data type to the output
-	 * 
-	 * @param out
-	 * @param obj
+	 * Writes a custom data to the output
+	 *
+	 * @param out       Output writer
+	 * @param obj       Custom data
 	 * @return <code>true</code> if the object has been written, otherwise
 	 *         <code>false</code>
 	 */
 	protected boolean writeCustomType(Output out, Object obj) {
 		if (out.isCustom(obj)) {
-			out.writeCustom(obj);
+            // Write custom data
+            out.writeCustom(obj);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public boolean isOptEnabled(Object obj, SerializerOption opt) {
+    /**
+     * Check serializer options whether given object turned on
+     *
+     * @param obj           Option
+     * @param opt           Serializer option
+     * @return              true if options is enabled, false otherwise
+     */
+    public boolean isOptEnabled(Object obj, SerializerOption opt) {
 		if (obj != null) {
-			if (obj instanceof SerializerOpts) {
-				SerializerOpts opts = (SerializerOpts) obj;
-				Flag flag = opts.getSerializerOption(opt);
-				if (flag != Flag.Default) {
-					return (flag == Flag.Enabled);
-				}
+            // Get flag
+            Flag flag = getSerializerOption(opt);
+            // Check against Default first
+            if (flag != Flag.Default) {
+				return (flag == Flag.Enabled);
 			}
 		}
-		return getSerializerOption(opt) == Flag.Enabled;
+        // Check against Enabled flag
+        return getSerializerOption(opt) == Flag.Enabled;
 	}
 
-	public Flag getSerializerOption(SerializerOption opt) {
+    /**
+     *  Return Flag (enum that can be Enabled, Disabled or Default)
+     *
+     * @param opt       Serializer option to check
+     * @return          Property flag enum value (Default, Enabled or Disabled)
+     */
+    public Flag getSerializerOption(SerializerOption opt) {
 		// We can now return defaults
-		switch (opt) {
-			case SerializeClassName:
-				return Flag.Enabled;
+		if (opt == SerializerOption.SerializeClassName) {
+			return Flag.Enabled;
 		}
-		return Flag.Disabled;
+        // Return disabled otherwise
+        return Flag.Disabled;
 	}
 
 }

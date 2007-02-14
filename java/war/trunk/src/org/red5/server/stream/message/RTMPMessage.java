@@ -3,7 +3,7 @@ package org.red5.server.stream.message;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -22,14 +22,27 @@ package org.red5.server.stream.message;
 import org.red5.server.messaging.AbstractMessage;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 
+/**
+ * RTMP message
+ */
 public class RTMPMessage extends AbstractMessage {
 	private IRTMPEvent body;
 
-	public IRTMPEvent getBody() {
+	/**
+     * Return RTMP message body
+     *
+     * @return Value for property 'body'.
+     */
+    public IRTMPEvent getBody() {
 		return body;
 	}
 
-	public void setBody(IRTMPEvent body) {
+	/**
+     * Setter for RTMP message body
+     *
+     * @param body Value to set for property 'body'.
+     */
+    public void setBody(IRTMPEvent body) {
 		this.body = body;
 	}
 

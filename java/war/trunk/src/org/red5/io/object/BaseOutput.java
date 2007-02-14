@@ -3,7 +3,7 @@ package org.red5.io.object;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -32,19 +32,27 @@ import java.util.Map;
 public class BaseOutput {
 
 	class IdentityWrapper {
-
+        /**
+         * Wrapped object
+         */
 		Object object;
 
-		public IdentityWrapper(Object object) {
+        /**
+         * Creates wrapper for object
+         * @param object        Object to wrap
+         */
+        public IdentityWrapper(Object object) {
 			this.object = object;
 		}
 
-		@Override
+		/** {@inheritDoc} */
+        @Override
 		public int hashCode() {
 			return System.identityHashCode(object);
 		}
 
-		@Override
+		/** {@inheritDoc} */
+        @Override
 		public boolean equals(Object object) {
 			if (object instanceof IdentityWrapper) {
 				return ((IdentityWrapper) object).object == this.object;
@@ -55,9 +63,15 @@ public class BaseOutput {
 
 	}
 
-	protected Map<IdentityWrapper, Short> refMap;
+    /**
+     * References map
+     */
+    protected Map<IdentityWrapper, Short> refMap;
 
-	protected short refId = 0;
+    /**
+     * Reference id
+     */
+    protected short refId;
 
 	/**
 	 * BaseOutput Constructor
@@ -70,19 +84,19 @@ public class BaseOutput {
 	/**
 	 * Store an object into a map
 	 * 
-	 * @param obj
+	 * @param obj   Object to store
 	 */
-	public void storeReference(Object obj) {
-		refMap.put(new IdentityWrapper(obj), new Short(refId++));
+	protected void storeReference(Object obj) {
+		refMap.put(new IdentityWrapper(obj), Short.valueOf(refId++));
 	}
 
 	/**
-	 * Returns a boolean stating whether the map contains an object by
+	 * Returns a boolean stating whether the map contains an object with
 	 * that key
-	 * @param obj
-	 * @return boolean
+	 * @param obj            Object
+	 * @return boolean       <code>true</code> if it does contain it, <code>false</code> otherwise
 	 */
-	public boolean hasReference(Object obj) {
+	protected boolean hasReference(Object obj) {
 		return refMap.containsKey(new IdentityWrapper(obj));
 	}
 
@@ -97,8 +111,8 @@ public class BaseOutput {
 	/**
 	 * Returns the reference id based on the parameter obj
 	 * 
-	 * @param obj
-	 * @return short
+	 * @param obj            Object
+	 * @return short         Reference id
 	 */
 	protected short getReferenceId(Object obj) {
 		return refMap.get(new IdentityWrapper(obj)).shortValue();

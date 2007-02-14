@@ -3,7 +3,7 @@ package org.red5.server.service;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2007 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -20,13 +20,23 @@ package org.red5.server.service;
  */
 
 /**
+ * Thrown when service can't be found thus remote call throws an exception
  *
  * @author The Red5 Project (red5@osflash.org)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 public class ServiceNotFoundException extends RuntimeException {
 
-	public ServiceNotFoundException(String serviceName) {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7543755414829244027L;
+
+    /**
+     * Creates new exception with service name
+     * @param serviceName       Name of service that couldn't been found
+     */
+    public ServiceNotFoundException(String serviceName) {
 		super("Service not found: " + serviceName);
 	}
 
