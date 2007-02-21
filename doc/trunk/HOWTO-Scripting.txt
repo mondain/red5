@@ -2,6 +2,7 @@
 How to script for Red5
 By: Paul Gregoire
 Date: 2 Feb 2007
+$Revision: $
 
 I. Select a scripting implementation
 Level: Beginner
