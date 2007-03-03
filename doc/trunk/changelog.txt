@@ -15,6 +15,7 @@ Bugfixes:
 - deserializing of remoting results fixed (Jira APPSERVER-63)
 - fixed "error in object encoding" when rejecting AMF3 clients
   (Jira APPSERVER-73)
+- concurrency problems when closing a connection fixed (Jira APPSERVER-59)
 
 
 Red5 0.6rc2 (2007-02-12)
