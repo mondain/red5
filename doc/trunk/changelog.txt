@@ -13,6 +13,8 @@ Bugfixes:
 - merged WAR build script with primary script, also moved WAR specific
   startup servlet into trunk
 - deserializing of remoting results fixed (Jira APPSERVER-63)
+- fixed "error in object encoding" when rejecting AMF3 clients
+  (Jira APPSERVER-73)
 
 
 Red5 0.6rc2 (2007-02-12)
