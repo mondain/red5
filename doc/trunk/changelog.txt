@@ -6,6 +6,10 @@ versions of Red5.
 
 Red5 0.6    (unreleased)
 ------------------------
+New features:
+- Keyframe informations are cached so files don't need to be reparsed
+  before playback.
+
 Bugfixes:
 - serialization of Maps with non-number keys fixed (Jira APPSERVER-60)
 - multiple IO processor threads are used by default
