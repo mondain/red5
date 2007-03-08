@@ -20,6 +20,8 @@ Bugfixes:
 - fixed "error in object encoding" when rejecting AMF3 clients
   (Jira APPSERVER-73)
 - concurrency problems when closing a connection fixed (Jira APPSERVER-59)
+- unnecessary NetStream.Play.* events are no longer sent when playback
+  stopped (Jira APPSERVER-70)
 
 
 Red5 0.6rc2 (2007-02-12)
