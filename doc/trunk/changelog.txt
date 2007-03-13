@@ -24,6 +24,7 @@ Bugfixes:
   stopped (Jira APPSERVER-70)
 - SimplePlaylistController setRepeat and setRandom fixed (Jira SN-27)
 - NPE in SimpleBWControlService fixed (Jira APPSERVER-75)
+- reference bugs in AMF3 encoder fixed (Jira APPSERVER-81)
 
 
 Red5 0.6rc2 (2007-02-12)
