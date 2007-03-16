@@ -9,6 +9,7 @@ Red5 0.6    (unreleased)
 New features:
 - Keyframe informations are cached so files don't need to be reparsed
   before playback
+- Connections from Flash Media Encoder supported
 
 Bugfixes:
 - serialization of Maps with non-number keys fixed (Jira APPSERVER-60)
@@ -25,6 +26,8 @@ Bugfixes:
 - SimplePlaylistController setRepeat and setRandom fixed (Jira SN-27)
 - NPE in SimpleBWControlService fixed (Jira APPSERVER-75)
 - reference bugs in AMF3 encoder fixed (Jira APPSERVER-81)
+- "NetStream.Play.Failed" is sent correctly now (Jira APPSERVER-52)
+
 
 
 Red5 0.6rc2 (2007-02-12)
