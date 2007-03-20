@@ -27,6 +27,7 @@ Bugfixes:
 - NPE in SimpleBWControlService fixed (Jira APPSERVER-75)
 - reference bugs in AMF3 encoder fixed (Jira APPSERVER-81)
 - "NetStream.Play.Failed" is sent correctly now (Jira APPSERVER-52)
+- concurrency issue fixed in SimpleBWControlService (Jira SN-32)
 
 
 
