@@ -30,7 +30,8 @@ Bugfixes:
 - concurrency issue fixed in SimpleBWControlService (Jira SN-32)
 - fixed problem when decoding MP3 files with signed values in the
   ID3v2 tag size (Jira APPSERVER-86)
-
+- "NetStream.Seek.Failed" is sent when trying to seek in live streams
+  (Jira APPSERVER-84)
 
 
 Red5 0.6rc2 (2007-02-12)
