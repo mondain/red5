@@ -1,0 +1,6 @@
+
+This will install Red5 0.6 RC2 on your computer.
+
+It is recommended that you close all other applications before continuing.
+
+Click Continue to proceed.
