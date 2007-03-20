@@ -28,6 +28,8 @@ Bugfixes:
 - reference bugs in AMF3 encoder fixed (Jira APPSERVER-81)
 - "NetStream.Play.Failed" is sent correctly now (Jira APPSERVER-52)
 - concurrency issue fixed in SimpleBWControlService (Jira SN-32)
+- fixed problem when decoding MP3 files with signed values in the
+  ID3v2 tag size (Jira APPSERVER-86)
 
 
 
