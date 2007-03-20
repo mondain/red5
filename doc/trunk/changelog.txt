@@ -32,6 +32,8 @@ Bugfixes:
   ID3v2 tag size (Jira APPSERVER-86)
 - "NetStream.Seek.Failed" is sent when trying to seek in live streams
   (Jira APPSERVER-84)
+- "NetStream.Failed" is sent for exceptions during streaming methods
+  (Jira APPSERVER-85)
 
 
 Red5 0.6rc2 (2007-02-12)
