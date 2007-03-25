@@ -35,6 +35,7 @@ Bugfixes:
 - "NetStream.Failed" is sent for exceptions during streaming methods
   (Jira APPSERVER-85)
 - random server freezing resolved (Jira APPSERVER-41)
+- send correct timestamps if seeking beyond end of file (Jira APPSERVER-54)
 
 
 Red5 0.6rc2 (2007-02-12)
