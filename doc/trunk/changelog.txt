@@ -13,6 +13,8 @@ New features:
 - access to shared objects can be limited (Jira APPSERVER-25)
 
 Bugfixes:
+- bandwidth control code has been rewritten to fix stability issues and
+  memory leaking in high concurrency connection count situations
 - serialization of Maps with non-number keys fixed (Jira APPSERVER-60)
 - multiple IO processor threads are used by default
 - memory leak when closing RTMPT connections fixed (Jira APPSERVER-61)
