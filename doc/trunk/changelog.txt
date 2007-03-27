@@ -10,6 +10,7 @@ New features:
 - Keyframe informations are cached so files don't need to be reparsed
   before playback
 - Connections from Flash Media Encoder and On2 Flix Live supported
+- access to shared objects can be limited (Jira APPSERVER-25)
 
 Bugfixes:
 - serialization of Maps with non-number keys fixed (Jira APPSERVER-60)
