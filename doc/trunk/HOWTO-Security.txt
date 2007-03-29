@@ -20,14 +20,14 @@ Communication Server / Flash Media Server 2.
 
 Streams
 ==========================
-Read (playback) and write (publishing) access to streams is protected
+Read (playback) and write (publishing/recording) access to streams is protected
 separately in Red5.
 
 
 Stream playback security
 --------------------------
 For applications that want to limit the playback of streams per user or only
-want to provide access to streams with a given filename, the interface
+want to provide access to streams with a given name, the interface
 IStreamPlaybackSecurity_ is available in Red5.
 
 It can be implemented by any object and registered in the ApplicationAdapter_.
