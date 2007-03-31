@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/aio-0.1.jar"/>
+	<classpathentry kind="lib" path="lib/mina-integration-spring-2.0.0-M1.jar"/>
+	<classpathentry kind="lib" path="lib/mina-filter-ssl-2.0.0-M1.jar"/>
+	<classpathentry kind="lib" path="lib/mina-filter-compression-2.0.0-M1.jar"/>
+	<classpathentry kind="lib" path="lib/mina-core-2.0.0-M1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
