@@ -42,6 +42,10 @@ Bugfixes:
 - fixed NoSuchElementException when iterating connections during disconnect
   (Jira APPSERVER-94)
 - reference bugs im AMF3 decoder fixed (Jira APPSERVER-95)
+- "NetStream.Play.Complete" is sent (APPSERVER-50)
+- "NetStream.Play.Switch" is sent (APPSERVER-82)
+- streams are always played to the end (SN-8)
+- seeking in stopped streams fixed (APPSERVER-89)
 
 
 Red5 0.6rc2 (2007-02-12)
