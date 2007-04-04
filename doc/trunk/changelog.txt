@@ -48,6 +48,7 @@ Bugfixes:
 - "NetStream.Play.Switch" is sent (APPSERVER-82)
 - streams are always played to the end (SN-8)
 - seeking in stopped streams fixed (APPSERVER-89)
+- fixed deadlock in shared objects under high load (APPSERVER-98)
 
 
 Red5 0.6rc2 (2007-02-12)
