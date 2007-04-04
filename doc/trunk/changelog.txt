@@ -10,7 +10,9 @@ New features:
 - Keyframe informations are cached so files don't need to be reparsed
   before playback
 - Connections from Flash Media Encoder and On2 Flix Live supported
-- access to shared objects can be limited (Jira APPSERVER-25)
+- Access to shared objects can be limited (Jira APPSERVER-25)
+- Connections can provide a list of remote addresses. This is usefull
+  for proxied RTMPT connections.
 
 Bugfixes:
 - bandwidth control code has been rewritten to fix stability issues and
