@@ -492,6 +492,7 @@ begin
     if (Host = '') or (Host = '0.0.0.0') then
       Host := '127.0.0.1';
     SaveStringToFile(Filename, Format('proxy_forward.host_port = %s:%s', [Host, Port]) + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.threadcount = 4' + #13#10, True);
   end;
 end;
 
