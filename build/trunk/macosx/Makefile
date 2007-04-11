@@ -1,8 +1,7 @@
 #
 # How to release:
 # 1. Get the latest tarball or tag from svn of the Red5 server and unpack it. 
-# 2. Make sure to set the java_version property inside build.properties to 1.5 for Mac OSX 10.4.x
-# 3. Change the SRC_DIR below and point it to the root of the unpacked Red5 installation directory.
+# 2. Change the SRC_DIR below and point it to the root of the unpacked Red5 installation directory.
 # 3. Updating the version number isn't automated and optimized yet and now has to be done manually.
 #    So before building, first:
 #    - open the file 'packages/docs/Info.plist', change the version number(s) and save the file.
@@ -18,12 +17,12 @@
 # Thijs Triemstra, 03/07
 # Original script from http://brok3n.org/archivesextreme/2006/09/dmg_creation_ti.html
 
-VERSION=0.6rc2
+VERSION=0.6rc3
 RELEASE_NAME=red5-$(VERSION)
 FANCY_NAME=Red5 v$(VERSION)
 DMG_NAME=setup-$(RELEASE_NAME).dmg
 MPKG_NAME=Install-$(RELEASE_NAME).mpkg
-SRC_DIR=../../$(RELEASE_NAME)
+SRC_DIR=../$(RELEASE_NAME)
 BUILD_DIR=build
 BIN_DIR=bin
 PACKAGES_DIR=packages
@@ -111,7 +110,7 @@ release:
 	cp $(SRC_DIR)/license.txt $(BUILD_DIR)/$(RED5_META_PACKAGE_NAME)/English.lproj/License.txt
 
 	@# Add fresh copy of change log
-	cp $(SRC_DIR)/doc/changelog.txt $(BUILD_DIR)/$(RED5_META_PACKAGE_NAME)/English.lproj/Readme.txt
+	cp $(SRC_DIR)/doc/changelog.txt $(BUILD_DIR)/$(RED5_META_PACKAGE_NAME)/English.lproj/ReadMe.txt
 
 	@echo == Updating package permissions...
 	@# Set package permissions
