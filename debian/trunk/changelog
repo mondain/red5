@@ -1,3 +1,9 @@
+red5 (0.6rc3-1) unstable; urgency=low
+
+  * Upgrade to new red5 upstream release.
+
+ -- Joachim Bauch <jojo@struktur.de>  Wed, 11 Apr 2007 19:28:52 +0200
+
 red5 (0.6rc1-1) unstable; urgency=low
 
   * Upgrade to new red5 upstream release.
