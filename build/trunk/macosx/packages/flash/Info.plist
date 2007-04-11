@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleGetInfoString</key>
-	<string>Red5 0.6 RC2, Copyright © 2006-2007 OSFlash</string>
+	<string>Red5 0.6 RC3, Copyright © 2006-2007 OSFlash</string>
 	<key>CFBundleIdentifier</key>
 	<string>flash</string>
 	<key>CFBundleShortVersionString</key>
