@@ -2,7 +2,7 @@
 How to script for Red5
 By: Paul Gregoire
 Date: 2 Feb 2007
-$Revision: $
+Revision: 2
 
 I. Select a scripting implementation
 Level: Beginner
@@ -20,6 +20,13 @@ Future versions may include:
 	- PHP (This one is non-trivial, I may just provide a bridge)
 	- Actionscript (Not SSAS)
 
+The scripting implementation classes are pre-specified in the following locations depending upon your Java version:
+
+    Java5 - jsr-223-1.0-pr.jar /META-INF/services/javax.script.ScriptEngineFactory
+    Java6 - resources.jar /META-INF/services/javax.script.ScriptEngineFactory
+    Red5 - red5.jar /META-INF/services/javax.script.ScriptEngineFactory
+
+It is most likely that the classes read from the jdk or jre will be prefered over any specified elsewhere.
 
 
 II. Configuring Spring
