@@ -13,6 +13,7 @@ Bugfixes:
   (Jira APPSERVER-80, APPSERVER-100)
 - fixed AMF3 deserializer for references from attributes to parent classes
   (Jira APPSERVER-101)
+- Jython example adjusted for new bandwidth API (Jira APPSERVER-92)
 
 
 Red5 0.6rc3 (2007-04-11)
