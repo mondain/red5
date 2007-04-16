@@ -11,6 +11,8 @@ Bugfixes:
   (Jira APPSERVER-38, SN-37)
 - deserialization of objects defined in webapp classpath fixed
   (Jira APPSERVER-80, APPSERVER-100)
+- fixed AMF3 deserializer for references from attributes to parent classes
+  (Jira APPSERVER-101)
 
 
 Red5 0.6rc3 (2007-04-11)
