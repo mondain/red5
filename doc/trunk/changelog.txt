@@ -16,7 +16,7 @@ Bugfixes:
 - Jython example adjusted for new bandwidth API (Jira APPSERVER-92)
 - workaround added to deal with broken MP3 files (Jira APPSERVER-62)
 - "start" and "length" are properly evaluated when playing back VOD streams
-- fixed seeking not working for MP3 files
+- fixed seeking not working for MP3 or audio-only FLV files
 
 
 Red5 0.6rc3 (2007-04-11)
