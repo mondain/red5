@@ -6,6 +6,10 @@ versions of Red5.
 
 Red5 0.6    (unreleased)
 ------------------------
+New features:
+- Recording/playback of files to/from subscopes implemented
+  (Jira APPSERVER-103)
+
 Bugfixes:
 - ghost connection detection code rewritten to better detect dead clients
   (Jira APPSERVER-38, SN-37)
