@@ -24,6 +24,8 @@ Bugfixes:
 - don't log contents of wrong objects (Jira APPSERVER-109)
 - fixed potential NPEs in PlaylistSubscriberStream
 - a client buffer of 0 on live streams no longer breaks playback (Jira CS-3)
+- fixed shutdown error in Tomcat with WAR version by updating to SLF4J 1.3.1
+  (Jira APPSERVER-107)
 
 
 Red5 0.6rc3 (2007-04-11)
