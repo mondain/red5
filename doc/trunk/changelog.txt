@@ -22,6 +22,7 @@ Bugfixes:
 - "start" and "length" are properly evaluated when playing back VOD streams
 - fixed seeking not working for MP3 or audio-only FLV files
 - don't log contents of wrong objects (Jira APPSERVER-109)
+- fixed potential NPEs in PlaylistSubscriberStream
 
 
 Red5 0.6rc3 (2007-04-11)
