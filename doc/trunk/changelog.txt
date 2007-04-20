@@ -23,6 +23,7 @@ Bugfixes:
 - fixed seeking not working for MP3 or audio-only FLV files
 - don't log contents of wrong objects (Jira APPSERVER-109)
 - fixed potential NPEs in PlaylistSubscriberStream
+- a client buffer of 0 on live streams no longer breaks playback (Jira CS-3)
 
 
 Red5 0.6rc3 (2007-04-11)
