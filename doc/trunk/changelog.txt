@@ -6,6 +6,9 @@ versions of Red5.
 
 Red5 0.6.1  (unreleased)
 ------------------------
+Bugfixes:
+- "NetStream.Record.Failed" is sent for IO errors that occurred during
+  recording (Jira APPSERVER-64)
 
 
 Red5 0.6    (2007-04-23)
