@@ -11,6 +11,8 @@ New Features:
 - Newly recorded files start with an "onMetaData" tag containing the
   duration and the codecs used
 - Added a JMX subsystem
+- Simplified MBean unregistration and added a registration check prior to 
+  the unregister attempt (Jira APPSERVER-118)
 
 Bugfixes:
 - "NetStream.Record.Failed" is sent for IO errors that occurred during
