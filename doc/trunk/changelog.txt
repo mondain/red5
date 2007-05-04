@@ -14,6 +14,7 @@ Bugfixes:
   recording (Jira APPSERVER-64)
 - fixed possible deadlock if methods are invoked by a connecting client
   on a client that is currently disconnecting (Jira APPSERVER-108)
+- fixed NPE when connecting without application given (Jira APPSERVER-116)
 
 
 Red5 0.6    (2007-04-23)
