@@ -8,6 +8,8 @@ Red5 0.6.1  (unreleased)
 ------------------------
 New Features:
 - Switched to use mina 1.1, more config options in red5.properties
+- Newly recorded files start with an "onMetaData" tag containing the
+  duration and the codecs used
 
 Bugfixes:
 - "NetStream.Record.Failed" is sent for IO errors that occurred during
