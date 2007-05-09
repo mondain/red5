@@ -13,6 +13,7 @@ New Features:
 - Added a JMX subsystem
 - Simplified MBean unregistration and added a registration check prior to 
   the unregister attempt (Jira APPSERVER-118)
+- "IServerStream" now also supports "pause" and "seek"
 
 Bugfixes:
 - "NetStream.Record.Failed" is sent for IO errors that occurred during
