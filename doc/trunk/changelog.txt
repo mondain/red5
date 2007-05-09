@@ -21,6 +21,8 @@ Bugfixes:
 - fixed possible deadlock if methods are invoked by a connecting client
   on a client that is currently disconnecting (Jira APPSERVER-108)
 - fixed NPE when connecting without application given (Jira APPSERVER-116)
+- fixed various problems with deserialization of AMF3 objects that implement
+  IExternalizable (Jira CODECS-2)
 
 
 Red5 0.6    (2007-04-23)
