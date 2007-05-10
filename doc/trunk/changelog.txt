@@ -26,6 +26,8 @@ Bugfixes:
 - fixed warning about deprecated Jetty configuration (Jira APPSERVER-115)
 - fixed possible deadlock involving PersistableAttributeStore and Scope
   (Jira APPSERVER-122)
+- display better message if RMI connection to "rmiregistry" could not
+  be established (Jira APPSERVER-125)
 
 
 Red5 0.6    (2007-04-23)
