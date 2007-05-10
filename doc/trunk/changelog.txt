@@ -28,6 +28,8 @@ Bugfixes:
   (Jira APPSERVER-122)
 - display better message if RMI connection to "rmiregistry" could not
   be established (Jira APPSERVER-125)
+- Python scripts can import classes available only in the classpath of a
+  webapp (Jira APPSERVER-92)
 
 
 Red5 0.6    (2007-04-23)
