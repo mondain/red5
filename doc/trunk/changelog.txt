@@ -24,6 +24,8 @@ Bugfixes:
 - fixed various problems with deserialization of AMF3 objects that implement
   IExternalizable (Jira CODECS-2)
 - fixed warning about deprecated Jetty configuration (Jira APPSERVER-115)
+- fixed possible deadlock involving PersistableAttributeStore and Scope
+  (Jira APPSERVER-122)
 
 
 Red5 0.6    (2007-04-23)
