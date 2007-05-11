@@ -10,7 +10,7 @@ New Features:
 - Switched to use mina 1.1, more config options in red5.properties
 - Newly recorded files start with an "onMetaData" tag containing the
   duration and the codecs used
-- Added a JMX subsystem
+- Added a JMX subsystem with RMI and HTTP connectors
 - Simplified MBean unregistration and added a registration check prior to 
   the unregister attempt (Jira APPSERVER-118)
 - "IServerStream" now also supports "pause" and "seek"
@@ -30,7 +30,7 @@ Bugfixes:
   be established (Jira APPSERVER-125)
 - Python scripts can import classes available only in the classpath of a
   webapp (Jira APPSERVER-92)
-
+- fixed Ruby application issue by updating to Spring 2.0.5 and JRuby 0.9.8 (Jira APPSERVER-93)
 
 Red5 0.6    (2007-04-23)
 ------------------------
