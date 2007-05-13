@@ -12,7 +12,7 @@
 Preface
 ==========================
 This document describes how applications can be configured in Red5 when using the WAR
-implementation. In this version of Red5 the J2EE container is not contained within Red5 and therefore is configured diffently. This document assumes that the application war has already been expanded.
+implementation. In this version of Red5 the J2EE container is not contained within Red5 and therefore is configured differently. This document assumes that the application WAR has already been expanded.
 
 
 The application directory

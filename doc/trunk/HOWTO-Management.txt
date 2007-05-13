@@ -5,7 +5,7 @@ Date: 3 May 2007
 Revision: 2
 
 I. JMX classes
-Red5's implemenation consists of the following classes and various other MBeans:
+Red5's implementation consists of the following classes and various other MBeans:
 
 org.red5.server.jmx.JMXFactory - Provides access to the platform MBeanServer as well as registration, unregistration, and creation of new MBean instances. Creation and registration is performed using StandardMBean wrappers.
 
@@ -30,7 +30,7 @@ The Spring configuration for the JMX implementation allows you to configure the 
 		<property name="htmlAdapterPort" value="8082"/>
 	</bean>
 
-The HTML adapter is disabled by default, but it allows easy managment of MBeans from a web browser.
+The HTML adapter is disabled by default, but it allows easy management of MBeans from a web browser.
 The RMI adapter may only be used if an RMI registry is running. To start a registry simply execute this at the command prompt:
 
 - windows
@@ -52,7 +52,7 @@ After the parameter is set and the application initialized you can start jConsol
 
 	jconsole
 
-A Swing application will appear and you must select implementation (agent) you wish to manage, for local simply select "org.red5.server.Standalone".
+A Swing application will appear and you must select the implementation (agent) you wish to manage, for local simply select "org.red5.server.Standalone".
 
 
 IV. Links 

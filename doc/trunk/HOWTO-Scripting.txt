@@ -101,7 +101,7 @@ In general the configuration using scripted classes is defined using the constru
 					have to use those interfaces in all your script definitions.
 
 	Argument 3 - Java classes extended by the script
-					The extended class is not always nessasary, it depends upon the scripting engine implementation.
+					The extended class is not always necessary, it depends upon the scripting engine implementation.
 
 The example location starts with classpath:applications which in physical disk terms for the "oflaDemo" application equates to webapps/oflaDemo/WEB-INF/applications 
 
@@ -127,7 +127,7 @@ module RedFive
 end
 
 #
-# application.rb - a translation into Ruby of the olfa demo application, a red5 example.
+# application.rb - a translation into Ruby of the ofla demo application, a red5 example.
 #
 # @author Paul Gregoire
 #
@@ -231,7 +231,7 @@ include_class "org.red5.server.api.Red5"
 include_class "java.util.HashMap"
 
 #
-# demoservice.rb - a translation into Ruby of the olfa demo application, a red5 example.
+# demoservice.rb - a translation into Ruby of the ofla demo application, a red5 example.
 #
 # @author Paul Gregoire
 #
@@ -442,8 +442,4 @@ http://jpype.sourceforge.net/
 
 Groovy -
 http://groovy.codehaus.org/
-
-
-
-
 

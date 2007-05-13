@@ -12,7 +12,7 @@
 
 Preface
 ==========================
-This document describes how applications can stream ondemand videos from or
+This document describes how applications can stream ondemand videos (VOD) from or
 record to custom directories other than the default `streams` folder inside
 the webapp.
 
