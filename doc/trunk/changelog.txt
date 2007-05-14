@@ -38,6 +38,7 @@ Bugfixes:
 - fixed async calling of remoting methods (Jira APPSERVER-131)
 - accessing root of RTMPT server no longer results in 404 but redirects to
   HTTP port (Jira APPSERVER-130)
+- disconnect clients that don't send a valid handshake (Jira APPSERVER-128)
 
 
 Red5 0.6    (2007-04-23)
