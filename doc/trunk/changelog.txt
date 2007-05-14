@@ -33,7 +33,10 @@ Bugfixes:
   be established (Jira APPSERVER-125)
 - Python scripts can import classes available only in the classpath of a
   webapp (Jira APPSERVER-92)
-- fixed Ruby application issue by updating to Spring 2.0.5 and JRuby 0.9.8 (Jira APPSERVER-93)
+- fixed Ruby application issue by updating to Spring 2.0.5 and JRuby 0.9.8
+  (Jira APPSERVER-93)
+- fixed async calling of remoting methods (Jira APPSERVER-131)
+
 
 Red5 0.6    (2007-04-23)
 ------------------------
