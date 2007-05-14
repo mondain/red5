@@ -41,6 +41,7 @@ Bugfixes:
 - disconnect clients that don't send a valid handshake (Jira APPSERVER-128)
 - reduced max. idle time to prevent too many open sockets when using RTMPT
   with HTTP/1.0 (Jira APPSERVER-87)
+- fixed potential NPEs in PlaylistSubscriberStream (Jira SN-40)
 
 
 Red5 0.6    (2007-04-23)
