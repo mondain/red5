@@ -17,6 +17,7 @@ New Features:
 - Enabled RMI + SSL for JMX
 - Added JMX authentication
 - Added Shutdown class for cleanly shutting down a Red5 instance
+- Added support for AMF3 in remoting server
 
 Bugfixes:
 - "NetStream.Record.Failed" is sent for IO errors that occurred during
