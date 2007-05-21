@@ -19,9 +19,9 @@ SCRIPTNAME=/etc/init.d/$NAME
 test -x $DAEMON || exit 0
 
 # Read config file if it is present.
-if [ -r /etc/red5.conf ]
+if [ -r /etc/default/$NAME ]
 then
-	. /etc/red5.conf
+	. /etc/default/$NAME
 fi
 
 #
