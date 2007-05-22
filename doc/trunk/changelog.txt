@@ -18,6 +18,7 @@ New Features:
 - Added JMX authentication
 - Added Shutdown class for cleanly shutting down a Red5 instance
 - Added support for AMF3 in remoting server
+- "receiveAudio" and "receiveVideo" work for VOD streams (Jira SN-22)
 
 Bugfixes:
 - "NetStream.Record.Failed" is sent for IO errors that occurred during
@@ -44,6 +45,7 @@ Bugfixes:
   with HTTP/1.0 (Jira APPSERVER-87)
 - fixed potential NPEs in PlaylistSubscriberStream (Jira SN-40)
 - fixed various problems with deserializing AMF0 references in remoting
+- fixed frozen video if audio is disabled in live streams (Jira SN-22)
 
 
 Red5 0.6    (2007-04-23)
