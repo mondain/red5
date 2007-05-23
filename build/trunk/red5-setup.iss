@@ -63,6 +63,7 @@ PortWithDefault=port (default %1)
 PortWithNumber=port %1
 LimitService=You can limit a service to a single IP address by using the format "<ip>:<port>", e.g. "127.0.0.1:1935". If no ip is specified, the service will listen on all available interfaces.
 AdminUsernamePassword=To access the administration interface, use "admin" as username and "admin" as password when prompted for login credentials.
+PropertiesOverwritten=Please note that the layout of the red5.properties has changed, so your existing file was overwritten.
 #ifdef DOWNLOAD_SAMPLES
 DownloadSampleStreams=Download sample streams
 #endif
@@ -114,11 +115,14 @@ Source: "{#build_dir}\lib\wrapper.jar"; DestDir: "{app}\lib"; Flags: ignoreversi
 Source: "{#common_root}\.classpath"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#common_root}\.project"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#common_root}\.springBeans"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
-Source: "{#common_root}\build.properties"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\..\.settings\*"; DestDir: "{app}\.settings"; Flags: ignoreversion recursesubdirs; Components: java_source
 Source: "{#common_root}\build.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#common_root}\build.properties"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#common_root}\red5.bat"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#common_root}\red5.sh"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\..\red5-highperf.bat"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\..\red5-shutdown.bat"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\..\red5-shutdown.sh"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
 Source: "{#common_root}\src\*"; DestDir: "{app}\src"; Flags: ignoreversion recursesubdirs; Components: java_source
 
 ; Flash sample source code (optional)
@@ -377,8 +381,9 @@ begin
     if not FileExists(ExpandConstant('{app}\webapps\oflaDemo\streams')) then
       ForceDirectories(ExpandConstant('{app}\webapps\oflaDemo\streams'));
 
+    AddDownloadFile('F4_SilverSurfer.flv');
     AddDownloadFile('on2_flash8_w_audio.flv');
-    AddDownloadFile('Spiderman3_trailer_300.flv');
+    AddDownloadFile('Transformers.flv');
   end;
 
   Result := (isxdl_DownloadFiles(Wnd) <> 0);
@@ -473,26 +478,47 @@ begin
     DownloadFiles();
 #endif
     Filename := ExpandConstant('{app}\conf\red5.properties');
-    if FileExists(Filename) then
-      exit;
-      
-    AdjustHostPort(PortRTMP);
-    SaveStringToFile(Filename, Format('rtmp.host_port = %s', [PortRTMP.Text]) + #13#10, False);
-    
+    if FileExists(Filename) then begin
+      MsgBox(ExpandConstant('{cm:PropertiesOverwritten}'), mbInformation, MB_OK);
+      DeleteFile(Filename);
+    end;
+
+    SaveStringToFile(Filename, '# HTTP' + #13#10, False);
     SplitHostPort(PortHTTP, Host, Port);
     SaveStringToFile(Filename, Format('http.host = %s', [Host]) + #13#10, True);
     SaveStringToFile(Filename, Format('http.port = %s', [Port]) + #13#10, True);
     
+    SaveStringToFile(Filename, '# RTMP' + #13#10, True);
+    SplitHostPort(PortRTMP, Host, Port);
+    SaveStringToFile(Filename, Format('rtmp.host = %s', [Host]) + #13#10, True);
+    SaveStringToFile(Filename, Format('rtmp.port = %s', [Port]) + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.event_threads_core=16' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.event_threads_max=32' + #13#10, True);
+    SaveStringToFile(Filename, '# event threads queue: -1 unbounded, 0 direct (no queue), n bounded queue' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.event_threads_queue=-1' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.event_threads_keepalive=60' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.send_buffer_size=271360' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.receive_buffer_size=65536' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.ping_interval=5000' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.max_inactivity=60000' + #13#10, True);
+
+    SaveStringToFile(Filename, '# RTMPT' + #13#10, True);
     SplitHostPort(PortRTMPT, Host, Port);
     SaveStringToFile(Filename, Format('rtmpt.host = %s', [Host]) + #13#10, True);
     SaveStringToFile(Filename, Format('rtmpt.port = %s', [Port]) + #13#10, True);
+    SaveStringToFile(Filename, 'rtmpt.ping_interval=5000' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmpt.max_inactivity=60000' + #13#10, True);
     
-    SaveStringToFile(Filename, Format('debug_proxy.host_port = %s', [PortDebug.Text]) + #13#10, True);
-    SplitHostPort(PortHTTP, Host, Port);
-    if (Host = '') or (Host = '0.0.0.0') then
-      Host := '127.0.0.1';
-    SaveStringToFile(Filename, Format('proxy_forward.host_port = %s:%s', [Host, Port]) + #13#10, True);
-    SaveStringToFile(Filename, 'rtmp.threadcount = 4' + #13#10, True);
+    SaveStringToFile(Filename, '# Debug proxy (needs to be activated in red5-core.xml)' + #13#10, True);
+    SplitHostPort(PortDebug, Host, Port);
+    SaveStringToFile(Filename, Format('proxy.source_host=%s', [Host]) + #13#10, True);
+    SaveStringToFile(Filename, Format('proxy.source_port=%s', [Port]) + #13#10, True);
+    SplitHostPort(PortRTMP, Host, Port);
+    if (Host = '0.0.0.0') then begin
+        Host := '127.0.0.1';
+    end;
+    SaveStringToFile(Filename, Format('proxy.destination_host=%s', [Host]) + #13#10, True);
+    SaveStringToFile(Filename, Format('proxy.destination_port=%s', [Port]) + #13#10, True);
   end;
 end;
 
