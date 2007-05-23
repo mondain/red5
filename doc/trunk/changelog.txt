@@ -4,7 +4,7 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
-Red5 0.6.1  (unreleased)
+Red5 0.6.1  (2007-05-23)
 ------------------------
 New Features:
 - Switched to use mina 1.1, more config options in red5.properties
