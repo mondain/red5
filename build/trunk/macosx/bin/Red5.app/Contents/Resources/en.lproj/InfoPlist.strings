@@ -1,4 +1,4 @@
 CFBundleName = "Red5";
-CFBundleShortVersionString = "0.6 RC3";
-CFBundleGetInfoString = "Red5 version 0.6 RC3 Copyright 2006-2007 The Red5 Project (red5@osflash.org)";
+CFBundleShortVersionString = "0.6.1";
+CFBundleGetInfoString = "Red5 version 0.6.1 Copyright 2006-2007 The Red5 Project (red5@osflash.org)";
 NSHumanReadableCopyright = "Copyright 2006-2007 The Red5 Project (red5@osflash.org).";

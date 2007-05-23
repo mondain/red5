@@ -4,25 +4,26 @@
 # 2. Change the SRC_DIR below and point it to the root of the unpacked Red5 installation directory.
 # 3. Updating the version number isn't automated and optimized yet and now has to be done manually.
 #    So before building, first:
-#    - open the file 'packages/docs/Info.plist', change the version number(s) and save the file.
-#    - open the file 'packages/flash/Info.plist', change the version number(s) and save the file.
-#    - open the file 'packages/main/Info.plist', change the version number(s) and save the file.
-#    - open the file 'packages/source/Info.plist', change the version number(s) and save the file.
-#    - open the file 'bin/Red5.app/Contents/Info.plist', change the version number(s) and save the file.
-#    - open the file 'bin/Welcome.txt', change the version number(s) and save the file.
+#    - open the file 'packages/docs/Info.plist', change the version numbers and save the file.
+#    - open the file 'packages/flash/Info.plist', change the version numbers and save the file.
+#    - open the file 'packages/main/Info.plist', change the version numbers and save the file.
+#    - open the file 'packages/source/Info.plist', change the version numbers and save the file.
+#    - open the file 'bin/Red5.app/Contents/Info.plist', change the version numbers and save the file.
+#    - open the file 'bin/Red5.app/Contents/Resources/en.lproj/InfoPlist.strings', change the version numbers and save the file.
+#    - open the file 'bin/Welcome.txt', change the version number and save the file.
 #    - change the VERSION below (don't use any spaces)
 # 4. Run this file with 'make'.
 # 5. The output is the setup-red5xx.dmg file and a folder with a copy of the package's content.
 #
-# Thijs Triemstra, 03/07
+# Thijs Triemstra, 05/2007
 # Original script from http://brok3n.org/archivesextreme/2006/09/dmg_creation_ti.html
 
-VERSION=0.6rc3
+VERSION=0.6.1
 RELEASE_NAME=red5-$(VERSION)
 FANCY_NAME=Red5 v$(VERSION)
 DMG_NAME=setup-$(RELEASE_NAME).dmg
 MPKG_NAME=Install-$(RELEASE_NAME).mpkg
-SRC_DIR=../$(RELEASE_NAME)
+SRC_DIR=../stable/$(RELEASE_NAME)
 BUILD_DIR=build
 BIN_DIR=bin
 PACKAGES_DIR=packages
@@ -88,6 +89,7 @@ release:
 	cp $(SRC_DIR)/license.txt $(BUILD_DIR)/$(RED5_MAIN_PACKAGE_NAME)
 	cp $(SRC_DIR)/red5.jar $(BUILD_DIR)/$(RED5_MAIN_PACKAGE_NAME)
 	cp $(SRC_DIR)/red5.sh $(BUILD_DIR)/$(RED5_MAIN_PACKAGE_NAME)
+	cp $(SRC_DIR)/red5-shutdown.sh $(BUILD_DIR)/$(RED5_MAIN_PACKAGE_NAME)
 	cp -r $(SRC_DIR)/webapps $(BUILD_DIR)/$(RED5_MAIN_PACKAGE_NAME)
 
 	@# Copy Red5 launcher
@@ -111,12 +113,6 @@ release:
 
 	@# Add fresh copy of change log
 	cp $(SRC_DIR)/doc/changelog.txt $(BUILD_DIR)/$(RED5_META_PACKAGE_NAME)/English.lproj/ReadMe.txt
-
-	@echo == Updating package permissions...
-	@# Set package permissions
-	@echo == Authentication required to set package permissions ==
-	sudo chown -Rh root:admin $(BUILD_DIR)/$(RED5_DOCS_PACKAGE_NAME) $(BUILD_DIR)/$(RED5_FLASH_PACKAGE_NAME) $(BUILD_DIR)/$(RED5_MAIN_PACKAGE_NAME) $(BUILD_DIR)/$(RED5_SOURCE_PACKAGE_NAME) $(BUILD_DIR)/$(RED5_META_PACKAGE_NAME)
-	sudo chmod -R g+w $(BUILD_DIR)/$(RED5_DOCS_PACKAGE_NAME) $(BUILD_DIR)/$(RED5_FLASH_PACKAGE_NAME) $(BUILD_DIR)/$(RED5_MAIN_PACKAGE_NAME) $(BUILD_DIR)/$(RED5_SOURCE_PACKAGE_NAME) $(BUILD_DIR)/$(RED5_META_PACKAGE_NAME)
 
 	@#                         PackageMaker Options
 	@#
@@ -163,18 +159,18 @@ release:
 	@# Create source package file
 	/Developer/Tools/packagemaker -build -p $(BUILD_DIR)/$(PACKAGES_DIR)/$(RED5_SOURCE_PACKAGE_NAME).pkg -f $(BUILD_DIR)/$(RED5_SOURCE_PACKAGE_NAME) -ds -v -i $(RED5_SOURCE_PACKAGE)/Info.plist -d $(RED5_SOURCE_PACKAGE)/Description.plist 
 
-	@echo == Creating $(RELEASE_NAME) package...
+	@echo == Creating $(RELEASE_NAME) metapackage...
 	@# Create metapackage file
 	/Developer/Tools/packagemaker -build -p $(RED5_DIR)/$(MPKG_NAME) -f $(RED5_DIR) -mi $(BUILD_DIR)/$(PACKAGES_DIR) -ds -v -i $(RED5_META_PACKAGE)/Info.plist -d $(RED5_META_PACKAGE)/Description.plist -r $(BUILD_DIR)/$(RED5_META_PACKAGE_NAME)
 
 	@echo == Removing old build files...
 	@# cleanup
-	sudo rm -rf $(BUILD_DIR)/$(RED5_DOCS_PACKAGE_NAME)
-	sudo rm -rf $(BUILD_DIR)/$(RED5_FLASH_PACKAGE_NAME)
-	sudo rm -rf $(BUILD_DIR)/$(RED5_MAIN_PACKAGE_NAME)
-	sudo rm -rf $(BUILD_DIR)/$(RED5_SOURCE_PACKAGE_NAME)
-	sudo rm -rf $(BUILD_DIR)/$(RED5_META_PACKAGE_NAME)
-	sudo rm -rf $(BUILD_DIR)/$(PACKAGES_DIR)
+	rm -rf $(BUILD_DIR)/$(RED5_DOCS_PACKAGE_NAME)
+	rm -rf $(BUILD_DIR)/$(RED5_FLASH_PACKAGE_NAME)
+	rm -rf $(BUILD_DIR)/$(RED5_MAIN_PACKAGE_NAME)
+	rm -rf $(BUILD_DIR)/$(RED5_SOURCE_PACKAGE_NAME)
+	rm -rf $(BUILD_DIR)/$(RED5_META_PACKAGE_NAME)
+	rm -rf $(BUILD_DIR)/$(PACKAGES_DIR)
 
 	@echo == Deleting SVN and backup files...
 	@# delete svn and backup files
