@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleGetInfoString</key>
-	<string>Red5 0.6 RC3, Copyright © 2006-2007 OSFlash</string>
+	<string>Red5 0.6.1, Copyright © 2006-2007 OSFlash</string>
 	<key>CFBundleIdentifier</key>
 	<string>source</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.6</string>
+	<string>0.6.1</string>
 	<key>IFMajorVersion</key>
 	<integer>0</integer>
 	<key>IFMinorVersion</key>
@@ -15,7 +15,7 @@
 	<key>IFPkgFlagAllowBackRev</key>
 	<false/>
 	<key>IFPkgFlagAuthorizationAction</key>
-	<string>AdminAuthorization</string>
+	<string></string>
 	<key>IFPkgFlagBackgroundAlignment</key>
 	<string>topleft</string>
 	<key>IFPkgFlagBackgroundScaling</key>
