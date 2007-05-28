@@ -8,6 +8,7 @@ Red5 0.6.2  (unreleased)
 ------------------------
 Bugfixes:
 - "pause" no longer breaks live streams (Jira APPSERVER-136)
+- configured subscopes don't get released when a client disconnects
 
 
 Red5 0.6.1  (2007-05-23)
