@@ -11,6 +11,7 @@ Bugfixes:
 - configured subscopes don't get released when a client disconnects
 - AMF requests could not be decoded when run in the context root
   (Jira APPSERVER-146)
+- fixed bug for Remoting requests without parameters (Jira APPSERVER-147)
 
 
 Red5 0.6.1  (2007-05-23)
