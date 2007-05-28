@@ -9,6 +9,8 @@ Red5 0.6.2  (unreleased)
 Bugfixes:
 - "pause" no longer breaks live streams (Jira APPSERVER-136)
 - configured subscopes don't get released when a client disconnects
+- AMF requests could not be decoded when run in the context root
+  (Jira APPSERVER-146)
 
 
 Red5 0.6.1  (2007-05-23)
