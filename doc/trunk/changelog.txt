@@ -15,6 +15,7 @@ Bugfixes:
 - fixed issue with stop/start of war in Tomcat (Jira APPSERVER-155)
 - fixed handshake reply for Flash Player 9 Update 3
 - IMetaData supports fractional framerates (Jira APPSERVER-157)
+- correctly reject empty stream names (Jira APPSERVER-156)
 
 
 Red5 0.6.1  (2007-05-23)
