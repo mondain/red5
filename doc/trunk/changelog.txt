@@ -12,7 +12,8 @@ Bugfixes:
 - AMF requests could not be decoded when run in the context root
   (Jira APPSERVER-146)
 - fixed bug for Remoting requests without parameters (Jira APPSERVER-147)
-- Fixed issue with stop/start of war in Tomcat (Jira APPSERVER-155)
+- fixed issue with stop/start of war in Tomcat (Jira APPSERVER-155)
+- fixed handshake reply for Flash Player 9 Update 3
 
 
 Red5 0.6.1  (2007-05-23)
