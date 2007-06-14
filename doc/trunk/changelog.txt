@@ -16,6 +16,8 @@ Bugfixes:
 - fixed handshake reply for Flash Player 9 Update 3
 - IMetaData supports fractional framerates (Jira APPSERVER-157)
 - correctly reject empty stream names (Jira APPSERVER-156)
+- fixed problem with loading some JAR files from the applications
+  classpath (Jira APPSERVER-141)
 
 
 Red5 0.6.1  (2007-05-23)
