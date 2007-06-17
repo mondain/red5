@@ -18,6 +18,8 @@ Bugfixes:
 - correctly reject empty stream names (Jira APPSERVER-156)
 - fixed problem with loading some JAR files from the applications
   classpath (Jira APPSERVER-141)
+- fixed decoding of Remoting requests with multiple parameters
+  (Jira APPSERVER-151)
 
 
 Red5 0.6.1  (2007-05-23)
