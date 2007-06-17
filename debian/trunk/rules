@@ -35,7 +35,7 @@ configure-stamp:
 
 
 #Architecture 
-build: build-arch
+build: build-indep
 
 build-arch: build-arch-stamp
 build-arch-stamp: configure-stamp 
@@ -48,7 +48,7 @@ build-indep: build-indep-stamp
 build-indep-stamp: configure-stamp 
 
 	# Add here commands to compile the indep part of the package.
-	#$(MAKE) 
+	$(MAKE) 
 	touch build-indep-stamp
 
 clean:
@@ -61,7 +61,7 @@ clean:
 
 	dh_clean
 
-install: install-indep install-arch
+install: install-indep
 install-indep:
 	dh_testdir
 	dh_testroot
@@ -70,7 +70,7 @@ install-indep:
 
 	# Add here commands to install the indep part of the package into
 	# debian/<package>-doc.
-	#INSTALLDOC#
+	$(MAKE) install PREFIX=$(CURDIR)/debian/red5/usr
 
 	dh_install -i
 
@@ -124,5 +124,5 @@ binary-indep: build-indep install-indep
 binary-arch: build-arch install-arch
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
 
-binary: binary-arch
+binary: binary-indep
 .PHONY: build clean binary-indep binary-arch binary install install-indep install-arch configure
