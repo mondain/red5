@@ -67,12 +67,12 @@ class Builder:
             remove_tree(os.path.join(red5_root, 'dist.java6'))
         
         log('Compiling Java 1.5 version...')
-        self.compile(self.ant_cmd, os.path.join(red5_root, 'build.xml'), '1.5', 'installerdist')
+        self.compile(self.ant_cmd, os.path.join(red5_root, 'build.xml'), '1.5', 'clean', 'installerdist')
         os.renames(os.path.join(self.build_root, '..', 'dist'), os.path.join(self.build_root, '..', 'dist.java5'))
         
         log('Compiling Java 1.6 version...')
         os.environ['JAVACMD'] = os.path.join(JAVA6_HOME, 'bin', 'java.exe')
-        self.compile(self.ant_cmd, os.path.join(red5_root, 'build.xml'), '1.6', 'installerdist')
+        self.compile(self.ant_cmd, os.path.join(red5_root, 'build.xml'), '1.6', 'clean', 'installerdist')
         os.renames(os.path.join(self.build_root, '..', 'dist'), os.path.join(self.build_root, '..', 'dist.java6'))
         
         # setup .jar files to wrapper.conf
