@@ -18,7 +18,7 @@
 # Thijs Triemstra, 05/2007
 # Original script from http://brok3n.org/archivesextreme/2006/09/dmg_creation_ti.html
 
-VERSION=0.6.1
+VERSION=0.6.2
 RELEASE_NAME=red5-$(VERSION)
 FANCY_NAME=Red5 v$(VERSION)
 DMG_NAME=setup-$(RELEASE_NAME).dmg
