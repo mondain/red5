@@ -4,7 +4,7 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
-Red5 0.6.2  (unreleased)
+Red5 0.6.2  (2007-06-17)
 ------------------------
 Bugfixes:
 - "pause" no longer breaks live streams (Jira APPSERVER-136)
