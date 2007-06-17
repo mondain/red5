@@ -1,7 +1,7 @@
 Source: red5
 Section: web
 Priority: optional
-Maintainer: Simon Eisenmann <simon@struktur.de>
+Maintainer: Joachim Bauch <jojo@struktur.de>
 Build-Depends: debhelper (>= 4.0.0), ant, sun-java5-jdk
 Standards-Version: 3.6.1
 
