@@ -6,6 +6,8 @@ versions of Red5.
 
 Red5 0.6.3  (unreleased)
 ------------------------
+Bugfixes:
+- validate RTMP handshake received from client (Jira APPSERVER-159)
 
 
 Red5 0.6.2  (2007-06-17)
