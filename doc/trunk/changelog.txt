@@ -6,6 +6,9 @@ versions of Red5.
 
 Red5 0.6.3  (unreleased)
 ------------------------
+New Features:
+- Remoting requests from "mx:RemoteObject" supported (Jira APPSERVER-144)
+
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
 - Array typed parameters are converted correctly (Jira APPSERVER-161)
