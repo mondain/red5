@@ -8,10 +8,12 @@ Red5 0.6.3  (unreleased)
 ------------------------
 New Features:
 - Remoting requests from "mx:RemoteObject" supported (Jira APPSERVER-144)
+- RTMPT working with Tomcat
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
 - Array typed parameters are converted correctly (Jira APPSERVER-161)
+- RTMPTHandler is wired through Spring (Jira APPSERVER-150)
 
 
 Red5 0.6.2  (2007-06-17)
