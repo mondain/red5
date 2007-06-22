@@ -14,6 +14,8 @@ Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
 - Array typed parameters are converted correctly (Jira APPSERVER-161)
 - RTMPTHandler is wired through Spring (Jira APPSERVER-150)
+- fixed concurrency issue in RTMP encoder that could result in wrong
+  packet header types
 
 
 Red5 0.6.2  (2007-06-17)
