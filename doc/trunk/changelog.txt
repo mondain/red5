@@ -9,6 +9,9 @@ Red5 0.6.3  (unreleased)
 New Features:
 - Remoting requests from "mx:RemoteObject" supported (Jira APPSERVER-144)
 - RTMPT working with Tomcat
+- Added thread that writes modified persistent objects periodically.
+  This reduces server load if multiple attributes of one object,
+  or the same object is modified frequently.
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
