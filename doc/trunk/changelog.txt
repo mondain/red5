@@ -12,6 +12,8 @@ New Features:
 - Added thread that writes modified persistent objects periodically.
   This reduces server load if multiple attributes of one object,
   or the same object is modified frequently.
+- location of "webapps" folder can be configured in bean "jetty6.server"
+  inside "conf/red5.xml" (Jira APPSERVER-152)
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
