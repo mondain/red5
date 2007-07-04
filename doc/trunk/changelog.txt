@@ -23,6 +23,7 @@ Bugfixes:
 - RTMPTHandler is wired through Spring (Jira APPSERVER-150)
 - fixed concurrency issue in RTMP encoder that could result in wrong
   packet header types
+- IStreamAwareScopeHandler methods are also called for server side streams
 
 
 Red5 0.6.2  (2007-06-17)
