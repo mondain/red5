@@ -22,22 +22,25 @@
 	<property name="DIST_DIR" value="dist"/>
 	<property name="RESOURCES_DIR" value="resources"/>
 	<property name="TOOLS_DIR" value="tools"/>
+	<property name="PLISTS_DIR" value="plists"/>
 	<property name="IMAGE_CONTENTS" value="${BUILD_DIR}/imagecontents"/>
-	<property name="PACKAGES_DIR" value="packages"/>
+	<property name="PACKAGE_CONTENTS" value="${BUILD_DIR}/packages"/>
 	<property name="DOCS_PACKAGE_NAME" value="docs"/>
-	<property name="DOCS_PACKAGE" value="${PACKAGES_DIR}/${DOCS_PACKAGE_NAME}"/>
+	<property name="DOCS_PACKAGE" value="${PLISTS_DIR}/${DOCS_PACKAGE_NAME}"/>
 	<property name="FLASH_PACKAGE_NAME" value="flash"/>
-	<property name="FLASH_PACKAGE" value="${PACKAGES_DIR}/${FLASH_PACKAGE_NAME}"/>
+	<property name="FLASH_PACKAGE" value="${PLISTS_DIR}/${FLASH_PACKAGE_NAME}"/>
 	<property name="MAIN_PACKAGE_NAME" value="main"/>
-	<property name="MAIN_PACKAGE" value="${PACKAGES_DIR}/${MAIN_PACKAGE_NAME}"/>
+	<property name="MAIN_PACKAGE" value="${PLISTS_DIR}/${MAIN_PACKAGE_NAME}"/>
 	<property name="SOURCE_PACKAGE_NAME" value="source"/>
-	<property name="SOURCE_PACKAGE" value="${PACKAGES_DIR}/${SOURCE_PACKAGE_NAME}"/>
+	<property name="SOURCE_PACKAGE" value="${PLISTS_DIR}/${SOURCE_PACKAGE_NAME}"/>
 	<property name="META_PACKAGE_NAME" value="release"/>
-	<property name="META_PACKAGE" value="${PACKAGES_DIR}/${META_PACKAGE_NAME}"/>
+	<property name="META_PACKAGE" value="${PLISTS_DIR}/${META_PACKAGE_NAME}"/>
 	<property name="RELEASE_NAME" value="red5-${VERSION}"/>
 	<property name="FANCY_NAME" value="Red5 v${VERSION}"/>
 	<property name="DMG_NAME" value="setup-${RELEASE_NAME}.dmg"/>
 	<property name="MPKG_NAME" value="Install-${RELEASE_NAME}.mpkg"/>
+	<property name="PACKAGE_MAKER" value="/Developer/Tools/packagemaker"/>
+	<property name="SET_FILE" value="/Developer/Tools/SetFile"/>
 	
     <description>
     	Red5 for Mac OSX
@@ -71,7 +74,7 @@
     	<mkdir dir="${BUILD_DIR}"/>
 	<mkdir dir="${IMAGE_CONTENTS}"/>
 	<mkdir dir="${DIST_DIR}"/>
-	<mkdir dir="${BUILD_DIR}/metapackage"/>
+	<mkdir dir="${PACKAGE_CONTENTS}"/>
 	<mkdir dir="${BUILD_DIR}/${DOCS_PACKAGE_NAME}"/>
 	<mkdir dir="${BUILD_DIR}/${FLASH_PACKAGE_NAME}"/>
 	<mkdir dir="${BUILD_DIR}/${FLASH_PACKAGE_NAME}/swf"/>
@@ -94,9 +97,9 @@
             target: build
     - - - - - - - - - - - - - - - - - -->
     <target name="build">
-	<echo>Copying plist files for packages...</echo>
+	<echo>Copying plist files...</echo>
 	<exec executable="cp" failonerror="true">
-		<arg line='-r ${PACKAGES_DIR} ${BUILD_DIR}/${PACKAGES_DIR}'/>
+		<arg line='-r ${PLISTS_DIR} ${BUILD_DIR}/${PLISTS_DIR}'/>
 	</exec>
 	<echo>Copying files for '${DOCS_PACKAGE_NAME}' package...</echo>
 	<exec executable="cp" failonerror="true">
@@ -132,18 +135,10 @@
 	<exec executable="cp" failonerror="true">
 		<arg line='-r ${RESOURCES_DIR}/Red5.app ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
 	</exec>
-	<replace file="${BUILD_DIR}/${MAIN_PACKAGE_NAME}/Red5.app/Contents/Resources/en.lproj/InfoPlist.strings" 
-		 propertyFile="build.properties">
-  		<replacefilter token="@VERSION@" property="VERSION"/>
-		<replacefilter token="@COPYRIGHT@" property="COPYRIGHT"/>
-	</replace>
 	<!-- Update version info -->
-	<replace file="${BUILD_DIR}/${MAIN_PACKAGE_NAME}/Red5.app/Contents/Info.plist" 
-		 propertyFile="build.properties">
-  		<replacefilter token="@VERSION@" property="VERSION"/>
-		<replacefilter token="@COPYRIGHT@" property="COPYRIGHT"/>
-	</replace>
-	<exec executable="/Developer/Tools/SetFile" failonerror="true">
+	<updateVersion replaceFile="${BUILD_DIR}/${MAIN_PACKAGE_NAME}/Red5.app/Contents/Info.plist"/>
+	<updateVersion replaceFile="${BUILD_DIR}/${MAIN_PACKAGE_NAME}/Red5.app/Contents/Resources/en.lproj/InfoPlist.strings"/>
+	<exec executable="${SET_FILE}" failonerror="true">
 		<arg line='-a E ${BUILD_DIR}/${MAIN_PACKAGE_NAME}/Red5.app'/>
 	</exec>
 	<echo>Copying files for '${SOURCE_PACKAGE_NAME}' package...</echo>
@@ -167,30 +162,11 @@
 		<arg line='${RESOURCES_DIR}/Welcome.txt ${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj'/>
 	</exec>
 	<!-- Update version info -->
-	<replace file="${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj/Welcome.txt" 
-		 propertyFile="build.properties">
-  		<replacefilter token="@VERSION@" property="VERSION"/>
-	</replace>
-	<replace file="${BUILD_DIR}/${PACKAGES_DIR}/${DOCS_PACKAGE_NAME}/Info.plist" 
-		 propertyFile="build.properties">
-  		<replacefilter token="@VERSION@" property="VERSION"/>
-		<replacefilter token="@COPYRIGHT@" property="COPYRIGHT"/>
-	</replace>
-	<replace file="${BUILD_DIR}/${PACKAGES_DIR}/${FLASH_PACKAGE_NAME}/Info.plist" 
-		 propertyFile="build.properties">
-  		<replacefilter token="@VERSION@" property="VERSION"/>
-		<replacefilter token="@COPYRIGHT@" property="COPYRIGHT"/>
-	</replace>
-	<replace file="${BUILD_DIR}/${PACKAGES_DIR}/${MAIN_PACKAGE_NAME}/Info.plist" 
-		 propertyFile="build.properties">
-  		<replacefilter token="@VERSION@" property="VERSION"/>
-		<replacefilter token="@COPYRIGHT@" property="COPYRIGHT"/>
-	</replace>
-	<replace file="${BUILD_DIR}/${PACKAGES_DIR}/${SOURCE_PACKAGE_NAME}/Info.plist" 
-		 propertyFile="build.properties">
-  		<replacefilter token="@VERSION@" property="VERSION"/>
-		<replacefilter token="@COPYRIGHT@" property="COPYRIGHT"/>
-	</replace>
+	<updateVersion replaceFile="${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj/Welcome.txt"/>
+	<updateVersion replaceFile="${BUILD_DIR}/${PLISTS_DIR}/${DOCS_PACKAGE_NAME}/Info.plist"/>
+	<updateVersion replaceFile="${BUILD_DIR}/${PLISTS_DIR}/${FLASH_PACKAGE_NAME}/Info.plist"/>
+	<updateVersion replaceFile="${BUILD_DIR}/${PLISTS_DIR}/${MAIN_PACKAGE_NAME}/Info.plist"/>
+	<updateVersion replaceFile="${BUILD_DIR}/${PLISTS_DIR}/${SOURCE_PACKAGE_NAME}/Info.plist"/>
 	<!-- Add license -->
 	<exec executable="cp" failonerror="true">
 		<arg line='${SRC_DIR}/license.txt ${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj/License.txt'/>
@@ -199,44 +175,18 @@
 	<exec executable="cp" failonerror="true">
 		<arg line='${SRC_DIR}/doc/changelog.txt ${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj/ReadMe.txt'/>
 	</exec>
-	<echo>Creating '${DOCS_PACKAGE_NAME}' package...</echo>
-	<exec executable="/Developer/Tools/packagemaker" failonerror="true">
-		<arg line='-build -ds -v'/>
-		<arg line='-p ${BUILD_DIR}/metapackage/${DOCS_PACKAGE_NAME}.pkg'/>
-		<arg line='-f ${BUILD_DIR}/${DOCS_PACKAGE_NAME}'/>
-		<arg line='-i ${BUILD_DIR}/${DOCS_PACKAGE}/Info.plist'/>
-		<arg line='-d ${BUILD_DIR}/${DOCS_PACKAGE}/Description.plist'/>
-	</exec>
-	<echo>Creating '${FLASH_PACKAGE_NAME}' package...</echo>
-	<exec executable="/Developer/Tools/packagemaker" failonerror="true">
-		<arg line='-build -ds -v'/>
-		<arg line='-p ${BUILD_DIR}/metapackage/${FLASH_PACKAGE_NAME}.pkg'/>
-		<arg line='-f ${BUILD_DIR}/${FLASH_PACKAGE_NAME}'/>
-		<arg line='-i ${BUILD_DIR}/${FLASH_PACKAGE}/Info.plist'/>
-		<arg line='-d ${BUILD_DIR}/${FLASH_PACKAGE}/Description.plist'/>
-	</exec>
-	<echo>Creating '${MAIN_PACKAGE_NAME}' package...</echo>
-	<exec executable="/Developer/Tools/packagemaker" failonerror="true">
-		<arg line='-build -ds -v'/>
-		<arg line='-p ${BUILD_DIR}/metapackage/${MAIN_PACKAGE_NAME}.pkg'/>
-		<arg line='-f ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-		<arg line='-i ${BUILD_DIR}/${MAIN_PACKAGE}/Info.plist'/>
-		<arg line='-d ${BUILD_DIR}/${MAIN_PACKAGE}/Description.plist'/>
-	</exec>
-	<echo>Creating '${SOURCE_PACKAGE_NAME}' package...</echo>
-	<exec executable="/Developer/Tools/packagemaker" failonerror="true">
-		<arg line='-build -ds -v'/>
-		<arg line='-p ${BUILD_DIR}/metapackage/${SOURCE_PACKAGE_NAME}.pkg'/>
-		<arg line='-f ${BUILD_DIR}/${SOURCE_PACKAGE_NAME}'/>
-		<arg line='-i ${BUILD_DIR}/${SOURCE_PACKAGE}/Info.plist'/>
-		<arg line='-d ${BUILD_DIR}/${SOURCE_PACKAGE}/Description.plist'/>
-	</exec>
+	<!-- Create packages -->
+	<createPackage packageName="${DOCS_PACKAGE_NAME}" package="${DOCS_PACKAGE}"/>
+	<createPackage packageName="${FLASH_PACKAGE_NAME}" package="${FLASH_PACKAGE}"/>
+	<createPackage packageName="${MAIN_PACKAGE_NAME}" package="${MAIN_PACKAGE}"/>
+	<createPackage packageName="${SOURCE_PACKAGE_NAME}" package="${SOURCE_PACKAGE}"/>
+	<!-- Create metapackage -->
 	<echo>Creating '${RELEASE_NAME}' metapackage...</echo>
-	<exec executable="/Developer/Tools/packagemaker" failonerror="true">
+	<exec executable="${PACKAGE_MAKER}" failonerror="true">
 		<arg line='-build -ds -v'/>
 		<arg line='-p ${IMAGE_CONTENTS}/${MPKG_NAME}'/>
 		<arg line='-f ${IMAGE_CONTENTS}'/>
-		<arg line='-mi ${BUILD_DIR}/metapackage'/>
+		<arg line='-mi ${PACKAGE_CONTENTS}'/>
 		<arg line='-i ${BUILD_DIR}/${META_PACKAGE}/Info.plist'/>
 		<arg line='-d ${BUILD_DIR}/${META_PACKAGE}/Description.plist'/>
 		<arg line='-r ${BUILD_DIR}/${META_PACKAGE_NAME}'/>
@@ -249,8 +199,8 @@
 		<arg line='${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
 		<arg line='${BUILD_DIR}/${SOURCE_PACKAGE_NAME}'/>
 		<arg line='${BUILD_DIR}/${META_PACKAGE_NAME}'/>
-		<arg line='${BUILD_DIR}/${PACKAGES_DIR}'/>
-		<arg line='${BUILD_DIR}/metapackage'/>
+		<arg line='${BUILD_DIR}/${PLISTS_DIR}'/>
+		<arg line='${PACKAGE_CONTENTS}'/>
 	</exec>
     </target>
 
@@ -262,10 +212,42 @@
 	<exec executable="sh" failonerror="true">
 		<arg line='${TOOLS_DIR}/make-diskimage.sh "${DIST_DIR}/${DMG_NAME}" "${IMAGE_CONTENTS}" "Red5" ${TOOLS_DIR}/dmg_red5.scpt'/>
 	</exec>
-	<!-- Dump MD5 checksum for dmg file -->
+	<!-- Dump MD5 checksum for .dmg file -->
 	<exec executable="md5" failonerror="true">
 		<arg line='${DIST_DIR}/${DMG_NAME}'/>
 	</exec>
     </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+            macrodef: updateVersion
+    - - - - - - - - - - - - - - - - - -->
+    <macrodef name="updateVersion">
+    	<attribute name="replaceFile"/>                       
+   	<sequential>
+      		<replace file="@{replaceFile}" 
+		 propertyFile="build.properties">
+  			<replacefilter token="@VERSION@" property="VERSION"/>
+			<replacefilter token="@COPYRIGHT@" property="COPYRIGHT"/>
+		</replace>
+   	</sequential>
+    </macrodef>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+            macrodef: createPackage
+    - - - - - - - - - - - - - - - - - -->
+    <macrodef name="createPackage">
+    	<attribute name="packageName"/> 
+	<attribute name="package"/>                     
+   	<sequential>
+		<echo>Creating '@{packageName}' package...</echo>
+      		<exec executable="${PACKAGE_MAKER}" failonerror="true">
+			<arg line='-build -ds -v'/>
+			<arg line='-p ${PACKAGE_CONTENTS}/@{packageName}.pkg'/>
+			<arg line='-f ${BUILD_DIR}/@{packageName}'/>
+			<arg line='-i ${BUILD_DIR}/@{package}/Info.plist'/>
+			<arg line='-d ${BUILD_DIR}/@{package}/Description.plist'/>
+		</exec>
+   	</sequential>
+    </macrodef>
 
 </project>
