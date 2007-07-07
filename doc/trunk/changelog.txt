@@ -16,6 +16,7 @@ New Features:
   inside "conf/red5.xml" (Jira APPSERVER-152)
 - "IStreamFilenameGenerator" can specify if it returns absolute or relative
   paths
+- applications can be unloaded and loaded without restarting Red5
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
@@ -24,6 +25,8 @@ Bugfixes:
 - fixed concurrency issue in RTMP encoder that could result in wrong
   packet header types
 - IStreamAwareScopeHandler methods are also called for server side streams
+- "NetConnection.Connect.AppShutdown" is returned when trying to connect
+  to application that currently is unloaded (Jira APPSERVER-13)
 
 
 Red5 0.6.2  (2007-06-17)
