@@ -17,6 +17,7 @@ New Features:
 - "IStreamFilenameGenerator" can specify if it returns absolute or relative
   paths
 - applications can be unloaded and loaded without restarting Red5
+- "mx.collections.ArrayCollection" objects supported by AMF3 codec
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
