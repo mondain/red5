@@ -19,6 +19,7 @@ New Features:
 - applications can be unloaded and loaded without restarting Red5
 - "mx.collections.ArrayCollection" objects supported by AMF3 codec
 - object attributes are converted if necessary in AMF0/AMF3 codecs
+- "mx.utils.ObjectProxy" objects supported by AMF3 codec (Jira APPSERVER-173)
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
