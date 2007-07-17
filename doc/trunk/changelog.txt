@@ -30,6 +30,8 @@ Bugfixes:
 - IStreamAwareScopeHandler methods are also called for server side streams
 - "NetConnection.Connect.AppShutdown" is returned when trying to connect
   to application that currently is unloaded (Jira APPSERVER-13)
+- state is properly reset if exceptions occur in package decoding
+  (Jira APPSERVER-137)
 
 
 Red5 0.6.2  (2007-06-17)
