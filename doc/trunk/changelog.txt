@@ -26,7 +26,7 @@ Bugfixes:
 - Array typed parameters are converted correctly (Jira APPSERVER-161)
 - RTMPTHandler is wired through Spring (Jira APPSERVER-150)
 - fixed concurrency issue in RTMP encoder that could result in wrong
-  packet header types
+  packet header types (Jira APPSERVER-177)
 - IStreamAwareScopeHandler methods are also called for server side streams
 - "NetConnection.Connect.AppShutdown" is returned when trying to connect
   to application that currently is unloaded (Jira APPSERVER-13)
