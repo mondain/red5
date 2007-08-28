@@ -22,6 +22,7 @@ New Features:
 - "mx.utils.ObjectProxy" objects supported by AMF3 codec (Jira APPSERVER-173)
 - "IConnection" objects for Remoting properly store attributes accross
   multiple requests by using sessions
+- Remoting headers are accessible through "IConnection.getConnectParams"
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
