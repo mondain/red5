@@ -20,6 +20,8 @@ New Features:
 - "mx.collections.ArrayCollection" objects supported by AMF3 codec
 - object attributes are converted if necessary in AMF0/AMF3 codecs
 - "mx.utils.ObjectProxy" objects supported by AMF3 codec (Jira APPSERVER-173)
+- "IConnection" objects for Remoting properly store attributes accross
+  multiple requests by using sessions
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
@@ -32,6 +34,7 @@ Bugfixes:
   to application that currently is unloaded (Jira APPSERVER-13)
 - state is properly reset if exceptions occur in package decoding
   (Jira APPSERVER-137)
+- numbers outside integer range are correctly serialized in AMF3 codec
 
 
 Red5 0.6.2  (2007-06-17)
