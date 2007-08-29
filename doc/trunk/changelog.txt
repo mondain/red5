@@ -23,6 +23,7 @@ New Features:
 - "IConnection" objects for Remoting properly store attributes accross
   multiple requests by using sessions
 - Remoting headers are accessible through "IConnection.getConnectParams"
+- "ByteArray" objects supported (Jira APPSERVER-189)
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
