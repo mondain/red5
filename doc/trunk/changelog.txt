@@ -24,6 +24,8 @@ New Features:
   multiple requests by using sessions
 - Remoting headers are accessible through "IConnection.getConnectParams"
 - "ByteArray" objects supported (Jira APPSERVER-189)
+- "NetStream.send" messages are properly passed through from Flex clients
+  (Jira APPSERVER-185)
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
