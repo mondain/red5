@@ -26,6 +26,8 @@ New Features:
 - "ByteArray" objects supported (Jira APPSERVER-189)
 - "NetStream.send" messages are properly passed through from Flex clients
   (Jira APPSERVER-185)
+- Class fields that should not be serialized when sending objects to clients
+  can be annotated with "@DontSerialize" (in "org.red5.annotations")
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
