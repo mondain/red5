@@ -19,26 +19,29 @@
 				//  create the netConnection
 				nc = new NetConnection();
 				nc.objectEncoding = ObjectEncoding.AMF3;
-				//  set it's client/focus to this
-				nc.client = this;
 
 				// add listeners for netstatus and security issues
 				nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 				nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
 				nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, netASyncError);
             	nc.addEventListener(IOErrorEvent.IO_ERROR, netIOError);
+            	
+            	nc.connect(null);
+            	
+            	// set it's client/focus to this
+				nc.client = this;
 			}
 
 			public function doConnection(protocol:String):void {
 				if (nc.connected) {
 					nc.close();
 				}				
-				trace('Connection type: '+protocol);
 				// connect
-				if (protocol == "http") {
-					nc.connect(givenPathHttp.text);					
+				if (protocol === "http") {
+					//Alert.show('Connecting via HTTP');
+					nc.connect('http://localhost:8080/RemoteApp/gateway');					
 				} else {
-					nc.connect(givenPath.text);
+					nc.connect('rtmp://localhost/RemoteApp');
 				}
 			}
 
@@ -47,18 +50,25 @@
 			}
 
 			private function netStatusHandler(event:NetStatusEvent):void {
+			    if (event.info.code != "NetConnection.Connect.Closed") {
+			        Alert.show('Code: ' + event.info.code + '\nURI: ' + nc.uri);
+			    }
 				if (event.info.code == "NetConnection.Connect.Success") {
 					// we can't use the connection until we get this flag back
 					// call server-side method
 					// create a responder and set it to getServerResponse
-					var nc_responder:Responder = new Responder(getServerResponse, null);
+					var nc_responder:Responder = new Responder(getServerResponse, getServerStatus);
 					// call the server side method named "hello"
-					nc.call("hello", nc_responder, new Array());
+					nc.call("hello", nc_responder);
 				}
 	        }
 
 	        public function getServerResponse(resp:Object):void {
 				serverResponse.text = resp as String
+			}
+
+	        public function getServerStatus(stat:Object):void {
+				serverResponse.text = stat as String
 			}
 
 			private function securityErrorHandler(event:SecurityErrorEvent):void {
