@@ -38,8 +38,12 @@
 				}				
 				// connect
 				if (protocol === "http") {
-					//Alert.show('Connecting via HTTP');
-					nc.connect('http://localhost:8080/RemoteApp/gateway');					
+					nc.connect('http://localhost:8080/RemoteApp/gateway');		
+					// call server-side method
+					// create a responder and set it to getServerResponse
+					var nc_responder:Responder = new Responder(getServerResponse, getServerStatus);
+					// call the server side method named "hello"
+					nc.call("hello", nc_responder);					
 				} else {
 					nc.connect('rtmp://localhost/RemoteApp');
 				}
@@ -50,9 +54,7 @@
 			}
 
 			private function netStatusHandler(event:NetStatusEvent):void {
-			    if (event.info.code != "NetConnection.Connect.Closed") {
-			        Alert.show('Code: ' + event.info.code + '\nURI: ' + nc.uri);
-			    }
+				//this event only gets called when making an RTMP connection
 				if (event.info.code == "NetConnection.Connect.Success") {
 					// we can't use the connection until we get this flag back
 					// call server-side method

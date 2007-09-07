@@ -12,6 +12,10 @@
 	<!-- http://labs.adobe.com/wiki/index.php/Flex_Ant_Tasks -->
     <taskdef resource="flexTasks.tasks" classpath="${env.ANT_HOME}/lib/flexTasks.jar" /> 	
     
+	<path id="project.classpath">
+		<fileset dir="${lib.dir}"/>
+	</path>    
+    
 	<!--
 		Have you edit the properties file to make sure the paths are right oo your system?
 	-->
@@ -24,6 +28,12 @@
     <target name="compile" depends="clean">
         <echo message="Project name: ${ant.project.name}"/>
         <echo message="Ant: ${env.ANT_HOME} Flex: ${env.FLEX_HOME}"/>
+        <mkdir dir="${bin.dir}"/>
+		<antcall target="compile_flex" inheritAll="true" inheritRefs="true"/>
+		<antcall target="compile_java" inheritAll="true" inheritRefs="true"/>
+	</target>
+        
+    <target name="compile_flex">
         <mxmlc 
             file="${src.dir}/${ant.project.name}.mxml" 
             output="${bin.dir}/${ant.project.name}.swf"           
@@ -50,12 +60,53 @@
         </mxmlc>
     </target>
     
+	<target name="compile_java">
+		<condition property="java.target_version" value="1.5">
+			<not>
+				<isset property="java.target_version"/>
+			</not>
+		</condition>
+		<echo message="Javac version: ${java.target_version}"/>
+		<echo message="Eclipse? ${eclipse.running}"/>
+		<condition property="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter">
+			<isset property="eclipse.running"/>
+		</condition>
+		<condition property="compiler" value="${build.compiler}${java.target_version}">
+			<equals arg1="${build.compiler}" arg2="javac"/>
+		</condition>
+		<property name="compiler" value="${build.compiler}"/>
+		<echo message="Compiler adapter name: ${compiler}"/>
+
+		<mkdir dir="${bin.dir}/WEB-INF/classes"/>	 
+
+		<!-- destination for compiled classes -->
+		<javac sourcepath="" srcdir="${src.dir}" destdir="${bin.dir}/WEB-INF/classes" classpathref="project.classpath"
+			 optimize="${build.optimize}" verbose="${build.verbose}" fork="${build.fork}" nowarn="${build.nowarn}"
+			 deprecation="${build.deprecation}" debug="${debug.state}" compiler="${compiler}"
+			 source="${java.target_version}" target="${java.target_version}" memoryMaximumSize="1024m"
+			 excludes="${std_excludes}" listfiles="false"/>
+					 
+		<war destfile="${bin.dir}/${ant.project.name}.war" webxml="web/WEB-INF/web.xml">
+			<fileset dir="web">
+				<exclude name="**/WEB-INF/web.xml"/>
+			</fileset>
+			<fileset dir="${bin.dir}"/>
+			<lib dir="${lib.dir}">
+				<exclude name="red5.jar"/>
+			</lib>			
+			<manifest>
+				<attribute name="Built-By" value="RED5 Project - red5@osflash.org"/>
+			</manifest>
+		</war>				 
+			 
+		<copy todir="${bin.dir}/WEB-INF/classes" file="${src.dir}/${ant.project.name}-web.xml"/>
+			 
+	</target>    
+    
     <target name="clean">
         <delete dir="${src.dir}/generated"/>
         <delete dir="${build.dir}/generated"/>
-        <delete>
-            <fileset dir="${bin.dir}" includes="${ant.project.name}.swf"/>
-        </delete>    
+        <delete dir="${bin.dir}"/>
     </target> 
     	
 	<!--
