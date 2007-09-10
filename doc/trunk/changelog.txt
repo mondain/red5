@@ -47,6 +47,7 @@ Bugfixes:
   "NetConnection.call" in case of errors (Jira APPSERVER-192)
 - fixed endless loop in playlist controller with only one item in it
   (Jira APPSERVER-191)
+- fixed renaming across filesystems (Jira SN-59)
 
 
 Red5 0.6.2  (2007-06-17)
