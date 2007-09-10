@@ -48,6 +48,7 @@ Bugfixes:
 - fixed endless loop in playlist controller with only one item in it
   (Jira APPSERVER-191)
 - fixed renaming across filesystems (Jira SN-59)
+- updated Jetty to 6.1.5 (Jira APPSERVER-123)
 
 
 Red5 0.6.2  (2007-06-17)
