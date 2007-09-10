@@ -28,6 +28,8 @@ New Features:
   (Jira APPSERVER-185)
 - Class fields that should not be serialized when sending objects to clients
   can be annotated with "@DontSerialize" (in "org.red5.annotations")
+- Public methods can be protected from being called through RTMP, RTMPT or
+  Remoting by using "@DeclarePrivate" and "@DeclareProtected".
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
