@@ -43,6 +43,8 @@ Bugfixes:
 - state is properly reset if exceptions occur in package decoding
   (Jira APPSERVER-137)
 - numbers outside integer range are correctly serialized in AMF3 codec
+- return proper error object that triggers "onStatus" for
+  "NetConnection.call" in case of errors (Jira APPSERVER-192)
 
 
 Red5 0.6.2  (2007-06-17)
