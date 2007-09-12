@@ -49,6 +49,7 @@ Bugfixes:
   (Jira APPSERVER-191)
 - fixed renaming across filesystems (Jira SN-59)
 - updated Jetty to 6.1.5 (Jira APPSERVER-123)
+- fixed deserialization of AMF3 encoded SO events (Jira APPSERVER-188)
 
 
 Red5 0.6.2  (2007-06-17)
