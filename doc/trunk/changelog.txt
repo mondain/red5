@@ -30,6 +30,7 @@ New Features:
   can be annotated with "@DontSerialize" (in "org.red5.annotations")
 - Public methods can be protected from being called through RTMP, RTMPT or
   Remoting by using "@DeclarePrivate" and "@DeclareProtected".
+- support for XML objects added to AMF3 codec (Jira APPSERVER-196)
 
 Bugfixes:
 - validate RTMP handshake received from client (Jira APPSERVER-159)
