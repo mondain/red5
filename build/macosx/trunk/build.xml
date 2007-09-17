@@ -129,7 +129,16 @@
 		<arg line='${SRC_DIR}/red5-shutdown.sh ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
 	</exec>
 	<exec executable="cp" failonerror="true">
-		<arg line='-r ${SRC_DIR}/webapps ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
+		<arg line='${SRC_DIR}/red5_debug.sh ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
+	</exec>
+	<exec executable="cp" failonerror="true">
+		<arg line='${SRC_DIR}/ivy.xml ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
+	</exec>
+	<exec executable="cp" failonerror="true">
+		<arg line='${SRC_DIR}/ivyconfig.xml ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
+	</exec>
+	<exec executable="cp" failonerror="true">
+		<arg line='-r ${SRC_DIR}/dist/webapps ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
 	</exec>
 	<!-- Copy Red5 launcher -->
 	<exec executable="cp" failonerror="true">
