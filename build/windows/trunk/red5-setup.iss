@@ -381,7 +381,7 @@ begin
     if not FileExists(ExpandConstant('{app}\webapps\oflaDemo\streams')) then
       ForceDirectories(ExpandConstant('{app}\webapps\oflaDemo\streams'));
 
-    AddDownloadFile('F4_SilverSurfer.flv');
+    AddDownloadFile('IronMan.flv');
     AddDownloadFile('on2_flash8_w_audio.flv');
     AddDownloadFile('Transformers.flv');
   end;
