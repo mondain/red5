@@ -4,6 +4,10 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
+Red5 0.6.4  (unreleased)
+------------------------
+
+
 Red5 0.6.3  (2007-09-17)
 ------------------------
 New Features:
