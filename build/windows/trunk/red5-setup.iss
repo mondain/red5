@@ -97,8 +97,8 @@ Source: "{#common_root}\webapps\*"; DestDir: "{app}\webapps"; Excludes: "oflaDem
 Source: "{#common_root}\webapps\*"; DestDir: "{app}\webapps"; Flags: onlyifdoesntexist recursesubdirs; Components: sample_applications
 #endif
 Source: "{#common_root}\webapps\red5-default.xml"; DestDir: "{app}\webapps"; Flags: onlyifdoesntexist; Components: not sample_applications
-Source: "{#common_root}\webapps\admin\*"; DestDir: "{app}\webapps\admin"; Flags: onlyifdoesntexist; Components: not sample_applications
-Source: "{#common_root}\webapps\root\*"; DestDir: "{app}\webapps\root"; Flags: onlyifdoesntexist; Components: not sample_applications
+Source: "{#common_root}\webapps\admin\*"; DestDir: "{app}\webapps\admin"; Flags: onlyifdoesntexist recursesubdirs; Components: not sample_applications
+Source: "{#common_root}\webapps\root\*"; DestDir: "{app}\webapps\root"; Flags: onlyifdoesntexist recursesubdirs; Components: not sample_applications
 Source: "{#common_root}\doc\*"; DestDir: "{app}\doc"; Excludes: "api\*"; Flags: ignoreversion recursesubdirs; Components: documentation
 Source: "{#java5_root}\doc\api\*"; DestDir: "{app}\doc\api"; Flags: ignoreversion recursesubdirs; Components: documentation; Check: IsJavaVersion(5)
 Source: "{#java6_root}\doc\api\*"; DestDir: "{app}\doc\api"; Flags: ignoreversion recursesubdirs; Components: documentation; Check: IsJavaVersion(6)
