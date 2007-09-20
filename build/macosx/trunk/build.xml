@@ -1,19 +1,21 @@
 <?xml version="1.0"?>
-<!-- ======================================================================                                               
-     Red5 build script for Mac OSX   
-     
-     = How to release =
-     1. Get the latest tarball or tag from svn of the Red5 server and unpack it. 
-     2. Update the version number and source directory in the build.properties file
-	and point it to the root of the unpacked Red5 installation directory.
-     3. Start building with the 'ant' command.
-     4. The output file (setup-red5xx.dmg) will be created in the DIST_DIR directory.
-                 
-     Thijs Triemstra (info@collab.nl), 07/2007
-     Based on script from http://brok3n.org/archivesextreme/2006/09/dmg_creation_ti.html                                                             
-     ====================================================================== -->
 <project name="Red5" default="all" basedir=".">
-	
+
+<description>
+Red5 for Mac OSX   
+     
+= How to release =
+1. Get the latest tarball or tag from svn of the Red5 server and unpack it. 
+2. Update the version number and source directory in the build.properties file
+   and point it to the root of the unpacked Red5 installation directory.
+3. Start building with the 'ant' command.
+4. The output file (setup-red5-VERSION.dmg) will be created in the DIST_DIR directory.
+                 
+Author: Thijs Triemstra (info@collab.nl), 07/2007
+Based on script from http://brok3n.org/archivesextreme/2006/09/dmg_creation_ti.html
+
+</description>
+
 	<!-- Include build configuration -->
 	<property file="./build.properties" />
 
@@ -41,22 +43,18 @@
 	<property name="MPKG_NAME" value="Install-${RELEASE_NAME}.mpkg"/>
 	<property name="PACKAGE_MAKER" value="/Developer/Tools/packagemaker"/>
 	<property name="SET_FILE" value="/Developer/Tools/SetFile"/>
-	
-    <description>
-    	Red5 for Mac OSX
-    </description>
 
     <!-- - - - - - - - - - - - - - - - - - 
           target: all                      
     - - - - - - - - - - - - - - - - - -->
-    <target name="all" depends="clean, init, compile, build, release">
+    <target name="all" depends="clean, prepare, compile, package, release">
     	<echo>Completed building ${FANCY_NAME} for ${os.name}</echo>
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - 
           target: clean                      
     - - - - - - - - - - - - - - - - - -->
-    <target name="clean">
+    <target name="clean" description="Clean build folders">
     	<delete 
     		dir="${BUILD_DIR}" 
     		failOnError="false" 
@@ -68,9 +66,9 @@
     </target>
 	
     <!-- - - - - - - - - - - - - - - - - - 
-          target: init                      
+          target: prepare                      
     - - - - - - - - - - - - - - - - - -->
-    <target name="init">
+    <target name="prepare" description="Create build folders" >
     	<mkdir dir="${BUILD_DIR}"/>
 	<mkdir dir="${IMAGE_CONTENTS}"/>
 	<mkdir dir="${DIST_DIR}"/>
@@ -87,60 +85,50 @@
     <!-- - - - - - - - - - - - - - - - - - 
           target: compile
     - - - - - - - - - - - - - - - - - -->
-    <target name="compile">
+    <target name="compile" description="Create installer distribution">
 	<exec executable="make" failonerror="true">
-		<arg line='-C ${SRC_DIR}'/>
+		<arg line='installerdist -C ${SRC_DIR}'/>
 	</exec>
     </target>
 	
     <!-- - - - - - - - - - - - - - - - - - 
-            target: build
+            target: package
     - - - - - - - - - - - - - - - - - -->
-    <target name="build">
+    <target name="package" description="Create installer packages">
 	<echo>Copying plist files...</echo>
-	<exec executable="cp" failonerror="true">
-		<arg line='-r ${PLISTS_DIR} ${BUILD_DIR}/${PLISTS_DIR}'/>
-	</exec>
+	<copy todir="${BUILD_DIR}/${PLISTS_DIR}">
+    		<fileset dir="${PLISTS_DIR}"/>
+  	</copy>
 	<echo>Copying files for '${DOCS_PACKAGE_NAME}' package...</echo>
-	<exec executable="cp" failonerror="true">
-		<arg line='-r ${SRC_DIR}/doc ${BUILD_DIR}/${DOCS_PACKAGE_NAME}'/>
-	</exec>
+	<copy todir="${BUILD_DIR}/${DOCS_PACKAGE_NAME}/doc">
+    		<fileset dir="${SRC_DIR}/dist/doc"/>
+  	</copy>
 	<echo>Copying files for '${FLASH_PACKAGE_NAME}' package...</echo>
-	<exec executable="cp" failonerror="true">
-		<arg line='-r ${SRC_DIR}/swf ${BUILD_DIR}/${FLASH_PACKAGE_NAME}'/>
-	</exec>
+	<copy todir="${BUILD_DIR}/${FLASH_PACKAGE_NAME}/swf">
+    		<fileset dir="${SRC_DIR}/dist/swf"/>
+  	</copy>
+
 	<echo>Copying files for '${MAIN_PACKAGE_NAME}' package...</echo>
-	<exec executable="cp" failonerror="true">
-		<arg line='-r ${SRC_DIR}/conf ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='-r ${SRC_DIR}/lib ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/license.txt ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/red5.jar ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/red5.sh ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/red5-shutdown.sh ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/red5_debug.sh ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/ivy.xml ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/ivyconfig.xml ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='-r ${SRC_DIR}/dist/webapps ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-	</exec>
-	<!-- Copy Red5 launcher -->
+	<copy todir="${BUILD_DIR}/${MAIN_PACKAGE_NAME}/conf">
+    		<fileset dir="${SRC_DIR}/dist/conf"/>
+  	</copy>
+	<copy todir="${BUILD_DIR}/${MAIN_PACKAGE_NAME}/lib">
+    		<fileset dir="${SRC_DIR}/dist/lib"/>
+  	</copy>
+	<copy todir="${BUILD_DIR}/${MAIN_PACKAGE_NAME}/webapps">
+    		<fileset dir="${SRC_DIR}/dist/webapps"/>
+  	</copy>
+	<copy todir="${BUILD_DIR}/${MAIN_PACKAGE_NAME}" flatten="true">
+	    <resources>
+    		<file file="${SRC_DIR}/dist/license.txt"/>
+		<file file="${SRC_DIR}/dist/red5.jar"/>
+		<file file="${SRC_DIR}/dist/red5.sh"/>
+		<file file="${SRC_DIR}/dist/red5-shutdown.sh"/>
+		<file file="${SRC_DIR}/red5_debug.sh"/>
+		<file file="${SRC_DIR}/dist/ivy.xml"/>
+		<file file="${SRC_DIR}/dist/ivyconfig.xml"/>
+	    </resources>
+  	</copy>
 	<exec executable="cp" failonerror="true">
 		<arg line='-r ${RESOURCES_DIR}/Red5.app ${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
 	</exec>
@@ -150,46 +138,49 @@
 	<exec executable="${SET_FILE}" failonerror="true">
 		<arg line='-a E ${BUILD_DIR}/${MAIN_PACKAGE_NAME}/Red5.app'/>
 	</exec>
+	
 	<echo>Copying files for '${SOURCE_PACKAGE_NAME}' package...</echo>
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/build.properties ${BUILD_DIR}/${SOURCE_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/build.xml ${BUILD_DIR}/${SOURCE_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='-r ${SRC_DIR}/src ${BUILD_DIR}/${SOURCE_PACKAGE_NAME}'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='-r ${SRC_DIR}/test ${BUILD_DIR}/${SOURCE_PACKAGE_NAME}'/>
-	</exec>
+	<copy todir="${BUILD_DIR}/${SOURCE_PACKAGE_NAME}/src">
+    		<fileset dir="${SRC_DIR}/dist/src"/>
+  	</copy>
+	<copy todir="${BUILD_DIR}/${SOURCE_PACKAGE_NAME}/test">
+    		<fileset dir="${SRC_DIR}/test"/>
+  	</copy>
+	<copy todir="${BUILD_DIR}/${SOURCE_PACKAGE_NAME}" flatten="true">
+	     <resources>
+    		<file file="${SRC_DIR}/dist/.classpath"/>
+		<file file="${SRC_DIR}/dist/.project"/>
+		<file file="${SRC_DIR}/dist/.springBeans"/>
+		<file file="${SRC_DIR}/dist/build.properties"/>
+		<file file="${SRC_DIR}/dist/build.xml"/>
+             </resources>
+  	</copy>
+
 	<echo>Copying files for '${META_PACKAGE_NAME}' package...</echo>
-	<exec executable="cp" failonerror="true">
-		<arg line='${RESOURCES_DIR}/background.gif ${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj'/>
-	</exec>
-	<exec executable="cp" failonerror="true">
-		<arg line='${RESOURCES_DIR}/Welcome.txt ${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj'/>
-	</exec>
+	<copy todir="${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj" flatten="true">
+	     <resources>
+    		<file file="${RESOURCES_DIR}/background.gif"/>
+		<file file="${RESOURCES_DIR}/Welcome.txt"/>
+	     </resources>
+  	</copy>
+
 	<!-- Update version info -->
 	<updateVersion replaceFile="${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj/Welcome.txt"/>
 	<updateVersion replaceFile="${BUILD_DIR}/${PLISTS_DIR}/${DOCS_PACKAGE_NAME}/Info.plist"/>
 	<updateVersion replaceFile="${BUILD_DIR}/${PLISTS_DIR}/${FLASH_PACKAGE_NAME}/Info.plist"/>
 	<updateVersion replaceFile="${BUILD_DIR}/${PLISTS_DIR}/${MAIN_PACKAGE_NAME}/Info.plist"/>
 	<updateVersion replaceFile="${BUILD_DIR}/${PLISTS_DIR}/${SOURCE_PACKAGE_NAME}/Info.plist"/>
-	<!-- Add license -->
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/license.txt ${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj/License.txt'/>
-	</exec>
-	<!-- Add changelog -->
-	<exec executable="cp" failonerror="true">
-		<arg line='${SRC_DIR}/doc/changelog.txt ${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj/ReadMe.txt'/>
-	</exec>
+	
+	<!-- Update license and readme for installer -->
+	<copy file="${SRC_DIR}/dist/license.txt" tofile="${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj/License.txt"/>
+	<copy file="${SRC_DIR}/dist/doc/changelog.txt" tofile="${BUILD_DIR}/${META_PACKAGE_NAME}/English.lproj/ReadMe.txt"/>
+	
 	<!-- Create packages -->
 	<createPackage packageName="${DOCS_PACKAGE_NAME}" package="${DOCS_PACKAGE}"/>
 	<createPackage packageName="${FLASH_PACKAGE_NAME}" package="${FLASH_PACKAGE}"/>
 	<createPackage packageName="${MAIN_PACKAGE_NAME}" package="${MAIN_PACKAGE}"/>
 	<createPackage packageName="${SOURCE_PACKAGE_NAME}" package="${SOURCE_PACKAGE}"/>
-	<!-- Create metapackage -->
+
 	<echo>Creating '${RELEASE_NAME}' metapackage...</echo>
 	<exec executable="${PACKAGE_MAKER}" failonerror="true">
 		<arg line='-build -ds -v'/>
@@ -200,23 +191,24 @@
 		<arg line='-d ${BUILD_DIR}/${META_PACKAGE}/Description.plist'/>
 		<arg line='-r ${BUILD_DIR}/${META_PACKAGE_NAME}'/>
 	</exec>
+
 	<echo>Removing old build files...</echo>
-	<exec executable="rm" failonerror="true">
-		<arg line='-rf'/>
-		<arg line='${BUILD_DIR}/${DOCS_PACKAGE_NAME}'/>
-		<arg line='${BUILD_DIR}/${FLASH_PACKAGE_NAME}'/>
-		<arg line='${BUILD_DIR}/${MAIN_PACKAGE_NAME}'/>
-		<arg line='${BUILD_DIR}/${SOURCE_PACKAGE_NAME}'/>
-		<arg line='${BUILD_DIR}/${META_PACKAGE_NAME}'/>
-		<arg line='${BUILD_DIR}/${PLISTS_DIR}'/>
-		<arg line='${PACKAGE_CONTENTS}'/>
-	</exec>
+	<delete includeEmptyDirs="true">
+    		<fileset dir="${BUILD_DIR}/${DOCS_PACKAGE_NAME}"/>
+		<fileset dir="${BUILD_DIR}/${FLASH_PACKAGE_NAME}"/>
+		<fileset dir="${BUILD_DIR}/${MAIN_PACKAGE_NAME}"/>
+		<fileset dir="${BUILD_DIR}/${SOURCE_PACKAGE_NAME}"/>
+		<fileset dir="${BUILD_DIR}/${META_PACKAGE_NAME}"/>
+		<fileset dir="${BUILD_DIR}/${PLISTS_DIR}"/>
+		<fileset dir="${PACKAGE_CONTENTS}"/>
+  	</delete>
+
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - 
             target: release
     - - - - - - - - - - - - - - - - - -->
-    <target name="release">
+    <target name="release" description="Create disk image for distribution">
 	<echo>Creating disk image...</echo>
 	<exec executable="sh" failonerror="true">
 		<arg line='${TOOLS_DIR}/make-diskimage.sh "${DIST_DIR}/${DMG_NAME}" "${IMAGE_CONTENTS}" "Red5" ${TOOLS_DIR}/dmg_red5.scpt'/>
