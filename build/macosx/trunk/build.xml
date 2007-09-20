@@ -124,9 +124,6 @@ Based on script from http://brok3n.org/archivesextreme/2006/09/dmg_creation_ti.h
 		<file file="${SRC_DIR}/dist/red5.jar"/>
 		<file file="${SRC_DIR}/dist/red5.sh"/>
 		<file file="${SRC_DIR}/dist/red5-shutdown.sh"/>
-		<file file="${SRC_DIR}/red5_debug.sh"/>
-		<file file="${SRC_DIR}/dist/ivy.xml"/>
-		<file file="${SRC_DIR}/dist/ivyconfig.xml"/>
 	    </resources>
   	</copy>
 	<exec executable="cp" failonerror="true">
@@ -153,6 +150,9 @@ Based on script from http://brok3n.org/archivesextreme/2006/09/dmg_creation_ti.h
 		<file file="${SRC_DIR}/dist/.springBeans"/>
 		<file file="${SRC_DIR}/dist/build.properties"/>
 		<file file="${SRC_DIR}/dist/build.xml"/>
+		<file file="${SRC_DIR}/dist/ivy.xml"/>
+		<file file="${SRC_DIR}/dist/ivyconfig.xml"/>
+		<file file="${SRC_DIR}/red5_debug.sh"/>
              </resources>
   	</copy>
 
