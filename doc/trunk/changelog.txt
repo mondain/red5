@@ -6,6 +6,8 @@ versions of Red5.
 
 Red5 0.6.4  (unreleased)
 ------------------------
+Bugfixes:
+- pause near end of buffered streams works as expected (Jira APPSERVER-199)
 
 
 Red5 0.6.3  (2007-09-17)
