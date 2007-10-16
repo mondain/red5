@@ -8,6 +8,7 @@ Red5 0.6.4  (unreleased)
 ------------------------
 New Features:
 - added stream listeners that can get notified about received packets
+- Support for server-side Javascript (JIRA-169)
 
 Bugfixes:
 - pause near end of buffered streams works as expected (Jira APPSERVER-199)
