@@ -16,6 +16,7 @@ Bugfixes:
   closed (Jira APPSERVER-193)
 - "onMetaData" is only written to newly recorded FLV files and contains
   valid properties now
+- don't try to decode objects for closed connections (Jira APPSERVER-208)
 
 
 Red5 0.6.3  (2007-09-17)
