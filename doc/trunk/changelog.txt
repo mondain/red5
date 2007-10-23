@@ -9,6 +9,9 @@ Red5 0.6.4  (unreleased)
 New Features:
 - added stream listeners that can get notified about received packets
 - Support for server-side Javascript (Jira APPSERVER-169)
+- added new base class org.red5.server.adapter.MultiThreadedApplicationAdapter
+  that allows multiple clients to connect simultaneously to the same
+  application
 
 Bugfixes:
 - pause near end of buffered streams works as expected (Jira APPSERVER-199)
@@ -18,6 +21,8 @@ Bugfixes:
   valid properties now
 - don't try to decode objects for closed RTMPT connections
   (Jira APPSERVER-208)
+- new multi-threaded connection code fixes various timeout issues
+  (Jira APPSERVER-122, Jira APPSERVER-166 and Jira APPSERVER-167)
 
 
 Red5 0.6.3  (2007-09-17)
