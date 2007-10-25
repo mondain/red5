@@ -24,6 +24,7 @@ Bugfixes:
 - new multi-threaded connection code fixes various timeout issues
   (Jira APPSERVER-122, Jira APPSERVER-166 and Jira APPSERVER-167)
 - always use correct classloader inside applications (Jira APPSERVER-200)
+- Tomcat cannot undeploy red5 application (Jira APPSERVER-204)
 
 
 Red5 0.6.3  (2007-09-17)
