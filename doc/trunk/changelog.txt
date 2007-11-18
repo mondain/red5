@@ -25,6 +25,8 @@ Bugfixes:
   (Jira APPSERVER-122, Jira APPSERVER-166 and Jira APPSERVER-167)
 - always use correct classloader inside applications (Jira APPSERVER-200)
 - Tomcat cannot undeploy red5 application (Jira APPSERVER-204)
+- "ByteArray" objects used old data after calling "compress" or "uncompress"
+  (Jira APPSERVER-211)
 
 
 Red5 0.6.3  (2007-09-17)
