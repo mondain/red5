@@ -27,6 +27,8 @@ Bugfixes:
 - Tomcat cannot undeploy red5 application (Jira APPSERVER-204)
 - "ByteArray" objects used old data after calling "compress" or "uncompress"
   (Jira APPSERVER-211)
+- "@DontSerialize" checks for properties also in inherited classes
+  (Jira APPSERVER-225)
 
 
 Red5 0.6.3  (2007-09-17)
