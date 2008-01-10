@@ -1,6 +1,6 @@
 body {
 	margin:0px;
-	padding:0px;
+	padding:10px;
 	font-family:verdana, arial, helvetica, sans-serif;
 	color:#333;
 	background-color:white;
@@ -29,7 +29,6 @@ p {
 #Content>p+p {text-indent:30px;}
 
 ol {
-	list-style-type: decimal-leading-zero;;
 	margin-left: 10px;
 	padding-left: 10px;
 	text-indent: 10px;
