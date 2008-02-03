@@ -13,8 +13,8 @@ Server Configuration
 There are several configuration files added to support Edge/Origin configuration, 
 they are under conf/:
 
- - red5-edge.xml, red5-edge-core.xml -- used for Edge spring bean configuration. 
- - red5-origin.xml, red5-origin-core.xml -- used for origin spring bean configuration
+ - red5-edge.xml, red5-edge-core.xml -- used for Edge Spring bean configuration. 
+ - red5-origin.xml, red5-origin-core.xml -- used for Origin Spring bean configuration
 
 Configure Edge Server
 =====================
@@ -25,7 +25,7 @@ same server as Origin.
 Edge on a different Server from Origin
 ======================================
 Update the configuration of bean "mrtmpClient" in red5-edge-core.xml to point to the 
-Origin server::
+Origin server:
 
     <bean id="mrtmpClient" class="org.red5.server.net.mrtmp.MRTMPClient"
 	  init-method="start">
@@ -38,9 +38,10 @@ Now you can start the server with red5.sh or 'java -jar red5.jar'.
 
 Edge on the same Server as Origin
 =================================
-You don't need to change red5.xml. Copy $(RED5_ROOT)/conf/red5-edge.xml to $(RED5_ROOT)
-and start the server with 'java -jar red5.jar red5-edge.xml' or update red5.sh and add
-the 'red5-edge.xml' parameter.
+You don't need to change red5.xml. Copy $(RED5_EDGE_ROOT)/conf/red5.xml to 
+$(RED5_ORIGIN_ROOT)/red5-edge.xml and start the server with 
+'java -jar red5.jar red5-edge.xml' or update red5.sh and add the 'red5-edge.xml'
+parameter.
 
 Configure Origin Server
 =======================
