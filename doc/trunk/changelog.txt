@@ -12,6 +12,8 @@ New Features:
 - Added new base class org.red5.server.adapter.MultiThreadedApplicationAdapter
   that allows multiple clients to connect simultaneously to the same
   application
+- Added new Flash Player 9 statuses NetStream.Play.FileStructureInvalid and 
+  NetStream.Play.NoSupportedTrackFound
 
 Bugfixes:
 - Pause near end of buffered streams works as expected (Jira APPSERVER-199)
@@ -29,6 +31,7 @@ Bugfixes:
   (Jira APPSERVER-211)
 - "@DontSerialize" checks for properties also in inherited classes
   (Jira APPSERVER-225)
+- [PATCH] Enable true bidirectional serialization is possible (Jira APPSERVER-219)
 
 
 Red5 0.6.3  (2007-09-17)
