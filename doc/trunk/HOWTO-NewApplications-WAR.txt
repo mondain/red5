@@ -12,7 +12,9 @@
 Preface
 ==========================
 This document describes how applications can be configured in Red5 when using the WAR
-implementation. In this version of Red5 the J2EE container is not contained within Red5 and therefore is configured differently. This document assumes that the application WAR has already been expanded.
+implementation. In this version of Red5 the J2EE container is not contained within Red5
+and therefore is configured differently. This document assumes that the application WAR has
+already been expanded.
 
 
 The application directory
@@ -95,20 +97,26 @@ Every handler configuration file must contain at least three beans:
 
 Context
 --------------------------
-The default context bean has the reserved name 'web.context' and is used to map paths to scopes, lookup services and handlers.  The default class for this is 'org.red5.server.Context'.
+The default context bean has the reserved name 'web.context' and is used to map paths to scopes,
+lookup services and handlers.  The default class for this is 'org.red5.server.Context'.
 
 By default this bean is specified as::
 
     <bean id="web.context" class="org.red5.server.Context" autowire="byType" />
 
-Every application can only have one context and they should follow this naming convention '<application name>.context' so that they will not conflict with one another.  Application contexts can be shared across multiple scopes.
+Every application can only have one context and they should follow this naming convention 
+'<application name>.context' so that they will not conflict with one another.  Application contexts
+can be shared across multiple scopes.
 
 
 Scopes
 --------------------------
-Every application needs at least one scope that links the handler to the context and the server. The scopes can be used to build a tree where clients can connect to every node and share objects inside this scope (like shared objects or live streams).  You can see the scopes as rooms or instances.
+Every application needs at least one scope that links the handler to the context and the server. The
+scopes can be used to build a tree where clients can connect to every node and share objects inside this
+scope (like shared objects or live streams).  You can see the scopes as rooms or instances.
 
-The default scope usually has the name 'web.scope' and they should follow this naming convention '<application name>.scope' so that they will not conflict with one another.
+The default scope usually has the name 'web.scope' and they should follow this naming convention 
+'<application name>.scope' so that they will not conflict with one another.
 
 The bean has the following properties:
 
@@ -138,16 +146,21 @@ A sample definition looks like this::
         <property name="virtualHosts" value="localhost, 127.0.0.1" />
     </bean>
 
-The 'contextPath' specified in the configuration can be seen as "root" path of the scope.  You can add additional elements after the configured path when connecting to dynamically create extra scopes.
+The 'contextPath' specified in the configuration can be seen as "root" path of the scope.  You can add additional
+elements after the configured path when connecting to dynamically create extra scopes.
 
 These extra scopes all use the same handler but have their own properties, shared objects and live streams.
 
 
 Handlers
 --------------------------
-Every context needs a handler that implements the methods called when a client connects to the scope, leaves it and that contains additional methods that can be called by the client. The interface these handlers need to implement is specified by 'org.red5.server.api.IScopeHandler', however you can implement other interfaces if you want to control access to shared objects or streams.
+Every context needs a handler that implements the methods called when a client connects to the scope, leaves it
+and that contains additional methods that can be called by the client. The interface these handlers need to
+implement is specified by 'org.red5.server.api.IScopeHandler', however you can implement other interfaces if you
+want to control access to shared objects or streams.
 
-A sample implementation that can be used as base class can be found at 'org.red5.server.adapter.ApplicationAdapter'. Please refer to the javadoc documentation for further details.
+A sample implementation that can be used as base class can be found at 'org.red5.server.adapter.ApplicationAdapter'.
+Please refer to the javadoc documentation for further details.
 
 The bean for a scope handler is configured by::
 
