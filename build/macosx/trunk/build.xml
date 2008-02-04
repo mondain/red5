@@ -6,14 +6,14 @@ Red5 for Mac OSX
 </description>
 
 	<!-- Include build configuration -->
-	<property file="./build.properties" />
+	<property file="${basedir}/build.properties" />
 
 	<!-- Init build properties -->
-	<property name="BUILD_DIR" value="build"/>
-	<property name="DIST_DIR" value="dist"/>
-	<property name="RESOURCES_DIR" value="resources"/>
-	<property name="TOOLS_DIR" value="tools"/>
-	<property name="PLISTS_DIR" value="plists"/>
+	<property name="BUILD_DIR" value="${basedir}/build"/>
+	<property name="DIST_DIR" value="${basedir}/dist"/>
+	<property name="RESOURCES_DIR" value="${basedir}/resources"/>
+	<property name="TOOLS_DIR" value="${basedir}/tools"/>
+	<property name="PLISTS_DIR" value="${basedir}/plists"/>
 	<property name="IMAGE_CONTENTS" value="${BUILD_DIR}/imagecontents"/>
 	<property name="PACKAGE_CONTENTS" value="${BUILD_DIR}/packages"/>
 	<property name="DOCS_PACKAGE_NAME" value="docs"/>
@@ -141,7 +141,7 @@ Red5 for Mac OSX
 		<file file="${SRC_DIR}/dist/build.xml"/>
 		<file file="${SRC_DIR}/dist/ivy.xml"/>
 		<file file="${SRC_DIR}/dist/ivyconfig.xml"/>
-		<file file="${SRC_DIR}/red5_debug.sh"/>
+		<file file="${SRC_DIR}/dist/red5-debug.sh"/>
              </resources>
   	</copy>
 
