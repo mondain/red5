@@ -7,6 +7,8 @@ versions of Red5.
 Red5 0.7.0  (unreleased)
 ------------------------
 New Features:
+- Initial Edge/Origin clustering support for multiple Edges with a single
+  Origin (Jira APPSERVER-66)	
 - Added stream listeners that can get notified about received packets
 - Support for server-side Javascript (Jira APPSERVER-169)
 - Added new base class org.red5.server.adapter.MultiThreadedApplicationAdapter
@@ -31,7 +33,7 @@ Bugfixes:
   (Jira APPSERVER-211)
 - "@DontSerialize" checks for properties also in inherited classes
   (Jira APPSERVER-225)
-- [PATCH] Enable true bidirectional serialization is possible (Jira APPSERVER-219)
+- Enabled bidirectional class serialization (Jira APPSERVER-219)
 
 
 Red5 0.6.3  (2007-09-17)
