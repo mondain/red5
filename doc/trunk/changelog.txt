@@ -34,7 +34,8 @@ Bugfixes:
 - "@DontSerialize" checks for properties also in inherited classes
   (Jira APPSERVER-225)
 - Enabled bidirectional class serialization (Jira APPSERVER-219)
-
+- Array typed parameters in remoting service methods converted properly
+  (Jira APPSERVER-161)
 
 Red5 0.6.3  (2007-09-17)
 ------------------------
