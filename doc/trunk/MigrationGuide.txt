@@ -13,7 +13,7 @@
 Preface
 ==========================
 This document describes API differences between the Macromedia Flash
-Communication Server / Flash Media Server 2 and Red5.  It aims at helping
+Communication Server / Adobe Flash Media Server and Red5.  It aims at helping
 migrate existing applications to Red5.
 
 If you don't have an application in Red5 yet, please read the tutorial about

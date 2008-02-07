@@ -16,6 +16,7 @@ New Features:
   application
 - Added new Flash Player 9 statuses NetStream.Play.FileStructureInvalid and 
   NetStream.Play.NoSupportedTrackFound
+- New Flex admin tool (Jira APPSERVER-242)
 
 Bugfixes:
 - Pause near end of buffered streams works as expected (Jira APPSERVER-199)
