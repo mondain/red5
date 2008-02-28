@@ -1,0 +1,544 @@
+#ifexist "isxdl.iss"
+#include "isxdl.iss"
+#define DOWNLOAD_SAMPLES
+#endif
+
+#ifndef build_dir
+#define build_dir "."
+#endif
+#ifndef root_dir
+#define root_dir ".."
+#endif
+#ifndef common_root
+#define common_root "..\dist.java5"
+#endif
+#ifndef java5_root
+#define java5_root "..\dist.java5"
+#endif
+#ifndef java6_root
+#define java6_root "..\dist.java6"
+#endif
+#ifndef version
+#define version "test"
+#endif
+[Setup]
+AppName=Red5
+AppVerName=Red5 {#version}
+AppPublisher=Red5 Project
+AppPublisherURL=http://www.osflash.org/red5
+DefaultDirName={pf}\Red5
+DefaultGroupName=Red5
+OutputBaseFilename=setup-red5-{#version}
+Compression=lzma
+SolidCompression=yes
+;Compression=none
+WizardSmallImageFile={#build_dir}\images\red5_top.bmp
+WizardImageFile={#build_dir}\images\red5_left.bmp
+LicenseFile={#common_root}\license.txt
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[CustomMessages]
+RegisterService=&Register as service
+StartService=&Start service
+JavaSetup=Java Setup
+JavaHome=Java Home
+JavaHomeDesc=Red5 needs a Java Runtime Environment (JRE) 1.5 or 1.6 to work properly.
+JavaHomeInfo=Enter the path to your Java installation.
+InvalidJavaHome=The path you selected is invalid. Please make sure a java.exe exists inside the "bin" directory and the version is 1.5 or 1.6.
+MainFiles=Main files
+Documentation=Documentation
+SampleWebapps=Sample applications
+JavaSources=Java source files
+FlashSources=Flash sample source files
+Red5Services=Network services
+Red5ServicesSetup=Network services setup
+RedServicesSetupInfo=Select the network services you want to enable in your Red5 installation.
+RTMP=RTMP
+RTMPT=RTMPT
+HTTP=HTTP servlet engine
+Debug=Debug proxy
+PortWithDefault=port (default %1)
+PortWithNumber=port %1
+LimitService=You can limit a service to a single IP address by using the format "<ip>:<port>", e.g. "127.0.0.1:1935". If no ip is specified, the service will listen on all available interfaces.
+AdminUsernamePassword=To access the administration interface, use "admin" as username and "admin" as password when prompted for login credentials.
+PropertiesOverwritten=Please note that the layout of the red5.properties has changed, so your existing file was overwritten.
+#ifdef DOWNLOAD_SAMPLES
+DownloadSampleStreams=Download sample streams
+#endif
+
+[Components]
+Name: "main"; Description: "{cm:MainFiles}"; Types: full compact custom; Flags: fixed
+Name: "documentation"; Description: "{cm:Documentation}"; Types: full
+Name: "sample_applications"; Description: "{cm:SampleWebapps}"; Types: full
+Name: "java_source"; Description: "{cm:JavaSources}"; Types: full
+Name: "flash_source"; Description: "{cm:FlashSources}"; Types: full
+
+[Tasks]
+Name: "service"; Description: "{cm:RegisterService}"
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; Flags: unchecked
+#ifdef DOWNLOAD_SAMPLES
+Name: "sample_streams"; Description: "{cm:DownloadSampleStreams}"; Components: sample_applications
+#endif
+
+[Files]
+; Application files
+Source: "{#common_root}\license.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#java5_root}\red5.jar"; DestDir: "{app}"; Flags: ignoreversion; Check: IsJavaVersion(5)
+Source: "{#java6_root}\red5.jar"; DestDir: "{app}"; Flags: ignoreversion; Check: IsJavaVersion(6)
+Source: "{#common_root}\conf\*"; DestDir: "{app}\conf"; Excludes: "red5.properties"; Flags: onlyifdoesntexist recursesubdirs
+Source: "{#common_root}\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
+Source: "{#common_root}\swf\DEV_Deploy\*"; DestDir: "{app}\swf\DEV_Deploy"; Flags: ignoreversion recursesubdirs
+Source: "{#common_root}\swf\samples\*.swf"; DestDir: "{app}\swf\samples"; Flags: ignoreversion recursesubdirs
+#ifdef DOWNLOAD_SAMPLES
+Source: "{#common_root}\webapps\*"; DestDir: "{app}\webapps"; Excludes: "oflaDemo\streams\*.flv,oflaDemo\streams\*.mp3"; Flags: onlyifdoesntexist recursesubdirs; Components: sample_applications
+#else
+Source: "{#common_root}\webapps\*"; DestDir: "{app}\webapps"; Flags: onlyifdoesntexist recursesubdirs; Components: sample_applications
+#endif
+Source: "{#common_root}\webapps\red5-default.xml"; DestDir: "{app}\webapps"; Flags: onlyifdoesntexist; Components: not sample_applications
+Source: "{#common_root}\webapps\admin\*"; DestDir: "{app}\webapps\admin"; Flags: onlyifdoesntexist recursesubdirs; Components: not sample_applications
+Source: "{#common_root}\webapps\root\*"; DestDir: "{app}\webapps\root"; Flags: onlyifdoesntexist recursesubdirs; Components: not sample_applications
+Source: "{#common_root}\doc\*"; DestDir: "{app}\doc"; Excludes: "api\*"; Flags: ignoreversion recursesubdirs; Components: documentation
+Source: "{#java5_root}\doc\api\*"; DestDir: "{app}\doc\api"; Flags: ignoreversion recursesubdirs; Components: documentation; Check: IsJavaVersion(5)
+Source: "{#java6_root}\doc\api\*"; DestDir: "{app}\doc\api"; Flags: ignoreversion recursesubdirs; Components: documentation; Check: IsJavaVersion(6)
+
+; Files required for windows service / wrapped start
+Source: "{#build_dir}\bin\*.bat"; DestDir: "{app}\wrapper"; Flags: ignoreversion
+Source: "{#build_dir}\bin\wrapper.exe"; DestDir: "{app}\wrapper"; Flags: ignoreversion
+Source: "{#build_dir}\conf\wrapper.conf.java5"; DestDir: "{app}\conf"; DestName: "wrapper.conf"; Flags: ignoreversion; AfterInstall: UpdateWrapperConf('{app}\conf\wrapper.conf'); Check: IsJavaVersion(5)
+Source: "{#build_dir}\conf\wrapper.conf.java6"; DestDir: "{app}\conf"; DestName: "wrapper.conf"; Flags: ignoreversion; AfterInstall: UpdateWrapperConf('{app}\conf\wrapper.conf'); Check: IsJavaVersion(6)
+Source: "{#build_dir}\lib\wrapper.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#build_dir}\lib\wrapper.jar"; DestDir: "{app}\lib"; Flags: ignoreversion
+
+; Java source code (optional)
+Source: "{#common_root}\.classpath"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\.project"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\.springBeans"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\..\.settings\*"; DestDir: "{app}\.settings"; Flags: ignoreversion recursesubdirs; Components: java_source
+Source: "{#common_root}\build.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\build.properties"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\red5.bat"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\red5.sh"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\..\red5-highperf.bat"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\..\red5-shutdown.bat"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\..\red5-shutdown.sh"; DestDir: "{app}"; Flags: ignoreversion; Components: java_source
+Source: "{#common_root}\src\*"; DestDir: "{app}\src"; Flags: ignoreversion recursesubdirs; Components: java_source
+
+; Flash sample source code (optional)
+Source: "{#common_root}\swf\DEV_Source\*"; DestDir: "{app}\swf\DEV_Source"; Flags: ignoreversion recursesubdirs; Components: flash_source
+Source: "{#common_root}\swf\samples\*.fla"; DestDir: "{app}\swf\samples"; Flags: ignoreversion recursesubdirs; Components: flash_source
+
+[Dirs]
+Name: "{app}\logs"
+
+[Icons]
+Name: "{group}\Red5"; Filename: "{app}\wrapper\Red5.bat"
+Name: "{group}\Readme"; Filename: "{app}\doc\readme.html"
+Name: "{group}\API Documentation"; Filename: "{app}\doc\api\index.html"
+Name: "{group}\Eclipse Setup"; Filename: "{app}\doc\eclipsesetup.html"
+Name: "{group}\FAQ (PDF)"; Filename: "{app}\doc\Frequently Asked Questions.pdf"
+Name: "{group}\FAQ (Word)"; Filename: "{app}\doc\Frequently Asked Questions.doc"
+Name: "{group}\FAQ (Flash)"; Filename: "{app}\doc\Frequently Asked Questions.swf"
+Name: "{group}\HOWTO create new applications"; Filename: "{app}\doc\HOWTO-NewApplications.txt"
+Name: "{group}\Red5 migration guide"; Filename: "{app}\doc\MigrationGuide.txt"
+Name: "{group}\RTMPT Specification"; Filename: "{app}\doc\SPEC-RTMPT.txt"
+Name: "{group}\License"; Filename: "{app}\doc\licenseInfo\Red5LicenseInfo.txt"
+Name: "{group}\Team"; Filename: "{app}\doc\licenseInfo\team.txt"
+Name: "{group}\Mailing list"; Filename: "http://osflash.org/mailman/listinfo/red5_osflash.org"
+Name: "{group}\Administration Interface"; Filename: "{code:GetAdminUrl}"
+Name: "{group}\Welcome page"; Filename: "{code:GetWelcomeUrl}"
+
+Name: "{group}\{cm:UninstallProgram,Red5}"; Filename: "{uninstallexe}"
+Name: "{userdesktop}\Red5"; Filename: "{app}\wrapper\Red5.bat"; Tasks: desktopicon
+
+[Run]
+Filename: "{app}\wrapper\InstallRed5-NT.bat"; Tasks: service; Flags: runhidden;
+Filename: "{app}\wrapper\StartRed5-NT.bat"; Description: "{cm:StartService}"; Tasks: service; Flags: postinstall runhidden;
+Filename: "{app}\wrapper\Red5.bat"; Description: "{cm:LaunchProgram,Red5}"; Tasks: not service; Flags: nowait postinstall skipifsilent
+
+[UninstallRun]
+Filename: "{app}\wrapper\StopRed5-NT.bat"; Tasks: service; Flags: runhidden;
+Filename: "{app}\wrapper\UninstallRed5-NT.bat"; Tasks: service; Flags: runhidden;
+
+[UninstallDelete]
+Type: dirifempty; Name: "{app}\logs"
+
+[Code]
+#ifdef DOWNLOAD_SAMPLES
+const
+  STREAM_DOWNLOAD_URL = 'http://dl.fancycode.com/red5/sample_streams/';
+#endif
+
+var
+  JavaHome: String;
+  JavaHomePage: TInputDirWizardPage;
+  JavaVersion: Integer;
+  ServicesPage: TWizardPage;
+  EnableRTMP: TCheckBox;
+  PortRTMP: TEdit;
+  EnableRTMPT: TCheckBox;
+  PortRTMPT: TEdit;
+  EnableHTTP: TCheckBox;
+  PortHTTP: TEdit;
+  EnableDebug: TCheckBox;
+  PortDebug: TEdit;
+
+function IsJavaVersion(Version: Integer): Boolean;
+begin
+  Result := Version = JavaVersion;
+end;
+
+function InitializeSetup(): Boolean;
+begin
+  Result := False;
+  // Check Java 5 installation
+  if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment\1.5', 'JavaHome', JavaHome) then
+    JavaHome := '';
+
+  Result := True;
+end;
+
+procedure URLLabelOnClick(Sender: TObject);
+var
+  Dummy: Integer;
+begin
+  ShellExec('open', 'http://osflash.org/red5', '', '', SW_SHOWNORMAL, ewNoWait, Dummy);
+end;
+
+Function AddService(Root: TWizardPage; X: Integer; Y: Integer; Name: String; DefaultPort: String; var CB: TCheckBox; var Input: TEdit): Integer;
+var
+  Static: TNewStaticText;
+begin
+  CB := TCheckBox.Create(Root);
+  {
+  CB.Caption := ExpandConstant(Name);
+  CB.Top := Y;
+  CB.Left := X;
+  CB.Parent := Root.Surface;
+  CB.Width := Root.SurfaceWidth;
+  }
+  CB.Checked := True;
+
+  Static := TNewStaticText.Create(Root);
+  Static.Caption := ExpandConstant(Name) + ' ' + ExpandConstant('{cm:PortWithDefault,'+DefaultPort+'}');
+  Static.Top := Y;
+  Static.Left := X;
+  Static.Parent := Root.Surface;
+  Static.AutoSize := True;
+
+  Input := TEdit.Create(Root);
+  Input.Text := DefaultPort;
+  Input.Top := Static.Top + Static.Height + 2;
+  Input.Left := X;
+  Input.Parent := Root.Surface;
+  
+  Result := Input.Top + Input.Height;
+end;
+
+procedure InitializeWizard();
+var
+  URLLabel: TNewStaticText;
+  CancelButton: TButton;
+  Pos, X: Integer;
+  Static: TNewStaticText;
+begin
+  // Add link to Red5 homepage on the wizard form
+  CancelButton := WizardForm.CancelButton;
+  URLLabel := TNewStaticText.Create(WizardForm);
+  URLLabel.Left := WizardForm.ClientWidth - CancelButton.Left - CancelButton.Width;
+  URLLabel.Top := CancelButton.Top;
+  URLLabel.Caption := 'http://osflash.org/red5';
+  URLLabel.Font.Style := URLLabel.Font.Style + [fsUnderLine];
+  URLLabel.Font.Color := clBlue;
+  URLLabel.Cursor := crHand;
+  URLLabel.OnClick := @URLLabelOnClick;
+  URLLabel.Parent := WizardForm;
+
+
+  // Custom page to select JAVA_HOME
+  JavaHomePage := CreateInputDirPage(wpLicense,
+    ExpandConstant('{cm:JavaSetup}'),
+    ExpandConstant('{cm:JavaHomeDesc}'),
+    ExpandConstant('{cm:JavaHomeInfo}'),
+    False,
+    '');
+  JavaHomePage.Add('');
+  JavaHomePage.Values[0] := JavaHome;
+  
+  // Setup page containing services selection
+  ServicesPage := CreateCustomPage(wpSelectTasks,
+    ExpandConstant('{cm:Red5ServicesSetup}'),
+    ExpandConstant('{cm:RedServicesSetupInfo}'));
+    
+  X := ServicesPage.SurfaceWidth / 2;
+  Pos := AddService(ServicesPage, 0, 0, '{cm:RTMP}', '1935', EnableRTMP, PortRTMP);
+  AddService(ServicesPage, X, 0, '{cm:RTMPT}', '8088', EnableRTMPT, PortRTMPT);
+  
+  AddService(ServicesPage, 0, Pos + 16, '{cm:HTTP}', '5080', EnableHTTP, PortHTTP);
+  Pos := AddService(ServicesPage, X, Pos + 16, '{cm:Debug}', '1936', EnableDebug, PortDebug);
+
+  Static := TNewStaticText.Create(ServicesPage);
+  Static.Parent := ServicesPage.Surface;
+  Static.Left := 0;
+  Static.Top := Pos + 16;
+  Static.Width := ServicesPage.SurfaceWidth;
+  Static.Height := Static.Height * 3;
+  Static.AutoSize := False;
+  Static.WordWrap := True;
+  Static.Caption := ExpandConstant('{cm:LimitService}');
+
+  Static := TNewStaticText.Create(ServicesPage);
+  Static.Parent := ServicesPage.Surface;
+  Static.Left := 0;
+  Static.Top := Pos + 64;
+  Static.Width := ServicesPage.SurfaceWidth;
+  Static.Height := Static.Height * 3;
+  Static.AutoSize := False;
+  Static.WordWrap := True;
+  Static.Caption := ExpandConstant('{cm:AdminUsernamePassword}');
+end;
+
+function ExecOutput(const Filename, Params: String): String;
+var
+  TmpFile: String;
+  ResultCode: Integer;
+begin
+  Result := '';
+  TmpFile := GenerateUniqueName(ExpandConstant('{tmp}'), 'tmp');
+  if Exec(ExpandConstant('{cmd}'), '/C "' + Filename + '" ' + Params + ' 2> ' + TmpFile,
+     '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    if ResultCode = 0 then
+      if LoadStringFromFile(TmpFile, Result) then
+      begin
+        Result := Trim(Result);
+        Log('ExecOutput: running ' + Filename + ' succeded with output: ' + Result);
+      end
+      else
+        Log('ExecOutput: running ' + Filename + ' succeded, but the temp file was not created')
+    else
+      Log('ExecOutput: running ' + Filename + ' failed, code: ' + IntToStr(ResultCode))
+  else
+    { That's really odd, we should always be able to exec the command interpreter! }
+    Log('ExecOutput: cannot exec command interpreter, code: ' + IntToStr(ResultCode) + ', message: ' + SysErrorMessage(ResultCode));
+end;
+
+{**
+ * Check if <Path> is a valid Java home.
+ * Returns 5 for Java5, 6 for Java6 and 0 for unknown/wrong version.
+ *}
+function CheckJavaHome(Path: String): Integer;
+var
+  Output: String;
+  Idx: Integer;
+begin
+  Result := 0;
+  Path := AddBackslash(Path);
+  if (not FileExists(Path + 'bin\java.exe')) then
+    exit;
+
+  Output := ExecOutput(Path + 'bin\java.exe', '-version');
+  Idx := Pos('java version "', Output);
+  if (Idx <= 0) then
+    exit;
+    
+  Output := Copy(Output, Idx+14, Length(Output)-Idx);
+  Idx := Pos('"', Output);
+  if (Idx <= 0) then
+    exit;
+
+  Output := Copy(Output, 1, Idx-1);
+  if (Pos('1.5', Output) = 1) then
+    Result := 5
+  else if (Pos('1.6', Output) = 1) then
+    Result := 6;
+  Log('Detected Java version: ' + IntToStr(Result));
+end;
+
+#ifdef DOWNLOAD_SAMPLES
+procedure AddDownloadFile(Name: String);
+var
+  Filename: String;
+begin
+  FileName := ExpandConstant('{app}\webapps\oflaDemo\streams\' + Name);
+  if (FileExists(FileName)) then
+    // File already exists
+    exit;
+
+  isxdl_AddFile(STREAM_DOWNLOAD_URL + Name, FileName);
+end;
+
+function DownloadFiles(): Boolean;
+var
+  Wnd: Integer;
+  Tasks: String;
+begin
+  Wnd := StrToInt(ExpandConstant('{wizardhwnd}'));
+  Tasks := WizardSelectedTasks(False);
+  isxdl_ClearFiles();
+
+  if Pos('sample_streams', Tasks) > 0 then begin
+    if not FileExists(ExpandConstant('{app}\webapps\oflaDemo\streams')) then
+      ForceDirectories(ExpandConstant('{app}\webapps\oflaDemo\streams'));
+
+    AddDownloadFile('IronMan.flv');
+    AddDownloadFile('on2_flash8_w_audio.flv');
+    AddDownloadFile('Transformers.flv');
+  end;
+
+  Result := (isxdl_DownloadFiles(Wnd) <> 0);
+end;
+#endif
+
+function NextButtonClick(CurPage: Integer): Boolean;
+begin
+  Result := True;
+  if (CurPage = JavaHomePage.ID) then begin
+    JavaVersion := CheckJavaHome(JavaHomePage.Values[0]);
+    if (JavaVersion = 0) then begin
+      MsgBox(ExpandConstant('{cm:InvalidJavaHome}'), mbError, MB_OK);
+      Result := False;
+    end;
+  end;
+end;
+
+function UpdateReadyMemo(Space, NewLine, MemoUserInfoInfo, MemoDirInfo, MemoTypeInfo, MemoComponentsInfo, MemoGroupInfo, MemoTasksInfo: String): String;
+begin
+  Result := MemoDirInfo + NewLine + NewLine +
+            MemoGroupInfo + NewLine + NewLine;
+
+  if (MemoComponentsInfo <> '') then
+    Result := Result + MemoComponentsInfo + NewLine + NewLine;
+
+  if (MemoTasksInfo <> '') then
+    Result := Result + MemoTasksInfo + NewLine + NewLine;
+
+  Result := Result +
+    ExpandConstant('{cm:JavaHome}') + ':' + NewLine +
+    Space + AddBackslash(JavaHomePage.Values[0]) + NewLine +
+    Space + 'Version 1.' + IntToStr(JavaVersion) + NewLine + NewLine;
+    
+  Result := Result +
+    ExpandConstant('{cm:Red5Services}') + ':' + NewLine;
+  if (EnableRTMP.Checked) then
+    Result := Result + Space + ExpandConstant('{cm:RTMP}') + ' ' + ExpandConstant('{cm:PortWithNumber,'+PortRTMP.Text+'}') + NewLine;
+  if (EnableRTMPT.Checked) then
+    Result := Result + Space + ExpandConstant('{cm:RTMPT}') + ' ' + ExpandConstant('{cm:PortWithNumber,'+PortRTMPT.Text+'}') + NewLine;
+  if (EnableHTTP.Checked) then
+    Result := Result + Space + ExpandConstant('{cm:HTTP}') + ' ' + ExpandConstant('{cm:PortWithNumber,'+PortHTTP.Text+'}') + NewLine;
+  if (EnableDebug.Checked) then
+    Result := Result + Space + ExpandConstant('{cm:Debug}') + ' ' + ExpandConstant('{cm:PortWithNumber,'+PortDebug.Text+'}') + NewLine;
+end;
+
+procedure UpdateWrapperConf(Filename: String);
+var
+  Lines: TArrayOfString;
+  i: Integer;
+  Path: String;
+begin
+  Filename := ExpandConstant(Filename);
+  Path := AddBackslash(JavaHomePage.Values[0]);
+  if LoadStringsFromFile(Filename, Lines) then begin
+    for i := 0 to GetArrayLength(Lines)-1 do begin
+      if Pos(Path, Lines[i]) > 0 then
+        // Already changed this line...
+        continue;
+
+      if Pos('wrapper.java.command=', Lines[i]) > 0 then begin
+        Lines[i] := Format('wrapper.java.command=%sbin\java.exe', [Path]);
+      end;
+    end;
+    SaveStringsToFile(Filename, Lines, False);
+  end;
+end;
+
+procedure AdjustHostPort(Input: TEdit);
+begin
+  if (Pos(':', Input.Text) = 0) then
+    Input.Text := '0.0.0.0:' + Input.Text;
+end;
+
+procedure SplitHostPort(Input: TEdit; var Host: String; var Port: String);
+var
+  Idx: Integer;
+begin
+  AdjustHostPort(Input);
+  Idx := Pos(':', Input.Text);
+  Host := Copy(Input.Text, 1, Idx-1);
+  Port := Copy(Input.Text, Idx+1, Length(Input.Text)-Idx);
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  Filename: String;
+  Host, Port: String;
+begin
+  if (CurStep = ssPostInstall) then begin
+#ifdef DOWNLOAD_SAMPLES
+    DownloadFiles();
+#endif
+    Filename := ExpandConstant('{app}\conf\red5.properties');
+    if FileExists(Filename) then begin
+      MsgBox(ExpandConstant('{cm:PropertiesOverwritten}'), mbInformation, MB_OK);
+      DeleteFile(Filename);
+    end;
+
+    SaveStringToFile(Filename, '# HTTP' + #13#10, False);
+    SplitHostPort(PortHTTP, Host, Port);
+    SaveStringToFile(Filename, Format('http.host = %s', [Host]) + #13#10, True);
+    SaveStringToFile(Filename, Format('http.port = %s', [Port]) + #13#10, True);
+    
+    SaveStringToFile(Filename, '# RTMP' + #13#10, True);
+    SplitHostPort(PortRTMP, Host, Port);
+    SaveStringToFile(Filename, Format('rtmp.host = %s', [Host]) + #13#10, True);
+    SaveStringToFile(Filename, Format('rtmp.port = %s', [Port]) + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.event_threads_core=16' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.event_threads_max=32' + #13#10, True);
+    SaveStringToFile(Filename, '# event threads queue: -1 unbounded, 0 direct (no queue), n bounded queue' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.event_threads_queue=-1' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.event_threads_keepalive=60' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.send_buffer_size=271360' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.receive_buffer_size=65536' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.ping_interval=5000' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmp.max_inactivity=60000' + #13#10, True);
+
+    SaveStringToFile(Filename, '# RTMPT' + #13#10, True);
+    SplitHostPort(PortRTMPT, Host, Port);
+    SaveStringToFile(Filename, Format('rtmpt.host = %s', [Host]) + #13#10, True);
+    SaveStringToFile(Filename, Format('rtmpt.port = %s', [Port]) + #13#10, True);
+    SaveStringToFile(Filename, 'rtmpt.ping_interval=5000' + #13#10, True);
+    SaveStringToFile(Filename, 'rtmpt.max_inactivity=60000' + #13#10, True);
+    
+    SaveStringToFile(Filename, '# Debug proxy (needs to be activated in red5-core.xml)' + #13#10, True);
+    SplitHostPort(PortDebug, Host, Port);
+    SaveStringToFile(Filename, Format('proxy.source_host=%s', [Host]) + #13#10, True);
+    SaveStringToFile(Filename, Format('proxy.source_port=%s', [Port]) + #13#10, True);
+    SplitHostPort(PortRTMP, Host, Port);
+    if (Host = '0.0.0.0') then begin
+        Host := '127.0.0.1';
+    end;
+    SaveStringToFile(Filename, Format('proxy.destination_host=%s', [Host]) + #13#10, True);
+    SaveStringToFile(Filename, Format('proxy.destination_port=%s', [Port]) + #13#10, True);
+  end;
+end;
+
+function GetAdminUrl(Default: String): String;
+var
+  Host, Port: String;
+begin
+  SplitHostPort(PortHTTP, Host, Port);
+  if (Host = '') or (Host = '0.0.0.0') then
+    Host := '127.0.0.1';
+  Result := Format('http://%s:%s/admin', [Host, Port]);
+end;
+
+function GetWelcomeUrl(Default: String): String;
+var
+  Host, Port: String;
+begin
+  SplitHostPort(PortHTTP, Host, Port);
+  if (Host = '') or (Host = '0.0.0.0') then
+    Host := '127.0.0.1';
+  Result := Format('http://%s:%s/', [Host, Port]);
+end;
+
