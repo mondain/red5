@@ -4,7 +4,7 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
-Red5 0.7.0  (unreleased)
+Red5 0.7.0  (2008-02-23)
 ------------------------
 New Features:
 - Initial Edge/Origin clustering support for multiple Edges with a single
