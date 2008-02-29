@@ -6,7 +6,11 @@ versions of Red5.
 
 Red5 0.7.1  (unreleased)
 ------------------------
+New Features:
 
+
+Bugfixes:
+- RTMPProtocolDecoder fixed to support RSO sendMessage (Jira CODECS-9)
 
 Red5 0.7.0  (2008-02-23)
 ------------------------
