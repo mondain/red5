@@ -54,7 +54,7 @@ public class BaseOutput {
 	
 	}
 	
-	protected Map<IdentityWrapper, Short> refMap;
+	protected Map<IdentityWrapper, Short> refMap = null;
 	protected short refId = 0;
 	
 	/**
@@ -62,7 +62,6 @@ public class BaseOutput {
 	 *
 	 */
 	protected BaseOutput(){
-		refMap = new HashMap<IdentityWrapper, Short>();
 	}
 	
 	/**
@@ -70,7 +69,11 @@ public class BaseOutput {
 	 * @param obj
 	 */
 	public void storeReference(Object obj){
-		refMap.put(new IdentityWrapper(obj), new Short(refId++));
+		if (refMap == null) {
+			refMap = new HashMap<IdentityWrapper, Short>();
+		}
+		
+		refMap.put(new IdentityWrapper(obj), refId++);
 	}
 	
 	/**
@@ -80,14 +83,18 @@ public class BaseOutput {
 	 * @return boolean
 	 */
 	public boolean hasReference(Object obj){
-		return refMap.containsKey(new IdentityWrapper(obj));
+		return (refMap != null && refMap.containsKey(new IdentityWrapper(obj)));
 	}
 	
 	/**
 	 * Clears the map
 	 */
 	public void clearReferences(){
-		refMap.clear();
+		if (refMap != null) {
+			refMap.clear();
+			refMap = null;
+		}
+		
 		refId = 0;
 	}
 	
@@ -97,7 +104,11 @@ public class BaseOutput {
 	 * @return short
 	 */
 	protected short getReferenceId(Object obj){
-		return refMap.get(new IdentityWrapper(obj)).shortValue();
+		if (refMap == null) {
+			return -1;
+		}
+		
+		return refMap.get(new IdentityWrapper(obj));
 	}
 
 }
