@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class BaseInput {
 
-	protected Map refMap = new HashMap();
+	protected Map<Short, Object> refMap = null;
 	protected short refId = 0;
 	
 	/**
@@ -39,14 +39,22 @@ public class BaseInput {
 	 * @param obj
 	 */
 	public void storeReference(Object obj){
-		refMap.put(new Short(refId++),obj);
+		if (refMap == null) {
+			refMap = new HashMap<Short, Object>();
+		}
+		
+		refMap.put(refId++, obj);
 	}
 	
 	/**
 	 * Clears the map
 	 */
 	public void clearReferences(){
-		refMap.clear();
+		if (refMap != null) {
+			refMap.clear();
+			refMap = null;
+		}
+		
 		refId = 0;
 	}
 	
@@ -56,7 +64,11 @@ public class BaseInput {
 	 * @return Object
 	 */
 	protected Object getReference(short id){
-		return refMap.get(new Short(id));
+		if (refMap == null) {
+			return null;
+		}
+		
+		return refMap.get(id);
 	}
 
 }
