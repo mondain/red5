@@ -9,6 +9,7 @@ Red5 0.7.1  (unreleased)
 New Features:
 - Added socket policy file server to support new security model, starting 
   in flash player 9,0,124,0
+- Added virtual hosting capabilities (Tomcat only)
 
 
 Bugfixes:
