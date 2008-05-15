@@ -10,6 +10,8 @@ New Features:
 - Added socket policy file server to support new security model, starting 
   in flash player 9,0,124,0
 - Added virtual hosting capabilities (Tomcat only)
+- Added W3C log appender for logback modeled after FMS log events and categories
+- Added the ability to unload a context using the ContextLoader
 
 
 Bugfixes:
