@@ -12,6 +12,7 @@ New Features:
 - Added virtual hosting capabilities (Tomcat only)
 - Added W3C log appender for logback modeled after FMS log events and categories
 - Added the ability to unload a context using the ContextLoader
+- Added RTMPS support (Jira SN-69)
 
 
 Bugfixes:
