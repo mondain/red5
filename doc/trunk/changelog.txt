@@ -13,10 +13,12 @@ New Features:
 - Added W3C log appender for logback modeled after FMS log events and categories
 - Added the ability to unload a context using the ContextLoader
 - Added RTMPS support (Jira SN-69)
-
+- Set default J2EE servlet container / HTTP server to Tomcat
 
 Bugfixes:
 - RTMPProtocolDecoder fixed to support RSO sendMessage (Jira CODECS-9)
+- Fixed Tomcat logging problem
+
 
 Red5 0.7.0  (2008-02-23)
 ------------------------
