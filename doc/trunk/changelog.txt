@@ -18,6 +18,7 @@ New Features:
 Bugfixes:
 - RTMPProtocolDecoder fixed to support RSO sendMessage (Jira CODECS-9)
 - Fixed Tomcat logging problem
+- Fixed memory leak in ServiceUtils
 
 
 Red5 0.7.0  (2008-02-23)
