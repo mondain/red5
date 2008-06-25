@@ -19,6 +19,9 @@ Bugfixes:
 - RTMPProtocolDecoder fixed to support RSO sendMessage (Jira CODECS-9)
 - Fixed Tomcat logging problem
 - Fixed memory leak in ServiceUtils
+- Fixed connection timeout (Jira SN-95 / APPSERVER-274)
+- Resolved exception with WarLoaderServlet (Jira APPSERVER-224)
+- Resolved log directory issue (Jira APPSERVER-246)
 
 
 Red5 0.7.0  (2008-02-23)
