@@ -22,6 +22,8 @@ Bugfixes:
 - Fixed connection timeout (Jira SN-95 / APPSERVER-274)
 - Resolved exception with WarLoaderServlet (Jira APPSERVER-224)
 - Resolved log directory issue (Jira APPSERVER-246)
+- Resolved ServerStream issue with w3c logging (Jira APPSERVER-263)
+- Added patch to support ability to implement IBroadcastStream for custom streaming protocols (Jira SN-87)
 
 
 Red5 0.7.0  (2008-02-23)
