@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xml:id="clustering" xmlns="http://docbook.org/ns/docbook" 
+   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
+   <title>Clustering</title>
+   <section xml:id="server-configuration">
+      <title>Server Configuration</title>
+      <para>There are several configuration files added to support Edge/Origin configuration,
+         they are under conf/:</para>
+      <blockquote>
+         <itemizedlist mark="-">
+            <listitem>
+               <para>red5-edge.xml, red5-edge-core.xml -- used for Edge Spring bean configuration.</para>
+            </listitem>
+            <listitem>
+               <para>red5-origin.xml, red5-origin-core.xml -- used for Origin Spring bean configuration</para>
+            </listitem>
+         </itemizedlist>
+      </blockquote>
+   </section>
+   <section xml:id="configure-edge-server">
+      <title>Configure Edge Server</title>
+      <para>You don't need to deploy your application on Edges. We strongly recommend you to deploy
+         Edge on a different server from Origin. But it should be OK to deploy the Edge on the
+         same server as Origin.</para>
+   </section>
+   <section xml:id="edge-on-a-different-server-from-origin">
+      <title>Edge on a different Server from Origin</title>
+      <para>Update the configuration of bean "mrtmpClient" in red5-edge-core.xml to point to the
+      Origin server:</para>
+      
+      <programlisting>
+      <![CDATA[
+<bean id="mrtmpClient" class="org.red5.server.net.mrtmp.MRTMPClient"
+   init-method="start">
+   <property name="ioHandler" ref="mrtmpHandler" />
+   <property name="server" value="origin.example.com" />
+   <property name="port" value="${mrtmp.port}" />
+</bean>
+      ]]>
+      </programlisting>
+      <para>Now you can start the server with red5.sh or 'java -jar red5.jar'.</para>
+   </section>
+   <section xml:id="edge-on-the-same-server-as-origin">
+      <title>Edge on the same Server as Origin</title>
+      <para>You don't need to change red5.xml. Copy $(RED5_EDGE_ROOT)/conf/red5.xml to
+         $(RED5_ORIGIN_ROOT)/red5-edge.xml and start the server with
+         'java -jar red5.jar red5-edge.xml' or update red5.sh and add the 'red5-edge.xml'
+         parameter.</para>
+   </section>
+   <section xml:id="configure-origin-server">
+      <title>Configure Origin Server</title>
+      <para>Deploy your application to webapps/. Make sure your 9035 port is not blocked by a
+         firewall. The port will be used by Edge servers to create a connection with the Origin
+         server. Start the server with red5.sh or 'java -jar red5.jar'.</para>
+      <para>Your RTMP can go through Edges now. Your RTMPT and HTTP can go through Origin as normal.</para>
+   </section>
+</chapter>

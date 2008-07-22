@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xml:id="scripting" xmlns="http://docbook.org/ns/docbook" 
+   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
+   <title>Scripting Implementations</title>
+   <section xml:id="i-select-a-scripting-implementation">
+      <title>I. Select a scripting implementation</title>
+      <para>Level: Beginner</para>
+      <variablelist role="definition_list">
+         <varlistentry>
+            <term>Red5 includes interpreters for the following scripting languages:</term>
+            <listitem>
+               <itemizedlist mark="-">
+                  <listitem>
+                     <para>Javascript - version 1.6 (Mozilla Rhino version 1.6 R7)</para>
+                  </listitem>
+                  <listitem>
+                     <para>JRuby - version 1.0.1 (Ruby version 1.8.5)</para>
+                  </listitem>
+                  <listitem>
+                     <para>Jython - version 2.2 (Python version 2.1)</para>
+                  </listitem>
+                  <listitem>
+                     <para>Groovy - version 1.0</para>
+                  </listitem>
+                  <listitem>
+                     <para>Beanshell - version 2.0b4</para>
+                  </listitem>
+               </itemizedlist>
+            </listitem>
+         </varlistentry>
+         <varlistentry>
+            <term>Future versions may include:</term>
+            <listitem>
+               <itemizedlist mark="-">
+                  <listitem>
+                     <para>JudoScript</para>
+                  </listitem>
+                  <listitem>
+                     <para>Scala</para>
+                  </listitem>
+                  <listitem>
+                     <para>PHP (This one is non-trivial, I may just provide a bridge)</para>
+                  </listitem>
+                  <listitem>
+                     <para>Actionscript (Maybe SSAS)</para>
+                  </listitem>
+               </itemizedlist>
+            </listitem>
+         </varlistentry>
+      </variablelist>
+      <para>The scripting implementation classes are pre-specified in the following locations depending upon your Java version:</para>
+      <blockquote>
+         <literallayout>
+Java5 - js-engine.jar, jython-engine.jar, groovy-engine.jar
+Java6 - resources.jar</literallayout>
+      </blockquote>
+      <para>File location: /META-INF/services/javax.script.ScriptEngineFactory</para>
+      <para>It is most likely that the classes read from the jdk or jre will be prefered over any specified elsewhere.</para>
+   </section>
+   <section xml:id="ii-configuring-spring">
+      <title>II. Configuring Spring</title>
+      <para>Level: Intermediate</para>
+      <para>Step one is to locate your web applications red5-web.xml file. Within the xml config file the web.scope bean definition must supply a web.handler, this handler is your Red5 application (An application must extend the org.red5.server.adapter.ApplicationAdapter class).</para>
+      <para>The application provides access to the Red5 server and any service instances that are created. The service instances and the application itself may be scripted.
+Bean definitions in Spring config files may not have the same id, here are some web handler definition examples:</para>
+      <itemizedlist mark="-">
+         <listitem>
+            <para>Java class implementation</para>
+            <programlisting>
+            <![CDATA[
+<bean id="web.handler" class="org.red5.server.webapp.oflaDemo.MultiThreadedApplicationAdapter" />
+            ]]>
+             </programlisting>
+         </listitem>
+         <listitem>
+            <para>Javascript implementation</para>
+            <programlisting>
+            <![CDATA[
+<bean id="web.handler" class="org.red5.server.script.rhino.RhinoScriptFactory">
+  <constructor-arg index="0" value="classpath:applications/main.js"/>
+  <constructor-arg index="1">
+    <list>
+    	<value>org.red5.server.api.IScopeHandler</value>
+    	<value>org.red5.server.adapter.IApplication</value>
+    </list>
+</constructor-arg>
+<constructor-arg index="2">
+	<value>org.red5.server.adapter.ApplicationAdapter</value>
+</constructor-arg>
+</bean>
+            ]]>
+           </programlisting>
+         </listitem>
+         <listitem>
+            <para>Ruby implementation</para>
+            <programlisting>
+            <![CDATA[
+<bean id="web.handler" class="org.springframework.scripting.jruby.JRubyScriptFactory">
+<constructor-arg index="0" value="classpath:applications/main.rb"/>
+<constructor-arg index="1">
+	<list>
+		<value>org.red5.server.api.IScopeHandler</value>
+		<value>org.red5.server.adapter.IApplication</value>
+	</list>
+</constructor-arg>
+</bean>
+            ]]>
+            </programlisting>
+         </listitem>
+         <listitem>
+            <para>Groovy implementation</para>
+            <programlisting>
+            <![CDATA[
+<bean id="web.handler" class="org.red5.server.script.groovy.GroovyScriptFactory">
+<constructor-arg index="0" value="classpath:applications/main.groovy"/>
+<constructor-arg index="1">
+	<list>
+		<value>org.red5.server.api.IScopeHandler</value>
+		<value>org.red5.server.adapter.IApplication</value>
+	</list>
+</constructor-arg>
+</bean>
+            ]]>
+            </programlisting>
+         </listitem>
+         <listitem>
+            <para>Python implementation</para>
+            <programlisting>
+            <![CDATA[
+<bean id="web.handler" class="org.red5.server.script.jython.JythonScriptFactory">
+	<constructor-arg index="0" value="classpath:applications/main.py"/>
+	<constructor-arg index="1">
+		<list>
+    		<value>org.red5.server.api.IScopeHandler</value>
+    		<value>org.red5.server.adapter.IApplication</value>
+		</list>
+	</constructor-arg>
+        <constructor-arg index="2">
+		<list>
+            <value>One</value>
+            <value>2</value>
+            <value>III</value>
+        </list>
+    </constructor-arg>
+</bean>
+            ]]>
+            </programlisting>
+         </listitem>
+      </itemizedlist>
+      <variablelist role="definition_list">
+         <varlistentry>
+            <term>In general the configuration using scripted classes is defined using the constructor arguments (see interpreter section) in the following order:</term>
+            <listitem>
+               <para>Argument 1 - Location of the script source file</para>
+               <variablelist role="definition_list">
+                  <varlistentry>
+                     <term>Argument 2 - Java interfaces implemented by the script</term>
+                     <listitem>
+                        <para>The interfaces for the code which extends an Application are basically boilerplate as seen in the examples above; You do not
+have to use those interfaces in all your script definitions.</para>
+                     </listitem>
+                  </varlistentry>
+                  <varlistentry>
+                     <term>Argument 3 - Java classes extended by the script</term>
+                     <listitem>
+                        <para>The extended class is not always necessary, it depends upon the scripting engine implementation.</para>
+                     </listitem>
+                  </varlistentry>
+               </variablelist>
+            </listitem>
+         </varlistentry>
+      </variablelist>
+      <para>The example location starts with classpath:applications which in physical disk terms for the "oflaDemo" application equates to webapps/oflaDemo/WEB-INF/applications</para>
+   </section>
+   <section xml:id="iii-creating-an-application-script">
+      <title>III. Creating an application script</title>
+      <para>Level: Intermediate</para>
+   </section>
+   <section xml:id="application-adapter">
+      <title>1. Application adapter</title>
+      <para>Scripting an application adapter is more difficult in some languages than it is in others, because of this I present the Ruby example which works really well and is easy to write and integrate. The application services are easily written in any of the supported languages, but they require a Java interface at a minimum.</para>
+      <orderedlist numeration="lowerroman">
+         <listitem>
+            <para>JRuby application adapter implementation</para>
+            <programlisting>
+            <![CDATA[
+# JRuby
+require 'java'
+module RedFive
+    include_package "org.red5.server.api"
+    include_package "org.red5.server.api.stream"
+    include_package "org.red5.server.api.stream.support"
+    include_package "org.red5.server.adapter"
+    include_package "org.red5.server.stream"
+end
+
+#
+# application.rb - a translation into Ruby of the ofla demo application, a red5 example.
+#
+# @author Paul Gregoire
+#
+class Application &lt; RedFive::ApplicationAdapter
+
+    attr_reader :appScope, :serverStream
+        attr_writer :appScope, :serverStream
+
+        def initialize
+           #call super to init the superclass, in this case a Java class
+           super
+           puts "Initializing ruby application"
+        end
+
+        def appStart(app)
+        puts "Ruby appStart"
+                @appScope = app
+                return true
+        end
+
+        def appConnect(conn, params)
+                puts "Ruby appConnect"
+                measureBandwidth(conn)
+                puts "Ruby appConnect 2"
+                if conn.instance_of?(RedFive::IStreamCapableConnection)
+                    puts "Got stream capable connection"
+                        sbc = RedFive::SimpleBandwidthConfigure.new
+                        sbc.setMaxBurst(8388608)
+                        sbc.setBurst(8388608)
+                        sbc.setOverallBandwidth(8388608)
+                        conn.setBandwidthConfigure(sbc)
+                end
+                return super
+        end
+
+        def appDisconnect(conn)
+                puts "Ruby appDisconnect"
+                if appScope == conn.getScope &amp;&amp; @serverStream != nil
+                        @serverStream.close
+                end
+                super
+        end
+
+        def toString
+                return "Ruby toString"
+        end
+
+    def setScriptContext(scriptContext)
+           puts "Ruby application setScriptContext"
+    end
+
+    def method_missing(m, *args)
+      super unless @value.respond_to?(m)
+      return @value.send(m, *args)
+    end
+
+end   
+          ]]>
+         </programlisting>
+         </listitem>
+      </orderedlist>
+   </section>
+   <section xml:id="application-services">
+      <title>2. Application services</title>
+      <para>Here is an example of a Java interface (Yes, the methods are supposed to be empty) which is used in the examples to provide a template for applications which will gather a list of files and return them as a "Map" (key-value pairs) to the caller.</para>
+      <orderedlist numeration="lowerroman">
+         <listitem>
+            <para>Simple Java interface for implementation by scripts</para>
+            <programlisting>
+             <![CDATA[
+package org.red5.server.webapp.oflaDemo;
+             
+import java.util.Map;
+
+public interface IDemoService {
+
+        /**
+     * Getter for property 'listOfAvailableFLVs'.
+     *
+     * @return Value for property 'listOfAvailableFLVs'.
+     */
+    public Map getListOfAvailableFLVs();
+
+    public Map getListOfAvailableFLVs(String string);
+
+}
+         ]]>
+         </programlisting>
+         </listitem>
+         <listitem>
+            <para>Spring bean definition for a script implementation of the interface</para>
+            <programlisting>
+            <![CDATA[   
+<bean id="demoService.service" class="org.springframework.scripting.jruby.JRubyScriptFactory">
+   <constructor-arg index="0" value="classpath:applications/demoservice.rb"/>
+   <constructor-arg index="1">
+      <list>
+         <value>org.red5.server.webapp.oflaDemo.IDemoService</value>
+      </list>
+   </constructor-arg>
+</bean>
+            ]]>
+            </programlisting>
+         </listitem>
+         <listitem>
+            <para>JRuby script implementing the interface</para>
+            <programlisting>
+            <![CDATA[
+# JRuby - style
+require 'java'
+module RedFive
+    include_package "org.springframework.core.io"
+    include_package "org.red5.server.webapp.oflaDemo"
+end
+include_class "org.red5.server.api.Red5"
+include_class "java.util.HashMap"
+
+#
+# demoservice.rb - a translation into Ruby of the ofla demo application, a red5 example.
+#
+# @author Paul Gregoire
+#
+class DemoService &lt; RedFive::DemoServiceImpl
+
+    attr_reader :filesMap
+    attr_writer :filesMap
+
+        def initialize
+           puts "Initializing ruby demoservice"
+           super
+           @filesMap = HashMap.new
+        end
+
+        def getListOfAvailableFLVs
+                puts "Getting the FLV files"
+                begin
+            dirname = File.expand_path('webapps/oflaDemo/streams').to_s
+                        Dir.open(dirname).entries.grep(/\.flv$/) do |dir|
+                            dir.each do |flvName|
+                            fileInfo = HashMap.new
+                            stats = File.stat(dirname+'/'+flvName)
+                            fileInfo["name"] = flvName
+                            fileInfo["lastModified"] = stats.mtime
+                            fileInfo["size"] = stats.size || 0
+                    @filesMap[flvName] = fileInfo
+                    print 'FLV Name:', flvName
+                    print 'Last modified date:', stats.mtime
+                    print 'Size:', stats.size || 0
+                    print '-------'
+                end
+            end
+                rescue Exception =&gt; ex
+                        puts "Error in getListOfAvailableFLVs #{errorType} \n"
+                        puts "Exception: #{ex} \n"
+                        puts caller.join("\n");
+                end
+                return filesMap
+        end
+
+        def formatDate(date)
+                return date.strftime("%d/%m/%Y %I:%M:%S")
+        end
+
+    def method_missing(m, *args)
+      super unless @value.respond_to?(m)
+      return @value.send(m, *args)
+    end
+
+end
+         ]]>
+         </programlisting>
+         </listitem>
+         <listitem>
+            <para>Java application implementing the interface, upon which the Ruby code was based (This code is NOT needed when using the script)</para>
+            <programlisting>
+            <![CDATA[
+package org.red5.server.webapp.oflaDemo;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.red5.server.api.IScope;
+import org.red5.server.api.Red5;
+import org.springframework.core.io.Resource;
+
+public class DemoService {
+
+        protected static Log log = LogFactory.getLog(DemoService.class.getName());
+
+        /**
+     * Getter for property 'listOfAvailableFLVs'.
+     *
+     * @return Value for property 'listOfAvailableFLVs'.
+     */
+    public Map getListOfAvailableFLVs() {
+                IScope scope = Red5.getConnectionLocal().getScope();
+                Map&lt;String, Map&gt; filesMap = new HashMap&lt;String, Map&gt;();
+                Map&lt;String, Object&gt; fileInfo;
+                try {
+                        log.debug("getting the FLV files");
+                        Resource[] flvs = scope.getResources("streams/*.flv");
+                        if (flvs != null) {
+                                for (Resource flv : flvs) {
+                                        File file = flv.getFile();
+                                        Date lastModifiedDate = new Date(file.lastModified());
+                                        String lastModified = formatDate(lastModifiedDate);
+                                        String flvName = flv.getFile().getName();
+                                        String flvBytes = Long.toString(file.length());
+                                        if (log.isDebugEnabled()) {
+                                                log.debug("flvName: " + flvName);
+                                                log.debug("lastModified date: " + lastModified);
+                                                log.debug("flvBytes: " + flvBytes);
+                                                log.debug("-------");
+                                        }
+                                        fileInfo = new HashMap&lt;String, Object&gt;();
+                                        fileInfo.put("name", flvName);
+                                        fileInfo.put("lastModified", lastModified);
+                                        fileInfo.put("size", flvBytes);
+                                        filesMap.put(flvName, fileInfo);
+                                }
+                        }
+
+                        Resource[] mp3s = scope.getResources("streams/*.mp3");
+                        if (mp3s != null) {
+                                for (Resource mp3 : mp3s) {
+                                        File file = mp3.getFile();
+                                        Date lastModifiedDate = new Date(file.lastModified());
+                                        String lastModified = formatDate(lastModifiedDate);
+                                        String flvName = mp3.getFile().getName();
+                                        String flvBytes = Long.toString(file.length());
+                                        if (log.isDebugEnabled()) {
+                                                log.debug("flvName: " + flvName);
+                                                log.debug("lastModified date: " + lastModified);
+                                                log.debug("flvBytes: " + flvBytes);
+                                                log.debug("-------");
+                                        }
+                                        fileInfo = new HashMap&lt;String, Object&gt;();
+                                        fileInfo.put("name", flvName);
+                                        fileInfo.put("lastModified", lastModified);
+                                        fileInfo.put("size", flvBytes);
+                                        filesMap.put(flvName, fileInfo);
+                                }
+                        }
+                } catch (IOException e) {
+                        log.error(e);
+                }
+                return filesMap;
+        }
+
+        private String formatDate(Date date) {
+                SimpleDateFormat formatter;
+                String pattern = "dd/MM/yy H:mm:ss";
+                Locale locale = new Locale("en", "US");
+                formatter = new SimpleDateFormat(pattern, locale);
+                return formatter.format(date);
+        }
+
+}   
+         ]]>
+         </programlisting>
+         </listitem>
+         <listitem>
+            <para>Flex AS3 method calling the service</para>
+            <programlisting>
+            <![CDATA[
+[Bindable]
+public var videoList:ArrayCollection;
+
+public function catchVideos():void{
+        // call server-side method
+        // create a responder and set it to getMediaList
+        var nc_responder:Responder = new Responder(getMediaList, null);
+        // call the server side method to get list of FLV's
+        nc.call("demoService.getListOfAvailableFLVs", nc_responder);
+}
+
+public function getMediaList(list:Object):void{
+        // this is the result of the server side getListOfAvailableFLVs
+        var mediaList:Array = new Array();
+        for(var items:String in list){
+            mediaList.push({label:items, size:list[items].size, dateModified:list[items].lastModified});
+        }
+        // videoList is bindable and the datagrid is set to use this for it's dataprovider
+        // wrap it in an ArrayCollection first
+        videoList = new ArrayCollection(mediaList);
+}
+         ]]>
+         </programlisting>
+         </listitem>
+      </orderedlist>
+   </section>
+   <section xml:id="iv-creating-your-own-interpreter">
+      <title>IV. Creating your own interpreter</title>
+      <para>Level: Advanced</para>
+      <para>Lets just open this up by saying that I attempted to build an interpreter for PHP this last weekend 02/2007 and it was a real pain; after four hours I had to give up. So what I learned from this is that you must first identify scripting languages which operate as applications, not as http request processors. Heres a test: Can X language be compiled into an executable or be run on the command-line? If yes then it should be trivial to integrate.</para>
+   </section>
+   <section xml:id="v-links-with-scripting-information">
+      <title>V. Links with scripting information</title>
+      <itemizedlist mark="-">
+         <listitem>
+            <para>Spring scripting</para>
+            <literallayout>
+               <link xl:href="http://static.springframework.org/spring/docs/2.0.x/reference/dynamic-language.html">http://static.springframework.org/spring/docs/2.0.x/reference/dynamic-language.html</link>
+               <link xl:href="http://rhinoinspring.sourceforge.net/">http://rhinoinspring.sourceforge.net/</link>
+            </literallayout>
+         </listitem>
+         <listitem>
+            <para>Java scripting</para>
+            <literallayout>
+
+                  <link xl:href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/">http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/</link>
+
+                  <link xl:href="http://blogs.sun.com/sundararajan/">http://blogs.sun.com/sundararajan/</link>
+
+                  <link xl:href="https://scripting.dev.java.net/">https://scripting.dev.java.net/</link>
+
+                  <link xl:href="http://today.java.net/pub/a/today/2006/04/11/scripting-for-java-platform.html">http://today.java.net/pub/a/today/2006/04/11/scripting-for-java-platform.html</link>
+
+                  <link xl:href="http://www.javaworld.com/javaworld/jw-03-2005/jw-0314-scripting_p.html">http://www.javaworld.com/javaworld/jw-03-2005/jw-0314-scripting_p.html</link>
+
+                  <link xl:href="http://www.oreillynet.com/onjava/blog/2004/01/java_scripting_half_the_size_h.html">http://www.oreillynet.com/onjava/blog/2004/01/java_scripting_half_the_size_h.html</link>
+
+                  <link xl:href="http://www.robert-tolksdorf.de/vmlanguages.html">http://www.robert-tolksdorf.de/vmlanguages.html</link>
+            </literallayout>
+         </listitem>
+         <listitem>
+            <para>Javascript</para>
+            <literallayout>
+
+                  <link xl:href="http://www.mozilla.org/rhino/">http://www.mozilla.org/rhino/</link>
+
+                  <link xl:href="http://www.mozilla.org/rhino/ScriptingJava.html">http://www.mozilla.org/rhino/ScriptingJava.html</link>
+            </literallayout>
+         </listitem>
+         <listitem>
+            <para>Ruby</para>
+             <literallayout>
+
+                  <link xl:href="http://jruby.codehaus.org/">http://jruby.codehaus.org/</link>
+             </literallayout>
+         </listitem>
+         <listitem>
+            <para>BeanShell</para>
+             <literallayout>
+                  <link xl:href="http://www.beanshell.org/">http://www.beanshell.org/</link>
+             </literallayout>
+         </listitem>
+         <listitem>
+            <para>Python</para>
+            <literallayout>
+
+                  <link xl:href="http://www.jython.org/Project/">http://www.jython.org/Project/</link>
+
+                  <link xl:href="http://www.onjava.com/pub/a/onjava/2002/03/27/jython.html">http://www.onjava.com/pub/a/onjava/2002/03/27/jython.html</link>
+
+                  <link xl:href="http://jepp.sourceforge.net/">http://jepp.sourceforge.net/</link>
+
+                  <link xl:href="http://jpe.sourceforge.net/">http://jpe.sourceforge.net/</link>
+
+                  <link xl:href="http://jpype.sourceforge.net/">http://jpype.sourceforge.net/</link>
+            </literallayout>
+         </listitem>
+         <listitem>
+            <para>Python</para>
+            <literallayout>
+               <link xl:href="http://groovy.codehaus.org/">http://groovy.codehaus.org/</link>
+            </literallayout>
+         </listitem>
+      </itemizedlist>
+   </section>
+</chapter>

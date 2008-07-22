@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xml:id="applications-stream-directory" xmlns="http://docbook.org/ns/docbook" 
+   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
+   <title>Build Environment Setup</title>
+   <para>This document describes how applications can stream ondemand videos (VOD) from or
+      record to custom directories other than the default <citetitle>streams</citetitle> folder inside
+      the webapp.</para>
+   <section xml:id="filename-generator-service">
+      <title>Filename generator service</title>
+      <para>Red5 uses a concept called <citetitle>scope services</citetitle> for functionality that is provided
+         for a certain scope. One of these scope services is <link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamFilenameGenerator.html">IStreamFilenameGenerator</link>
+         that generates filenames for VOD streams that should be played or recorded.</para>
+   </section>
+   <section xml:id="custom-generator">
+      <title>Custom generator</title>
+      <para>To generate filename in different folders, a new filename generator must be
+         implemented:</para>
+      <programlisting>
+      <![CDATA[
+import org.red5.server.api.IScope;
+import org.red5.server.api.stream.IStreamFilenameGenerator;
+
+public class CustomFilenameGenerator implements IStreamFilenameGenerator {
+
+/** Path that will store recorded videos. */
+public String recordPath = "recordedStreams/";
+/** Path that contains VOD streams. */
+public String playbackPath = "videoStreams/";
+
+public String generateFilename(IScope scope, String name,
+GenerationType type) {
+// Generate filename without an extension.
+return generateFilename(scope, name, null, type);
+}
+
+public String generateFilename(IScope scope, String name,
+String extension, GenerationType type) {
+String filename;
+if (type == GenerationType.RECORD)
+filename = recordPath + name;
+else
+filename = playbackPath + name;
+
+if (extension != null)
+// Add extension
+filename += extension;
+
+return filename;
+}
+}
+       ]]>
+       </programlisting>
+      <para>The above class will generate filenames for recorded streams like
+         <citetitle>recordedStreams/red5RecordDemo1234.flv</citetitle> and use the directory <citetitle>videoStreams</citetitle>
+         as source for all VOD streams.</para>
+   </section>
+   <section xml:id="activate-custom-generator">
+      <title>Activate custom generator</title>
+      <para>In the next step, the custom generator must be activate in the configuration
+         files for the desired application.</para>
+      <para>Add the following definition to <citetitle>yourApp/WEB-INF/red5-web.xml</citetitle>:</para>
+      <programlisting>
+      <![CDATA[   
+<bean id="streamFilenameGenerator" 
+    class="path.to.your.CustomFilenameGenerator" />
+      ]]>
+      </programlisting>
+      <para>This will use the class defined above to generate stream filenames.</para>
+   </section>
+   <section xml:id="change-paths-through-configuration">
+      <title>Change paths through configuration</title>
+      <para>While the class described here works as expected, it's a bit unhandy to
+         change the paths inside the code as every change requires recompilation
+         of the class.</para>
+      <para>Therefore you can pass parameters to the bean defined in the previous step
+         to specify the paths to use inside the configuration file.</para>
+      <para>Add two methods to your class that will be executed while the configuration
+         file is parsed:</para>
+      <programlisting>
+      <![CDATA[ 
+public void setRecordPath(String path) {
+recordPath = path;
+}
+
+public void setPlaybackPath(String path) {
+playbackPath = path;
+}
+      ]]>
+      </programlisting>
+      <para>Now you can set the paths inside the bean definition:</para>
+      <programlisting>
+      <![CDATA[    
+<bean id="streamFilenameGenerator" 
+   class="path.to.your.CustomFilenameGenerator">
+   <property name="recordPath" value="recordedStreams/" />
+   <property name="playbackPath" value="videoStreams/" />
+</bean>
+      ]]>
+      </programlisting>
+      <para>You can also move the paths to the <citetitle>yourApp/WEB-INF/red5-web.properties</citetitle>
+         file and use parameters to access them:</para>
+      <programlisting>
+      <![CDATA[
+<bean id="streamFilenameGenerator" 
+   class="path.to.your.CustomFilenameGenerator">
+   <property name="recordPath" value="${recordPath}" />
+   <property name="playbackPath" value="${playbackPath}" />
+</bean>
+      ]]>
+      </programlisting>
+      <para>In that case you will have to add the following lines to your properties
+         file:</para>
+      <programlisting>
+      <![CDATA[
+recordPath=recordedStreams/
+playbackPath=videoStreams/
+      ]]>
+      </programlisting>
+   </section>
+</chapter>
