@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xml:id="new-applications" xmlns="http://docbook.org/ns/docbook" 
+   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
+    <title>Create new applications in Red5</title>
+   <para></para>
+    <section xml:id="preface">
+        <title>Preface</title>
+        <para>This document describes how new applications can be created in Red5.
+            It applies to the new API introduced by Red5 0.4.
+        </para>
+    </section>
+    <section xml:id="the-application-directory">
+        <title>The application directory</title>
+        <para>Red5 stores all application definitions as folders inside the "webapps"
+            directory beneath the root of Red5.  So the first thing you will have to
+            do in order to create a new application, is to create a new subfolder
+            in "webapps".  By convention this folder should get the same name the
+            application will be reached later.
+        </para>
+        <para>Inside your new application, you will need a folder "WEB-INF" containing
+            configuration files about the classes to use.  You can use the templates
+            provided by Red5 in the folder "doc/templates/myapp".
+        </para>
+        <para>During the start of Red5, all folders inside "webapps" are searched for
+            a directory "WEB-INF" containing the configuration files.
+        </para>
+    </section>
+    <section xml:id="configuration">
+        <title>Configuration</title>
+        <para>The main configuration file that is loaded is "web.xml".  It contains the
+            following parameters:
+        </para>
+        <!--
+        <section xml:id="globalscope">
+            <title>globalScope</title>
+            <para>The name of the global scope, this should be left at the default:
+            </para>
+            <programlisting>
+            <![CDATA[                
+<context-param>
+    <param-name>globalScope</param-name>
+    <param-value>default</param-value>
+</context-param>
+            ]]>                             
+            </programlisting>
+        </section>
+        <section xml:id="contextconfiglocation">
+            <title>contextConfigLocation</title>
+            <para>Specifies the name(s) of handler configuration files for this application.
+                The handler configuration files reference the classes that are used to notify
+                the application about joining / leaving clients and that provide the methods
+                a client can call.</para>
+            <para>Additionally, the handler configuration files specify the scope hierarchy for
+                these classes.</para>
+            <para>The path name given here can contain wildcards to load multiple files:</para>
+            <programlisting>
+             <![CDATA[     
+<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/red5-*.xml</param-value>
+</context-param>
+             ]]>
+            </programlisting>
+        </section>
+        <section xml:id="locatorfactoryselector">
+            <title>locatorFactorySelector</title>
+            <para>References the configuration file of the root application context which
+                usually is "red5.xml":</para>
+            <programlisting>
+             <![CDATA[      
+<context-param>
+    <param-name>locatorFactorySelector</param-name>
+    <param-value>red5.xml</param-value>
+</context-param>
+             ]]>
+            </programlisting>
+        </section>
+        <section xml:id="parentcontextkey">
+            <title>parentContextKey</title>
+            <para>Name of the parent context, this usually is "default.context":</para>
+            <programlisting>
+             <![CDATA[    
+<context-param>
+    <param-name>parentContextKey</param-name>
+    <param-value>default.context</param-value>
+</context-param>
+             ]]>   
+            </programlisting>
+        </section>
+        <section xml:id="log4jconfiglocation">
+            <title>log4jConfigLocation</title>
+            <para>Path to the configuration file for the logging subsystem:</para>
+            <programlisting>
+            <![CDATA[    
+<context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/log4j.properties</param-value>
+</context-param>
+             ]]>  
+            </programlisting>
+            </section>-->
+        <section xml:id="webapprootkey">
+            <title>webAppRootKey</title>
+            <para>Unique name for this application, should be the public name:</para>
+            <programlisting>
+            <![CDATA[     
+<context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>/myapp</param-value>
+</context-param>
+            ]]> 
+            </programlisting>
+        </section>
+    </section>
+    <section xml:id="handler-configuration">
+        <title>Handler configuration</title>
+        <para>Every handler configuration file must contain at least three beans:</para>
+        <section xml:id="context">
+            <title>Context</title>
+            <para>The context bean has the reserved name <citetitle>web.context</citetitle> and is used to map paths
+                to scopes, lookup services and handlers.  The default class for this is
+                <citetitle>org.red5.server.Context</citetitle>.
+            </para>
+            <para>By default this bean is specified as:</para>
+            <programlisting>
+            <![CDATA[  
+<bean id="web.context" class="org.red5.server.Context" 
+    autowire="byType" />   
+            ]]>
+            </programlisting>
+            <para>Every application can only have one context.  However this context can be
+                shared across multiple scopes.
+            </para>
+        </section>
+        <section xml:id="scopes">
+            <title>Scopes</title>
+            <para>Every application needs at least one scope that links the handler to the
+                context and the server.  The scopes can be used to build a tree where clients
+                can connect to every node and share objects inside this scope (like shared
+                objects or live streams).  You can see the scopes as rooms or instances.</para>
+            <para>The default scope usually has the name <citetitle>web.scope</citetitle>, but the name can be chosen
+                arbitrarily.</para>
+            <para>The bean has the following properties:</para>
+            <blockquote>
+                <variablelist role="definition_list">
+                    <varlistentry>
+                        <term>
+                            <citetitle>server</citetitle>
+                        </term>
+                        <listitem>
+                            <para>This references the global server <citetitle>red5.server</citetitle>.</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>
+                            <citetitle>parent</citetitle>
+                        </term>
+                        <listitem>
+                            <para>References the parent for this scope and usually is <citetitle>global.scope</citetitle>.</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>
+                            <citetitle>context</citetitle>
+                        </term>
+                        <listitem>
+                            <para>The server context for this scope, use the <citetitle>web.context</citetitle> from above.</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>
+                            <citetitle>handler</citetitle>
+                        </term>
+                        <listitem>
+                            <para>The handler for this scope (see below).</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>
+                            <citetitle>contextPath</citetitle>
+                        </term>
+                        <listitem>
+                            <para>The path to use when connecting to this scope.</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>
+                            <citetitle>virtualHosts</citetitle>
+                        </term>
+                        <listitem>
+                            <para>A comma separated list of hostnames or ip addresses this scope runs at.</para>
+                        </listitem>
+                    </varlistentry>
+                </variablelist>
+            </blockquote>
+            <para>A sample definition looks like this:</para>
+            <programlisting>
+            <![CDATA[  
+<bean id="web.scope" class="org.red5.server.WebScope"
+    init-method="register">
+    <property name="server" ref="red5.server" />
+    <property name="parent" ref="global.scope" />
+    <property name="context" ref="web.context" />
+    <property name="handler" ref="web.handler" />
+    <property name="contextPath" value="/myapp" />
+    <property name="virtualHosts" value="localhost, 127.0.0.1" />
+</bean>
+            ]]>
+            </programlisting>
+            <para>You can move the values for <citetitle>contextPath</citetitle> and <citetitle>virtualHosts</citetitle> to a separate
+                properties file and use parameters.  In that case you need another bean:</para>
+            <programlisting>
+            <![CDATA[
+<bean id="placeholderConfig"
+    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="/WEB-INF/red5-web.properties" />
+</bean>
+            ]]>
+            </programlisting>
+            <para>Assuming a <citetitle>red5-web.properties</citetitle> containing the following data:</para>
+            <programlisting>
+            <![CDATA[    
+webapp.contextPath=/myapp
+webapp.virtualHosts=localhost, 127.0.0.1
+            ]]>
+            </programlisting>
+            <para>the properties of the scope can now be changed to:</para>
+            <programlisting>
+            <![CDATA[   
+<property name="contextPath" value="${webapp.contextPath}" />
+<property name="virtualHosts" value="${webapp.virtualHosts}" />
+            ]]>
+            </programlisting>
+            <para>The <citetitle>contextPath</citetitle> specified in the configuration can be seen as "root" path
+                of the scope.  You can add additional elements after the configured path when
+                connecting to dynamically create extra scopes.</para>
+            <para>These extra scopes all use the same handler but have their own properties,
+                shared objects and live streams.</para>
+        </section>
+        <section xml:id="handlers">
+            <title>Handlers</title>
+            <para>Every context needs a handler that implements the methods called when a client
+                connects to the scope, leaves it and that contains additional methods that can
+                be called by the client.  The interface these handlers need to implement is
+                specified by <citetitle>org.red5.server.api.IScopeHandler</citetitle>, however you can implement
+                other interfaces if you want to control access to shared objects or streams.</para>
+            <para>A sample implementation that can be used as base class can be found at
+                <citetitle>org.red5.server.adapter.ApplicationAdapter</citetitle>.  Please refer to the javadoc
+                documentation for further details.</para>
+            <para>The bean for a scope handler is configured by:</para>
+            <programlisting>
+            <![CDATA[   
+<bean id="web.handler" 
+    class="the.path.to.my.Application" 
+    singleton="true" />
+            ]]>
+            </programlisting>
+            <para>The <citetitle>id</citetitle> attribute is referenced by the scope definition above.</para>
+            <para>If you don't need any special server-side logic, you can use the default
+                application handler provided by Red5:</para>
+            <programlisting>
+            <![CDATA[  
+<bean id="web.handler" 
+  class="org.red5.server.adapter.MultiThreadedApplicationAdapter" 
+  singleton="true" />
+            ]]>
+            </programlisting>
+        </section>
+    </section>
+    <section xml:id="sample-handler">
+        <title>Sample handler</title>
+        <para>A sample handler can be implemented in a few lines of code:</para>
+        <programlisting>
+        <![CDATA[ 
+package the.path.to.my;
+
+import org.red5.server.adapter.MultiThreadedApplicationAdapter;
+
+public class Application extends MultiThreadedApplicationAdapter {
+
+    public Double add(Double a, Double b){
+        return a + b;
+    }
+
+}
+        ]]>    
+        </programlisting>
+        <para>Assuming the sample configuration above, you can call this method using the
+            following ActionScript snippet:</para>
+        <programlisting>
+        <![CDATA[ 
+nc = new NetConnection();
+nc.connect("rtmp://localhost/myapp");
+nc.onResult = function(obj) {
+trace("The result is " + obj);
+}
+nc.call("add", nc, 1, 2);
+        ]]> 
+        </programlisting>
+        <para>This should give you the output:</para>
+        <programlisting>The result is 3</programlisting>
+    </section>
+</chapter>
