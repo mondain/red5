@@ -27,7 +27,27 @@ and extract to the directory doc/reference/images
 Download http://red5.electroteque.org/dev/doc/reference/docbook-reference-src-images.zip
 and extract to the directory doc/reference/src/images
 
+The fulllist of required libraries are
 
+ant-contrib-1.0b3.jar - Ant Contrib - http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.tar.gz?modtime=1162486708&big_mirror=0
+
+fop.jar - FOP - http://xmlgraphics.apache.org/fop/download.html
+fop-hyph.jar - Objects For Formatting Objects required for FOP hypenation - http://offo.sourceforge.net/
+avalon-framework-4.2.0.jar - Apache Avalon Framework required by FOP - http://avalon.apache.org/closed.html
+batik-util.jar - Batik required by FOP - http://xmlgraphics.apache.org/batik/download.cgi
+commons-io-1.4.jar - Apache Commons IO required by FOP - http://commons.apache.org/io/
+commons-logging-1.1.1.jar - Apache Commons Logging required by FOP - http://commons.apache.org/logging/
+xmlgraphics-commons-1.3.1.jar - XML Graphics Commons required for FOP images - http://xmlgraphics.apache.org/commons/download.html 
+
+saxon.jar - Saxon 6.5 - http://saxon.sourceforge.net/
+xercesImpl.jar - Xerces required for Xinclude parsing - http://xerces.apache.org/xerces-j/
+xalan.jar - Xalan required by Xerces ?? - http://xml.apache.org/xalan-j/
+
+docbook-5.0 - Docbook 5 XML - http://www.docbook.org/xml/5.0/
+docbook-xsl-ns - Docbook XSL Namespace Stylesheets required by Docbook 5 - http://sourceforge.net/project/showfiles.php?group_id=21935&package_id=219178
+saxon-dbxsl-extensions.jar - Docbook XSL Extensions for Saxon - http://sourceforge.net/project/showfiles.php?group_id=21935&package_id=243973
+
+The Docbook 5 reference  - http://www.docbook.org/tdg5/en/html/docbook.html
 
 Thanks to Hibernate + Spring Framework, for providing the skeleton for
 DocBook documentation!
