@@ -102,7 +102,7 @@
         <section xml:id="webapprootkey">
             <title>webAppRootKey</title>
             <para>Unique name for this application, should be the public name:</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[     
 <context-param>
     <param-name>webAppRootKey</param-name>
@@ -122,7 +122,7 @@
                 <citetitle>org.red5.server.Context</citetitle>.
             </para>
             <para>By default this bean is specified as:</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[  
 <bean id="web.context" class="org.red5.server.Context" 
     autowire="byType" />   
@@ -194,7 +194,7 @@
                 </variablelist>
             </blockquote>
             <para>A sample definition looks like this:</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[  
 <bean id="web.scope" class="org.red5.server.WebScope"
     init-method="register">
@@ -209,7 +209,7 @@
             </programlisting>
             <para>You can move the values for <citetitle>contextPath</citetitle> and <citetitle>virtualHosts</citetitle> to a separate
                 properties file and use parameters.  In that case you need another bean:</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[
 <bean id="placeholderConfig"
     class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -218,14 +218,14 @@
             ]]>
             </programlisting>
             <para>Assuming a <citetitle>red5-web.properties</citetitle> containing the following data:</para>
-            <programlisting>
+            <programlisting language="ini">
             <![CDATA[    
 webapp.contextPath=/myapp
 webapp.virtualHosts=localhost, 127.0.0.1
             ]]>
             </programlisting>
             <para>the properties of the scope can now be changed to:</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[   
 <property name="contextPath" value="${webapp.contextPath}" />
 <property name="virtualHosts" value="${webapp.virtualHosts}" />
@@ -248,7 +248,7 @@ webapp.virtualHosts=localhost, 127.0.0.1
                 <citetitle>org.red5.server.adapter.ApplicationAdapter</citetitle>.  Please refer to the javadoc
                 documentation for further details.</para>
             <para>The bean for a scope handler is configured by:</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[   
 <bean id="web.handler" 
     class="the.path.to.my.Application" 
@@ -258,7 +258,7 @@ webapp.virtualHosts=localhost, 127.0.0.1
             <para>The <citetitle>id</citetitle> attribute is referenced by the scope definition above.</para>
             <para>If you don't need any special server-side logic, you can use the default
                 application handler provided by Red5:</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[  
 <bean id="web.handler" 
   class="org.red5.server.adapter.MultiThreadedApplicationAdapter" 
@@ -270,7 +270,7 @@ webapp.virtualHosts=localhost, 127.0.0.1
     <section xml:id="sample-handler">
         <title>Sample handler</title>
         <para>A sample handler can be implemented in a few lines of code:</para>
-        <programlisting>
+        <programlisting language="java">
         <![CDATA[ 
 package the.path.to.my;
 
@@ -287,7 +287,7 @@ public class Application extends MultiThreadedApplicationAdapter {
         </programlisting>
         <para>Assuming the sample configuration above, you can call this method using the
             following ActionScript snippet:</para>
-        <programlisting>
+        <programlisting language="java">
         <![CDATA[ 
 nc = new NetConnection();
 nc.connect("rtmp://localhost/myapp");

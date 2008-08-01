@@ -15,7 +15,7 @@
    <section>
       <title>Spring configuration</title>
       <para>The Spring configuration for the JMX implementation allows you to configure the "domain" for MBean registration and listener port for the HTML adaptor. The default entries are shown below.</para>
-      <programlisting>
+      <programlisting language="xml">
          <![CDATA[   
 <!-- JMX server -->
 <!-- JMX server -->
@@ -51,7 +51,7 @@
             ]]>
       </programlisting>
       <para>The config settings for the jmxAgent bean is located in the red5.properties, these are:</para>
-      <programlisting>
+      <programlisting language="ini">
          <![CDATA[
  # JMX
 jmx.rmi.port.registry=9999

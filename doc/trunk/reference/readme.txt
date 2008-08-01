@@ -47,6 +47,8 @@ docbook-5.0 - Docbook 5 XML - http://www.docbook.org/xml/5.0/
 docbook-xsl-ns - Docbook XSL Namespace Stylesheets required by Docbook 5 - http://sourceforge.net/project/showfiles.php?group_id=21935&package_id=219178
 saxon-dbxsl-extensions.jar - Docbook XSL Extensions for Saxon - http://sourceforge.net/project/showfiles.php?group_id=21935&package_id=243973
 
+xslthl-2.0.0.jar - XSLT Syntax Highlighting Extension - http://sourceforge.net/projects/xslthl
+
 The Docbook 5 reference  - http://www.docbook.org/tdg5/en/html/docbook.html
 
 Thanks to Hibernate + Spring Framework, for providing the skeleton for

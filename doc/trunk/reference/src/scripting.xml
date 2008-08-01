@@ -66,7 +66,7 @@ Bean definitions in Spring config files may not have the same id, here are some 
       <itemizedlist mark="-">
          <listitem>
             <para>Java class implementation</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[
 <bean id="web.handler" class="org.red5.server.webapp.oflaDemo.MultiThreadedApplicationAdapter" />
             ]]>
@@ -74,7 +74,7 @@ Bean definitions in Spring config files may not have the same id, here are some 
          </listitem>
          <listitem>
             <para>Javascript implementation</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[
 <bean id="web.handler" class="org.red5.server.script.rhino.RhinoScriptFactory">
   <constructor-arg index="0" value="classpath:applications/main.js"/>
@@ -93,7 +93,7 @@ Bean definitions in Spring config files may not have the same id, here are some 
          </listitem>
          <listitem>
             <para>Ruby implementation</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[
 <bean id="web.handler" class="org.springframework.scripting.jruby.JRubyScriptFactory">
 <constructor-arg index="0" value="classpath:applications/main.rb"/>
@@ -109,7 +109,7 @@ Bean definitions in Spring config files may not have the same id, here are some 
          </listitem>
          <listitem>
             <para>Groovy implementation</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[
 <bean id="web.handler" class="org.red5.server.script.groovy.GroovyScriptFactory">
 <constructor-arg index="0" value="classpath:applications/main.groovy"/>
@@ -125,7 +125,7 @@ Bean definitions in Spring config files may not have the same id, here are some 
          </listitem>
          <listitem>
             <para>Python implementation</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[
 <bean id="web.handler" class="org.red5.server.script.jython.JythonScriptFactory">
 	<constructor-arg index="0" value="classpath:applications/main.py"/>
@@ -182,7 +182,7 @@ have to use those interfaces in all your script definitions.</para>
       <orderedlist numeration="lowerroman">
          <listitem>
             <para>JRuby application adapter implementation</para>
-            <programlisting>
+            <programlisting language="java">
             <![CDATA[
 # JRuby
 require 'java'
@@ -264,7 +264,7 @@ end
       <orderedlist numeration="lowerroman">
          <listitem>
             <para>Simple Java interface for implementation by scripts</para>
-            <programlisting>
+            <programlisting language="java">
              <![CDATA[
 package org.red5.server.webapp.oflaDemo;
              
@@ -287,7 +287,7 @@ public interface IDemoService {
          </listitem>
          <listitem>
             <para>Spring bean definition for a script implementation of the interface</para>
-            <programlisting>
+            <programlisting language="xml">
             <![CDATA[   
 <bean id="demoService.service" class="org.springframework.scripting.jruby.JRubyScriptFactory">
    <constructor-arg index="0" value="classpath:applications/demoservice.rb"/>
@@ -302,7 +302,7 @@ public interface IDemoService {
          </listitem>
          <listitem>
             <para>JRuby script implementing the interface</para>
-            <programlisting>
+            <programlisting language="java">
             <![CDATA[
 # JRuby - style
 require 'java'
@@ -370,7 +370,7 @@ end
          </listitem>
          <listitem>
             <para>Java application implementing the interface, upon which the Ruby code was based (This code is NOT needed when using the script)</para>
-            <programlisting>
+            <programlisting language="java">
             <![CDATA[
 package org.red5.server.webapp.oflaDemo;
 
@@ -466,7 +466,7 @@ public class DemoService {
          </listitem>
          <listitem>
             <para>Flex AS3 method calling the service</para>
-            <programlisting>
+            <programlisting language="java">
             <![CDATA[
 [Bindable]
 public var videoList:ArrayCollection;

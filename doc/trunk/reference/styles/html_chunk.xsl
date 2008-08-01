@@ -11,8 +11,10 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
     xmlns="http://www.w3.org/TR/xhtml1/transitional"
     xmlns:d="http://docbook.org/ns/docbook"
-    exclude-result-prefixes="d"
+    xmlns:xslthl="http://xslthl.sf.net"
+    exclude-result-prefixes="d xslthl"
     version="1.0">
+    
     <xsl:import href="&db_xsl_path;/html/chunk.xsl" />
     <!--###################################################
                      HTML Settings
@@ -224,5 +226,19 @@
                 </xsl:if>
             </div>
         </xsl:if>
+    </xsl:template>
+    
+    <!--###################################################
+        Syntax Highlighting
+        ################################################### --> 
+    
+    <xsl:param name="highlight.source" select="1"/>
+    <xsl:param name="highlight.default.language">xml</xsl:param>
+    <xsl:template match='xslthl:keyword'>
+        <font font-weight="bold" color="blue"><xsl:apply-templates/></font>
+    </xsl:template>
+    
+    <xsl:template match='xslthl:comment'>
+        <font font-style="italic" color="grey"><xsl:apply-templates/></font>
     </xsl:template>
 </xsl:stylesheet>
