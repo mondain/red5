@@ -10,7 +10,8 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 	xmlns:fo="http://www.w3.org/1999/XSL/Format"
 	xmlns:d="http://docbook.org/ns/docbook"
-	exclude-result-prefixes="d"
+	xmlns:xslthl="http://xslthl.sf.net"
+	exclude-result-prefixes="d xslthl"
 	version="1.0"> 
 	<xsl:import href="&db_xsl_path;/fo/docbook.xsl"/> 
 		
@@ -160,14 +161,14 @@
 		<!-- justify-end removed from block attributes (space problem in title.markup) -->
 		<fo:block end-indent="{$toc.indent.width}pt"
 			last-line-end-indent="-{$toc.indent.width}pt"
-			white-space-treatment="ignore"
+			white-space-treatment="preserve"
 			linefeed-treatment="ignore"
 			text-align-last="justify"
 			white-space-collapse="true">
 			<fo:inline keep-with-next.within-line="always">
 				<!-- print Chapters in bold style -->
 				<xsl:choose>
-					<xsl:when test="local-name(.) = 'chapter'">
+					<xsl:when test="local-name(.) = 'd:chapter'">
 						<xsl:attribute name="font-weight">bold</xsl:attribute>
 					</xsl:when>
 				</xsl:choose>        
@@ -551,4 +552,17 @@
 		<fo:block/>
 	</xsl:template>
 	
+	<!--###################################################
+		Syntax Highlighting
+		################################################### --> 
+	
+	<xsl:param name="highlight.source" select="1"/>
+	<xsl:param name="highlight.default.language">xml</xsl:param>
+	<xsl:template match='xslthl:keyword'>
+		<fo:inline font-weight="bold" color="blue"><xsl:apply-templates/></fo:inline>
+	</xsl:template>
+	
+	<xsl:template match='xslthl:comment'>
+		<fo:inline font-style="italic" color="grey"><xsl:apply-templates/></fo:inline>
+	</xsl:template>
 </xsl:stylesheet>

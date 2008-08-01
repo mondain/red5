@@ -99,7 +99,7 @@
          <itemizedlist mark="-">
             <listitem>
                <para>Jetty</para>
-               <programlisting>
+               <programlisting language="xml">
                <![CDATA[
 <bean id="jetty6.server" class="org.red5.server.JettyLoader" init-method="init" autowire="byType" />
                 ]]>
@@ -107,7 +107,7 @@
             </listitem>
             <listitem>
                <para>Tomcat</para>
-               <programlisting>
+               <programlisting language="xml">
                <![CDATA[
 <bean id="tomcat.server" class="org.red5.server.TomcatLoader" init-method="init" destroy-method="shutdown" autowire="byType">
    ... cut for brevity ...
@@ -126,7 +126,7 @@
          <para>The object (FLV) cache is configured / spring-wired in this file. Four implementations
             are currently available; The first one is our own creation (simple byte-buffers) and the others use
             WhirlyCache, or Ehcache. If no caching is desired then the NoCache implementation should be specified like so:</para>
-         <programlisting>
+         <programlisting language="xml">
          <![CDATA[
 <bean id="object.cache" class="org.red5.server.cache.NoCacheImpl"/>
          ]]>
@@ -135,7 +135,7 @@
          <itemizedlist mark="-">
             <listitem>
                <para>Red5 homegrown simple example</para>
-               <programlisting>
+               <programlisting language="xml">
                <![CDATA[
 <bean id="object.cache" class="org.red5.server.cache.CacheImpl" init-method="init" autowire="byType"> 
    <property name="maxEntries"><value>5</value></property>
@@ -146,7 +146,7 @@
             <listitem>
                <para>EhCache <link xl:href="http://ehcache.sourceforge.net/">http://ehcache.sourceforge.net/</link>
                </para>
-               <programlisting>
+               <programlisting language="xml">
                <![CDATA[   
          <bean id="object.cache" class="org.red5.server.cache.EhCacheImpl" init-method="init">
             <property name="diskStore" value="java.io.tmpdir" />
@@ -172,7 +172,7 @@
             <listitem>
                <para>Whirlycache <link xl:href="https://whirlycache.dev.java.net/">https://whirlycache.dev.java.net/</link>
                </para>
-               <programlisting>
+               <programlisting language="xml">
                <![CDATA[
 <bean id="object.cache" class="org.red5.server.cache.WhirlyCacheImpl" init-method="init" autowire="byType">
 <property name="maxEntries" value="5" />
@@ -205,7 +205,7 @@
          <itemizedlist mark="-">
             <listitem>
                <para>Jetty</para>
-               <programlisting>
+               <programlisting language="xml">
                <![CDATA[
 <bean id="rtmpt.server" class="org.red5.server.net.rtmpt.RTMPTLoader" init-method="init" autowire="byType" />
                ]]>
@@ -213,7 +213,7 @@
             </listitem>
             <listitem>
                <para>Tomcat</para>
-               <programlisting>
+               <programlisting language="xml">
                <![CDATA[
 <bean id="rtmpt.server" class="org.red5.server.net.rtmpt.TomcatRTMPTLoader" init-method="init" autowire="byType">
    ... cut for brevity ...
@@ -254,7 +254,7 @@
          <itemizedlist mark="-">
             <listitem>
                <para>Java application</para>
-               <programlisting>
+               <programlisting language="xml">
                <![CDATA[
 <bean id="web.handler" class="org.red5.server.webapp.oflaDemo.Application" singleton="true" />   
                ]]> 
@@ -262,7 +262,7 @@
             </listitem>
             <listitem>
                <para>Javascript / Rhino application</para>
-               <programlisting>
+               <programlisting language="xml">
                <![CDATA[ 
 <bean id="web.handler" class="org.red5.server.script.rhino.RhinoScriptFactory">
    <constructor-arg index="0" value="classpath:applications/main.js"/>
@@ -283,7 +283,7 @@
             </listitem>
             <listitem>
                <para>Ruby application</para>
-               <programlisting>
+               <programlisting language="xml">
                <![CDATA[      
 <bean id="web.handler" class="org.red5.server.script.jruby.JRubyScriptFactory">
    <constructor-arg index="0" value="classpath:applications/main.rb"/>

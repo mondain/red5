@@ -28,7 +28,7 @@
       <para>Update the configuration of bean "mrtmpClient" in red5-edge-core.xml to point to the
       Origin server:</para>
       
-      <programlisting>
+      <programlisting language="xml">
       <![CDATA[
 <bean id="mrtmpClient" class="org.red5.server.net.mrtmp.MRTMPClient"
    init-method="start">

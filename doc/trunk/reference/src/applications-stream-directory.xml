@@ -15,7 +15,7 @@
       <title>Custom generator</title>
       <para>To generate filename in different folders, a new filename generator must be
          implemented:</para>
-      <programlisting>
+      <programlisting language="java">
       <![CDATA[
 import org.red5.server.api.IScope;
 import org.red5.server.api.stream.IStreamFilenameGenerator;
@@ -59,7 +59,7 @@ return filename;
       <para>In the next step, the custom generator must be activate in the configuration
          files for the desired application.</para>
       <para>Add the following definition to <citetitle>yourApp/WEB-INF/red5-web.xml</citetitle>:</para>
-      <programlisting>
+      <programlisting language="xml">
       <![CDATA[   
 <bean id="streamFilenameGenerator" 
     class="path.to.your.CustomFilenameGenerator" />
@@ -76,7 +76,7 @@ return filename;
          to specify the paths to use inside the configuration file.</para>
       <para>Add two methods to your class that will be executed while the configuration
          file is parsed:</para>
-      <programlisting>
+      <programlisting language="java">
       <![CDATA[ 
 public void setRecordPath(String path) {
 recordPath = path;
@@ -88,7 +88,7 @@ playbackPath = path;
       ]]>
       </programlisting>
       <para>Now you can set the paths inside the bean definition:</para>
-      <programlisting>
+      <programlisting language="xml">
       <![CDATA[    
 <bean id="streamFilenameGenerator" 
    class="path.to.your.CustomFilenameGenerator">
@@ -99,7 +99,7 @@ playbackPath = path;
       </programlisting>
       <para>You can also move the paths to the <citetitle>yourApp/WEB-INF/red5-web.properties</citetitle>
          file and use parameters to access them:</para>
-      <programlisting>
+      <programlisting language="xml">
       <![CDATA[
 <bean id="streamFilenameGenerator" 
    class="path.to.your.CustomFilenameGenerator">
@@ -110,7 +110,7 @@ playbackPath = path;
       </programlisting>
       <para>In that case you will have to add the following lines to your properties
          file:</para>
-      <programlisting>
+      <programlisting language="ini">
       <![CDATA[
 recordPath=recordedStreams/
 playbackPath=videoStreams/

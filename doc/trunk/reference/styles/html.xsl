@@ -10,9 +10,11 @@
 ]>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                version="1.0"
                 xmlns="http://www.w3.org/TR/xhtml1/transitional"
-                exclude-result-prefixes="#default">
+                xmlns:d="http://docbook.org/ns/docbook"
+                xmlns:xslthl="http://xslthl.sf.net"
+                exclude-result-prefixes="d xslthl"
+                version="1.0">
                 
 <xsl:import href="&db_xsl_path;/html/docbook.xsl"/>
 
@@ -96,5 +98,20 @@
 			<xsl:apply-templates mode="titlepage.mode" />
 		</div>
 	</xsl:template>
+    
+    
+    <!--###################################################
+        Syntax Highlighting
+        ################################################### --> 
+    
+    <xsl:param name="highlight.source" select="1"/>
+    <xsl:param name="highlight.default.language">xml</xsl:param>
+    <xsl:template match='xslthl:keyword'>
+        <font font-weight="bold" color="blue"><xsl:apply-templates/></font>
+    </xsl:template>
+    
+    <xsl:template match='xslthl:comment'>
+        <font font-style="italic" color="grey"><xsl:apply-templates/></font>
+    </xsl:template>
   
 </xsl:stylesheet>

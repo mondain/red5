@@ -22,7 +22,9 @@
             corresponding error message.</para>
          <para>An example handler that only allows access to streams that have a name
             starting with <citetitle>liveStream</citetitle> is described below:</para>
-         <programlisting><![CDATA[ import org.red5.server.api.IScope;
+         <programlisting language="java">
+            <![CDATA[ 
+            import org.red5.server.api.IScope;
             import org.red5.server.api.stream.IStreamPlaybackSecurity;
             
             public class NamePlaybackSecurity implements IStreamPlaybackSecurity {
@@ -57,7 +59,9 @@
          <para>An example handler that only allows authenticated connections to publish a
             live stream starting with <citetitle>liveStream</citetitle> and deny all other access is described
             below:</para>
-         <programlisting><![CDATA[import org.red5.server.api.IConnection;
+         <programlisting language="java">
+            <![CDATA[
+            import org.red5.server.api.IConnection;
             import org.red5.server.api.IScope;
             import org.red5.server.api.Red5;
             import org.red5.server.api.stream.IStreamPublishSecurity;
@@ -108,7 +112,8 @@
          <citetitle>saySomething</citetitle> through the SO is allowed. All write access to properties is
          denied. You could however change properties through serverside code as these
          changes are never protected by the security handlers.</para>
-      <programlisting><![CDATA[
+      <programlisting language="java">
+         <![CDATA[
          import java.util.List;
          import org.red5.server.api.IScope;
          import org.red5.server.api.so.ISharedObject;
@@ -157,7 +162,7 @@
       <programlisting>registerSharedObjectSecurity(new SampleSOSecurityHandler());</programlisting>
       <para>If you want to register a security handler only for a given shared object,
          use code like this:</para>
-      <programlisting>
+      <programlisting language="java">
          <![CDATA[
 ISharedObject so = getSharedObject(scope, "MySharedObject");
 so.registerSharedObjectSecurity(new MySOSecurityHandler());]]>
