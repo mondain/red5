@@ -20,7 +20,7 @@
             Workspace" and hit next</para>
              <mediaobject>
                 <imageobject>
-                   <imagedata  width="100%" scalefit="1" format="PNG"
+                   <imagedata  width="70%" scalefit="1" format="PNG"
                       fileref="file:images/eclipse-import.png"/>
                 </imageobject>
              </mediaobject>
@@ -36,7 +36,7 @@
             <para>Make sure red5 is selected in the projects area and hit "Finish"</para>
             <mediaobject>
                <imageobject>
-                  <imagedata width="100%" scalefit="1" format="PNG"
+                  <imagedata width="70%" scalefit="1" format="PNG"
                      fileref="file:images/eclipse-import-project.png"/>
                </imageobject>
             </mediaobject>
@@ -67,7 +67,7 @@
             <para>Type a name for the debug configuration (ie "Red") and type "org.red5.server.Standalone" an the main class. Add extra VM arguments in the arguments tab if required.</para>
             <mediaobject>
                <imageobject>
-                  <imagedata width="100%" scalefit="1" format="PNG"
+                  <imagedata width="70%" scalefit="1" format="PNG"
                      fileref="file:images/eclipse-debug-setup.png"/>
                </imageobject>
             </mediaobject>
@@ -79,7 +79,7 @@
             <para>Console logging will appear in the console window.</para>
             <mediaobject>
                <imageobject>
-                  <imagedata align="right" width="6in" format="PNG"
+                  <imagedata width="70%" scalefit="1" format="PNG"
                      fileref="file:images/eclipse-console.png"/>
                </imageobject>
             </mediaobject>
