@@ -24,6 +24,9 @@ Bugfixes:
 - Resolved log directory issue (Jira APPSERVER-246)
 - Resolved ServerStream issue with w3c logging (Jira APPSERVER-263)
 - Added patch to support ability to implement IBroadcastStream for custom streaming protocols (Jira SN-87)
+- Resolved OSX connection problem with players > version 9,0,115
+- Added patch for InvocationTargetException on missing files (Jira SN-99 and SN-97)
+- Fixed a small issue with stream ids > 100
 
 
 Red5 0.7.0  (2008-02-23)
