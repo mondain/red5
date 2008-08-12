@@ -27,6 +27,8 @@ Bugfixes:
 - Resolved OSX connection problem with players > version 9,0,115
 - Added patch for InvocationTargetException on missing files (Jira SN-99 and SN-97)
 - Fixed a small issue with stream ids > 100
+- Added patch for flv metadata handling
+- Added patch for RTMPT client
 
 
 Red5 0.7.0  (2008-02-23)
