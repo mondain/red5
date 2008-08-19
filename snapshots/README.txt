@@ -1,0 +1,1 @@
+This directory contains pre-compiled versions of Red5 or its modules / demos
