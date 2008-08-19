@@ -30,6 +30,9 @@ Bugfixes:
 - Added patch for flv metadata handling
 - Added patch for RTMPT client
 
+Other:
+- Split demos and flash sources into their own top level directories
+
 
 Red5 0.7.0  (2008-02-23)
 ------------------------
