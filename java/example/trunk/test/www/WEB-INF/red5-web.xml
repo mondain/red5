@@ -19,16 +19,10 @@
 		<property name="virtualHosts" value="${webapp.virtualHosts}" />
 	</bean>
 
-	<bean id="web.handler" 
-	    class="org.red5.server.webapp.test.Application" 
-		singleton="true" />
+	<bean id="web.handler" class="org.red5.demos.test.Application"/>
 		
-	<bean id="test.service" 
-	    class="org.red5.server.webapp.test.TestService" 
-		singleton="true" />	
+	<bean id="test.service" class="org.red5.demos.test.TestService"/>	
 
-	<bean id="echo.service" 
-	    class="org.red5.samples.services.EchoService" 
-		singleton="true" />	
+	<bean id="echo.service" class="org.red5.server.service.EchoService"/>	
 
 </beans>

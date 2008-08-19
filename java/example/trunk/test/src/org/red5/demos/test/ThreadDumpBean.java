@@ -1,4 +1,4 @@
-package org.red5.server.performance;
+package org.red5.demos.test;
 
 import java.io.Serializable;
 import java.util.Collection;

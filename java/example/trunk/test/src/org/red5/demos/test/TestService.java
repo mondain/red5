@@ -1,4 +1,4 @@
-package org.red5.server.webapp.test;
+package org.red5.demos.test;
 
 public class TestService {
 
