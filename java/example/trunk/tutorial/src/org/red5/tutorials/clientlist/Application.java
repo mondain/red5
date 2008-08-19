@@ -21,7 +21,7 @@ package org.red5.tutorials.clientlist;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.red5.samples.components.ClientManager;
+import org.red5.components.ClientManager;
 import org.red5.server.adapter.ApplicationAdapter;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
