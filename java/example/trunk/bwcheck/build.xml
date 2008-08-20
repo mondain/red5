@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="bwcheck" basedir="." default="jar">
+<project name="bwcheck" basedir="." default="war">
     <!-- user overides for project properties -->
     <property file="${user.home}/build.properties"/>
     <!-- base project properties -->
@@ -81,6 +81,55 @@
 			</manifest>
 		</war>		
     </target>
+	
+	<!-- Updates snapshot repository -->
+	<target name="upload-snapshot" depends="war">
+		<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="svnant.jar" /> 
+	
+		<condition property="java.version.name" value="java5" else="java6">
+			<not>
+				<available classname="javax.script.Bindings"/>
+			</not>
+		</condition>
+	
+		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
+			<status path="build.xml" textStatusProperty="svn.info.status" lastChangedRevisionProperty="svn.info.lastrev" revisionProperty="svn.info.rev"/> 
+		</svn>
+		<echo message="Svn info - status: ${svn.info.status} last rev: ${svn.info.lastrev} rev: ${svn.info.rev}"/>
+	
+		<property name="snapshot.name" value="${ant.project.name}-r${svn.info.rev}-${java.version.name}.war"/>
+		<property name="snapshot.path" value="../../../../snapshots/"/>
+	
+		<echo message="Destination: ${snapshot.path}${snapshot.name}"/>
+	
+		<!-- make a copy of the red5.jar with a versioned name + the java version -->
+		<move file="dist/${ant.project.name}.war" tofile="${snapshot.path}${snapshot.name}"/>
+	
+		<!-- check if the file is already versioned -->
+		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
+			<status path="${svn.url}/snapshots/${snapshot.name}" textStatusProperty="svn.info.status"/> 
+		</svn>
+		<echo message="Svn info - status: ${svn.info.status}"/>	
+	
+       	<condition property="add-file" value="true" else="false">
+	   		<equals arg1="${svn.info.status}" arg2="unversioned"/>
+      	</condition>
+       	<echo message='File does not exist in repository: ${add-file}'/>
+
+		<antcall target="svn-add" inheritAll="true" inheritRefs="true">
+			<param name="file.path" value="${snapshot.path}${snapshot.name}"/>
+		</antcall>
+		
+		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
+			<commit message="Added snapshot" file="${snapshot.path}${snapshot.name}"/>
+		</svn>	
+	</target>
+	
+	<target name="svn-add" if="add-file">
+		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
+			<add file="${file.path}" force="true"/>
+		</svn>	
+	</target>		
 	
     <target name="all" depends="clean, prepare, compile, jar, war"/>
     
