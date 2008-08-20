@@ -1,4 +1,4 @@
-package org.red5.server.midi;
+package org.red5.demos.midi;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
