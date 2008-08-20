@@ -5,7 +5,7 @@
    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" 
    version="2.4"> 
 
-	<display-name>Red5 Test App</display-name>
+	<display-name>test</display-name>
 	
 	<context-param>
 		<param-name>webAppRootKey</param-name>
@@ -14,9 +14,7 @@
 
 	<servlet>
 		<servlet-name>gateway</servlet-name>
-		<servlet-class>
-			org.red5.server.net.servlet.AMFGatewayServlet
-		</servlet-class>
+		<servlet-class>org.red5.server.net.servlet.AMFGatewayServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
     
@@ -25,8 +23,4 @@
 		<url-pattern>/gateway</url-pattern>
 	</servlet-mapping>
 
-    <taglib>
-        <taglib-uri>/tlds/c</taglib-uri>
-        <taglib-location>/WEB-INF/tlds/c.tld</taglib-location>
-    </taglib>
 </web-app>
