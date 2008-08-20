@@ -1,4 +1,4 @@
-package org.red5.server.webapp.echo;
+package org.red5.demos.echo;
 
 public class RemoteClass {
 

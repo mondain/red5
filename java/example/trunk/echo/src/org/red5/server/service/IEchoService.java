@@ -1,4 +1,4 @@
-package org.red5.samples.services;
+package org.red5.server.service;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
