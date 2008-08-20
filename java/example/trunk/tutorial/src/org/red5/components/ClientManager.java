@@ -77,7 +77,6 @@ public class ClientManager {
 	 * @param uid
 	 * 			the unique id of the user that connected
 	 */
-	@SuppressWarnings("unchecked")
 	public void addClient(IScope scope, String username, String uid) {
 		ISharedObject so = getSharedObject(scope);
 		so.setAttribute(uid, username);
@@ -93,7 +92,6 @@ public class ClientManager {
 	 * 			unique id of the user that disconnected
 	 * @return the username of the disconnected user
 	 */
-	@SuppressWarnings("unchecked")
 	public String removeClient(IScope scope, String uid) {
 		ISharedObject so = getSharedObject(scope);
 		if (!so.hasAttribute(uid)) {
