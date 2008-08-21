@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application xmlns="http://ns.adobe.com/air/application/1.0.M6">
+<application xmlns="http://ns.adobe.com/air/application/1.0">
 
 <!-- Adobe AIR Application Descriptor File Template.
 
@@ -18,7 +18,7 @@
 	<id>org.red5.admin</id>
 
 	<!-- Used as the filename for the application. Required. -->
-	<filename>admin</filename>
+	<filename>Red5 Admin</filename>
 
 	<!-- The name that is displayed in the AIR application installer. Optional. -->
 	<name>Red5 Admin</name>
@@ -36,7 +36,7 @@
 	<initialWindow>
 		<!-- The main SWF or HTML file of the application. Required. -->
 		<!-- Note: In Flex Builder, the SWF reference is set automatically. -->
-		<content>adminPanel.swf</content>
+		<content>Red5Admin.swf</content>
 		
 		<!-- The title of the main window. Optional. -->
 		<title>Red5 Admin</title>
@@ -131,5 +131,4 @@
 		<!-- </fileType> -->
 	<!-- </fileTypes> -->
 
-<name>admin</name>
 </application>
