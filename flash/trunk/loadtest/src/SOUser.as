@@ -23,7 +23,7 @@ package {
 		
 		private var useDirty:Boolean = false;
 		
-		private var updateTimer:Timer;
+		private var updateTimer:Timer = null;
 		private var updateInterval:int = 10;
 		
 		private var encoding:uint = ObjectEncoding.AMF3;
@@ -45,6 +45,7 @@ package {
 		public function stop():void {
 			if (updateTimer) {
 				updateTimer.stop();
+				updateTimer = null;
 			}
 			if (so) {
 				so.close();
@@ -107,23 +108,26 @@ package {
 		}	
 		
 		public function startUpdater():void {
-			so = SharedObject.getRemote("loadtest", nc.uri, false);
+			so = SharedObject.getRemote("loadtestSO", nc.uri, false);
 			so.client = this;
 			so.addEventListener(SyncEvent.SYNC, onSync);
 			so.connect(nc);			
 			
 			if (!updateTimer) {
+				log('Creating timer');
 				updateTimer = new Timer(updateInterval);
 				updateTimer.addEventListener(TimerEvent.TIMER, updateSO);
 				updateTimer.start();			
 			}
 		}
 				
-		private function updateSO():void {				
+		public function updateSO():void {		
+			log('Updating SO');		
 			so.setProperty("randomInteger", int(Math.random()));
 			if (useDirty) {							
 				so.setDirty("randomInteger");	
 			}
+			so.send();
 			changesMade++;
 		}
 				
