@@ -59,16 +59,17 @@
 		log('Net status: '+event.info.code);
         switch (event.info.code) {
             case "NetConnection.Connect.Success":
-                connector.label = "Disconnect";             
-            	//getList();
-            	applistRPC.send();
+                connectorbtn.label = "Disconnect";             
+            	getList();
+            	//applistRPC.send();
                 break;
             case "NetConnection.Connect.Failed":
                 break;
             case "NetConnection.Connect.Rejected":
             	break;
             case "NetConnection.Connect.Closed":	                
-				connector.label = 'Connect';
+				connectorbtn.label = 'Connect';
+            	listbtn.enabled = false;
 				break;                
         }				
 	}	
@@ -87,8 +88,8 @@
 	}	
 	
 	public function connect():void {       	
-    	log('Trying to ' + connector.label);	
-		if (connector.label === 'Connect') {
+    	log('Trying to ' + connectorbtn.label);	
+		if (connectorbtn.label === 'Connect') {
 			//  create the netConnection
 			nc = new NetConnection();
 			nc.objectEncoding = ObjectEncoding.AMF3;
@@ -102,7 +103,7 @@
 			nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
 	
 		    nc.connect('rtmp://' + hostString + '/installer', null);   
-		} else if (connector.label === 'Disconnect') {
+		} else if (connectorbtn.label === 'Disconnect') {
 			if (nc.connected) {
 				nc.close();
 			}
@@ -116,14 +117,26 @@
     
 	//callback handler
     public function handleAppList(resp:Object):void {
-		log('handle Application list ' + resp);
+		//log('handle Application list ' + resp);
 		traceObject(resp);
 		try {
-      		applicationList = resp as ArrayCollection;
-      		//go thru list and set nice role name
-      		for each (var str:String in applicationList) {
-      			trace(str);
+			var s:String = resp.body as String;
+			//log('Raw string: ' + s);
+			var xml:XML = new XML(s);
+			//log('XML: ' + xml);
+			var arr:Array = new Array();
+			for each (var property:XML in xml..application) {
+				log('Property: ' + property);				
+				var item:Item = new Item();
+				item.name = String(property.@name);
+				item.description = property.desc;
+				item.author = property.author;
+				item.filename = property.filename;
+				arr.push(item);
 			}
+			applicationList = new ArrayCollection(arr);
+			log('Got the application list');
+			listbtn.enabled = true;
   		} catch (e) {
   			log(e);
   		}		
@@ -141,6 +154,7 @@
 			arr.push(item);
 		}
 		applicationList = new ArrayCollection(arr);
+		listbtn.enabled = true;
 	}	
 	
 	public function handleClick(event:ListEvent):void {

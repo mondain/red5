@@ -18,13 +18,15 @@
 				<mx:DataGridColumn headerText="File Name" dataField="filename"/>
 			</mx:columns>
 		</mx:DataGrid>
-		<mx:Button x="10" y="271" label="Install" enabled="{selectedFilename != null}" click="install()"/>
+		<mx:Button x="10" y="271" label="Install" enabled="{selectedFilename != null}" click="install()" 
+			toolTip="Please take note of the java version before installing on your server (use the filename field)"/>
 		<mx:Button x="81" y="271" label="Uninstall" enabled="false" click="uninstall()"/>
-		<mx:Button x="164" y="271" label="List" click="getList()" enabled="false"/>
+		<mx:Button x="164" y="271" id="listbtn" label="List" click="getList()" enabled="false"/>
 		<mx:TextInput id="selectedApp" x="87" y="10"/>
 		<mx:Label x="10" y="12" text="Application" fontWeight="bold"/>
-		<mx:Button x="293" y="10" id="connector" label="Connect" click="connect()"/>
+		<mx:Button x="293" y="10" id="connectorbtn" label="Connect" click="connect()"/>
 	</mx:Panel>
-	<mx:TextArea x="432" y="10" width="323" height="343" id="messages"/>
+	<mx:TextArea x="432" y="38" width="323" height="315" id="messages"/>
+	<mx:Label x="432" y="12" text="Debug messages" fontWeight="bold"/>
 	
 </mx:Application>
