@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<appender name="OFLA" class="ch.qos.logback.core.FileAppender">
-		<File>log/oflademo.log</File>
+	<appender name="LOADTEST" class="ch.qos.logback.core.FileAppender">
+		<File>log/loadtest.log</File>
 		<Append>false</Append>
 		<Encoding>UTF-8</Encoding>
 		<BufferedIO>false</BufferedIO>
@@ -14,9 +14,9 @@
 	</appender>
 	<root>
 		<level value="DEBUG" />
-		<appender-ref ref="OFLA" />
+		<appender-ref ref="LOADTEST" />
 	</root>	
-	<logger name="org.red5.demos.oflaDemo">
+	<logger name="org.red5.demos.loadtest">
 		<level value="DEBUG" />
 	</logger>		
 </configuration>
