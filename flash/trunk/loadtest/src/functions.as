@@ -34,7 +34,7 @@
 	public var soUserList:ArrayCollection = new ArrayCollection();	
 	
 	
-	private static var timer:Timer;
+	private static var timer:Timer = null;
 	
 	public function init():void {
 		Security.allowDomain("*");
@@ -152,10 +152,14 @@
     	log('Got play status');
     }
     
-    public function doLoadTest():void {
+    public function startTest():void {
+    	log('Start test');
+    	if (ncPlayer.connected) {
+			ncPlayer.close();
+    	}
     	log('Load delay: '+requestDelay.text);
     	var delay:int = Number(requestDelay.text);
-    	if (delay === 0) {
+    	if (delay < 1) {
     		log('Invalid delay entered, setting to .1');
     		delay = .1;
     	}
@@ -173,6 +177,7 @@
     public function stopTest():void { 
     	if (timer) {      	
     		timer.stop();
+    		timer = null;
     	}
     	log('Trying to stop view');
     	if (ncPlayer && ncPlayer.connected) {
@@ -203,7 +208,7 @@
 			log('Creating a new viewer');
 			var viewer:Viewer = new Viewer();
 			viewer.sid = String(viewerList.length);
-			viewer.setEncoding(useAMF3.selected == true ? 3 : 0);
+			viewer.setEncoding(useAMF3.selected === true ? 3 : 0);
 			viewer.path = givenPath.text;
 			viewer.stream = playerStream.text;
 			viewer.start();
@@ -217,7 +222,7 @@
 			log('Creating a new SO user');
 			var souser:SOUser = new SOUser();
 			souser.sid = String(soUserList.length);
-			souser.setEncoding(useAMF3.selected == true ? 3 : 0);
+			souser.setEncoding(useAMF3.selected === true ? 3 : 0);
 			souser.setUpdateInterval(int(updateInterval.text));
 			souser.setUseDirtyFlag(useDirty.selected);
 			souser.start();
@@ -229,6 +234,13 @@
 			timer.stop();
 		}
 	}           
+	
+	private function forceSOUpdate():void {
+		log('Forcing update');
+		for each (var souser:SOUser in soUserList) {
+			souser.updateSO();
+		}
+	}
     
 	private function securityErrorHandler(e:SecurityErrorEvent):void {
 		log('Security Error: '+e);
@@ -259,10 +271,10 @@
 	    for (prop in obj) {
 	        val = obj[prop];
 	        if (typeof(val) == "object") {
-	            trace(indentString + " " + i + ": [Object]");
+	            log(indentString + " " + i + ": [Object]");
 	            traceObject(val, indent + 1);
 	        } else {
-	            trace(indentString + " " + prop + ": " + val);
+	            log(indentString + " " + prop + ": " + val);
 	        }
 	    }
 	}    

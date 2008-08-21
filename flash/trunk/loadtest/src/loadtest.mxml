@@ -15,7 +15,7 @@
 		<mx:Canvas label="Viewer Test" width="100%" height="100%">
 			<mx:HBox x="10" y="10" width="381">
 				<mx:Label text="Filename" fontWeight="bold"/>
-				<mx:TextInput id="playerStream" text="DarkKnight" width="158" cornerRadius="6"/>
+				<mx:TextInput id="playerStream" text="city_of_ember" width="158" cornerRadius="6"/>
 				<mx:Label text="Viewers" fontWeight="bold"/>
 				<mx:TextInput id="numRequest" text="0" width="38" cornerRadius="6" maxChars="4"/>
 			</mx:HBox>
@@ -44,6 +44,7 @@
 				<mx:Label text="User count" fontWeight="bold"/>
 				<mx:TextInput text="{soUserList.length}" editable="false"/>
 			</mx:HBox>
+			<mx:Button x="290" y="40" label="Force update" click="forceSOUpdate()"/>
 		</mx:Canvas>
 		<mx:Canvas label="Options" width="100%" height="100%">
 			<mx:CheckBox label="AMF3" fontWeight="bold" id="useAMF3" x="10" y="40" color="#000000"/>
@@ -53,12 +54,12 @@
 			</mx:HBox>
 		</mx:Canvas>
 	</mx:Accordion>
-	<mx:Button label="Start Test" click="doLoadTest()" x="115" y="452"/>
+	<mx:Button label="Start Test" click="startTest()" x="115" y="452"/>
 	<mx:Button label="Stop Test" click="stopTest()" x="221" y="452"/>
 	<mx:TextArea wordWrap="true" editable="false" width="402" height="128" id="messages" verticalScrollPolicy="auto" x="10" y="316"/>
 	<mx:Canvas width="10" height="10" cornerRadius="20" id="indicatorOn" backgroundColor="#00FF00" x="402" y="10" visible="false"/>
 	<mx:Canvas width="10" height="10" cornerRadius="20" id="indicatorOff" backgroundColor="#FF0000" x="402" y="10"/>
-	<mx:Button id="connector" label="Connect" click="doPlayerView()" toolTip="{this.label}" width="75" x="271" y="37"/>
-	<mx:TextInput id="givenPath" text="rtmp://{hostString}/oflaDemo" width="253" cornerRadius="6" x="10" y="37"/>
+	<mx:Button id="connector" label="Connect" click="doPlayerView()" toolTip="{this.label}" width="99" x="271" y="37"/>
+	<mx:TextInput id="givenPath" text="rtmp://{hostString}/loadtest" width="253" cornerRadius="6" x="10" y="37"/>
 	
 </mx:Application>
