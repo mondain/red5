@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<registry lastupdate="2008-08-20T19:04">
+	<applications>
+		<application name="admin">
+			<author>Martin M, Dan Rossi</author>
+			<desc>Administration console</desc>
+			<filename>admin-r2947-java6.war</filename>
+		</application>
+		<application name="oflaDemo">
+			<author>Red5 Team</author>
+			<desc>Demo originally created for the OFLA conference</desc>
+			<filename>oflaDemo-r2947-java6.war</filename>
+		</application>
+		<application name="midiDemo">
+			<author>John Grden, Luke Hubbard</author>
+			<desc>Demo originally created for the FITC conference, to demonstrate Midi functionality</desc>
+			<filename>midiDemo-r2953-java6.war</filename>
+		</application>
+		<application name="echo">
+			<author>Red5 Team</author>
+			<desc>Test tool for AMF0/AMF3 and RTMP/HTTP functionality</desc>
+			<filename>echo-r2953-java6.war</filename>
+		</application>
+		<application name="dump">
+			<author>Red5 Team</author>
+			<desc>Test tool for diagnosing protocol issues</desc>
+			<filename>dump-r2953-java6.war</filename>
+		</application>		
+		<application name="bwcheck">
+			<author>Red5 Team</author>
+			<desc>Bandwidth demo</desc>
+			<filename>bwcheck-r2953-java6.war</filename>
+		</application>	
+	</applications>
+</registry>
