@@ -14,6 +14,7 @@ New Features:
 - Added the ability to unload a context using the ContextLoader
 - Added RTMPS support (Jira SN-69)
 - Set default J2EE servlet container / HTTP server to Tomcat
+- Added Flex based application installer for red5 web applications
 
 Bugfixes:
 - RTMPProtocolDecoder fixed to support RSO sendMessage (Jira CODECS-9)
@@ -29,9 +30,11 @@ Bugfixes:
 - Fixed a small issue with stream ids > 100
 - Added patch for flv metadata handling
 - Added patch for RTMPT client
+- Added patch for start and stop scripts
 
 Other:
 - Split demos and flash sources into their own top level directories
+- Added application snapshot repository
 
 
 Red5 0.7.0  (2008-02-23)
