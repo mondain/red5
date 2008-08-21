@@ -40,6 +40,9 @@
 		name="main.application.release.out" 
 		location="${release.build.dir}/${output.swf.name}.swf"/>
 	<property 
+		name="air.swf.release.out" 
+		location="${release.build.dir}/${air.swf.name}.swf"/>
+	<property 
 		name="air.application.release.out" 
 		location="${output.swf.name}.air"/>
 	<property 
@@ -145,31 +148,53 @@
     		in="${main.application}"
     		out="${main.application.release.out}"
     	    additional='+configname=air -benchmark -optimize=true -debug=false -title "${swf.release.title}" -description "${swf.release.title}"' />
+
     </target>
+	
+	<target 
+	    	name="compile.air">
+	
+	    	<mxmlc.compile
+	    	    in="${air.application}"
+	    	    out="${air.swf.release.out}"
+	    	    config="${air.config.xml}"/>
+	  </target>
 	
     <!-- - - - - - - - - - - - - - - - - - 
           target: compile.air.release
          - - - - - - - - - - - - - - - - - -->
-    <target name="compile.air.release" depends="build.air.cert, compile.release">
+    <target name="compile.air.release" depends="cert.check, build.air.cert, compile.release, compile.air">
     	
         <java jar="${adt.jar}" fork="true" failonerror="true">
             <arg line="-package"/>
         	<arg line="-storetype pkcs12"/>
-        	<arg line="-keystore ${release.build.dir}/${air.cert.file}"/>
+        	<arg line="-keystore ${basedir}/${air.cert.file}"/>
         	<arg line="-keypass ${air.cert.password}"/>
+        	<arg line="-storepass ${air.cert.password}"/>
             <arg line="${air.release}"/>
             <arg line="${air.descriptor}"/>
         	<arg line="-C"/>
             <arg line="${release.build.dir}"/>
-            <arg line="${output.swf.name}.swf"/>
+            <arg line="${air.swf.name}.swf"/>
+        	<arg line="-C"/>
+        	<arg line="assets ."/>
         </java>
     </target>
+	
 	
 	<!-- - - - - - - - - - - - - - - - - - 
 	       target: build.air.cert
 	      - - - - - - - - - - - - - - - - - -->
-	<target name="build.air.cert">
-	        <java jar="${adt.jar}" fork="true" failonerror="true" dir="${release.build.dir}">
+	<target name="cert.check">
+		<condition property="cert.installed" value="true">
+			<available file="${basedir}/${air.cert.file}"/>
+		</condition>
+	</target>
+	
+	<target name="build.air.cert" unless="cert.installed">
+			
+		
+	        <java jar="${adt.jar}" fork="true" failonerror="true" dir="${basedir}">
 	            <arg line="-certificate"/>
 	        	<arg line="-cn ${air.cert.cname}"/>
 	        	<arg line="-ou ${air.cert.ounit}"/>
@@ -179,7 +204,7 @@
 	        	<arg line="${air.cert.file}"/>	
 	        	<arg line="${air.cert.password}"/>	
 	        </java>
-	    </target>
+	</target>
 	
 	<!--  additional='-benchmark -optimize=true -title "${swf.release.title}" -description "${swf.release.title}"' -->
 	
@@ -242,6 +267,7 @@
 		</exec>
     </target>
 
+
 	<!-- = = = = = = = = = = = = = = = = =
           macrodef: mxmlc.compile          
          = = = = = = = = = = = = = = = = = -->
@@ -251,8 +277,7 @@
 		
     	<attribute name="additional" default="" />
     	<attribute 
-    	    name="config" 
-    	    default="${flex.config.xml}" />
+    	    name="config" default="${flex.config.xml}" />
         <sequential>
         	<java
         		jar="${mxmlc.jar}"
