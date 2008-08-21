@@ -180,8 +180,7 @@ To register the class `com.fancycode.red5.HandlerSample` as handler `sample`,
 the following bean needs to be added to `WEB-INF/red5-web.xml`::
 
     <bean id="sample.service" 
-          class="com.fancycode.red5.HandlerSample" 
-          singleton="true" />
+          class="com.fancycode.red5.HandlerSample" />
 
 Note that the id of the bean is constructed as the name of the handler
 (here `sample`) and the keyword `service`.
@@ -397,8 +396,7 @@ must have a name of `<SharedObjectName>.<DottedServiceName>.soservice`, so
 the above example could also be defined with::
 
     <bean id="sampleSO.one.two.soservice" 
-          class="com.fancycode.red5.MySharedObjectHandler" 
-          singleton="true" />
+          class="com.fancycode.red5.MySharedObjectHandler" />
 
 
 Persistence
