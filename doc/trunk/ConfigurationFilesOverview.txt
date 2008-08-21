@@ -5,7 +5,7 @@
 :author: Joachim Bauch, Paul Gregoire
 :contact: jojo@struktur.de, mondain@gmail.com
 :updated: 26 September 2006
-:version: 0.6-dev
+:version: 0.7.1-dev
 
 .. contents::
 
@@ -13,11 +13,22 @@ Preface
 ==========================
 This document describes the configuration files used by Red5.
 
-Please note that this document is still *work in progress*, so some things
-may (and surely will) change until the final release of Red5!
+Please note that this document may be in-flux due to the current development nature of Red5.
+Things may and will change at a rapid pace while in this development stage. Expect the 
+final version when we release version 1.0 of Red5!
+
+There are three supported ways to run Red5 and they are designated as 
+
+1. Standalone
+2. Bootstrap
+3. WAR
+
+The first two are similar in that they create a JEE application server internally, this provides
+HTTP, JSP, and Servlet capabilities in addition to RTMP, RTMPT, and RTMPS services. The WAR version 
+is meant to be deployed to a JEE server (Tomcat, JBoss, etc...) and provides RTMP, RTMPT, and RTMPS services.
 
 
-Directory "conf"
+Server configuration directory - "conf"
 ==========================
 
 jetty.xml
@@ -25,10 +36,8 @@ jetty.xml
 The settings of the HTTP server and servlet container are specified using
 this file.  It runs on all available interfaces on port 5080 by default.
 
-See the `Jetty homepage`__ for further information about the syntax of this
-file.
-
-__ http://jetty.mortbay.org/jetty6/
+See the `Jetty homepage` for further information about the syntax of this
+file http://jetty.mortbay.org/jetty6/
 
 
 keystore
@@ -36,14 +45,11 @@ keystore
 Contains a sample private key and certificate to be used for secure
 connections.
 
-
 log4j.properties
 --------------------------
 Controls the log levels and output handlers for the logging subsystem.
 
-Further information about log4j can be found on `the official homepage`__.
-
-__ http://logging.apache.org/log4j/docs/
+Further information about log4j can be found at this location: http://logging.apache.org/log4j/docs/
 
 
 realm.properties (Jetty)
@@ -71,10 +77,10 @@ The format is::
 
 Passwords may be clear text, obfuscated or checksummed. For information on different
 digest support or available realm implementations use the how-to:
-http://tomcat.apache.org/tomcat-5.5-doc/realm-howto.html
+http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html
 
 Further information about tomcat realms can be found on `the official homepage` 
-http://tomcat.apache.org/tomcat-5.5-doc/catalina/docs/api/org/apache/catalina/realm/package-summary.html
+http://tomcat.apache.org/tomcat-6.0-doc/
 
 
 red5.globals
@@ -144,26 +150,6 @@ The other bean configurations are as follows (Only one may be used at a time):
 		</property>
 	</bean> 	
 
-- Whirlycache https://whirlycache.dev.java.net/
-    <bean id="object.cache" class="org.red5.server.cache.WhirlyCacheImpl" init-method="init" autowire="byType">
-        <property name="maxEntries" value="5" />
-	<property name="cacheConfig">
-	     <bean class="com.whirlycott.cache.CacheConfiguration">
-		  <property name="name" value="flv.cache" />
-		  <property name="maxSize" value="5" />
-		  <!-- This policy removes cached items, biased towards least frequently used (LFU) Items -->
-		  <property name="policy"><value>com.whirlycott.cache.policy.LFUMaintenancePolicy</value></property>
-		  <!-- This policy removes cached items, biased towards least recently used (LRU) Items -->
-		  <!-- property name="policy"><value>com.whirlycott.cache.policy.LRUMaintenancePolicy</value></property -->
-		  <!-- This policy removes cache items in the order in which they were added -->
-		  <!-- property name="policy"><value>com.whirlycott.cache.policy.FIFOMaintenancePolicy</value></property -->
-		  <!-- A predicate for filtering Collections of Items based on their expiration time -->
-		  <!-- property name="policy"><value>com.whirlycott.cache.policy.ExpirationTimePredicate</value></property -->		
-		  <!-- property name="backend"><value>com.whirlycott.cache.impl.ConcurrentHashMapImpl</value></property -->
-	          <property name="backend"><value>com.whirlycott.cache.impl.FastHashMapImpl</value></property>
-	      </bean>
-	  </property>
-      </bean>   
 
 
 red5-core.xml
@@ -185,18 +171,13 @@ Sets up the mapping between the RTMPT URLs and the servlets to use as well
 as specify the host and port to run on.  By default the RTMPT server runs on
 all available interfaces on port 8088.
 
-See the `Jetty homepage`__ for further information about the syntax of this
-file.
-
-__ http://jetty.mortbay.org/jetty6/
-
 
 web.xml (Tomcat)
 --------------------------
 Default web.xml file used by Tomcat.  The settings from this file are applied to a web
 application before it's own WEB_INF/web.xml file.
 Further info about the configuration of this file may be found here: 
-http://tomcat.apache.org/tomcat-5.5-doc/jasper-howto.html#Configuration
+http://tomcat.apache.org/tomcat-6.0-doc/jasper-howto.html#Configuration
 
 
 web-default.xml (Jetty)
@@ -214,7 +195,7 @@ Red5 applications are configured within this file. The scripting implementations
 applications are configured via Spring bean elements.
 
 - Java application
-    <bean id="web.handler" class="org.red5.server.webapp.oflaDemo.Application" singleton="true" />
+    <bean id="web.handler" class="org.red5.server.webapp.oflaDemo.Application" />
 
 - Javascript / Rhino application
     <bean id="web.handler" class="org.red5.server.script.rhino.RhinoScriptFactory">
