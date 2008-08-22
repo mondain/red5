@@ -159,7 +159,7 @@
 	
 	public function handleClick(event:ListEvent):void {
 		traceObject(event);
-        if (event.rowIndex > 0) {
+        if (event.rowIndex >= 0) {
         	selectedApp.text = grid.selectedItem.name;
         	selectedFilename = grid.selectedItem.filename;
         }
