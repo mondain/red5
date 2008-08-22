@@ -9,7 +9,7 @@
 		<application name="oflaDemo">
 			<author>Red5 Team</author>
 			<desc>Demo originally created for the OFLA conference</desc>
-			<filename>oflaDemo-r2947-java6.war</filename>
+			<filename>oflaDemo-r2967-java6.war</filename>
 		</application>
 		<application name="midiDemo">
 			<author>John Grden, Luke Hubbard</author>
@@ -31,5 +31,20 @@
 			<desc>Bandwidth demo</desc>
 			<filename>bwcheck-r2953-java6.war</filename>
 		</application>	
+		<application name="fitcDemo">
+			<author>Red5 Team</author>
+			<desc>Demo created for FITC conference</desc>
+			<filename>fitcDemo-r2967-java6.war</filename>
+		</application>		
+		<application name="messageRecorder">
+			<author>John Grden</author>
+			<desc>Demo created for Chris and Rebecca's wedding</desc>
+			<filename>messageRecorder-r2967-java6.war</filename>
+		</application>	
+		<application name="SOSample">
+			<author>Red5 Team</author>
+			<desc>Shared object demo</desc>
+			<filename>SOSample-r2967-java6.war</filename>
+		</application>						
 	</applications>
 </registry>
