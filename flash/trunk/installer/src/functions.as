@@ -137,8 +137,8 @@
 			applicationList = new ArrayCollection(arr);
 			log('Got the application list');
 			listbtn.enabled = true;
-  		} catch (e) {
-  			log(e);
+  		} catch (e:Error) {
+  			log(e.message);
   		}		
 	}    
 	
