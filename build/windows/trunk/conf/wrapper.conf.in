@@ -79,7 +79,23 @@ wrapper.java.classpath.62=../lib/jta.jar
 wrapper.java.library.path.1=../lib
 
 # Java Additional Parameters
-#wrapper.java.additional.1=
+wrapper.java.additional.1=-Xms256m 
+wrapper.java.additional.2=-Xmx1024m 
+wrapper.java.additional.3=-Xmn512m
+wrapper.java.additional.4=-Xss256k
+wrapper.java.additional.5=-XX:+AggressiveOpts
+wrapper.java.additional.6=-XX:+AggressiveHeap
+wrapper.java.additional.7=-XX:+UseConcMarkSweepGC
+wrapper.java.additional.8=-XX:+UseParNewGC
+wrapper.java.additional.9=-XX:ParallelGCThreads=4
+wrapper.java.additional.10=-XX:+ExplicitGCInvokesConcurrent 
+wrapper.java.additional.11=-XX:MinHeapFreeRatio=20
+wrapper.java.additional.12=-XX:NewSize=256m
+wrapper.java.additional.13=-XX:SurvivorRatio=16
+wrapper.java.additional.14=-Xrs
+wrapper.java.additional.15=-Djava.net.preferIPv4Stack=true
+wrapper.java.additional.16=-Dsun.rmi.dgc.client.gcInterval=990000
+wrapper.java.additional.17=-Dsun.rmi.dgc.server.gcInterval=990000
 
 # Initial Java Heap Size (in MB)
 #wrapper.java.initmemory=3
