@@ -5,20 +5,30 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
-			import flash.net.NetConnection;
+			import org.red5.flash.bwcheck.BandwidthDetection;
 			
-			private var nc:NetConnection;
-			private var serverURL:String = "rtmp://localhost/bwcheck";
+			//import flash.net.NetConnection;
+			
+			//private var nc:NetConnection;
+			//private var serverURL:String = "rtmp://localhost/bwcheck";
 			
 			public function onAppComplete(event:FlexEvent):void
 			{
-				nc = new NetConnection();
-				nc.client = this;
-				nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
+				var detect:BandwidthDetection = new BandwidthDetection();
+				detect.serverURL = "localhost";
+				detect.serverApplication = "bwcheck";
+				detect.clientServerService = "bwCheckService.onClientBWCheck";
+				detect.serverClientService = "bwCheckService.onServerClientBWCheck";
+				detect.ClientServer();
+				//detect.ServerClient();
+				//nc = new NetConnection();
+				//nc.client = this;
+				//nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
 				
-				nc.connect(serverURL);	
+				//nc.connect(serverURL);	
 			}
 			
+			/*
 			public function onBWCheck(obj:Object):void
 			{
 				//trace("Checking Bandwidth");
@@ -34,7 +44,7 @@
 			private function onStatus(event:NetStatusEvent):void
 			{
 				trace(event.info.code);
-			}
+			}*/
 			
 		]]>
 	</mx:Script>
