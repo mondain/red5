@@ -6,6 +6,8 @@ package org.red5.flash.bwcheck.events
 	{
 		public static const DETECT_STATUS:String = "detect_status";
 		public static const DETECT_COMPLETE:String = "detect_complete";
+		public static const DETECT_FAILED:String = "detect_failed";
+		
 		private var _info:Object;
 		
 		public function BandwidthDetectEvent(eventName:String)
