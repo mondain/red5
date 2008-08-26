@@ -64,9 +64,7 @@
             	//applistRPC.send();
                 break;
             case "NetConnection.Connect.Failed":
-                break;
             case "NetConnection.Connect.Rejected":
-            	break;
             case "NetConnection.Connect.Closed":	                
 				connectorbtn.label = 'Connect';
             	listbtn.enabled = false;
