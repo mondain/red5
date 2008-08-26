@@ -29,7 +29,7 @@
 		<application name="bwcheck">
 			<author>Red5 Team</author>
 			<desc>Bandwidth demo</desc>
-			<filename>bwcheck-r2953-java6.war</filename>
+			<filename>bwcheck-r3000-java6.war</filename>
 		</application>	
 		<application name="fitcDemo">
 			<author>Red5 Team</author>
