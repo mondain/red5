@@ -15,6 +15,7 @@ New Features:
 - Added RTMPS support (Jira SN-69)
 - Set default J2EE servlet container / HTTP server to Tomcat
 - Added Flex based application installer for red5 web applications
+- Added War auto-deployer service
 
 Bugfixes:
 - RTMPProtocolDecoder fixed to support RSO sendMessage (Jira CODECS-9)
