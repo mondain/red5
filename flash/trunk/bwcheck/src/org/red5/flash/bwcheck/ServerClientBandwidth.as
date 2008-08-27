@@ -14,7 +14,7 @@ package org.red5.flash.bwcheck
 			res = new Responder(onResult, onStatus);
 		}
 
-		public function onBWCheck(obj:Object):void
+		public function onBWCheck(obj:String):void
 		{
 				trace("Checking Bandwidth");
 				//dispatchStatus(info);
@@ -43,16 +43,24 @@ package org.red5.flash.bwcheck
 		public function start():void
 		{
 			nc.client = this;
-			nc.call(_service,res);
+			nc.call(_service,res, null);
 		}
 		
 		private function onResult(obj:Object):void
 		{
-					
+			for (var i in obj)
+			{
+				trace(i);	
+			}		
 		}
 		
 		private function onStatus(obj:Object):void
 		{
+			for (var i in obj)
+			{
+				trace(i);	
+			}
+			
 			switch (obj.code)
 			{
 				case "NetConnection.Call.Failed":

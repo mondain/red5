@@ -35,10 +35,13 @@
 				serverApplication = "bwcheck";
 				clientServerService = "bwCheckService.onClientBWCheck";
 				serverClientService = "bwCheckService.onServerClientBWCheck";
+				connect();
 				//ClientServer();
 				
-				ServerClient();
+				//ServerClient();
 			}
+			
+			
 			
 			/*
 			public function onBWCheck(obj:Object):void
