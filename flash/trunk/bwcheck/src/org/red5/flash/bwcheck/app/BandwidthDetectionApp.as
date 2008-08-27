@@ -2,6 +2,7 @@ package org.red5.flash.bwcheck.app
 {
 	import flash.events.NetStatusEvent;
 	import flash.net.NetConnection;
+	import flash.net.Responder;
 	
 	import mx.controls.TextArea;
 	import mx.core.Application;
@@ -45,19 +46,33 @@ package org.red5.flash.bwcheck.app
 			_serverClientService = service;
 		}
 		
-		private function connect():void
+		public function connect():void
 		{
 			nc = new NetConnection();
+			nc.objectEncoding = flash.net.ObjectEncoding.AMF0;
 			nc.client = this;
 			nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);	
 			nc.connect("rtmp://" + _serverURL + "/" + _serverApplication);
 		}
 		
+		public function onBWCheck(obj:String):void
+		{
+				trace("Checking Bandwidth");
+				//dispatchStatus(info);
+				//log.data = "Checking Bandwidth ..... \n\n";
+		}
+		
 		private function onStatus(event:NetStatusEvent):void
 		{
+			switch (event.info.code)
+			{
+				case "NetConnection.Connect.Success":
+					ServerClient();
+				break;	
+			}
 			txtLog.data += "\n" + event.info.code;
 		}
-			
+		
 		public function ClientServer():void
 		{
 			var clientServer:ClientServerBandwidth  = new ClientServerBandwidth();
@@ -73,7 +88,7 @@ package org.red5.flash.bwcheck.app
 		public function ServerClient():void
 		{
 			var serverClient:ServerClientBandwidth = new ServerClientBandwidth();
-			connect();
+			//connect();
 			serverClient.connection = nc;
 			serverClient.service = _serverClientService;
 			serverClient.addEventListener(BandwidthDetectEvent.DETECT_COMPLETE,onServerClientComplete);
