@@ -26,7 +26,7 @@ public class BandwidthDetection {
 		return clientServer.onClientBWCheck(params);
 	}
 
-	public void onServerClientBWCheck() {
+	public void onServerClientBWCheck(Object[] params) {
 		IConnection conn = Red5.getConnectionLocal();
 		ServerClientDetection serverClient = new ServerClientDetection();
 		serverClient.checkBandwidth(conn);

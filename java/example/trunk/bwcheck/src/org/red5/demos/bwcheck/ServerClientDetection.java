@@ -1,7 +1,9 @@
 package org.red5.demos.bwcheck;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.red5.server.api.IConnection;
 import org.red5.server.api.Red5;
@@ -9,11 +11,8 @@ import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IPendingServiceCallback;
 import org.red5.server.api.service.IServiceCapableConnection;
 import org.red5.server.api.stream.IStreamCapableConnection;
-
-import java.util.*;
-
-import java.util.Map;
-import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -43,7 +42,7 @@ public class ServerClientDetection implements IPendingServiceCallback,
 	private double[] payload_2 = new double[12000];
 
 	protected static Logger log = LoggerFactory
-			.getLogger(ServerClientDetection.class.getName());
+			.getLogger(ServerClientDetection.class);
 
 	public ServerClientDetection() {
 
@@ -74,11 +73,7 @@ public class ServerClientDetection implements IPendingServiceCallback,
 		p_client.setAttribute("payload_2", payload_2);
 
 		final IStreamCapableConnection beginningStats = this.getStats();
-		final Long start = new Long(System.nanoTime() / 1000000); // new
-																	// Long(System
-																	// .
-																	// currentTimeMillis
-																	// ());
+		final Long start = new Long(System.nanoTime() / 1000000); 
 
 		this.client = p_client;
 		beginningValues = new HashMap<String, Long>();
@@ -89,7 +84,8 @@ public class ServerClientDetection implements IPendingServiceCallback,
 		this.pakSent.add(start);
 		this.sent++;
 		log.info("Starting bandwidth check at " + start);
-		this.callBWCheck("");
+        
+		this.callBWCheck(p_client.getAttribute("payload_1"));
 
 	}
 
@@ -98,16 +94,16 @@ public class ServerClientDetection implements IPendingServiceCallback,
 	 */
 
 	public void resultReceived(IPendingServiceCall call) {
-		Long now = new Long(System.nanoTime() / 1000000); // new Long(System.
-															// currentTimeMillis
-															// ());
+		System.out.println(call.getException());
+	}
+	public void resultReceived2(IPendingServiceCall call) { 
+		Long now = new Long(System.nanoTime()/1000000); //new Long(System.currentTimeMillis());
 		this.pakRecv.add(now);
 		Long timePassed = (now - this.beginningValues.get("time"));
 
 		this.count++;
 
-		log.info("count: " + count + " sent: " + sent + " timePassed: "
-				+ timePassed + " latency: " + latency);
+        log.info("count: "+count+ " sent: "+sent+" timePassed: "+timePassed+" latency: "+latency);
 
 		if (count == 1) {
 			latency = Math.min(timePassed, 800);
@@ -123,8 +119,8 @@ public class ServerClientDetection implements IPendingServiceCallback,
 
 		}
 
-		// To run a very quick test, uncomment the following if statement and
-		// comment out the next 3 if statements.
+        
+        //To run a very quick test, uncomment the following if statement and comment out the next 3 if statements.
 
 		/*
 		 * else if (count == 2 && (timePassed < 2000)) { pakSent.add(now);
@@ -132,15 +128,16 @@ public class ServerClientDetection implements IPendingServiceCallback,
 		 * this.callBWCheck(this.client.getAttribute("payload")); }
 		 */
 
-		// The following will progressivly increase the size of the packets been
-		// sent until 1 second has elapsed.
+       
+        //The following will progressivly increase the size of the packets been sent until 1 second has elapsed.
 		else if ((count > 1 && count < 3) && (timePassed < 1000)) {
 			pakSent.add(now);
 			sent++;
 			cumLatency++;
 			log.info("Sending Second Payload at " + now);
 			this.callBWCheck(this.client.getAttribute("payload_1"));
-		} else if ((count >= 3 && count < 6) && (timePassed < 1000)) {
+        }
+        else if ((count >=3 && count < 6) && (timePassed < 1000)) {
 			pakSent.add(now);
 			sent++;
 			cumLatency++;
@@ -171,61 +168,44 @@ public class ServerClientDetection implements IPendingServiceCallback,
 			this.client.removeAttribute("payload_2");
 
 			final IStreamCapableConnection endStats = this.getStats();
-			deltaDown = (endStats.getWrittenBytes() - beginningValues
-					.get("b_down")) * 8 / 1000; // bytes to kbits
-			deltaUp = (endStats.getWrittenBytes() - beginningValues.get("b_up")) * 8 / 1000; // bytes
-																								// to
-																								// kbits
-			deltaTime = ((now - beginningValues.get("time")) - (latency * cumLatency)) / 1000; // total
-																								// dl
-																								// time
-																								// -
-																								// latency
-																								// for
-																								// each
-																								// packet
-																								// sent
-																								// in
-																								// secs
+            deltaDown = (endStats.getWrittenBytes() - beginningValues.get("b_down")) * 8 / 1000; // bytes to kbits
+            deltaUp = (endStats.getWrittenBytes() - beginningValues.get("b_up")) * 8 / 1000; // bytes to kbits
+            deltaTime = ((now - beginningValues.get("time")) - (latency * cumLatency)) / 1000; // total dl time - latency for each packet sent in secs
 			if (Math.round(deltaTime) <= 0) {
 				deltaTime = (now - beginningValues.get("time") + latency) / 1000;
 			}
 			kbitDown = Math.round(deltaDown / deltaTime); // kbits / sec
 			kbitUp = Math.round(deltaUp / deltaTime); // kbits / sec
 
-			if (kbitDown < 100)
-				kbitDown = 100;
+            if (kbitDown < 100) kbitDown = 100;
 
-			log.info("onBWDone: kbitDown = " + kbitDown + ", deltaDown= "
-					+ deltaDown + ", deltaTime = " + deltaTime + ", latency = "
-					+ this.latency);
+            log.info("onBWDone: kbitDown = " + kbitDown + ", deltaDown= " + deltaDown + ", deltaTime = " + deltaTime + ", latency = " + this.latency);
 
-			this.callBWDone(this.kbitDown, this.deltaDown, this.deltaTime,
-					this.latency);
+            this.callBWDone(this.kbitDown, this.deltaDown, this.deltaTime, this.latency);                                 
 		}
 
 	}
 
-	private void callBWCheck(Object params) {
+	private void callBWCheck(Object params)
+	{
 		IConnection conn = Red5.getConnectionLocal();
 
 		if (conn instanceof IServiceCapableConnection) {
-			((IServiceCapableConnection) conn).invoke("onBWCheck",
-					new Object[] { params }, this);
+			((IServiceCapableConnection) conn).invoke("onBWCheck", new Object[]{params}, this);
 		}
 	}
 
-	private void callBWDone(double kbitDown, double deltaDown,
-			double deltaTime, double latency) {
+	private void callBWDone(double kbitDown, double deltaDown, double deltaTime, double latency)
+	{
 		IConnection conn = Red5.getConnectionLocal();
 
 		if (conn instanceof IServiceCapableConnection) {
-			((IServiceCapableConnection) conn).invoke("onBWDone", new Object[] {
-					kbitDown, deltaDown, deltaTime, latency });
+			((IServiceCapableConnection) conn).invoke("onBWDone", new Object[]{kbitDown,  deltaDown, deltaTime, latency});
 		}
 	}
 
-	private IStreamCapableConnection getStats() {
+	private IStreamCapableConnection getStats()
+	{
 		IConnection conn = Red5.getConnectionLocal();
 		if (conn instanceof IStreamCapableConnection) {
 			return (IStreamCapableConnection) conn;

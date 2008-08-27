@@ -20,9 +20,9 @@
 	</bean>
 
 	<bean id="bwcheck.handler" 
-	    class="org.red5.webapps.bwcheck.BWApplication"
+	    class="org.red5.demos.bwcheck.BWApplication"
 		singleton="true" />
 
-	<bean id="bwCheckService.service" class="org.red5.webapps.bwcheck.BandwidthDetection" />
+	<bean id="bwCheckService.service" class="org.red5.demos.bwcheck.BandwidthDetection" />
 	
 </beans>
