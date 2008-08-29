@@ -16,7 +16,8 @@ New Features:
 - Set default J2EE servlet container / HTTP server to Tomcat
 - Added Flex based application installer for red5 web applications
 - Added War auto-deployer service
-- Added additional MP3 ID3 data to the onMetaData event 
+- Added additional MP3 ID3 data to the onMetaData event
+- Added onImageData and MP3 cover art support 
 
 Bugfixes:
 - RTMPProtocolDecoder fixed to support RSO sendMessage (Jira CODECS-9)
