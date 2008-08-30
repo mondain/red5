@@ -50,7 +50,7 @@ package org.red5.flash.bwcheck
 		{
 			nc.client = this;
 			var obj:Array = new Array();
-			nc.call(_service, res, new Array());
+			nc.call(_service, res);
 		}
 		
 		private function onResult(obj:Object):void
@@ -132,7 +132,12 @@ package org.red5.flash.bwcheck
 		
 		private function onStatus(obj:Object):void
 		{
-			
+			switch (obj.code)
+			{
+				case "NetConnection.Call.Failed":
+					dispatchFailed(obj);
+				break;
+			}
 		}
 	}
 }
