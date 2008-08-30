@@ -27,9 +27,9 @@
 			<filename>dump-r2953-java6.war</filename>
 		</application>		
 		<application name="bwcheck">
-			<author>Red5 Team</author>
+			<author>Dan Rossi</author>
 			<desc>Bandwidth demo</desc>
-			<filename>bwcheck-r3000-java6.war</filename>
+			<filename>bwcheck-r3027-java6.war</filename>
 		</application>	
 		<application name="fitcDemo">
 			<author>Red5 Team</author>
