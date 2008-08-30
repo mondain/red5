@@ -32,6 +32,7 @@ public class ServerClientDetection implements IPendingServiceCallback,
 	double deltaDown = 0;
 	double deltaUp = 0;
 	double deltaTime = 0;
+	Long timePassed;
 
 	List<Long> pakSent = new ArrayList<Long>();
 	List<Long> pakRecv = new ArrayList<Long>();
@@ -78,14 +79,13 @@ public class ServerClientDetection implements IPendingServiceCallback,
 		this.client = p_client;
 		beginningValues = new HashMap<String, Long>();
 		beginningValues.put("b_down", beginningStats.getWrittenBytes());
-		beginningValues.put("b_up", beginningStats.getReadBytes());
 		beginningValues.put("time", start);
 
 		this.pakSent.add(start);
 		this.sent++;
-		log.info("Starting bandwidth check at " + start);
+		log.info("Starting bandwidth check {} ", new Object[]{start});
         
-		this.callBWCheck(p_client.getAttribute("payload_1"));
+		this.callBWCheck("");
 
 	}
 
@@ -93,17 +93,15 @@ public class ServerClientDetection implements IPendingServiceCallback,
 	 * Handle callback from service call.
 	 */
 
-	public void resultReceived(IPendingServiceCall call) {
-		System.out.println(call.getException());
-	}
-	public void resultReceived2(IPendingServiceCall call) { 
+
+	public void resultReceived(IPendingServiceCall call) { 
 		Long now = new Long(System.nanoTime()/1000000); //new Long(System.currentTimeMillis());
 		this.pakRecv.add(now);
-		Long timePassed = (now - this.beginningValues.get("time"));
+		timePassed = (now - this.beginningValues.get("time"));
 
-		this.count++;
+		count++;
 
-        log.info("count: "+count+ " sent: "+sent+" timePassed: "+timePassed+" latency: "+latency);
+        log.info("count: {} sent: {} timePassed: {} latency: {}", new Object[]{count, sent, timePassed, latency});
 
 		if (count == 1) {
 			latency = Math.min(timePassed, 800);
@@ -114,7 +112,7 @@ public class ServerClientDetection implements IPendingServiceCallback,
 			pakSent.add(now);
 			sent++;
 
-			log.info("Sending First Payload at " + now);
+			log.info("Sending First Payload at {} count: {} sent: {} ", new Object[]{now, count, sent});
 			this.callBWCheck(this.client.getAttribute("payload"));
 
 		}
@@ -134,14 +132,14 @@ public class ServerClientDetection implements IPendingServiceCallback,
 			pakSent.add(now);
 			sent++;
 			cumLatency++;
-			log.info("Sending Second Payload at " + now);
+			log.info("Sending Second Payload at {} count: {} sent: {} ", new Object[]{now, count, sent});
 			this.callBWCheck(this.client.getAttribute("payload_1"));
         }
         else if ((count >=3 && count < 6) && (timePassed < 1000)) {
 			pakSent.add(now);
 			sent++;
 			cumLatency++;
-			log.info("Sending Third Payload at " + now);
+			log.info("Sending Third Payload at {} count: {} sent: {} ", new Object[]{now, count, sent});
 			this.callBWCheck(this.client.getAttribute("payload_1"));
 		}
 
@@ -149,7 +147,7 @@ public class ServerClientDetection implements IPendingServiceCallback,
 			pakSent.add(now);
 			sent++;
 			cumLatency++;
-			log.info("Sending Fourth Payload at " + now);
+			log.info("Sending Fourth Payload at {} count: {} sent: {}", new Object[]{now, count, sent});
 			this.callBWCheck(this.client.getAttribute("payload_2"));
 		}
 
@@ -168,39 +166,54 @@ public class ServerClientDetection implements IPendingServiceCallback,
 			this.client.removeAttribute("payload_2");
 
 			final IStreamCapableConnection endStats = this.getStats();
-            deltaDown = (endStats.getWrittenBytes() - beginningValues.get("b_down")) * 8 / 1000; // bytes to kbits
-            deltaUp = (endStats.getWrittenBytes() - beginningValues.get("b_up")) * 8 / 1000; // bytes to kbits
-            deltaTime = ((now - beginningValues.get("time")) - (latency * cumLatency)) / 1000; // total dl time - latency for each packet sent in secs
-			if (Math.round(deltaTime) <= 0) {
-				deltaTime = (now - beginningValues.get("time") + latency) / 1000;
+			
+			this.deltaDown = (endStats.getWrittenBytes() - beginningValues.get("b_down")) * 8 / 1000; // bytes to kbits
+            this.deltaTime = ((now - beginningValues.get("time")) - (latency * cumLatency)) / 1000; // total dl time - latency for each packet sent in secs
+            
+            if (Math.round(deltaTime) <= 0) {
+				this.deltaTime = (now - beginningValues.get("time") + latency) / 1000;
 			}
-			kbitDown = Math.round(deltaDown / deltaTime); // kbits / sec
-			kbitUp = Math.round(deltaUp / deltaTime); // kbits / sec
-
-            if (kbitDown < 100) kbitDown = 100;
-
-            log.info("onBWDone: kbitDown = " + kbitDown + ", deltaDown= " + deltaDown + ", deltaTime = " + deltaTime + ", latency = " + this.latency);
-
-            this.callBWDone(this.kbitDown, this.deltaDown, this.deltaTime, this.latency);                                 
+			this.kbitDown = Math.round(deltaDown / deltaTime); // kbits / sec
+			
+            if (kbitDown < 100) this.kbitDown = 100;
+            
+            log.info("onBWDone: kbitDown: {} deltaDown: {} deltaTime: {} latency: {} ", new Object[]{kbitDown, deltaDown, deltaTime, this.latency});
+            
+            this.callBWDone();                                 
 		}
 
 	}
 
-	private void callBWCheck(Object params)
+	private void callBWCheck(Object payload)
 	{
 		IConnection conn = Red5.getConnectionLocal();
+		
 
+		Map<String, Object> statsValues = new HashMap<String, Object>();
+		statsValues.put("count", this.count);
+		statsValues.put("sent", this.sent);
+		statsValues.put("timePassed", this.timePassed);
+		statsValues.put("latency", this.latency);
+		statsValues.put("cumLatency", this.cumLatency);
+		statsValues.put("payload", payload);
+		
 		if (conn instanceof IServiceCapableConnection) {
-			((IServiceCapableConnection) conn).invoke("onBWCheck", new Object[]{params}, this);
+			((IServiceCapableConnection) conn).invoke("onBWCheck", new Object[]{statsValues}, this);
 		}
 	}
 
-	private void callBWDone(double kbitDown, double deltaDown, double deltaTime, double latency)
+	private void callBWDone()
 	{
 		IConnection conn = Red5.getConnectionLocal();
-
+		
+		Map<String, Object> statsValues = new HashMap<String, Object>();
+		statsValues.put("kbitDown", this.kbitDown);
+		statsValues.put("deltaDown", this.deltaDown);
+		statsValues.put("deltaTime", this.deltaTime);
+		statsValues.put("latency", this.latency);
+		
 		if (conn instanceof IServiceCapableConnection) {
-			((IServiceCapableConnection) conn).invoke("onBWDone", new Object[]{kbitDown,  deltaDown, deltaTime, latency});
+			((IServiceCapableConnection) conn).invoke("onBWDone", new Object[]{statsValues});
 		}
 	}
 
