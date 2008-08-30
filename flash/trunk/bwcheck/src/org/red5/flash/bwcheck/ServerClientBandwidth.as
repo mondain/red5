@@ -14,25 +14,14 @@ package org.red5.flash.bwcheck
 			res = new Responder(onResult, onStatus);
 		}
 
-		public function onBWCheck(obj:String):void
+		public function onBWCheck(obj:Object):void
 		{
-				trace("Checking Bandwidth");
-				//dispatchStatus(info);
-				//log.data = "Checking Bandwidth ..... \n\n";
+				dispatchStatus(obj);
 		}
 			
-		public function onBWDone(kbitDown:String, deltaDown:String, deltaTime:String, latency:String):void 
+		public function onBWDone(obj:Object):void 
 		{ 
-  			var info:Object = new Object();
-			info.kbitDown = kbitDown;
-			info.deltaDown = deltaDown;
-			info.deltaTime = deltaTime;
-			info.latency = latency;
-			//info.KBytes = KBytes;
-			
-			dispatchComplete(info);
-  			
-  			//log.data += "\n\n kbit Down: " + kbitDown + " Delta Down: " + deltaDown + " Delta Time: " + deltaTime + " Latency: " + latency; 
+			dispatchComplete(obj);
 		} 
 		
 		public function set service(service:String):void
@@ -43,24 +32,17 @@ package org.red5.flash.bwcheck
 		public function start():void
 		{
 			nc.client = this;
-			nc.call(_service,res, null);
+			nc.call(_service,res);
 		}
 		
 		private function onResult(obj:Object):void
 		{
-			for (var i in obj)
-			{
-				trace(i);	
-			}		
+			dispatchStatus(obj);
+				
 		}
 		
 		private function onStatus(obj:Object):void
 		{
-			for (var i in obj)
-			{
-				trace(i);	
-			}
-			
 			switch (obj.code)
 			{
 				case "NetConnection.Call.Failed":
