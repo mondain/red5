@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.red5.io.flv;
+package org.red5.io.impl;
 /*
  * * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
@@ -27,6 +27,8 @@ package org.red5.io.flv;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import org.red5.io.flv.IMetaData;
+
 /**
  * MetaData Implementation
  * 
@@ -34,7 +36,7 @@ import java.util.HashMap;
  * @author daccattato (daccattato@gmail.com)
  * @version 0.3
  */
-public class MetaDataImpl extends HashMap implements IMetaData, Comparable, Serializable {
+public class MetaData extends HashMap implements IMetaData, Comparable, Serializable {
 	
 	private boolean canSeekToEnd = true;
 	private int videocodecid = 4;
@@ -47,7 +49,7 @@ public class MetaDataImpl extends HashMap implements IMetaData, Comparable, Seri
 	private int timestamp = 0;
 	private String name = null;
 	
-	public MetaDataImpl(String string) {
+	public MetaData(String string) {
 		this.name  = string;
 	}
 
@@ -165,7 +167,7 @@ public class MetaDataImpl extends HashMap implements IMetaData, Comparable, Seri
 	}
 
 	public int compareTo(Object arg0) {		
-		MetaDataImpl mdi = (MetaDataImpl) arg0;
+		MetaData mdi = (MetaData) arg0;
 		int mdiTime = mdi.getTimestamp();
 		int thisTime = this.getTimestamp();
 		

@@ -1,4 +1,4 @@
-package org.red5.io.flv;
+package org.red5.io.impl;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -24,6 +24,7 @@ package org.red5.io.flv;
  */
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.flv.ITag;
 
 /**
  * A Tag represents the contents or payload of a FLV file
@@ -33,7 +34,7 @@ import org.apache.mina.common.ByteBuffer;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class TagImpl implements ITag {
+public class Tag implements ITag {
 
 	private byte type;
 	private byte dataType;
@@ -51,7 +52,7 @@ public class TagImpl implements ITag {
 	 * @param bodySize
 	 * @param body
 	 */
-	public TagImpl(byte dataType, int timestamp, int bodySize, ByteBuffer body, int previousTagSize){
+	public Tag(byte dataType, int timestamp, int bodySize, ByteBuffer body, int previousTagSize){
 		this.dataType = dataType;
 		this.timestamp = timestamp;
 		this.bodySize = bodySize;
@@ -59,7 +60,7 @@ public class TagImpl implements ITag {
 		this.previuosTagSize = previousTagSize;
 	}
 	
-	public TagImpl(){
+	public Tag(){
 		
 	}
 	

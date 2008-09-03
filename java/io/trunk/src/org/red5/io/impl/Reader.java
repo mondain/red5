@@ -1,4 +1,4 @@
-package org.red5.io.flv;
+package org.red5.io.impl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.flv.FLVHeader;
+import org.red5.io.flv.IFLV;
+import org.red5.io.flv.IKeyFrameDataAnalyzer;
+import org.red5.io.flv.IReader;
+import org.red5.io.flv.ITag;
 import org.red5.io.flv.IKeyFrameDataAnalyzer.KeyFrameMeta;
 import org.red5.io.utils.IOUtils;
 
@@ -45,7 +50,7 @@ import org.red5.io.utils.IOUtils;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class ReaderImpl implements IReader, IKeyFrameDataAnalyzer {
+public class Reader implements IReader, IKeyFrameDataAnalyzer {
 	
 	private FileInputStream fis = null;
 	private FLVHeader header = null;
@@ -54,7 +59,7 @@ public class ReaderImpl implements IReader, IKeyFrameDataAnalyzer {
 	private ByteBuffer in = null;
 	private ITag tag = null;
 	
-	public ReaderImpl(FileInputStream f) {
+	public Reader(FileInputStream f) {
 		this.fis = f;
 		channel = fis.getChannel();
 		try {
@@ -201,6 +206,6 @@ public class ReaderImpl implements IReader, IKeyFrameDataAnalyzer {
 		// reserved
 		in.getInt();
 		
-		return new TagImpl(dataType,timestamp, bodySize, null, previousTagSize);
+		return new Tag(dataType,timestamp, bodySize, null, previousTagSize);
 	}
 }
