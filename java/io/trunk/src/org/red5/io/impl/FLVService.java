@@ -1,4 +1,4 @@
-package org.red5.io.flv;
+package org.red5.io.impl;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -30,6 +30,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.red5.io.flv.IFLV;
+import org.red5.io.flv.IFLVService;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
 
@@ -42,7 +44,7 @@ import org.red5.io.object.Serializer;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class FLVServiceImpl implements IFLVService {
+public class FLVService implements IFLVService {
 	private Serializer serializer;
 	private Deserializer deserializer;
 	
@@ -66,7 +68,7 @@ public class FLVServiceImpl implements IFLVService {
 	 * @see org.red5.io.flv.FLVService#getFLV(java.io.File)
 	 */
 	public IFLV getFLV(File file) throws IOException {
-		IFLV flv = new FLVImpl(file); 
+		IFLV flv = new FLV(file); 
 		return flv;
 	}
 	

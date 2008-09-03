@@ -1,4 +1,4 @@
-package org.red5.io.flv;
+package org.red5.io.impl;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 
 import org.apache.mina.common.ByteBuffer;
+import org.red5.io.flv.IFLV;
+import org.red5.io.flv.ITag;
+import org.red5.io.flv.IWriter;
 import org.red5.io.utils.IOUtils;
 
 import java.nio.MappedByteBuffer;
@@ -42,7 +45,7 @@ import java.nio.channels.WritableByteChannel;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class WriterImpl implements IWriter {
+public class Writer implements IWriter {
 	
 	private FileOutputStream fos = null;
 	private WritableByteChannel channel;
@@ -54,7 +57,7 @@ public class WriterImpl implements IWriter {
 	private long bytesWritten = 0;
 	private int offset = 0;
 	
-	public WriterImpl(FileOutputStream fos){
+	public Writer(FileOutputStream fos){
 		this(fos,null);
 	}
 	
@@ -62,7 +65,7 @@ public class WriterImpl implements IWriter {
 	 * WriterImpl Constructor
 	 * @param fos 
 	 */
-	public WriterImpl(FileOutputStream fos, ITag lastTag) {
+	public Writer(FileOutputStream fos, ITag lastTag) {
 		this.fos = fos;
 		this.lastTag = lastTag;
 		if(lastTag !=null) offset=lastTag.getTimestamp();

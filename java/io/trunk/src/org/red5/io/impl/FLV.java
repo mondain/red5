@@ -1,4 +1,4 @@
-package org.red5.io.flv;
+package org.red5.io.impl;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -32,6 +32,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.red5.io.amf.Input;
+import org.red5.io.flv.IFLV;
+import org.red5.io.flv.IReader;
+import org.red5.io.flv.ITag;
+import org.red5.io.flv.IWriter;
 
 /**
  * A FLVImpl implements the FLV api
@@ -41,15 +45,15 @@ import org.red5.io.amf.Input;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @version 0.3
  */
-public class FLVImpl implements IFLV {
+public class FLV implements IFLV {
 
 	
 	protected static Log log =
-        LogFactory.getLog(FLVImpl.class.getName());
+        LogFactory.getLog(FLV.class.getName());
 	
 	private File file;
 	
-	public FLVImpl(File file){
+	public FLV(File file){
 		this.file = file;
 	}
 	
@@ -142,7 +146,7 @@ public class FLVImpl implements IFLV {
 			file.createNewFile();
 		}
 		log.info("File size: "+file.length());
-		ReaderImpl reader = new ReaderImpl(new FileInputStream(file));
+		Reader reader = new Reader(new FileInputStream(file));
 		return reader;
 	}
 
@@ -160,7 +164,7 @@ public class FLVImpl implements IFLV {
 	public IWriter writer() throws IOException {
 		if(file.exists()) file.delete();
 		file.createNewFile();
-		IWriter writer = new WriterImpl(new FileOutputStream(file));
+		IWriter writer = new Writer(new FileOutputStream(file));
 		writer.writeHeader();
 		return writer;
 	}
@@ -184,7 +188,7 @@ public class FLVImpl implements IFLV {
 		}
 		reader.close();
 		FileOutputStream fos = new FileOutputStream(file, true);
-		IWriter writer = new WriterImpl(fos, lastTag);
+		IWriter writer = new Writer(fos, lastTag);
 		return writer;
 	}
 	
