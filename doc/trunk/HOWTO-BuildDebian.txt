@@ -5,7 +5,7 @@
 1. Install the debian packages "dpkg-dev", "debhelper", "dh-make",
    "devscripts" and "fakeroot".
 2. Checkout the debian build scripts to a folder "debian" inside the Red5
-   root from http://svn1.cvsdude.com/osflash/red5/debian/trunk
+   root from https://red5.googlecode.com/svn/build/debian/trunk
 3. Update "debian/changelog" and add an entry for the new version you are
    building. Note that the syntax must match the previous entries!
 4. Update the filename in "debian/files" to match the version you are
