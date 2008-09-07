@@ -12,25 +12,23 @@ for Ant. Targets included are:
 * doc-clean      - clean any output directories for docs
 
 To generate documentation, you need to include a lot
-of libraries, which haven't been added to CVS because
+of libraries, which haven't been added to SVN because
 they're simply too big. The libraries can be found at:
 http://red5.electroteque.org/dev/doc/reference/docbook-reference-libs.zip.
 Download them, create a lib directory in the
 docs/reference directory and unzip the zip there.
 Then, the targets should work.
 
-I have also not included the source images to SVN
-
-Download http://red5.electroteque.org/dev/doc/reference/docbook-reference-admon-images.zip
+I have also not included the source images to SVN that you can download from:
+http://red5.electroteque.org/dev/doc/reference/docbook-reference-admon-images.zip
 and extract to the directory doc/reference/images
 
 Download http://red5.electroteque.org/dev/doc/reference/docbook-reference-src-images.zip
 and extract to the directory doc/reference/src/images
 
-The fulllist of required libraries are
+The fulllist of required libraries are:
 
 ant-contrib-1.0b3.jar - Ant Contrib - http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.tar.gz?modtime=1162486708&big_mirror=0
-
 fop.jar - FOP - http://xmlgraphics.apache.org/fop/download.html
 fop-hyph.jar - Objects For Formatting Objects required for FOP hypenation - http://offo.sourceforge.net/
 avalon-framework-4.2.0.jar - Apache Avalon Framework required by FOP - http://avalon.apache.org/closed.html
@@ -38,7 +36,6 @@ batik-util.jar - Batik required by FOP - http://xmlgraphics.apache.org/batik/dow
 commons-io-1.4.jar - Apache Commons IO required by FOP - http://commons.apache.org/io/
 commons-logging-1.1.1.jar - Apache Commons Logging required by FOP - http://commons.apache.org/logging/
 xmlgraphics-commons-1.3.1.jar - XML Graphics Commons required for FOP images - http://xmlgraphics.apache.org/commons/download.html 
-
 saxon.jar - Saxon 6.5 - http://saxon.sourceforge.net/
 xercesImpl.jar - Xerces required for Xinclude parsing - http://xerces.apache.org/xerces-j/
 xalan.jar - Xalan required by Xerces ?? - http://xml.apache.org/xalan-j/
@@ -51,7 +48,7 @@ xslthl-2.0.0.jar - XSLT Syntax Highlighting Extension - http://sourceforge.net/p
 
 The Docbook 5 reference  - http://www.docbook.org/tdg5/en/html/docbook.html
 
-Thanks to Hibernate + Spring Framework, for providing the skeleton for
+Thanks to Hibernate + Spring Framework, for providing the skeleton for the
 DocBook documentation!
 
-spam@electroteque.org
+Author: Dan Rossi (spam@electroteque.org)
