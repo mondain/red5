@@ -1,4 +1,5 @@
 The Red5 Project (red5@osflash.org)
+
 Luke Hubbard (luke@codegent.com)
 Dominick Accattato (daccattato@gmail.com)
 Chris Allen (mrchrisallen@gmail.com)
@@ -12,3 +13,5 @@ Steven Gong (steven.gong@gmail.com)
 Paul Gregoire (mondain@gmail.com)
 Michael Klishin (michael.s.klishin@gmail.com)
 Thijs Triemstra (info@collab.nl)
+Dan Rossi (electroteque@gmail.com)
+Anton Lebedevich (mabrek@gmail.com)
