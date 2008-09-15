@@ -7,7 +7,7 @@
  	@author Paul Gregoire (mondain@gmail.com)
 	-->
 	<mx:Script source="functions.as"/>	
-	<mx:HTTPService id="applistRPC" url="http://svn1.cvsdude.com/osflash/red5/snapshots/registry.xml" 
+	<mx:HTTPService id="applistRPC" url="http://red5.googlecode.com/svn/snapshots/registry.xml" 
 		result="rpcHandler(event)" resultFormat="e4x" />
 	<mx:Panel x="10" y="10" width="414" height="343" layout="absolute" title="Red5 Application Installer">
 		<mx:DataGrid id="grid" x="10" y="38" width="374" height="225" dataProvider="{applicationList}" itemClick="handleClick(event)">
