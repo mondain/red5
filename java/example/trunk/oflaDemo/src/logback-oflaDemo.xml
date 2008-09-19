@@ -13,7 +13,6 @@
 		</layout>
 	</appender>
 	<root>
-		<level value="DEBUG" />
 		<appender-ref ref="OFLA" />
 	</root>	
 	<logger name="org.red5.demos.oflaDemo">
