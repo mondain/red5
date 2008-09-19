@@ -8,16 +8,25 @@ import org.red5.server.api.stream.IServerStream;
 import org.red5.server.api.stream.IStreamCapableConnection;
 import org.red5.server.api.stream.support.SimpleConnectionBWConfig;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.impl.StaticLoggerBinder;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.selector.ContextSelector;
 
 public class Application extends ApplicationAdapter {
 
-	protected Logger log = LoggerFactory.getLogger(Application.class);
+	private static Logger log;
 	
 	private IScope appScope;
 
 	private IServerStream serverStream;
 
+	static {
+	    ContextSelector selector = StaticLoggerBinder.SINGLETON.getContextSelector();
+        LoggerContext ctx = selector.getLoggerContext("oflaDemo");
+		log = ctx.getLogger(Application.class);
+	}
+	
 	{
 		log.info("oflaDemo created");
 		System.out.println("oflaDemo created");
@@ -36,7 +45,6 @@ public class Application extends ApplicationAdapter {
     @Override
 	public boolean appConnect(IConnection conn, Object[] params) {
 		log.info("oflaDemo appConnect");
-		System.out.println("oflaDemo appConnect");
 		// Trigger calling of "onBWDone", required for some FLV players
 		measureBandwidth(conn);
 		if (conn instanceof IStreamCapableConnection) {
@@ -74,6 +82,7 @@ public class Application extends ApplicationAdapter {
 	/** {@inheritDoc} */
     @Override
 	public void appDisconnect(IConnection conn) {
+		log.info("oflaDemo appDisconnect");
 		if (appScope == conn.getScope() && serverStream != null) {
 			serverStream.close();
 		}

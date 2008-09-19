@@ -8,20 +8,27 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.red5.server.api.IScope;
 import org.red5.server.api.Red5;
+import org.slf4j.Logger;
+import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.core.io.Resource;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.selector.ContextSelector;
 
 public class DemoService {
 
-	protected Logger log = LoggerFactory.getLogger(DemoService.class);
+	private static Logger log;
 
+	static {
+	    ContextSelector selector = StaticLoggerBinder.SINGLETON.getContextSelector();
+        LoggerContext ctx = selector.getLoggerContext("oflaDemo");
+		log = ctx.getLogger(DemoService.class);
+	}
+	
 	{
 		log.info("oflaDemo DemoService created");
-		System.out.println("oflaDemo DemoService created");
 	}
 	
 	private String formatDate(Date date) {
