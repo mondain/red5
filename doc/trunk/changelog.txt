@@ -34,6 +34,8 @@ Bugfixes:
 - Added patch for flv metadata handling
 - Added patch for RTMPT client
 - Added patch for start and stop scripts
+- Fixed logging in web applications
+- Root cause was not being sent on error in Flex message service (Jira APPSERVER-288)
 
 Other:
 - Split demos and flash sources into their own top level directories
