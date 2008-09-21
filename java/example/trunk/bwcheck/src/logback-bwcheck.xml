@@ -12,10 +12,10 @@
 			<Pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</Pattern> 
 		</layout> 
 	</appender> 
-	
-	<logger name="org.red5.demos.bwcheck.BandwidthDetection">
+	<root>
+		<level value="DEBUG" />
+	</root>	
+	<logger name="org.red5.demos.bwcheck">
 		<level value="INFO"/>
-		<appender-ref ref="BWFILE" />
 	</logger>
-	
 </configuration>
