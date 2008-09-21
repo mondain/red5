@@ -19,7 +19,7 @@
 	 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 	*/
 	
-	[RemoteClass(alias="org.red5.server.webapp.echo.RemoteClass")]
+	[RemoteClass(alias="org.red5.demos.echo.RemoteClass")]
 	/**
 	 * @author Joachim Bauch (jojo@struktur.de)
 	*/	
