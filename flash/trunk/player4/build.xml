@@ -1,11 +1,9 @@
 <?xml version="1.0"?>
 <!-- ======================================================================                                               
-     Port Tester application   
-                   
-     Thijs Triemstra                                                             
+     Player4 application   
      ====================================================================== -->
 <project 
-	name="Port Tester application" 
+	name="Player4 application" 
 	default="build"
 	basedir=".">
 	
@@ -71,7 +69,7 @@
 		value="#FFFFFF"/>
 
     <description>
-    	Red5 Port Tester
+    	Red5 Player4
     </description>
 
     <!-- ================================= 
