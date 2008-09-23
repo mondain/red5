@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
 <!-- ======================================================================                                               
-     Port Tester application   
+     Load Test application   
                    
-     Thijs Triemstra                                                             
      ====================================================================== -->
 <project 
-	name="Port Tester application" 
+	name="Load Test application" 
 	default="build"
 	basedir=".">
 	
@@ -71,7 +70,7 @@
 		value="#FFFFFF"/>
 
     <description>
-    	Red5 Port Tester
+    	Red5 Load Test
     </description>
 
     <!-- ================================= 
