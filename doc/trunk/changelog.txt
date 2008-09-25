@@ -4,7 +4,16 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
-Red5 0.7.1  (unreleased)
+Red5 0.8.1  (unreleased)
+------------------------
+New Features:
+
+Bugfixes:
+
+Other: 
+
+
+Red5 0.8.0  (next release)
 ------------------------
 New Features:
 - Added socket policy file server to support new security model, starting 
@@ -36,6 +45,8 @@ Bugfixes:
 - Added patch for start and stop scripts
 - Fixed logging in web applications
 - Root cause was not being sent on error in Flex message service (Jira APPSERVER-288)
+- Allow serializer to make use of other annotations like JPA (Jira APPSERVER-277)
+- Collections are not serialized appropriately (Jira APPSERVER-293)
 
 Other:
 - Split demos and flash sources into their own top level directories
