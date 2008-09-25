@@ -4,6 +4,15 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
+Red5 0.9.0  (unreleased)
+------------------------
+New Features:
+
+Bugfixes:
+
+Other: 
+
+
 Red5 0.8.1  (unreleased)
 ------------------------
 New Features:
@@ -51,6 +60,11 @@ Bugfixes:
 Other:
 - Split demos and flash sources into their own top level directories
 - Added application snapshot repository
+
+
+Red5 0.7.1
+------------------------
+Version renamed 0.8.0 for release
 
 
 Red5 0.7.0  (2008-02-23)
