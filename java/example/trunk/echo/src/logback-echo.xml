@@ -13,12 +13,12 @@
 		</layout>
 	</appender>
 	<root>
-		<level value="DEBUG" />
+		<appender-ref ref="ECHO" />
 	</root>	
 	<logger name="org.red5.demos.echo">
 		<level value="DEBUG" />
 	</logger>		
-	<logger name="org.red5.server.net">
+	<logger name="org.red5.server.service">
 		<level value="DEBUG" />
 	</logger>		
 </configuration>
