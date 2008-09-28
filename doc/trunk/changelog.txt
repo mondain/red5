@@ -56,6 +56,11 @@ Bugfixes:
 - Root cause was not being sent on error in Flex message service (Jira APPSERVER-288)
 - Allow serializer to make use of other annotations like JPA (Jira APPSERVER-277)
 - Collections are not serialized appropriately (Jira APPSERVER-293)
+- Unable to read external AMF3 arrays in IExternalizable classes (Jira APPSERVER-283)
+- Dealock issues with fix in Output.java (Jira APPSERVER-289)
+- Bug with scope stopping and multithreading (Jira APPSERVER-290)
+- SharedObjects modified flag doesn't get set to false (Jira APPSERVER-291)
+
 
 Other:
 - Split demos and flash sources into their own top level directories
