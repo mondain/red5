@@ -1,17 +1,17 @@
 # 
 # Red5 NSIS script for java6 builds
 # Author: Paul Gregoire
-# Date: 02/20/2008
+# Date: 09/29/2008
 #
 
 Name Red5
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.7.0
+!define VERSION 0.8.0RC1
 !define COMPANY "Red5 Server"
 !define DESCRIPTION "Red5 is an Open Source Flash Server written in Java"
-!define URL http://osflash.org/red5
+!define URL http://red5.googlecode.com
 !define DocumentRoot "..\..\..\doc\trunk"
 !define BuildRoot "..\..\..\java\server\trunk"
 
@@ -69,7 +69,7 @@ Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
     ; copy the java6 files
-    File /r /x jboss /x war /x *.sh /x Makefile ${BuildRoot}\dist.java5\*
+    File /r /x war /x *.sh /x Makefile ${BuildRoot}\dist.java5\*
     ; cd to conf dir
     SetOutPath $INSTDIR\conf
     ; copy wrapper conf
@@ -95,17 +95,15 @@ Section -post SEC0001
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Start $(^Name).lnk" $INSTDIR\wrapper\Red5.bat
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) on the Web.lnk" "http://red5.googlecode.com/"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Readme.lnk" $INSTDIR\doc\readme.html
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions (PDF).lnk" "$INSTDIR\doc\Frequently Asked Questions.pdf"
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions (DOC).lnk" "$INSTDIR\doc\Frequently Asked Questions.doc"
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions (SWF).lnk" "$INSTDIR\doc\Frequently Asked Questions.swf"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\API documents.lnk" $INSTDIR\doc\api\index.html
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Eclipse setup.lnk" $INSTDIR\doc\eclipsesetup.html
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) on the Web.lnk" "http://osflash.org/red5"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Bugtracker.lnk" "http://jira.red5.org/"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Tutorials.lnk" "http://jira.red5.org/confluence/display/docs/Home"
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Start $(^Name).lnk" $INSTDIR\wrapper\Red5.bat
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
@@ -118,7 +116,7 @@ Section -post SEC0001
     # Add the service
     ExecWait '"$INSTDIR\wrapper\InstallRed5-NT.bat"'
     ; send them to osflash
-    ExecShell "open" "http://osflash.org/red5"
+    ExecShell "open" "http://red5.googlecode.com/"
 SectionEnd
 
 # Macro for selecting uninstaller sections
@@ -150,8 +148,6 @@ Section -un.post UNSEC0001
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Tutorials.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Readme.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions (PDF).lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions (DOC).lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions (SWF).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\API documents.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Eclipse setup.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
