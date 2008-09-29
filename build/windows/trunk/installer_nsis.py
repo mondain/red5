@@ -31,27 +31,6 @@ class Builder:
         self.ant_cmd = ant_cmd
         self.build_root = os.path.abspath(os.path.split(__file__)[0])
 
-    def prepareWrapperConf(self, src, dst, java5=False):
-        fp = file(dst, 'wb')
-        jars = [x for x in os.listdir(os.path.join(red5_root, '.', 'dist.java5', 'lib')) if x.lower().endswith('.jar')]
-        added = False
-        for line in file(src, 'rb').readlines():
-            if not line.startswith('wrapper.java.classpath.'):
-                fp.write(line)
-                continue
-            
-            if added:
-                # skip line, setting will get overwritten
-                continue
-            
-            fp.write('wrapper.java.classpath.1=../lib/wrapper.jar\n')
-            fp.write('wrapper.java.classpath.2=../conf\n')
-            fp.write('wrapper.java.classpath.3=../bin\n')
-            fp.write('wrapper.java.classpath.4=../red5.jar\n')
-            for idx, filename in enumerate(jars):
-                fp.write('wrapper.java.classpath.%d=../lib/%s\n' % (idx+5, filename))
-            added = True
-
     def build(self, platform='windows'):
         log('Building from %s' % self.build_root)
         # prepare "dist" directory
@@ -69,13 +48,7 @@ class Builder:
         os.environ['JAVACMD'] = os.path.join(JAVA6_HOME, 'bin', 'java.exe')
         self.compile(self.ant_cmd, os.path.join(red5_root, 'build.xml'), '1.6', 'dist-installer')
         os.renames(os.path.join(red5_root, '.', 'dist'), os.path.join(red5_root, '.', 'dist.java6'))
-        
-        # setup .jar files to wrapper.conf
-        self.prepareWrapperConf(os.path.join(self.build_root, 'conf', 'wrapper.conf.in'), 
-                                os.path.join(self.build_root, 'conf', 'wrapper.conf.java6'))
-        self.prepareWrapperConf(os.path.join(self.build_root, 'conf', 'wrapper.conf.in'), 
-                                os.path.join(self.build_root, 'conf', 'wrapper.conf.java5'), java5=True)
-        
+                
         # build installer
         script = os.path.join(self.build_root, 'red5.nsi')
         cmd = NSIS_CMD

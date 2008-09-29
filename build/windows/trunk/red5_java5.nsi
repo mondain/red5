@@ -8,7 +8,7 @@ Name Red5
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.8.0RC1
+!define VERSION 0.8.0
 !define COMPANY "Red5 Server"
 !define DESCRIPTION "Red5 is an Open Source Flash Server written in Java"
 !define URL http://red5.googlecode.com
@@ -75,7 +75,7 @@ Section -Main SEC0000
     ; copy wrapper conf
     File conf\wrapper.conf.java5
     ; rename conf file
-    Rename $INSTDIR\conf\wrapper.conf.java6 $INSTDIR\conf\wrapper.conf
+    Rename $INSTDIR\conf\wrapper.conf.in $INSTDIR\conf\wrapper.conf
     ; cd to lib dir
     SetOutPath $INSTDIR\lib
     ; copy wrapper libs
