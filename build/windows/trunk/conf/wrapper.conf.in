@@ -12,37 +12,24 @@ wrapper.java.mainclass=org.tanukisoftware.wrapper.WrapperSimpleApp
 
 # Java Classpath (include wrapper.jar)  Add class path elements as
 #  needed starting from 1
-wrapper.java.classpath.1=../lib/wrapper.jar
-wrapper.java.classpath.2=../conf
-wrapper.java.classpath.3=../lib/red5.jar
+wrapper.java.classpath.1=lib/wrapper.jar
+wrapper.java.classpath.2=conf
+wrapper.java.classpath.3=lib/red5.jar
 
 # Java Library Path (location of Wrapper.DLL or libwrapper.so)
-wrapper.java.library.path.1=../lib
+wrapper.java.library.path.1=lib
 
 # Java Additional Parameters
-wrapper.java.additional.1=-Xms256m 
-wrapper.java.additional.2=-Xmx1024m 
-wrapper.java.additional.3=-Xmn512m
-wrapper.java.additional.4=-Xss256k
-wrapper.java.additional.5=-XX:+AggressiveOpts
-wrapper.java.additional.6=-XX:+AggressiveHeap
-wrapper.java.additional.7=-XX:+UseConcMarkSweepGC
-wrapper.java.additional.8=-XX:+UseParNewGC
-wrapper.java.additional.9=-XX:ParallelGCThreads=4
-wrapper.java.additional.10=-XX:+ExplicitGCInvokesConcurrent 
-wrapper.java.additional.11=-XX:MinHeapFreeRatio=20
-wrapper.java.additional.12=-XX:NewSize=256m
-wrapper.java.additional.13=-XX:SurvivorRatio=16
-wrapper.java.additional.14=-Xrs
-wrapper.java.additional.15=-Djava.net.preferIPv4Stack=true
-wrapper.java.additional.16=-Dsun.rmi.dgc.client.gcInterval=990000
-wrapper.java.additional.17=-Dsun.rmi.dgc.server.gcInterval=990000
+wrapper.java.additional.1=-Xrs
+wrapper.java.additional.2=-XX:+AggressiveOpts
+wrapper.java.additional.3=-XX:+DisableExplicitGC
+wrapper.java.additional.4=-Djava.net.preferIPv4Stack=true
 
 # Initial Java Heap Size (in MB)
-#wrapper.java.initmemory=3
+wrapper.java.initmemory=256
 
 # Maximum Java Heap Size (in MB)
-#wrapper.java.maxmemory=64
+wrapper.java.maxmemory=768
 
 # Application parameters.  Add parameters as needed starting from 1
 #wrapper.app.parameter.1=org.red5.server.Standalone
@@ -58,7 +45,7 @@ wrapper.console.format=PM
 wrapper.console.loglevel=INFO
 
 # Log file to use for wrapper output logging.
-wrapper.logfile=../log/red5_service.log
+wrapper.logfile=log/red5_service.log
 
 # Format of output for the log file.  (See docs for formats)
 wrapper.logfile.format=LPTM
