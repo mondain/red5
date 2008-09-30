@@ -15,7 +15,7 @@ rem Find the application home.
 rem
 rem %~dp0 is location of current script under NT
 set _REALPATH=%~dp0
-set _WRAPPER_EXE=%_REALPATH%Wrapper.exe
+set _WRAPPER_EXE=%_REALPATH%wrapper.exe
 
 rem
 rem Find the wrapper.conf
@@ -23,7 +23,7 @@ rem
 :conf
 set _WRAPPER_CONF="%~f1"
 if not %_WRAPPER_CONF%=="" goto startup
-set _WRAPPER_CONF="%_REALPATH%..\conf\wrapper.conf"
+set _WRAPPER_CONF="%_REALPATH%conf\wrapper.conf"
 
 rem
 rem Uninstall the Wrapper as an NT service.

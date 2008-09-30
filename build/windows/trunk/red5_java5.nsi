@@ -48,7 +48,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile setup-Red5-${VERSION}-java5.exe
+OutFile setup-Red5-${VERSION}-RC1-java5.exe
 InstallDir $PROGRAMFILES\Red5
 CRCCheck on
 XPStyle on
@@ -68,22 +68,20 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
+    ; copy wrapper files
+    File /r /x .svn bin\*
     ; copy the java6 files
     File /r /x war /x *.sh /x Makefile ${BuildRoot}\dist.java5\*
     ; cd to conf dir
     SetOutPath $INSTDIR\conf
     ; copy wrapper conf
-    File conf\wrapper.conf.java5
+    File conf\wrapper.conf.in
     ; rename conf file
     Rename $INSTDIR\conf\wrapper.conf.in $INSTDIR\conf\wrapper.conf
     ; cd to lib dir
     SetOutPath $INSTDIR\lib
     ; copy wrapper libs
     File /r /x .svn lib\*
-    ; create the wrapper dir
-    SetOutPath $INSTDIR\wrapper
-    ; copy wrapper files
-    File /r /x .svn bin\*
     ; create the log dir
     SetOutPath $INSTDIR\log
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
@@ -97,8 +95,7 @@ Section -post SEC0001
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Start $(^Name).lnk" $INSTDIR\wrapper\Red5.bat
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) on the Web.lnk" "http://red5.googlecode.com/"
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Readme.lnk" $INSTDIR\doc\readme.html
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions (PDF).lnk" "$INSTDIR\doc\Frequently Asked Questions.pdf"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions.lnk" "http://jira.red5.org/confluence/display/docs/FAQ"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\API documents.lnk" $INSTDIR\doc\api\index.html
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Eclipse setup.lnk" $INSTDIR\doc\eclipsesetup.html
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Bugtracker.lnk" "http://jira.red5.org/"
@@ -114,7 +111,7 @@ Section -post SEC0001
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
     # Add the service
-    ExecWait '"$INSTDIR\wrapper\InstallRed5-NT.bat"'
+    ExecWait '"$INSTDIR\InstallRed5-NT.bat"'
     ; send them to osflash
     ExecShell "open" "http://red5.googlecode.com/"
 SectionEnd
@@ -135,7 +132,7 @@ done${UNSECTION_ID}:
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
     # remove the service
-    ExecWait '"$INSTDIR\wrapper\UninstallRed5-NT.bat"'
+    ExecWait '"$INSTDIR\UninstallRed5-NT.bat"'
     RmDir /r /REBOOTOK $INSTDIR
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
@@ -146,8 +143,7 @@ Section -un.post UNSEC0001
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) on the Web.lnk" 
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Bugtracker.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Tutorials.lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Readme.lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions (PDF).lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\API documents.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Eclipse setup.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
