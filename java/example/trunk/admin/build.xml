@@ -68,6 +68,13 @@
         <tstamp prefix="build">
             <format property="TODAY" pattern="d-MMMM-yyyy" locale="en"/>
         </tstamp>    	
+        <copy todir="${classes.dir}">
+			<fileset dir="${src.dir}">
+				<include name="*.properties"/>
+				<include name="*.xml"/>
+				<exclude name="*.java"/>
+			</fileset>        
+        </copy>
 		<war destfile="${dist.dir}/${ant.project.name}.war" webxml="www/WEB-INF/web.xml">
 			<fileset dir="www">
 				<exclude name="**/src/**"/>
@@ -80,6 +87,9 @@
 				<attribute name="Build-Java" value="Java ${java.version}"/>
 			</manifest>
 		</war>		
+		<!-- clean up -->
+        <delete file="${classes.dir}/*.propeties"/>
+        <delete file="${classes.dir}/*.xml"/>
     </target>
 	
 	<!-- Updates snapshot repository -->

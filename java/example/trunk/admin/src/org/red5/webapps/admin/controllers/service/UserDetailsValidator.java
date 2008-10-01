@@ -1,14 +1,14 @@
 package org.red5.webapps.admin.controllers.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.red5.webapps.admin.Application;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 public class UserDetailsValidator implements Validator {
 
-	protected static Logger log = LoggerFactory.getLogger(UserDetailsValidator.class);
+	protected static Logger log = Application.loggerContext.getLogger(UserDetailsValidator.class);
 	
 	private int minLength = 4;
 

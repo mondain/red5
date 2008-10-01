@@ -2,15 +2,17 @@
 package org.red5.webapps.admin.controllers.service;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
+import java.util.Hashtable;
 
-import org.red5.webapps.admin.UserDatabase;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
+import org.red5.webapps.admin.Application;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
 
@@ -22,19 +24,25 @@ import org.springframework.security.GrantedAuthorityImpl;
  */
 public class UserDAO {
 
-	private static Logger log = LoggerFactory.getLogger(UserDAO.class);		
+	private static Logger log = Application.loggerContext.getLogger(UserDAO.class);		
 	
 	public static boolean addUser(String username, String hashedPassword) {
 		boolean result = false;
+				
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
-			//set properties
-			Properties props = new Properties();
-			props.setProperty("username", UserDatabase.getUserName());
-			props.setProperty("password", UserDatabase.getPassword());
-			//create the db and get a connection
-			conn = DriverManager.getConnection("jdbc:derby:" + UserDatabase.getDatabase() + ";", props);
+            // JDBC stuff
+			Hashtable  env = new Hashtable();
+			env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+			env.put("org.osjava.sj.root", "webapps/admin/WEB-INF/classes/config/");
+			env.put("org.osjava.sj.delimiter", "/");
+
+			Context ctx = new InitialContext(env);
+
+            DataSource ds = (DataSource) ctx.lookup("jdbc/admin");
+            
+			conn = ds.getConnection();
 			//make a statement
 			stmt = conn.prepareStatement("INSERT INTO APPUSER (username, password, enabled) VALUES (?, ?, 'enabled')");
 			stmt.setString(1, username);
@@ -70,12 +78,17 @@ public class UserDAO {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
-			//set properties
-			Properties props = new Properties();
-			props.setProperty("username", UserDatabase.getUserName());
-			props.setProperty("password", UserDatabase.getPassword());
-			//create the db and get a connection
-			conn = DriverManager.getConnection("jdbc:derby:" + UserDatabase.getDatabase() + ";", props);
+            // JDBC stuff
+			Hashtable  env = new Hashtable();
+			env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+			env.put("org.osjava.sj.root", "webapps/admin/WEB-INF/classes/config/");
+			env.put("org.osjava.sj.delimiter", "/");
+
+			Context ctx = new InitialContext(env);
+
+            DataSource ds = (DataSource) ctx.lookup("jdbc/admin");
+			
+			conn = ds.getConnection();
 			//make a statement
 			stmt = conn.prepareStatement("SELECT * FROM APPUSER WHERE username = ?");
 			stmt.setString(1, username);

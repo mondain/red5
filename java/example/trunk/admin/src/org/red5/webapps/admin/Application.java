@@ -23,14 +23,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.red5.components.ClientManager;
 import org.red5.server.adapter.ApplicationAdapter;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
 import org.red5.server.api.ScopeUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.impl.StaticLoggerBinder;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.selector.ContextSelector;
 
 /**
  * Admin Panel for Red5 Server
@@ -41,14 +43,25 @@ import org.slf4j.LoggerFactory;
  */
 public class Application extends ApplicationAdapter {
 
-	protected static Logger log = LoggerFactory.getLogger(Application.class);
-
+	protected static Logger log;
+	
+	//provide the logger context for other parts of the app
+	public static LoggerContext loggerContext;
+	
 	private IScope scope;
 
 	private HashMap<Integer, String> scopes;
 
 	private int scope_id = 0;
 
+	static {
+	    ContextSelector selector = StaticLoggerBinder.SINGLETON.getContextSelector();
+	    //get the logger context for the servlet / app context
+	    loggerContext = selector.getLoggerContext("admin");
+	    //get the logger for this class only
+		log = loggerContext.getLogger(Application.class);
+	}
+	
 	@Override
 	public boolean appStart(IScope app) {
 		log.info("Admin application started");
@@ -67,7 +80,7 @@ public class Application extends ApplicationAdapter {
 	 * 
 	 * @return HashMap containing all applications
 	 */
-	public HashMap getApplications() {
+	public HashMap<Integer, Object> getApplications() {
 		IScope root = ScopeUtils.findRoot(scope);
 		Iterator<String> iter = root.getScopeNames();
 		HashMap<Integer, Object> apps = new HashMap<Integer, Object>();
@@ -113,7 +126,7 @@ public class Application extends ApplicationAdapter {
 	 * @param scopeName
 	 * @return HashMap containing all the scopes
 	 */
-	public HashMap getScopes(String scopeName) {
+	public HashMap<Integer, String> getScopes(String scopeName) {
 		IScope root = ScopeUtils.findRoot(scope);
 		IScope scopeObj = root.getScope(scopeName);
 		scopes = new HashMap<Integer, String>();
@@ -161,7 +174,7 @@ public class Application extends ApplicationAdapter {
 	 * @param scopeName
 	 * @return HashMap with all clients in the given scope
 	 */
-	public HashMap getConnections(String scopeName) {
+	public HashMap<Integer, String> getConnections(String scopeName) {
 		HashMap<Integer, String> connections = new HashMap<Integer, String>();
 		IScope root = getScope(scopeName);
 		if (root != null) {

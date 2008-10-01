@@ -19,15 +19,19 @@ package org.red5.webapps.admin;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
+import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
+import java.util.Hashtable;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
+import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Database setup for admin.
@@ -37,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UserDatabase {
 
-	private static Logger log = LoggerFactory.getLogger(UserDatabase.class);		
+	private static Logger log = Application.loggerContext.getLogger(UserDatabase.class);		
 	
 	private boolean debug;
 
@@ -51,7 +55,9 @@ public class UserDatabase {
 		if (debug) {
 			System.setProperty("derby.debug.true", "");
 		}
-
+		//override derby log
+		System.setProperty("derby.stream.error.method", "org.red5.logging.DerbyLogInterceptor.handleDerbyLogFile");
+		
 		String prop = System.getenv("DERBY_HOME");
 		if (prop == null) {
 			prop = System.getProperty("user.home");
@@ -62,14 +68,37 @@ public class UserDatabase {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
-			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-			//set properties
-			Properties props = new Properties();
-			props.setProperty("username", userName);
-			props.setProperty("password", password);
+            // JDBC stuff
+			Hashtable  env = new Hashtable();
+			env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+			env.put("org.osjava.sj.root", "webapps/admin/WEB-INF/classes/config/");
+			env.put("org.osjava.sj.delimiter", "/");
+
+			Context ctx = new InitialContext(env);
+
+			DataSource ds = null;
+			
+			try {
+				Object o = ctx.lookup("jdbc/admin");
+				if (o == null) {
+					EmbeddedDataSource eds = new EmbeddedDataSource();
+					eds.setCreateDatabase("create");
+					eds.setDatabaseName(database);
+					eds.setPassword(password);
+					eds.setUser(userName);
+
+					ctx.rebind("jdbc/admin", eds);
+
+					ds = eds;
+				} else {
+					ds = (DataSource) o;
+				}
+			} catch (Exception e) {
+				log.error("Context check for datasource", e);
+			}
+			
 			//create the db and get a connection
-			conn = DriverManager.getConnection("jdbc:derby:" + database
-					+ ";create=true;", props);
+			conn = ds.getConnection();
 			//make a statement
 			stmt = conn.createStatement();
 			//check for table
@@ -131,13 +160,23 @@ public class UserDatabase {
 	public void shutdown() {
 		log.debug("Shutdown {} db", UserDatabase.database);
 		try {
-			DriverManager.getConnection("jdbc:derby:" + UserDatabase.database
-					+ ";shutdown=true");
-		} catch (SQLException e) {
+			//DriverManager.getConnection("jdbc:derby:" + UserDatabase.database + ";shutdown=true");
+			
+			Hashtable  env = new Hashtable();
+			env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+			env.put("org.osjava.sj.root", "webapps/admin/WEB-INF/classes/config/");
+			env.put("org.osjava.sj.delimiter", "/");
+
+			Context ctx = new InitialContext(env);
+
+			EmbeddedDataSource ds = (EmbeddedDataSource) ctx.lookup("jdbc/admin");
+            ds.setShutdownDatabase("shutdown");
+            
+		} catch (Exception e) {
 			log.debug("Error in db shutdown", e);
 		}
 	}
-
+	
 	public boolean isDebug() {
 		return debug;
 	}

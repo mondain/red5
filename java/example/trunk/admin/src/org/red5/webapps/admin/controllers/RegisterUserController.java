@@ -1,17 +1,12 @@
 package org.red5.webapps.admin.controllers;
 
-import java.io.IOException;
-
 import javax.servlet.ServletException;
 
-
-//import org.red5.webapps.admin.controllers.service.UserDetails;
+import org.red5.webapps.admin.Application;
 import org.red5.webapps.admin.utils.PasswordGenerator;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.dao.DaoAuthenticationProvider;
 import org.springframework.security.providers.dao.salt.SystemWideSaltSource;
 import org.springframework.security.userdetails.User;
@@ -24,7 +19,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class RegisterUserController extends SimpleFormController {
 
-	protected static Logger log = LoggerFactory.getLogger(RegisterUserController.class);
+	protected static Logger log = Application.loggerContext.getLogger(RegisterUserController.class);
 	
 	private static DaoAuthenticationProvider daoAuthenticationProvider;
 	
@@ -47,9 +42,7 @@ public class RegisterUserController extends SimpleFormController {
 
 		try {
     		// register user here
-
-			if (!((JdbcUserDetailsManager) userDetailsService).userExists("admin"))
-			{
+			if (!((JdbcUserDetailsManager) userDetailsService).userExists(username)) {
     			GrantedAuthority[] auths = new GrantedAuthority[1];
             	auths[0] = new GrantedAuthorityImpl("ROLE_SUPERVISOR");
             	User usr = new User(username, hashedPassword, true, true, true, true, auths);
@@ -59,10 +52,10 @@ public class RegisterUserController extends SimpleFormController {
                 		//setup security user stuff and add them to the current "cache" and current user map	
             		daoAuthenticationProvider.getUserCache().putUserInCache(usr);
                 } else {
-                	log.warn("User registration failed");
+                	log.warn("User registration failed for: {}", username);
                 }
 			} else {
-				log.warn("User admin already exists");
+				log.warn("User {} already exists", username);
 			}
         } catch (Exception e) {
         	log.error("Error during registration", e);
