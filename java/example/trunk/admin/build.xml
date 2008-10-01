@@ -70,8 +70,6 @@
         </tstamp>    	
         <copy todir="${classes.dir}">
 			<fileset dir="${src.dir}">
-				<include name="*.properties"/>
-				<include name="*.xml"/>
 				<exclude name="*.java"/>
 			</fileset>        
         </copy>
