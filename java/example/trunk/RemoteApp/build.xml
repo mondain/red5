@@ -10,7 +10,7 @@
     <property name="FLEX_HOME" value="${env.FLEX_HOME}"/>
 	
 	<!-- http://labs.adobe.com/wiki/index.php/Flex_Ant_Tasks -->
-    <taskdef resource="flexTasks.tasks" classpath="${env.ANT_HOME}/lib/flexTasks.jar" /> 	
+        <taskdef resource="flexTasks.tasks" classpath="${env.FLEX_HOME}/ant/lib/flexTasks.jar" /> 	
     
 	<path id="project.classpath">
 		<fileset dir="${lib.dir}"/>
@@ -104,9 +104,9 @@
 	</target>    
     
     <target name="clean">
-        <delete dir="${src.dir}/generated"/>
-        <delete dir="${build.dir}/generated"/>
-        <delete dir="${bin.dir}"/>
+        <delete failonerror="false" dir="${src.dir}/generated"/>
+        <delete failonerror="false" dir="${build.dir}/generated"/>
+        <delete failonerror="false" dir="${bin.dir}"/>
     </target> 
     	
 	<!--

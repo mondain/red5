@@ -10,7 +10,7 @@
     <property name="FLEX_HOME" value="${env.FLEX_HOME}"/>
 	
 	<!-- http://labs.adobe.com/wiki/index.php/Flex_Ant_Tasks -->
-    <taskdef resource="flexTasks.tasks" classpath="${env.ANT_HOME}/lib/flexTasks.jar" /> 	
+        <taskdef resource="flexTasks.tasks" classpath="${env.FLEX_HOME}/ant/lib/flexTasks.jar" /> 	
     
 	<!--
 		Have you edit the properties file to make sure the paths are right oo your system?
@@ -51,9 +51,9 @@
     </target>
     
     <target name="clean">
-        <delete dir="${src.dir}/generated"/>
-        <delete dir="${build.dir}/generated"/>
-        <delete>
+        <delete failonerror="false" dir="${src.dir}/generated"/>
+        <delete failonerror="false" dir="${build.dir}/generated"/>
+        <delete failonerror="false">
             <fileset dir="${bin.dir}" includes="${ant.project.name}.swf"/>
         </delete>    
     </target> 

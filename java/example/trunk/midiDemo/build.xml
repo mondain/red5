@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <project name="midiDemo" basedir="." default="war">
+    <!-- project properties -->
+    <property environment="env"/>
     <!-- user overides for project properties -->
     <property file="${user.home}/build.properties"/>
     <!-- base project properties -->
     <property file="build.properties"/>
     
-    <!-- project properties -->
-    <property environment="env"/>
     <property name="java.home" value="${env.JDK_HOME}"/>
     <property name="src.dir" value="src"/>
     <property name="lib.dir" value="www/WEB-INF/lib"/>
