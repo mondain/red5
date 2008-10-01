@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.red5.webapps.admin.Application;
 import org.red5.webapps.admin.controllers.service.UserDetails;
 import org.springframework.security.userdetails.User;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ import org.springframework.web.servlet.mvc.Controller;
 
 public class PanelController implements Controller {
 
-	protected static Logger log = LoggerFactory.getLogger(PanelController.class);	
+	protected static Logger log = Application.loggerContext.getLogger(PanelController.class);	
 
 	private static UserDetailsService userDetailsService;
 	private User user;

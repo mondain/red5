@@ -5,14 +5,14 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="var" path="Red5/red5.jar"/>
-	<classpathentry kind="var" path="Red5/lib/logback-core-0.9.9.jar"/>
-	<classpathentry kind="var" path="Red5/lib/slf4j-api-1.5.2.jar"/>
 	<classpathentry kind="var" path="Red5/lib/spring-beans-2.5.5.jar"/>
 	<classpathentry kind="var" path="Red5/lib/spring-context-2.5.5.jar"/>
 	<classpathentry kind="var" path="Red5/lib/spring-core-2.5.5.jar"/>
-	<classpathentry kind="var" path="Red5/lib/spring-orm-2.5.5.jar"/>
 	<classpathentry kind="var" path="Red5/lib/spring-web-2.5.5.jar"/>
 	<classpathentry kind="var" path="Red5/lib/servlet-api-2.5.jar"/>
 	<classpathentry kind="var" path="Red5/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="var" path="Red5/lib/logback-core-0.9.10-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="Red5/lib/slf4j-api-1.5.3.jar"/>
+	<classpathentry kind="var" path="Red5/lib/logback-classic-0.9.10-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="www/WEB-INF/classes"/>
 </classpath>

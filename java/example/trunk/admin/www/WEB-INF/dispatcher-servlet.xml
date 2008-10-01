@@ -31,11 +31,7 @@
         <property name="saltSource" ref="saltSource"/>      
         <property name="userDetailsService" ref="userDetailsService"/>
     </bean>
-    
-    <!--
-    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
-    -->
-    
+        
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
         <property name="prefix" value="/WEB-INF/jsp/" />

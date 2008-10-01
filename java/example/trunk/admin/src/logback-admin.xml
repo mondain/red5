@@ -11,9 +11,12 @@
 		</layout>
 	</appender>
 	<root>
-		<level value="DEBUG" />
+		<appender-ref ref="ADMIN" />
 	</root>	
-	<logger name="org.red5.webapps.admin">
+	<logger name="org.red5">
+		<level value="DEBUG"/>
+	</logger>
+	<logger name="org.apache.derby">
 		<level value="DEBUG"/>
 	</logger>
 </configuration>

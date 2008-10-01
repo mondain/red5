@@ -22,18 +22,17 @@ package org.red5.webapps.admin.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.red5.server.api.Red5;
 import org.red5.server.ClientRegistry;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IScope;
+import org.red5.server.api.Red5;
 import org.red5.server.exception.ClientNotFoundException;
 import org.red5.server.exception.ClientRejectedException;
-
+import org.red5.webapps.admin.Application;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.providers.ProviderManager;
 import org.springframework.security.BadCredentialsException;
+import org.springframework.security.providers.ProviderManager;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 
 /**
  * 
@@ -42,7 +41,7 @@ import org.springframework.security.BadCredentialsException;
  */
 public class AuthClientRegistry extends ClientRegistry {
 
-	private Logger log = LoggerFactory.getLogger(AuthClientRegistry.class);
+	private Logger log = Application.loggerContext.getLogger(AuthClientRegistry.class);
 
 	protected IScope masterScope;
 
