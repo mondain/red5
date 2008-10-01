@@ -4,7 +4,7 @@
 		<application name="admin">
 			<author>Martin M, Dan Rossi</author>
 			<desc>Administration console</desc>
-			<filename>admin-r3074-java6.war</filename>
+			<filename>admin-r3129-java6.war</filename>
 		</application>
 		<application name="oflaDemo">
 			<author>Red5 Team</author>
