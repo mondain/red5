@@ -60,7 +60,7 @@ Bugfixes:
 - Dealock issues with fix in Output.java (Jira APPSERVER-289)
 - Bug with scope stopping and multithreading (Jira APPSERVER-290)
 - SharedObjects modified flag doesn't get set to false (Jira APPSERVER-291)
-
+- Delete/overwrite streams from clientside (Jira SN-20)
 
 Other:
 - Split demos and flash sources into their own top level directories
