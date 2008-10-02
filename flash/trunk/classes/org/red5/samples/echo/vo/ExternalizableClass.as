@@ -23,7 +23,7 @@
 	import flash.utils.IDataOutput;
 	import flash.utils.IExternalizable;
 	
-	[RemoteClass(alias="org.red5.server.webapp.echo.ExternalizableClass")]
+	[RemoteClass(alias="org.red5.demos.echo.ExternalizableClass")]
 	/**
 	 * @author Joachim Bauch ( jojo@struktur.de )
 	 */
