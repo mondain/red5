@@ -61,10 +61,13 @@ Bugfixes:
 - Bug with scope stopping and multithreading (Jira APPSERVER-290)
 - SharedObjects modified flag doesn't get set to false (Jira APPSERVER-291)
 - Delete/overwrite streams from clientside (Jira SN-20)
+- InsufficientBW with VP6 encoder - live stream (Jira SN-77)
+- User friendly error message for port/permission problems (Jira APPSERVER-299)
 
 Other:
 - Split demos and flash sources into their own top level directories
 - Added application snapshot repository
+- Applied patches for JUnit (Jira DT-4)
 
 
 Red5 0.7.1
