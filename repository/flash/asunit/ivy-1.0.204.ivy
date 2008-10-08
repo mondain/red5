@@ -1,0 +1,15 @@
+<ivy-module version="2.0">
+
+  <info organisation="asunit" module="asunit-as3" revision="1.0.204" status="integration" publication="20081008091844"/>
+
+  <configurations>
+    <conf name="default" description="default configuration"/>
+    <conf name="compile" extends="default" description="compiling dependencies"/>
+    <conf name="test" extends="default" description="Unit testing dependencies"/>
+  </configurations>
+  <publications>
+    <artifact name="asunit-as3" type="swc" conf="*" ext="swc"/>
+  </publications>
+  <dependencies defaultconfmapping="*->*">
+  </dependencies>
+</ivy-module>
