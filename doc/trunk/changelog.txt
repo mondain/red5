@@ -4,38 +4,20 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
-Red5 0.9.0  (unreleased)
+Red5 0.8.0  (unreleased)
 ------------------------
 New Features:
-
-Bugfixes:
-
-Other: 
-
-
-Red5 0.8.1  (unreleased)
-------------------------
-New Features:
-
-Bugfixes:
-
-Other: 
-
-
-Red5 0.8.0  (next release)
-------------------------
-New Features:
-- Added socket policy file server to support new security model, starting 
-  in flash player 9,0,124,0
-- Added virtual hosting capabilities (Tomcat only)
-- Added W3C log appender for logback modeled after FMS log events and categories
-- Added the ability to unload a context using the ContextLoader
-- Added RTMPS support (Jira SN-69)
+- Socket policy file server to support new security model, starting 
+  with Flash Player 9,0,124,0
+- Virtual hosting capabilities (Tomcat only)
+- W3C log appender for logback modeled after FMS log events and categories
+- Ability to unload a context using the ContextLoader
+- RTMPS support (Jira SN-69)
 - Set default J2EE servlet container / HTTP server to Tomcat
-- Added Flex based application installer for red5 web applications
-- Added War auto-deployer service
+- Flex based application installer for Red5 web applications
+- War auto-deployer service
 - Added additional MP3 ID3 data to the onMetaData event
-- Added onImageData and MP3 cover art support 
+- onImageData and MP3 cover art support 
 
 Bugfixes:
 - RTMPProtocolDecoder fixed to support RSO sendMessage (Jira CODECS-9)
@@ -49,7 +31,7 @@ Bugfixes:
 - Resolved OSX connection problem with players > version 9,0,115
 - Added patch for InvocationTargetException on missing files (Jira SN-99 and SN-97)
 - Fixed a small issue with stream ids > 100
-- Added patch for flv metadata handling
+- Added patch for FLV metadata handling
 - Added patch for RTMPT client
 - Added patch for start and stop scripts
 - Fixed logging in web applications
@@ -63,16 +45,9 @@ Bugfixes:
 - Delete/overwrite streams from clientside (Jira SN-20)
 - InsufficientBW with VP6 encoder - live stream (Jira SN-77)
 - User friendly error message for port/permission problems (Jira APPSERVER-299)
-
-Other:
-- Split demos and flash sources into their own top level directories
+- Split demos and Flash sources into their own top level directories
 - Added application snapshot repository
 - Applied patches for JUnit (Jira DT-4)
-
-
-Red5 0.7.1
-------------------------
-Version renamed 0.8.0 for release
 
 
 Red5 0.7.0  (2008-02-23)
