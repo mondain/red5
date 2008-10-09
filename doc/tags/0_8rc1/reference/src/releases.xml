@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xml:id="releasing-red5" xmlns="http://docbook.org/ns/docbook" 
+   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
+   <title>Releasing Red5</title>
+   <para>This document describes the steps necessary to create a new release of Red5:</para>
+   <orderedlist numeration="arabic">
+      <listitem>
+         <para>Make sure everything has been committed to the trunk or correct branch.</para>
+      </listitem>
+      <listitem>
+         <para>Update the file doc/changelog.txt with informations about the new release.</para>
+      </listitem>
+      <listitem>
+         <para>Create tags of the modules that are linked into the main code tree:</para>
+         <itemizedlist mark="-">
+            <listitem>
+               <para>documentation at <link xl:href="http://svn1.cvsdude.com/osflash/red5/doc/tags">http://svn1.cvsdude.com/osflash/red5/doc/tags</link>
+               </para>
+            </listitem>
+         </itemizedlist>
+         <para>Tags for versions should always be the version string with dots replaced
+            by underscores, e.g. version "1.2.3" becomes tag "1_2_3".</para>
+         <para>If you would tag the documentation folder for version "1.2.3", you would
+            use the url <link xl:href="http://svn1.cvsdude.com/osflash/red5/doc/tags/1_2_3">http://svn1.cvsdude.com/osflash/red5/doc/tags/1_2_3</link>
+         </para>
+      </listitem>
+      <listitem>
+         <para>Tag the server code according to the naming scheme from above at
+            <link xl:href="http://svn1.cvsdude.com/osflash/red5/java/server/tags">http://svn1.cvsdude.com/osflash/red5/java/server/tags</link>
+         </para>
+      </listitem>
+      <listitem>
+         <para>Update the svn:externals in the newly created server code tag to point
+            to the tagged modules from step 3.</para>
+      </listitem>
+      <listitem>
+         <para>You're done.</para>
+      </listitem>
+   </orderedlist>
+</chapter>
