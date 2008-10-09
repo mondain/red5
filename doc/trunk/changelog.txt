@@ -4,6 +4,10 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
+Red5 0.8.0 RC2 (unreleased)
+---------------------------
+
+
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
 New Features:
@@ -48,7 +52,6 @@ Bugfixes:
 - Split demos and Flash sources into their own top level directories
 - Added application snapshot repository
 - Applied patches for JUnit (Jira DT-4)
-
 
 Red5 0.7.0  (2008-02-23)
 ------------------------
