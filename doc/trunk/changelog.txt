@@ -4,8 +4,8 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
-Red5 0.8.0  (unreleased)
-------------------------
+Red5 0.8.0 RC1 (2008-09-29)
+---------------------------
 New Features:
 - Socket policy file server to support new security model, starting 
   with Flash Player 9,0,124,0
