@@ -106,7 +106,6 @@
 		<echo message="Svn info - status: ${svn.info.status} last rev: ${svn.info.lastrev} rev: ${svn.info.rev}"/>
 	
 		<property name="snapshot.name" value="${ant.project.name}-r${svn.info.rev}-${java.version.name}.war"/>
-		<property name="snapshot.path" value="../../../../snapshots/"/>
 	
 		<echo message="Destination: ${snapshot.path}${snapshot.name}"/>
 	
