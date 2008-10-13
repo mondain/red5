@@ -140,7 +140,7 @@
   </target>
 
   <target name="clean"
-    description="Clean all built objects (except share artifacts)">
+    description="Clean build (except shared artifacts)">
     <delete 
       dir="${asdoc.output.dir}" 
       failOnError="false" 
@@ -157,22 +157,22 @@
 
   <target name="clobber"
     depends="clean, share-clean"
-    description="Clean all built objects (including share artifacts)">
+    description="Clean build (including share artifacts)">
   </target>
 
   <target name="share-clean"
-    description="Clean all share objects">
+    description="Clean all shared objects">
     <ant dir="share" target="clean" inheritAll="false" />
   </target>
 
   <target name="share-install"
-    description="Install all share libraries">
+    description="Install all shared libraries">
     <ant dir="share" target="install" inheritAll="false" />
   </target>
 
   <target name="compile-flash-library"
     depends="state"
-    description="Compiles any flash libraries (swc) for this build"
+    description="Compiles any Flash libraries (swc) for this build"
     if="output.swc.name"
     unless="library.uptodate"
     >
@@ -189,7 +189,7 @@
       <map from="${src.dir}/" to=""/> <!-- make relative -->
       <mapper>
         <chainedmapper>
-          <!-- And strip off the as in the name... feel ugly yet? -->
+          <!-- And strip off the .as extension -->
           <globmapper from="*.as" to ="*"/>
         </chainedmapper>
       </mapper>
@@ -202,7 +202,7 @@
       <map from="${test.dir}/" to=""/> <!-- make relative -->
       <mapper>
         <chainedmapper>
-          <!-- And strip off the as in the name... feel ugly yet? -->
+          <!-- And strip off the .as extension -->
           <globmapper from="*..as" to ="*"/>
           <globmapper from="*.as" to ="*"/>
         </chainedmapper>
@@ -220,7 +220,7 @@
       <source-path path-element="${test.dir}" />
       <!-- This means these libraries are compiled against, but not linked.
       That means you'll want to make sure if your library ACTUALLY
-      depends on these at link time for an SWF that you include any
+      depends on these at link time for an SWF, that you include any
       dependent libraries in the ivy publication of this library.
       -->
       <external-library-path dir="build/lib/compile" includes="**/*" append="true" />
@@ -229,7 +229,7 @@
 
   <target name="compile-flash-app"
     depends="state"
-    description="Compiles any flash applications (swf) for this build"
+    description="Compiles any Flash applications (swf) for this build"
     if="output.swf.name"
     unless="application.uptodate"
     >
@@ -254,7 +254,7 @@
 
   <target name="compile-flash-tests"
     depends="state"
-    description="Compiles any flash tests (swf) for this build"
+    description="Compiles any Flash tests (swf) for this build"
     if="output.test.swf.name"
     unless="test.uptodate"
     >
@@ -302,7 +302,7 @@
     name="run-tests-unattended"
     depends="compile-tests"
     if="output.test.swf.name"
-    description="Run unit tests for this application">
+    description="Run unattended unit tests for this application">
     <exec dir="${test.build.dir}" executable="${unattended.flash.exec}"
       failonerror="true">
       <arg line='${output.test.swf.filename}'/>
@@ -339,7 +339,7 @@
   </target>
 
   <target name="dependency-tests"
-    description="Determines whether we need to re-run (slow) compilers" >
+    description="Determines whether we need to re-run compilers" >
 
     <available property="dist.available" file="${dist.dir}" />
 
@@ -414,7 +414,7 @@
       <arg line='-left-frameset-width "${asdoc.framewidth}"'/>
       <arg line='-benchmark'/>
     </exec>
-    <echo message="Find api documentation at: ${asdoc.output.dir}"/>
+    <echo message="Created API documentation at: ${asdoc.output.dir}"/>
   </target>
 
 </project>
