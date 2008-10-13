@@ -6,6 +6,11 @@
   xmlns:ivy="antlib:org.apache.ivy.ant"
   >
 
+  <!-- This build file requires Apache Ant >= 1.7 -->
+  <condition property="ant-at-least-7">
+  	<antversion atleast="1.7.0"/>
+  </condition>
+
   <!-- the project name -->
   <description>${project.title}</description>
 
@@ -88,7 +93,7 @@
 
   <target name="ivy-init"
     unless="red5.ivy.initted"
-    description="Initialize ivy">
+    description="Initialize Ivy">
     <!--
     Ivy tasks and lib directory
     http://ant.apache.org/ivy
@@ -157,7 +162,7 @@
 
   <target name="clobber"
     depends="clean, share-clean"
-    description="Clean build (including share artifacts)">
+    description="Clean build (including shared artifacts)">
   </target>
 
   <target name="share-clean"
@@ -172,7 +177,7 @@
 
   <target name="compile-flash-library"
     depends="state"
-    description="Compiles any Flash libraries (swc) for this build"
+    description="Compiles any Flash libraries (.swc) for this build"
     if="output.swc.name"
     unless="library.uptodate"
     >
@@ -221,7 +226,7 @@
       <!-- This means these libraries are compiled against, but not linked.
       That means you'll want to make sure if your library ACTUALLY
       depends on these at link time for an SWF, that you include any
-      dependent libraries in the ivy publication of this library.
+      dependent libraries in the Ivy publication of this library.
       -->
       <external-library-path dir="build/lib/compile" includes="**/*" append="true" />
     </compc>
@@ -229,7 +234,7 @@
 
   <target name="compile-flash-app"
     depends="state"
-    description="Compiles any Flash applications (swf) for this build"
+    description="Compiles any Flash applications (.swf) for this build"
     if="output.swf.name"
     unless="application.uptodate"
     >
@@ -254,7 +259,7 @@
 
   <target name="compile-flash-tests"
     depends="state"
-    description="Compiles any Flash tests (swf) for this build"
+    description="Compiles any Flash tests (.swf) for this build"
     if="output.test.swf.name"
     unless="test.uptodate"
     >
@@ -312,7 +317,7 @@
   <target name="dist"
     depends="compile, compile-tests"
     unless="dist.available"
-    description="Install all libraries and SWF files into ${dist.dir} if it doesn't exist already">
+    description="Install all libraries and SWF files">
     <mkdir dir="${build.dir}/lib/default"/>
     <copy todir="${build.dir}/lib">
       <fileset dir="${test.build.dir}"
@@ -332,10 +337,13 @@
   <target name="state" 
     description="Show system state informaion"
     depends="dependency-tests">
+    <condition property="lib.uptodate" value="Yes" else="No">
+        <isset property="library.uptodate"/>
+    </condition>
     <echo>ant.project.name = ${ant.project.name}</echo>
-    <echo>    FLEX_HOME    = ${FLEX_HOME}</echo>
+    <echo>       FLEX_HOME = ${FLEX_HOME}</echo>
     <echo>         os.name = ${os.name}</echo>
-    <echo>library.uptodate = ${library.uptodate}</echo>
+    <echo>library.uptodate = ${lib.uptodate}</echo>
   </target>
 
   <target name="dependency-tests"
