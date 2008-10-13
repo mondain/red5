@@ -41,8 +41,8 @@
 #   service apache2 restart
 #
 #  Go to your hudson build; it should have some sensible defaults, but
-#  security will be turned off.  Turn it on as you like and voila,
-#  you should have a headless Red5 build server.
+#  and a hudson user configured.  The default password is "fmskiller"
+#  feel free to change it.
 INSTALL_DIR=`pwd`
 
 apt-get update 
