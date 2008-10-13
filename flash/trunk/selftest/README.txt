@@ -19,7 +19,6 @@ or bring up build/red5-selftest.swf in a flash player
 To generate documentation run:
 ant doc
 
-
 Here's the original text from the README:
 
 These libraries contain the following:
@@ -40,5 +39,12 @@ All tests assume the following:
  - You must have a FLV file hosted on that server at http://localhost/selftest/testvid.flv
  - You must ensure your server allows publishing of live streams
 
-Once that's done, the tests should run successfully.  Turns out the Red5 media
-distribution has a test service that does all this.  Check there for instructions.
+Once that's done, the tests should run successfully.  Turns out the Red5
+java server trunk has two build targets that are set up for this application:
+
+1) ant run-tests-systemtest: starts up a red5 test server, and uses this swf file
+  to do an end-to-end system test.
+2) ant run-tests-server: starts up a red5 test server that has a web-application 
+  installed at rtmp://HOSTNAME/selftest/ that will provide all the files
+  and APIs that this selftest assumes.
+
