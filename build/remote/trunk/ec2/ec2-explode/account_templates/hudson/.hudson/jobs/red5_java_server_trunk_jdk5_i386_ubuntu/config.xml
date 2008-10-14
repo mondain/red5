@@ -60,5 +60,13 @@ javadoc</targets>
       </threshold>
     </hudson.tasks.BuildTrigger>
   </publishers>
-  <buildWrappers/>
+  <buildWrappers>
+    <org.jvnet.hudson.plugins.port__allocator.PortAllocator>
+      <ports>
+        <org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
+          <name>1935</name>
+        </org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
+      </ports>
+    </org.jvnet.hudson.plugins.port__allocator.PortAllocator>
+  </buildWrappers>
 </project>
