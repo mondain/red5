@@ -9,6 +9,7 @@
     
     <property name="java.home" value="${env.JDK_HOME}"/>
     <property name="src.dir" value="src"/>
+	<property name="assets.dir" value="www/assets"/>
     <property name="lib.dir" value="www/WEB-INF/lib"/>
     <property name="classes.dir" value="www/WEB-INF/classes"/>
     <property name="dist.dir" value="dist"/>
@@ -25,6 +26,7 @@
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${lib.dir}"/>
         <mkdir dir="${dist.dir}"/>
+    	<mkdir dir="${assets.dir}"/>
     </target>
     
     <target name="clean">
@@ -73,6 +75,15 @@
 				<exclude name="*.java"/>
 			</fileset>        
         </copy>
+    	
+    	<copy todir="${assets.dir}">
+    		<fileset dir="${red5.root}/webapps/root/demos/assets"/>
+    	</copy>
+    	
+    	<copy todir="${assets.dir}">
+    	    <fileset file="${red5.root}/webapps/root/demos/adminPanel.swf"/>
+    	</copy>
+    	
 		<war destfile="${dist.dir}/${ant.project.name}.war" webxml="www/WEB-INF/web.xml">
 			<fileset dir="www">
 				<exclude name="**/src/**"/>
