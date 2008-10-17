@@ -11,6 +11,7 @@ New Features:
 Bugfixes:
 - RemotingClient decoding errors (Jira APPSERVER-296)
 - Codec typos (Jira APPSERVER-309)
+- Exception is thrown when doing NetStream.seek operation (Jira SN-94)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
