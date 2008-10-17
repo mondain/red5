@@ -6,7 +6,11 @@ versions of Red5.
 
 Red5 0.8.0 RC2 (unreleased)
 ---------------------------
+New Features:
 
+Bugfixes:
+- RemotingClient decoding errors (Jira APPSERVER-296)
+- Codec typos (Jira APPSERVER-309)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
