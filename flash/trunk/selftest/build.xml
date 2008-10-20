@@ -214,6 +214,7 @@
       </mapper>
     </pathconvert>
     <compc output="${build.dir}/lib/${output.swc.filename}"
+      fork="true"
       include-classes="${compile.classes} ${compile.test.classes}"
       compiler.incremental="${compiler.incremental}"
       compiler.debug="${compiler.debug}"
@@ -243,6 +244,7 @@
       <param name="ivy.settings.name" value="compile"/>
     </antcall>
     <mxmlc file="${src.dir}/${output.swf.inputfile}"
+      fork="true"
       output="${build.dir}/${output.swf.filename}"
       compiler.incremental="${compiler.incremental}"
       compiler.debug="${compiler.debug}"
@@ -268,6 +270,7 @@
       <param name="ivy.settings.name" value="test"/>
     </antcall>
     <mxmlc file="${test.dir}/${output.test.swf.inputfile}"
+      fork="true"
       output="${test.build.dir}/${output.test.swf.filename}"
       compiler.incremental="${compiler.incremental}"
       compiler.debug="${compiler.debug}"
