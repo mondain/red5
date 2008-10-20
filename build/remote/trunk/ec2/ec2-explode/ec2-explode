@@ -65,22 +65,6 @@ java -version
  apt-get install -y subversion
  apt-get install -y subversion-tools
 
-# ? install adobe flex
- export FLEX_HOME=/usr/local/adobe/flex3sdk
- mkdir -p $FLEX_HOME
- cd $FLEX_HOME
-# # need script to install
-wget http://download.macromedia.com/pub/flex/sdk/flex_sdk_3.zip
-unzip flex_sdk_3.zip
-# For some reason, flex defaults to not readable
-cd $FLEX_HOME/runtimes/player/lnx
-tar -xzvf flashplayer.tar.gz
-# Fix the permissions here; ugh
-cd $FLEX_HOME
-chmod -f -R a+r *
-find . -type d -exec chmod a+x \{\} \;
-chmod -f -R a+x bin
-
 # # need script to install -- and it unzips in that directory, plus comes with lnx player
 # # for web servers
 apt-get install -y debian-helper-scripts # For service tools
