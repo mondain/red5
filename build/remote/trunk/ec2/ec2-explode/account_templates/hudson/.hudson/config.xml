@@ -7,6 +7,9 @@
   <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
     <disableSignup>true</disableSignup>
   </securityRealm>
+  <systemMessage>This is the Red5 Continuous Builder Proof of Concept&#xd;
+&#xd;
+This is not the permanent host, but shows what we can do</systemMessage>
   <jdks>
     <jdk>
       <name>JDK6</name>

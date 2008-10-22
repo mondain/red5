@@ -21,11 +21,7 @@ OS: Linux</description>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
   <jdk>JDK5</jdk>
-  <triggers class="vector">
-    <hudson.triggers.SCMTrigger>
-      <spec>0,15,30,45 * * * *</spec>
-    </hudson.triggers.SCMTrigger>
-  </triggers>
+  <triggers class="vector"/>
   <builders>
     <hudson.tasks.Ant>
       <targets>clean
@@ -41,7 +37,7 @@ run-tests-systemtest</targets>
     <hudson.tasks.Mailer>
       <recipients>red5-builds@googlegroups.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>false</sendToIndividuals>
+      <sendToIndividuals>true</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
   <buildWrappers>
