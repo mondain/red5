@@ -1,6 +1,6 @@
 <ivy-module version="2.0">
 
-  <info organisation="red5" module="red5-selftest" revision="0.1.0" />
+  <info organisation="red5" module="red5-selftest" revision="0.1.1" />
 
   <configurations>
     <conf name="default" description="default configuration"/>
