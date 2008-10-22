@@ -21,15 +21,7 @@ OS: Linux</description>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
   <jdk>JDK5</jdk>
-  <triggers class="vector">
-    <hudson.triggers.SCMTrigger>
-      <spec>0,15,30,45 * * * *</spec>
-    </hudson.triggers.SCMTrigger>
-    <hudson.triggers.TimerTrigger>
-      <spec># Run every morning at 1am
-0 1 * * *</spec>
-    </hudson.triggers.TimerTrigger>
-  </triggers>
+  <triggers class="vector"/>
   <builders>
     <hudson.tasks.Ant>
       <targets>ivyclear
@@ -58,7 +50,7 @@ javadoc</targets>
     <hudson.tasks.Mailer>
       <recipients>red5-builds@googlegroups.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>false</sendToIndividuals>
+      <sendToIndividuals>true</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
   <buildWrappers>

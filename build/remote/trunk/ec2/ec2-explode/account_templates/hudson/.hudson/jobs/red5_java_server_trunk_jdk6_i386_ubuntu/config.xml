@@ -46,10 +46,18 @@ javadoc</targets>
     <hudson.tasks.junit.JUnitResultArchiver>
       <testResults>workingcopy/bin/testcases/testreports/*.xml</testResults>
     </hudson.tasks.junit.JUnitResultArchiver>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>red5_java_server_trunk_jdk5_i386_ubuntu, red5_java_server_trunk_jdk6_i386_ubuntu_systemtest</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
     <hudson.tasks.Mailer>
       <recipients>red5-builds@googlegroups.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>false</sendToIndividuals>
+      <sendToIndividuals>true</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
   <buildWrappers>

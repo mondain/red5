@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+  echo "Usage: $0 archive_name"
+  exit -1;
+fi
+cd $HOME/.hudson
+find . -name '*.xml' | grep -v workspace | grep -v builds | grep -v users | xargs tar czvf $1
