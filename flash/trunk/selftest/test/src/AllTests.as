@@ -27,6 +27,7 @@ package
   import flash.system.System;
   import flash.utils.*;
   import net.AllTests;
+  import org.AllTests;
 
   /**
    * @private
@@ -46,6 +47,7 @@ package
 
       // Now, add sub-tests here.
       addTest(new net.AllTests());
+      addTest(new org.AllTests());
     }
 
     public function onSuiteCompleteHandler(e:Event):void
