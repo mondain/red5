@@ -16,6 +16,7 @@ Bugfixes:
 - Childscopes not visible on customly created scopes (Jira APPSERVER-298)
 - Config removal dynamically created room scopes (Jira APPSERVER-165)
 - NullPointerException in RTMPProtocolDecoder.decodeHeader under load (Jira SN-103)
+- Remote Shared Objects: Sync event doesnt dispatch (Jira CS-5)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
