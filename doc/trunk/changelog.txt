@@ -6,6 +6,10 @@ versions of Red5.
 
 Red5 0.8.0 RC2 (unreleased)
 ---------------------------
+New Features:
+- Testing: Added a new automated testing framework
+  (http://jira.red5.org/confluence/display/docs/Chapter+20.+Testing+Red5)
+
 Bugfixes:
 - RemotingClient decoding errors (Jira APPSERVER-296)
 - Codec typos (Jira APPSERVER-309)
@@ -17,8 +21,6 @@ Bugfixes:
 - NullPointerException in RTMPProtocolDecoder.decodeHeader under load
   (Jira SN-103)
 - Remote Shared Objects: Sync event doesnt dispatch (Jira CS-5)
-- Testing: Added a new automated testing framework
-  (http://jira.red5.org/confluence/display/docs/Chapter+20.+Testing+Red5)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
