@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!-- ======================================================================                                               
-     bwcheck application   
+     Red5 Application Installer   
                    
      Dan Rossi
      Thijs Triemstra                                                             
      ====================================================================== -->
 <project 
-	name="installer application" 
+	name="Installer application" 
 	default="build"
 	basedir=".">
 	
@@ -72,7 +72,7 @@
 		value="#FFFFFF"/>
 
     <description>
-    	bwcheck app
+    	Red5 Installer application
     </description>
 
     <!-- ================================= 
