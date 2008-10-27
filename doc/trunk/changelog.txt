@@ -6,18 +6,19 @@ versions of Red5.
 
 Red5 0.8.0 RC2 (unreleased)
 ---------------------------
-New Features:
-
 Bugfixes:
 - RemotingClient decoding errors (Jira APPSERVER-296)
 - Codec typos (Jira APPSERVER-309)
 - Exception is thrown when doing NetStream.seek operation (Jira SN-94)
-- Scope access does not work if invoked from external Application (Jira APPSERVER-306)
+- Scope access does not work if invoked from external Application
+  (Jira APPSERVER-306)
 - Childscopes not visible on customly created scopes (Jira APPSERVER-298)
 - Config removal dynamically created room scopes (Jira APPSERVER-165)
-- NullPointerException in RTMPProtocolDecoder.decodeHeader under load (Jira SN-103)
+- NullPointerException in RTMPProtocolDecoder.decodeHeader under load
+  (Jira SN-103)
 - Remote Shared Objects: Sync event doesnt dispatch (Jira CS-5)
-- Testing: Added a new automated testing framework (http://jira.red5.org/confluence/display/docs/Chapter+20.+Testing+Red5)
+- Testing: Added a new automated testing framework
+  (http://jira.red5.org/confluence/display/docs/Chapter+20.+Testing+Red5)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
@@ -42,18 +43,23 @@ Bugfixes:
 - Resolved exception with WarLoaderServlet (Jira APPSERVER-224)
 - Resolved log directory issue (Jira APPSERVER-246)
 - Resolved ServerStream issue with w3c logging (Jira APPSERVER-263)
-- Added patch to support ability to implement IBroadcastStream for custom streaming protocols (Jira SN-87)
+- Added patch to support ability to implement IBroadcastStream for custom
+  streaming protocols (Jira SN-87)
 - Resolved OSX connection problem with players > version 9,0,115
-- Added patch for InvocationTargetException on missing files (Jira SN-99 and SN-97)
+- Added patch for InvocationTargetException on missing files
+  (Jira SN-99 and SN-97)
 - Fixed a small issue with stream ids > 100
 - Added patch for FLV metadata handling
 - Added patch for RTMPT client
 - Added patch for start and stop scripts
 - Fixed logging in web applications
-- Root cause was not being sent on error in Flex message service (Jira APPSERVER-288)
-- Allow serializer to make use of other annotations like JPA (Jira APPSERVER-277)
+- Root cause was not being sent on error in Flex message service
+  (Jira APPSERVER-288)
+- Allow serializer to make use of other annotations like JPA
+  (Jira APPSERVER-277)
 - Collections are not serialized appropriately (Jira APPSERVER-293)
-- Unable to read external AMF3 arrays in IExternalizable classes (Jira APPSERVER-283)
+- Unable to read external AMF3 arrays in IExternalizable classes
+  (Jira APPSERVER-283)
 - Dealock issues with fix in Output.java (Jira APPSERVER-289)
 - Bug with scope stopping and multithreading (Jira APPSERVER-290)
 - SharedObjects modified flag doesn't get set to false (Jira APPSERVER-291)
