@@ -17,9 +17,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>[source path] classes</name>
+			<name>[source path] folder</name>
 			<type>2</type>
-			<location>C:/dev/red5/flash/trunk/classes</location>
+			<location>/path/to/classes/folder</location>
 		</link>
 	</linkedResources>
 </projectDescription>
