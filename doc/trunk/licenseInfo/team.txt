@@ -12,8 +12,9 @@ Paul Gregoire (mondain AT gmail.com)
 Thijs Triemstra (info AT collab.nl)
 Dan Rossi (electroteque AT gmail.com)
 Anton Lebedevich (mabrek AT gmail.com)
+Art Clarke (aclarke AT vlideshow.com)
 
-Ð Inactive Members Ð
+- Inactive Members -
 Luke Hubbard (luke AT codegent.com)
 Joachim Bauch (jojo AT struktur.de)
 Mick Herres (mickherres AT hotmail.com)
