@@ -2,6 +2,7 @@ package org.red5.demos.fitc;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,6 @@ public class Application extends ApplicationAdapter implements
 	public boolean appConnect(IConnection conn, Object[] params) {
 		IServiceCapableConnection service = (IServiceCapableConnection) conn;
 		log.info("Client connected {} conn {}", new Object[]{conn.getClient().getId(), conn});
-		log.info("Setting stream id: {}", getClients().size()); // just a unique number
 		service
 				.invoke("setId", new Object[] { conn.getClient().getId() },
 						this);
@@ -60,21 +60,21 @@ public class Application extends ApplicationAdapter implements
 			log.debug("stream broadcast start: {}", stream.getPublishedName());
 		}
 		IConnection current = Red5.getConnectionLocal();
-		Iterator<IConnection> it = scope.getConnections();
-		while (it.hasNext()) {
-			IConnection conn = it.next();
-			if (conn.equals(current)) {
-				// Don't notify current client
-				continue;
-			}
-
-			if (conn instanceof IServiceCapableConnection) {
-				((IServiceCapableConnection) conn).invoke("newStream",
-						new Object[] { stream.getPublishedName() }, this);
-				if (log.isDebugEnabled()) {
-					log.debug("sending notification to {}", conn);
-				}
-			}
+        for(Set<IConnection> connections : scope.getConnections()) {
+            for (IConnection conn: connections) {
+                if (conn.equals(current)) {
+                    // Don't notify current client
+                    continue;
+                }
+    
+                if (conn instanceof IServiceCapableConnection) {
+                    ((IServiceCapableConnection) conn).invoke("newStream",
+                            new Object[] { stream.getPublishedName() }, this);
+                    if (log.isDebugEnabled()) {
+                        log.debug("sending notification to {}", conn);
+                    }
+                }
+            }
 		}
 	}
 
