@@ -1,11 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions class="java.util.concurrent.CopyOnWriteArrayList"/>
-  <description>Application: Red5&#xd;
-Component: Flash Self Test&#xd;
+  <description>Application: Xuggle&#xd;
+Component: Java Utils&#xd;
 Branch: Trunk&#xd;
-JVM: N/A&#xd;
-Flex: 3.1&#xd;
+JVM: JDK 1.5&#xd;
 Platform: i386&#xd;
 OS: Linux</description>
   <logRotator>
@@ -17,7 +16,7 @@ OS: Linux</description>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
       <hudson.scm.SubversionSCM_-ModuleLocation>
-        <remote>http://red5.googlecode.com/svn/flash/trunk/selftest</remote>
+        <remote>http://xuggle.googlecode.com/svn/trunk/java/xuggle-utils</remote>
         <local>workingcopy</local>
       </hudson.scm.SubversionSCM_-ModuleLocation>
     </locations>
@@ -28,31 +27,38 @@ OS: Linux</description>
   <jdk>JDK5</jdk>
   <triggers class="vector">
     <hudson.triggers.SCMTrigger>
-      <spec>0,15,30,45 * * * *</spec>
+      <spec>0,5,10,15,20,25,30,35,40,45,50,55 * * * *</spec>
     </hudson.triggers.SCMTrigger>
-    <hudson.triggers.TimerTrigger>
-      <spec># Run every morning at 1am
-0 1 * * *</spec>
-    </hudson.triggers.TimerTrigger>
   </triggers>
   <builders>
     <hudson.tasks.Ant>
-      <targets>clean
-install
-compile-tests
+      <targets>ivy-clear
+clean
+run-tests
 doc</targets>
       <antName>Ant7</antName>
     </hudson.tasks.Ant>
   </builders>
   <publishers>
     <hudson.tasks.JavadocArchiver>
-      <javadocDir>workingcopy/doc/flash/api</javadocDir>
+      <javadocDir>workingcopy/doc/</javadocDir>
       <keepAll>true</keepAll>
     </hudson.tasks.JavadocArchiver>
+    <hudson.tasks.junit.JUnitResultArchiver>
+      <testResults>workingcopy/build/test/output/*.xml</testResults>
+    </hudson.tasks.junit.JUnitResultArchiver>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>xuggle_java_utils_jdk6_i386_ubuntu</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
     <hudson.tasks.Mailer>
-      <recipients>red5-builds@googlegroups.com</recipients>
+      <recipients>xuggle-builds@xuggle.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>false</sendToIndividuals>
+      <sendToIndividuals>true</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
   <buildWrappers/>

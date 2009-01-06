@@ -7,9 +7,8 @@
   <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
     <disableSignup>true</disableSignup>
   </securityRealm>
-  <systemMessage>This is the Red5 Continuous Builder Proof of Concept&#xd;
-&#xd;
-This is not the permanent host, but shows what we can do</systemMessage>
+  <systemMessage>This is the Red5/Xuggle i386 Continuous Builder Server&#xd;
+</systemMessage>
   <jdks>
     <jdk>
       <name>JDK6</name>
@@ -22,7 +21,13 @@ This is not the permanent host, but shows what we can do</systemMessage>
   </jdks>
   <slaves/>
   <quietPeriod>120</quietPeriod>
-  <views/>
+  <views>
+    <hudson.model.AllView>
+      <owner class="hudson" reference="../../.."/>
+      <name>All</name>
+    </hudson.model.AllView>
+  </views>
+  <primaryView>All</primaryView>
   <slaveAgentPort>0</slaveAgentPort>
   <secretKey>ecccc914cc10e9e71a87dde679ab932218d7ae8515c3b1474f1be51d37d5997f</secretKey>
 </hudson>
