@@ -2,7 +2,7 @@
   
   ServerAdmin info@xuggle.com
   ServerName build.xuggle.com
-  ServerAlias www.build.xuggle.com *.build.xuggle.com
+  ServerAlias build-x32.xuggle.com www.build.xuggle.com *.build.xuggle.com
 
   ErrorLog /var/log/apache2/build.xuggle.com-error.log
   CustomLog /var/log/apache2/build.xuggle.com-access.log combined
