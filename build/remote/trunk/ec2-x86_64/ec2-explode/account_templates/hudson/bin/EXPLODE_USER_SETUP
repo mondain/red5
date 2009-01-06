@@ -1,0 +1,54 @@
+#!/bin/bash
+# Copyright (C) 2008 Vlideshow Inc., All Rights Reserved
+# http://www.theyard.net/ or http://www.vlideshow.com/
+#
+# This library is free software; you can redistribute it and/or modify it under the 
+# terms of the GNU Lesser General Public License as published by the Free Software 
+# Foundation; either version 2.1 of the License, or (at your option) any later 
+# version. 
+# 
+# This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+# PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public License along 
+# with this library; if not, write to the Free Software Foundation, Inc., 
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+#
+export CATALINA_HOME=$HOME/tomcat
+cd $HOME
+wget http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.18/bin/apache-tomcat-6.0.18.tar.gz
+tar -xzvf $HOME/apache-tomcat-6.0.18.tar.gz
+rm -rf $CATALINA_HOME
+ln -s $HOME/apache-tomcat-6.0.18 $CATALINA_HOME
+# remove the default apps
+rm -rf $CATALINA_HOME/webapps
+mkdir -p $CATALINA_HOME/webapps
+cd $CATALINA_HOME/webapps
+# Install hudson
+wget --no-check-certificate http://hudson.gotdns.com/latest/hudson.war
+# make hudson the default
+mv hudson.war ROOT.war
+
+echo "Now running a XServer to force password creation"
+# This starts an xserver for force password creation
+/usr/bin/tightvncserver :1
+# This should kill the server
+/usr/bin/tightvncserver -kill :1
+
+echo "Now setting up FLEX"
+# ? install adobe flex
+export FLEX_HOME=$HOME/adobe/flexsdk
+mkdir -p $FLEX_HOME
+ cd $FLEX_HOME
+# # need script to install
+wget http://download.macromedia.com/pub/flex/sdk/flex_sdk_3.zip
+unzip flex_sdk_3.zip
+# For some reason, flex defaults to not readable
+cd $FLEX_HOME/runtimes/player/lnx
+tar -xzvf flashplayer.tar.gz
+# Fix the permissions here; ugh
+cd $FLEX_HOME
+chmod -f -R a+r *
+find . -type d -exec chmod a+x \{\} \;
+chmod -f -R a+x bin

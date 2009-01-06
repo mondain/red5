@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions class="java.util.concurrent.CopyOnWriteArrayList"/>
+  <description>Application: Xuggle&#xd;
+Component: Java Xuggler&#xd;
+Branch: Trunk&#xd;
+JVM: JDK 1.6&#xd;
+Platform: x86_64&#xd;
+OS: Linux</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.SubversionSCM">
+    <locations>
+      <hudson.scm.SubversionSCM_-ModuleLocation>
+        <remote>http://xuggle.googlecode.com/svn/trunk/java/xuggle-xuggler</remote>
+        <local>workingcopy</local>
+      </hudson.scm.SubversionSCM_-ModuleLocation>
+    </locations>
+    <useUpdate>false</useUpdate>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <jdk>JDK6</jdk>
+  <triggers class="vector"/>
+  <builders>
+    <hudson.tasks.Ant>
+      <targets>ivy-clear
+clobber
+run-tests
+doc</targets>
+      <antName>Ant7</antName>
+    </hudson.tasks.Ant>
+  </builders>
+  <publishers>
+    <hudson.tasks.JavadocArchiver>
+      <javadocDir>workingcopy/doc</javadocDir>
+      <keepAll>false</keepAll>
+    </hudson.tasks.JavadocArchiver>
+    <hudson.tasks.junit.JUnitResultArchiver>
+      <testResults>workingcopy/build/test/output/*.xml</testResults>
+    </hudson.tasks.junit.JUnitResultArchiver>
+    <hudson.tasks.Mailer>
+      <recipients>red5-builds@googlegroups.com</recipients>
+      <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
+      <sendToIndividuals>true</sendToIndividuals>
+    </hudson.tasks.Mailer>
+  </publishers>
+  <buildWrappers/>
+</project>
