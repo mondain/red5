@@ -1,11 +1,11 @@
 <VirtualHost *>
   
-  ServerAdmin info@theyard.net
-  ServerName build.theyard.net
-  ServerAlias www.build.theyard.net *.build.theyard.net
+  ServerAdmin info@xuggle.com
+  ServerName build.xuggle.com
+  ServerAlias www.build.xuggle.com *.build.xuggle.com
 
-  ErrorLog /var/log/apache2/build.theyard.net-error.log
-  CustomLog /var/log/apache2/build.theyard.net-access.log combined
+  ErrorLog /var/log/apache2/build.xuggle.com-error.log
+  CustomLog /var/log/apache2/build.xuggle.com-access.log combined
 
   LogLevel warn
   ServerSignature Off
