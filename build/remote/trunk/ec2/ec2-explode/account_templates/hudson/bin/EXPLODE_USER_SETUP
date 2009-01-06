@@ -26,7 +26,7 @@ rm -rf $CATALINA_HOME/webapps
 mkdir -p $CATALINA_HOME/webapps
 cd $CATALINA_HOME/webapps
 # Install hudson
-wget http://hudson.gotdns.com/latest/hudson.war
+wget --no-check-certificate http://hudson.gotdns.com/latest/hudson.war
 # make hudson the default
 mv hudson.war ROOT.war
 
