@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions class="java.util.concurrent.CopyOnWriteArrayList"/>
-  <description>Application: Red5&#xd;
-Component: Java Server&#xd;
+  <description>Application: Xuggle&#xd;
+Component: Java Xuggler&#xd;
 Branch: Trunk&#xd;
 JVM: JDK 1.5&#xd;
 Platform: i386&#xd;
@@ -16,7 +16,7 @@ OS: Linux</description>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
       <hudson.scm.SubversionSCM_-ModuleLocation>
-        <remote>http://red5.googlecode.com/svn/java/server/trunk</remote>
+        <remote>http://xuggle.googlecode.com/svn/trunk/java/xuggle-xuggler</remote>
         <local>workingcopy</local>
       </hudson.scm.SubversionSCM_-ModuleLocation>
     </locations>
@@ -28,32 +28,17 @@ OS: Linux</description>
   <triggers class="vector"/>
   <builders>
     <hudson.tasks.Ant>
-      <targets>clean
-run-tests-systemtest</targets>
+      <targets>run-memcheck
+</targets>
       <antName>Ant7</antName>
     </hudson.tasks.Ant>
   </builders>
   <publishers>
-    <hudson.tasks.ArtifactArchiver>
-      <artifacts>workingcopy/bin/testcases/testreports/fixtures/output/**/*</artifacts>
-      <latestOnly>false</latestOnly>
-    </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.Mailer>
-      <recipients>red5-builds@googlegroups.com</recipients>
+      <recipients>xuggle-builds@xuggle.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>true</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
-  <buildWrappers>
-    <org.jvnet.hudson.plugins.port__allocator.PortAllocator>
-      <ports>
-        <org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
-          <name>1935</name>
-        </org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
-      </ports>
-    </org.jvnet.hudson.plugins.port__allocator.PortAllocator>
-    <hudson.plugins.xvnc.Xvnc>
-      <takeScreenshot>false</takeScreenshot>
-    </hudson.plugins.xvnc.Xvnc>
-  </buildWrappers>
+  <buildWrappers/>
 </project>
