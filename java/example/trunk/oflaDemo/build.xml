@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="oflaDemo" basedir="." default="war">
+<project name="oflaDemo" basedir="." default="war" xmlns:ivy="antlib:org.apache.ivy.ant">
     <!-- project properties -->
     <property environment="env"/>
     <!-- user overides for project properties -->
@@ -12,6 +12,11 @@
     <property name="lib.dir" value="www/WEB-INF/lib"/>
     <property name="classes.dir" value="www/WEB-INF/classes"/>
     <property name="dist.dir" value="dist"/>
+	
+	<taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml"
+		 classpath="${basedir}/lib/ivy-trunk.jar"/>
+	<!-- Latest ivy 9/2008 seems to want absolute path -->
+	<property name="ivy.lib.dir" value="${basedir}/lib"/>
 	
     <path id="project.classpath">
         <fileset dir="${red5.root}/lib"/>
@@ -31,8 +36,14 @@
         <delete dir="${classes.dir}"/>
         <delete dir="${dist.dir}"/>    	
     </target>
+
+	<target name="retrieve" description="Retrieves the libraries if needed">
+		<ivy:settings file="ivysettings.xml"/>
+		<ivy:resolve file="ivy.xml" />
+		<ivy:retrieve />
+	</target>    
     
-    <target name="compile" depends="prepare">
+    <target name="compile" depends="prepare, retrieve">
         <condition property="java.target_version" value="1.5">
             <not>
                 <isset property="java.target_version"/>
