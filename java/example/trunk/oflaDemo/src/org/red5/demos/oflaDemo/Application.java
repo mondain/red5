@@ -1,5 +1,6 @@
 package org.red5.demos.oflaDemo;
 
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.ApplicationAdapter;
 import org.red5.server.api.IBandwidthConfigure;
 import org.red5.server.api.IConnection;
@@ -8,25 +9,15 @@ import org.red5.server.api.stream.IServerStream;
 import org.red5.server.api.stream.IStreamCapableConnection;
 import org.red5.server.api.stream.support.SimpleConnectionBWConfig;
 import org.slf4j.Logger;
-import org.slf4j.impl.StaticLoggerBinder;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.selector.ContextSelector;
 
 public class Application extends ApplicationAdapter {
 
-	private static Logger log;
+	private static Logger log = Red5LoggerFactory.getLogger(Application.class, "oflaDemo");
 	
 	private IScope appScope;
 
 	private IServerStream serverStream;
 
-	static {
-	    ContextSelector selector = StaticLoggerBinder.SINGLETON.getContextSelector();
-        LoggerContext ctx = selector.getLoggerContext("oflaDemo");
-		log = ctx.getLogger(Application.class);
-	}
-	
 	{
 		log.info("oflaDemo created");
 		System.out.println("oflaDemo created");

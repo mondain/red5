@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
+	<contextName>oflaDemo</contextName>
+	
+	<jmxConfigurator contextName="oflaDemo" />
+
 	<appender name="OFLA" class="ch.qos.logback.core.FileAppender">
 		<File>log/oflademo.log</File>
 		<Append>false</Append>
