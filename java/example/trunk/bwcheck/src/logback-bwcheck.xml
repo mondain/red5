@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
+	<contextName>bwcheck</contextName>
+	
+	<jmxConfigurator contextName="bwcheck" />
+
 	<appender name="BWFILE" 
 		class="ch.qos.logback.core.rolling.RollingFileAppender"> 
 		<File>logs/bwcheck.log</File>
