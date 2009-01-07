@@ -14,12 +14,12 @@
 		<application name="midiDemo">
 			<author>John Grden, Luke Hubbard</author>
 			<desc>Demo originally created for the FITC conference, to demonstrate Midi functionality</desc>
-			<filename>midiDemo-r2953-java6.war</filename>
+			<filename>midiDemo-r3339-java6.war</filename>
 		</application>
 		<application name="echo">
 			<author>Red5 Team</author>
 			<desc>Test tool for AMF0/AMF3 and RTMP/HTTP functionality</desc>
-			<filename>echo-r3074-java6.war</filename>
+			<filename>echo-r3360-java6.war</filename>
 		</application>
 		<application name="dump">
 			<author>Red5 Team</author>
@@ -29,12 +29,12 @@
 		<application name="bwcheck">
 			<author>Dan Rossi</author>
 			<desc>Bandwidth demo</desc>
-			<filename>bwcheck-r3074-java6.war</filename>
+			<filename>bwcheck-r3359-java6.war</filename>
 		</application>	
 		<application name="fitcDemo">
 			<author>Red5 Team</author>
 			<desc>Demo created for FITC conference</desc>
-			<filename>fitcDemo-r2967-java6.war</filename>
+			<filename>fitcDemo-r3363-java6.war</filename>
 		</application>		
 		<application name="messageRecorder">
 			<author>John Grden</author>
