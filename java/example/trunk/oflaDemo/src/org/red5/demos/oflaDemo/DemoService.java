@@ -8,24 +8,15 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IScope;
 import org.red5.server.api.Red5;
 import org.slf4j.Logger;
-import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.core.io.Resource;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.selector.ContextSelector;
 
 public class DemoService {
 
-	private static Logger log;
-
-	static {
-	    ContextSelector selector = StaticLoggerBinder.SINGLETON.getContextSelector();
-        LoggerContext ctx = selector.getLoggerContext("oflaDemo");
-		log = ctx.getLogger(DemoService.class);
-	}
+	private static Logger log = Red5LoggerFactory.getLogger(DemoService.class, "oflaDemo");
 	
 	{
 		log.info("oflaDemo DemoService created");
@@ -44,9 +35,9 @@ public class DemoService {
 	 *
 	 * @return Value for property 'listOfAvailableFLVs'.
 	 */
-	public Map getListOfAvailableFLVs() {
+	public Map<String, Map<String, Object>> getListOfAvailableFLVs() {
 		IScope scope = Red5.getConnectionLocal().getScope();
-		Map<String, Map> filesMap = new HashMap<String, Map>();
+		Map<String, Map<String, Object>> filesMap = new HashMap<String, Map<String, Object>>();
 		try {
 			log.debug("getting the FLV files");
 			Resource[] flvs = scope.getResources("streams/*.flv");
@@ -62,7 +53,7 @@ public class DemoService {
 		return filesMap;
 	}
 
-	private void addToMap(Map<String, Map> filesMap, Resource[] files)
+	private void addToMap(Map<String, Map<String, Object>> filesMap, Resource[] files)
 			throws IOException {
 		if (files != null) {
 			for (Resource flv : files) {
