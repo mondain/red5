@@ -13,11 +13,6 @@
     <property name="classes.dir" value="www/WEB-INF/classes"/>
     <property name="dist.dir" value="dist"/>
 	
-	<taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml"
-		 classpath="${basedir}/lib/ivy-trunk.jar"/>
-	<!-- Latest ivy 9/2008 seems to want absolute path -->
-	<property name="ivy.lib.dir" value="${basedir}/lib"/>
-	
     <path id="project.classpath">
         <fileset dir="${red5.root}/lib"/>
         <pathelement location="${red5.root}/red5.jar"/>
@@ -38,6 +33,9 @@
     </target>
 
 	<target name="retrieve" description="Retrieves the libraries if needed">
+		<taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml"
+		 classpath="${basedir}/lib/ivy-trunk.jar"/>
+		<property name="ivy.lib.dir" value="${basedir}/lib"/>
 		<ivy:settings file="ivysettings.xml"/>
 		<ivy:resolve file="ivy.xml" />
 		<ivy:retrieve />

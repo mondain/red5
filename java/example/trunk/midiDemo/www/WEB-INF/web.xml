@@ -5,13 +5,27 @@
    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" 
    version="2.4"> 
 
-	<display-name>Midi Demo</display-name>
+	<display-name>midiDemo</display-name>
 	
 	<context-param>
 		<param-name>webAppRootKey</param-name>
 		<param-value>/midiDemo</param-value>
 	</context-param>
-
+    
+    <listener>
+        <listener-class>org.red5.logging.ContextLoggingListener</listener-class>
+    </listener>
+    
+    <filter>
+        <filter-name>LoggerContextFilter</filter-name>
+        <filter-class>org.red5.logging.LoggerContextFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>LoggerContextFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
     <!-- remove the following servlet tags if you want to disable remoting for this application -->
 	<servlet>
 		<servlet-name>gateway</servlet-name>
