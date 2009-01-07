@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
+	<contextName>fitcDemo</contextName>
+	
+	<jmxConfigurator contextName="fitcDemo" />
+
 	<appender name="FITC" class="ch.qos.logback.core.FileAppender">
 		<File>log/fitcdemo.log</File>
 		<Append>false</Append>
