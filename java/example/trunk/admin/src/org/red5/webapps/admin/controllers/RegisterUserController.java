@@ -4,7 +4,7 @@ import javax.servlet.ServletException;
 
 import org.red5.webapps.admin.Application;
 import org.red5.webapps.admin.utils.PasswordGenerator;
-import org.slf4j.Logger;
+
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
 import org.springframework.security.providers.dao.DaoAuthenticationProvider;
@@ -17,9 +17,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+import org.red5.logging.Red5LoggerFactory;
+import org.slf4j.Logger;
+
 public class RegisterUserController extends SimpleFormController {
 
-	protected static Logger log = Application.loggerContext.getLogger(RegisterUserController.class);
+	private static Logger log = Red5LoggerFactory.getLogger(RegisterUserController.class, "admin");
 	
 	private static DaoAuthenticationProvider daoAuthenticationProvider;
 	

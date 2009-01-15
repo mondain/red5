@@ -29,10 +29,13 @@ import org.red5.server.api.Red5;
 import org.red5.server.exception.ClientNotFoundException;
 import org.red5.server.exception.ClientRejectedException;
 import org.red5.webapps.admin.Application;
-import org.slf4j.Logger;
+
 import org.springframework.security.BadCredentialsException;
 import org.springframework.security.providers.ProviderManager;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+
+import org.red5.logging.Red5LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -41,7 +44,7 @@ import org.springframework.security.providers.UsernamePasswordAuthenticationToke
  */
 public class AuthClientRegistry extends ClientRegistry {
 
-	private Logger log = Application.loggerContext.getLogger(AuthClientRegistry.class);
+	private static Logger log = Red5LoggerFactory.getLogger(AuthClientRegistry.class, "admin");
 
 	protected IScope masterScope;
 

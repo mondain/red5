@@ -10,16 +10,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.red5.webapps.admin.Application;
 import org.red5.webapps.admin.controllers.service.UserDetails;
 import org.springframework.security.userdetails.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.security.userdetails.UserDetailsService;
 import org.springframework.security.userdetails.jdbc.JdbcUserDetailsManager;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
+import org.red5.logging.Red5LoggerFactory;
+import org.slf4j.Logger;
+
 public class PanelController implements Controller {
 
-	protected static Logger log = Application.loggerContext.getLogger(PanelController.class);	
+	private static Logger log = Red5LoggerFactory.getLogger(PanelController.class, "admin");
 
 	private static UserDetailsService userDetailsService;
 	private User user;
