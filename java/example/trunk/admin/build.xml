@@ -39,11 +39,20 @@
 		 classpath="${basedir}/lib/ivy-trunk.jar"/>
 		<property name="ivy.lib.dir" value="${basedir}/lib"/>
 		<ivy:settings file="ivysettings.xml"/>
-		<ivy:resolve file="ivy.xml" />
-		<ivy:retrieve />
+		<ivy:resolve file="ivy.xml" conf="build" />
+		<ivy:retrieve conf="build"/>
 	</target>    
     
-    <target name="compile" depends="prepare, retrieve">
+    <target name="retrieve-web-libs" description="Retrieves the libraries if needed">
+        <taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml"
+         classpath="${basedir}/lib/ivy-trunk.jar"/>
+    	<property name="ivy.lib.dir" value="${basedir}/www/WEB-INF/lib"/>
+        <ivy:settings file="ivysettings.xml"/>
+        <ivy:resolve file="ivy.xml" conf="web" />
+        <ivy:retrieve conf="web" pattern="${basedir}/www/WEB-INF/lib/[artifact](-[revision]).[ext]"/>
+    </target> 	
+	
+    <target name="compile" depends="prepare, retrieve, retrieve-web-libs">
         <condition property="java.target_version" value="1.5">
             <not>
                 <isset property="java.target_version"/>
