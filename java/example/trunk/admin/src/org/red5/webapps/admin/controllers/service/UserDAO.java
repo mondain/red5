@@ -12,9 +12,12 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.red5.webapps.admin.Application;
-import org.slf4j.Logger;
+
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
+
+import org.red5.logging.Red5LoggerFactory;
+import org.slf4j.Logger;
 
 
 /**
@@ -24,7 +27,7 @@ import org.springframework.security.GrantedAuthorityImpl;
  */
 public class UserDAO {
 
-	private static Logger log = Application.loggerContext.getLogger(UserDAO.class);		
+	private static Logger log = Red5LoggerFactory.getLogger(UserDAO.class, "admin");
 	
 	public static boolean addUser(String username, String hashedPassword) {
 		boolean result = false;

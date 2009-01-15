@@ -22,6 +22,7 @@ package org.red5.webapps.admin;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.red5.webapps.admin.utils.Utils;
 import org.red5.server.api.IConnection;
@@ -81,22 +82,24 @@ class ScopeStatistics {
 	}
 
 	protected void extractConnectionData(IScope root) {
-		Iterator<IConnection> conn = root.getConnections();
-		while (conn.hasNext()) {
-			IConnection connection = conn.next();
-			addData("Scope statistics", "--");
-			addData("Send bytes", Utils.formatBytes(connection
-					.getWrittenBytes()));
-			addData("Received bytes", Utils.formatBytes(connection
-					.getReadBytes()));
-			addData("Send messages", connection.getWrittenMessages());
-			addData("Dropped messages", connection.getDroppedMessages());
-			addData("Pending messages", connection.getPendingMessages());
-			addData("Received messages", connection.getReadMessages());
-			addData("Remote address", connection.getRemoteAddress() + ":"
-					+ connection.getRemotePort() + " (" + connection.getHost()
-					+ ")");
-			addData("Path", connection.getPath());
+		Collection<Set<IConnection>> conns = root.getConnections();
+		
+		for (Set<IConnection> set : conns) {
+			for (IConnection connection : set) {
+				addData("Scope statistics", "--");
+				addData("Send bytes", Utils.formatBytes(connection
+						.getWrittenBytes()));
+				addData("Received bytes", Utils.formatBytes(connection
+						.getReadBytes()));
+				addData("Send messages", connection.getWrittenMessages());
+				addData("Dropped messages", connection.getDroppedMessages());
+				addData("Pending messages", connection.getPendingMessages());
+				addData("Received messages", connection.getReadMessages());
+				addData("Remote address", connection.getRemoteAddress() + ":"
+						+ connection.getRemotePort() + " (" + connection.getHost()
+						+ ")");
+				addData("Path", connection.getPath());
+			}
 		}
 	}
 }

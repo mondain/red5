@@ -31,6 +31,8 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.apache.derby.jdbc.EmbeddedDataSource;
+
+import org.red5.logging.Red5LoggerFactory;
 import org.slf4j.Logger;
 
 /**
@@ -41,7 +43,7 @@ import org.slf4j.Logger;
  */
 public class UserDatabase {
 
-	private static Logger log = Application.loggerContext.getLogger(UserDatabase.class);		
+	private static Logger log = Red5LoggerFactory.getLogger(UserDatabase.class, "admin");		
 	
 	private boolean debug;
 

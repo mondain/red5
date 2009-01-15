@@ -28,11 +28,11 @@ import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
 import org.red5.server.api.ScopeUtils;
-import org.slf4j.Logger;
-import org.slf4j.impl.StaticLoggerBinder;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.selector.ContextSelector;
+import org.red5.logging.Red5LoggerFactory;
+import org.slf4j.Logger;
+
+
 
 /**
  * Admin Panel for Red5 Server
@@ -43,10 +43,8 @@ import ch.qos.logback.classic.selector.ContextSelector;
  */
 public class Application extends ApplicationAdapter {
 
-	protected static Logger log;
-	
 	//provide the logger context for other parts of the app
-	public static LoggerContext loggerContext;
+	private static Logger log = Red5LoggerFactory.getLogger(Application.class, "admin");
 	
 	private IScope scope;
 
@@ -54,14 +52,6 @@ public class Application extends ApplicationAdapter {
 
 	private int scope_id = 0;
 
-	static {
-	    ContextSelector selector = StaticLoggerBinder.SINGLETON.getContextSelector();
-	    //get the logger context for the servlet / app context
-	    loggerContext = selector.getLoggerContext("admin");
-	    //get the logger for this class only
-		log = loggerContext.getLogger(Application.class);
-	}
-	
 	@Override
 	public boolean appStart(IScope app) {
 		log.info("Admin application started");
