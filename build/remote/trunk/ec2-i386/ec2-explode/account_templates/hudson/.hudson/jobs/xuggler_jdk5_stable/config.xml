@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions class="java.util.concurrent.CopyOnWriteArrayList"/>
-  <description>Application: Red5&#xd;
-Component: Java Server&#xd;
+  <description>Application: Xuggle&#xd;
+Component: Java Xuggler&#xd;
 Branch: Trunk&#xd;
 JVM: JDK 1.5&#xd;
 Platform: i386&#xd;
@@ -12,45 +12,56 @@ OS: Linux</description>
     <numToKeep>20</numToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty>
+      <googlecodeWebsite>http://code.google.com/p/xuggle/</googlecodeWebsite>
+    </hudson.plugins.googlecode.GoogleCodeProjectProperty>
+  </properties>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
       <hudson.scm.SubversionSCM_-ModuleLocation>
-        <remote>http://red5.googlecode.com/svn/java/server/trunk</remote>
+        <remote>http://xuggle.googlecode.com/svn/trunk/java/xuggle-xuggler</remote>
         <local>workingcopy</local>
       </hudson.scm.SubversionSCM_-ModuleLocation>
     </locations>
     <useUpdate>false</useUpdate>
   </scm>
+  <quietPeriod>7200</quietPeriod>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
   <jdk>JDK5</jdk>
   <triggers class="vector"/>
   <builders>
     <hudson.tasks.Ant>
-      <targets>clean
-run-tests-systemtest</targets>
+      <targets>clobber
+run-tests
+dist
+doc
+</targets>
       <antName>Ant7</antName>
     </hudson.tasks.Ant>
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>workingcopy/bin/testcases/testreports/fixtures/output/**/*</artifacts>
+      <artifacts>workingcopy/build/native/**/*.tar.gz</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
+    <hudson.tasks.Fingerprinter>
+      <targets>workingcopy/build/native/**/*.tar.gz</targets>
+      <recordBuildArtifacts>false</recordBuildArtifacts>
+    </hudson.tasks.Fingerprinter>
+    <hudson.tasks.JavadocArchiver>
+      <javadocDir>workingcopy/doc</javadocDir>
+      <keepAll>false</keepAll>
+    </hudson.tasks.JavadocArchiver>
+    <hudson.tasks.junit.JUnitResultArchiver>
+      <testResults>workingcopy/build/test/output/*.xml</testResults>
+    </hudson.tasks.junit.JUnitResultArchiver>
     <hudson.tasks.Mailer>
-      <recipients>red5-builds@googlegroups.com</recipients>
+      <recipients>xuggle-builds@xuggle.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>true</sendToIndividuals>
+      <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
-    <hudson.tasks.BuildTrigger>
-      <childProjects>red5_jdk5_stable</childProjects>
-      <threshold>
-        <name>SUCCESS</name>
-        <ordinal>0</ordinal>
-        <color>BLUE</color>
-      </threshold>
-    </hudson.tasks.BuildTrigger>
   </publishers>
   <buildWrappers>
     <org.jvnet.hudson.plugins.port__allocator.PortAllocator>
@@ -60,8 +71,5 @@ run-tests-systemtest</targets>
         </org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
       </ports>
     </org.jvnet.hudson.plugins.port__allocator.PortAllocator>
-    <hudson.plugins.xvnc.Xvnc>
-      <takeScreenshot>false</takeScreenshot>
-    </hudson.plugins.xvnc.Xvnc>
   </buildWrappers>
 </project>

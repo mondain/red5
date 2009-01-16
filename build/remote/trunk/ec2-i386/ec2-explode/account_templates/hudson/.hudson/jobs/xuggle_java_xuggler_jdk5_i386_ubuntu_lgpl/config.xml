@@ -2,11 +2,12 @@
 <project>
   <actions class="java.util.concurrent.CopyOnWriteArrayList"/>
   <description>Application: Xuggle&#xd;
-Component: Java Utils&#xd;
+Component: Java Xuggler&#xd;
 Branch: Trunk&#xd;
 JVM: JDK 1.5&#xd;
 Platform: i386&#xd;
-OS: Linux</description>
+OS: Linux&#xd;
+Other: LGPL version</description>
   <logRotator>
     <daysToKeep>-1</daysToKeep>
     <numToKeep>20</numToKeep>
@@ -16,7 +17,7 @@ OS: Linux</description>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
       <hudson.scm.SubversionSCM_-ModuleLocation>
-        <remote>http://xuggle.googlecode.com/svn/trunk/java/xuggle-utils</remote>
+        <remote>http://xuggle.googlecode.com/svn/trunk/java/xuggle-xuggler</remote>
         <local>workingcopy</local>
       </hudson.scm.SubversionSCM_-ModuleLocation>
     </locations>
@@ -25,45 +26,25 @@ OS: Linux</description>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
   <jdk>JDK5</jdk>
-  <triggers class="vector">
-    <hudson.triggers.SCMTrigger>
-      <spec>0,5,10,15,20,25,30,35,40,45,50,55 * * * *</spec>
-    </hudson.triggers.SCMTrigger>
-  </triggers>
+  <triggers class="vector"/>
   <builders>
     <hudson.tasks.Ant>
-      <targets>ivy-clear
-clean
+      <targets>clobber
 run-tests
-doc</targets>
+</targets>
       <antName>Ant7</antName>
+      <properties>build.gpl=no</properties>
     </hudson.tasks.Ant>
   </builders>
   <publishers>
-    <hudson.tasks.JavadocArchiver>
-      <javadocDir>workingcopy/doc/</javadocDir>
-      <keepAll>true</keepAll>
-    </hudson.tasks.JavadocArchiver>
     <hudson.tasks.junit.JUnitResultArchiver>
       <testResults>workingcopy/build/test/output/*.xml</testResults>
     </hudson.tasks.junit.JUnitResultArchiver>
-    <hudson.tasks.BuildTrigger>
-      <childProjects>xuggle_java_utils_jdk6_i386_ubuntu</childProjects>
-      <threshold>
-        <name>SUCCESS</name>
-        <ordinal>0</ordinal>
-        <color>BLUE</color>
-      </threshold>
-    </hudson.tasks.BuildTrigger>
     <hudson.tasks.Mailer>
       <recipients>xuggle-builds@xuggle.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
-    <hudson.tasks.BuildTrigger>
-      <childProjects>xuggle_java_utils_jdk6_i386_ubuntu, xuggle_java_xuggler_jdk5_i386_ubuntu_lgpl</childProjects>
-      <threshold reference="../../hudson.tasks.BuildTrigger/threshold"/>
-    </hudson.tasks.BuildTrigger>
   </publishers>
   <buildWrappers/>
 </project>

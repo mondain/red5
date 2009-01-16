@@ -29,6 +29,7 @@ OS: Linux</description>
   <builders>
     <hudson.tasks.Ant>
       <targets>clobber
+stage
 run-tests-java
 doc</targets>
       <antName>Ant7</antName>
@@ -45,7 +46,7 @@ doc</targets>
     <hudson.tasks.Mailer>
       <recipients>xuggle-builds@xuggle.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>true</sendToIndividuals>
+      <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
   <buildWrappers/>
