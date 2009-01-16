@@ -1,7 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions class="java.util.concurrent.CopyOnWriteArrayList"/>
-  <description>Application: Red5&#xd;
+  <description>This is the official set of red5 stable builds.  These are only built if all other JDK 1.5 tests pass 100%.&#xd;
+&#xd;
+Application: Red5&#xd;
 Component: Java Server&#xd;
 Branch: Trunk&#xd;
 JVM: JDK 1.5&#xd;
@@ -12,7 +14,9 @@ OS: Linux</description>
     <numToKeep>20</numToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty/>
+  </properties>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
       <hudson.scm.SubversionSCM_-ModuleLocation>
@@ -22,6 +26,7 @@ OS: Linux</description>
     </locations>
     <useUpdate>false</useUpdate>
   </scm>
+  <quietPeriod>3600</quietPeriod>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
   <jdk>JDK5</jdk>
@@ -29,28 +34,29 @@ OS: Linux</description>
   <builders>
     <hudson.tasks.Ant>
       <targets>clean
-run-tests-systemtest</targets>
+dist
+javadoc</targets>
       <antName>Ant7</antName>
     </hudson.tasks.Ant>
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>workingcopy/bin/testcases/testreports/fixtures/output/**/*</artifacts>
+      <artifacts>workingcopy/dist/red5.jar</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
+    <hudson.tasks.Fingerprinter>
+      <targets>workingcopy/dist/red5.jar</targets>
+      <recordBuildArtifacts>true</recordBuildArtifacts>
+    </hudson.tasks.Fingerprinter>
+    <hudson.tasks.JavadocArchiver>
+      <javadocDir>workingcopy/doc/api</javadocDir>
+      <keepAll>false</keepAll>
+    </hudson.tasks.JavadocArchiver>
     <hudson.tasks.Mailer>
       <recipients>red5-builds@googlegroups.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>true</sendToIndividuals>
+      <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
-    <hudson.tasks.BuildTrigger>
-      <childProjects>red5_jdk5_stable</childProjects>
-      <threshold>
-        <name>SUCCESS</name>
-        <ordinal>0</ordinal>
-        <color>BLUE</color>
-      </threshold>
-    </hudson.tasks.BuildTrigger>
   </publishers>
   <buildWrappers>
     <org.jvnet.hudson.plugins.port__allocator.PortAllocator>
@@ -60,8 +66,5 @@ run-tests-systemtest</targets>
         </org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
       </ports>
     </org.jvnet.hudson.plugins.port__allocator.PortAllocator>
-    <hudson.plugins.xvnc.Xvnc>
-      <takeScreenshot>false</takeScreenshot>
-    </hudson.plugins.xvnc.Xvnc>
   </buildWrappers>
 </project>

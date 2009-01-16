@@ -36,7 +36,8 @@ OS: Linux (Ubuntu)</description>
   </triggers>
   <builders>
     <hudson.tasks.Ant>
-      <targets>clean
+      <targets>ivyclear
+clean
 run-tests
 javadoc</targets>
       <antName>Ant7</antName>

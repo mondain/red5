@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions class="java.util.concurrent.CopyOnWriteArrayList"/>
+  <description></description>
+  <logRotator>
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>10</numToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.SubversionSCM">
+    <locations>
+      <hudson.scm.SubversionSCM_-ModuleLocation>
+        <remote>http://vlideshow-svn.cvsdude.com/vlideshow/trunk/code/web/xuggle</remote>
+        <local>workingcopy</local>
+      </hudson.scm.SubversionSCM_-ModuleLocation>
+    </locations>
+    <useUpdate>false</useUpdate>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <jdk>(Default)</jdk>
+  <triggers class="vector"/>
+  <builders>
+    <hudson.tasks.Ant>
+      <targets>dist</targets>
+      <antName>(Default)</antName>
+    </hudson.tasks.Ant>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>workingcopy/dist/**/*.war</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
+  <buildWrappers/>
+</project>

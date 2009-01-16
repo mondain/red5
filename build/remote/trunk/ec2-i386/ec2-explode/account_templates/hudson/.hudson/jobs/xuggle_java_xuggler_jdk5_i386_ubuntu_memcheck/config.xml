@@ -12,7 +12,9 @@ OS: Linux</description>
     <numToKeep>20</numToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty/>
+  </properties>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
       <hudson.scm.SubversionSCM_-ModuleLocation>
@@ -22,6 +24,7 @@ OS: Linux</description>
     </locations>
     <useUpdate>false</useUpdate>
   </scm>
+  <quietPeriod>7200</quietPeriod>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
   <jdk>JDK5</jdk>
@@ -37,7 +40,7 @@ OS: Linux</description>
     <hudson.tasks.Mailer>
       <recipients>xuggle-builds@xuggle.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>true</sendToIndividuals>
+      <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
   <buildWrappers/>

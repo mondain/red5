@@ -26,6 +26,16 @@
       <owner class="hudson" reference="../../.."/>
       <name>All</name>
     </hudson.model.AllView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>Stable Builds</name>
+      <description>This is the list of stable builds; if a build is successful here, we consider it stable.</description>
+      <jobNames class="tree-set">
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>red5_jdk5_stable</string>
+        <string>xuggle_jdk5_stable</string>
+      </jobNames>
+    </listView>
   </views>
   <primaryView>All</primaryView>
   <slaveAgentPort>0</slaveAgentPort>

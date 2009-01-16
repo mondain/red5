@@ -45,7 +45,7 @@ doc</targets>
     <hudson.tasks.Mailer>
       <recipients>xuggle-builds@xuggle.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>true</sendToIndividuals>
+      <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
   <buildWrappers/>

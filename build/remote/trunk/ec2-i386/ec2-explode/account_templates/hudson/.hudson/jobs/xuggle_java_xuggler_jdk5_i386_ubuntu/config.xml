@@ -35,11 +35,16 @@ OS: Linux</description>
       <targets>ivy-clear
 clobber
 run-tests
-doc</targets>
+doc
+dist</targets>
       <antName>Ant7</antName>
     </hudson.tasks.Ant>
   </builders>
   <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>workingcopy/build/native/**/*.tar.gz</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.JavadocArchiver>
       <javadocDir>workingcopy/doc/</javadocDir>
       <keepAll>true</keepAll>
@@ -48,7 +53,7 @@ doc</targets>
       <testResults>workingcopy/build/test/output/*.xml</testResults>
     </hudson.tasks.junit.JUnitResultArchiver>
     <hudson.tasks.BuildTrigger>
-      <childProjects>xuggle_java_xuggler_jdk6_i386_ubuntu</childProjects>
+      <childProjects>xuggle_java_xuggler_jdk6_i386_ubuntu, xuggle_java_xuggler_jdk5_i386_ubuntu_memcheck, xuggle_java_xuggler_red5_jdk5_i386_ubuntu</childProjects>
       <threshold>
         <name>SUCCESS</name>
         <ordinal>0</ordinal>
@@ -58,12 +63,8 @@ doc</targets>
     <hudson.tasks.Mailer>
       <recipients>xuggle-builds@xuggle.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>true</sendToIndividuals>
+      <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
-    <hudson.tasks.BuildTrigger>
-      <childProjects>xuggle_java_xuggler_jdk6_i386_ubuntu, xuggle_java_xuggler_jdk5_i386_ubuntu_memcheck</childProjects>
-      <threshold reference="../../hudson.tasks.BuildTrigger/threshold"/>
-    </hudson.tasks.BuildTrigger>
   </publishers>
   <buildWrappers/>
 </project>
