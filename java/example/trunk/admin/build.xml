@@ -19,6 +19,7 @@
         <pathelement location="${red5.root}/red5.jar"/>
         <pathelement location="${red5.root}/lib/red5.jar"/>
     	<!-- project specific libs -->
+        <fileset dir="lib"/>
         <fileset dir="${lib.dir}"/>
     </path>
     
@@ -37,16 +38,20 @@
 	<target name="retrieve" description="Retrieves the libraries if needed">
 		<taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml"
 		 classpath="${basedir}/lib/ivy-trunk.jar"/>
+		<!--
 		<property name="ivy.lib.dir" value="${basedir}/lib"/>
+		-->
 		<ivy:settings file="ivysettings.xml"/>
 		<ivy:resolve file="ivy.xml" conf="build" />
-		<ivy:retrieve conf="build"/>
+		<ivy:retrieve conf="build" pattern="${basedir}/lib/[artifact](-[revision]).[ext]"/>
 	</target>    
     
     <target name="retrieve-web-libs" description="Retrieves the libraries if needed">
         <taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml"
          classpath="${basedir}/lib/ivy-trunk.jar"/>
+    	<!--
     	<property name="ivy.lib.dir" value="${basedir}/www/WEB-INF/lib"/>
+    	-->
         <ivy:settings file="ivysettings.xml"/>
         <ivy:resolve file="ivy.xml" conf="web" />
         <ivy:retrieve conf="web" pattern="${basedir}/www/WEB-INF/lib/[artifact](-[revision]).[ext]"/>
