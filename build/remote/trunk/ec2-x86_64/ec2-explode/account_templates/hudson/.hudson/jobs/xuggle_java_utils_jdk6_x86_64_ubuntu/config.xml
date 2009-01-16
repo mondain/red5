@@ -40,9 +40,9 @@ doc</targets>
       <testResults>workingcopy/build/test/output/*.xml</testResults>
     </hudson.tasks.junit.JUnitResultArchiver>
     <hudson.tasks.Mailer>
-      <recipients>red5-builds@googlegroups.com</recipients>
+      <recipients>xuggle-builds@xuggle.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>true</sendToIndividuals>
+      <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
   <buildWrappers/>
