@@ -9,12 +9,13 @@
 	<mx:Script source="functions.as"/>	
 	<mx:HTTPService id="applistRPC" url="http://red5.googlecode.com/svn/snapshots/registry.xml" 
 		result="rpcHandler(event)" resultFormat="e4x" />
-	<mx:Panel x="10" y="10" width="414" height="343" layout="absolute" title="Red5 Application Installer">
-		<mx:DataGrid id="grid" x="10" y="38" width="374" height="225" dataProvider="{applicationList}" itemClick="handleClick(event)">
+	<mx:Panel x="10" y="10" width="638" height="343" layout="absolute" title="Red5 Application Installer">
+		<mx:DataGrid id="grid" x="10" y="38" width="581" height="225" dataProvider="{applicationList}" itemClick="handleClick(event)">
 			<mx:columns>
 				<mx:DataGridColumn headerText="Name" dataField="name"/>
 				<mx:DataGridColumn headerText="Description" dataField="description"/>
 				<mx:DataGridColumn headerText="Author" dataField="author"/>
+				<mx:DataGridColumn headerText="Java Version" dataField="javaVersion"/>
 				<mx:DataGridColumn headerText="File Name" dataField="filename"/>
 			</mx:columns>
 		</mx:DataGrid>
@@ -22,11 +23,16 @@
 			toolTip="Please take note of the java version before installing on your server (use the filename field)"/>
 		<mx:Button x="81" y="271" label="Uninstall" enabled="false" click="uninstall()"/>
 		<mx:Button x="164" y="271" id="listbtn" label="List" click="getList()" enabled="false"/>
-		<mx:TextInput id="selectedApp" x="87" y="10"/>
+		<mx:TextInput id="selectedApp" x="87" y="10" editable="false" width="283"/>
 		<mx:Label x="10" y="12" text="Application" fontWeight="bold"/>
-		<mx:Button x="293" y="10" id="connectorbtn" label="Connect" click="connect()"/>
+		<mx:Button x="378" y="10" id="connectorbtn" label="Connect" click="connect()"/>
+		<mx:Button x="528" y="271" label="Debug" click="debugMessages.visible=!debugMessages.visible"/>
 	</mx:Panel>
-	<mx:TextArea x="432" y="38" width="323" height="315" id="messages"/>
-	<mx:Label x="432" y="12" text="Debug messages" fontWeight="bold"/>
+	<mx:Panel x="10" y="361" width="638" height="244" layout="absolute" title="Debug messages" id="debugMessages" visible="false">
+		<mx:TextArea x="0" y="0" width="100%" height="100%" id="messages"
+			editable="false" verticalScrollPolicy="on" liveScrolling="true" 
+			valueCommit="messages.verticalScrollPosition=messages.maxVerticalScrollPosition"
+			/>
+	</mx:Panel>
 	
 </mx:Application>
