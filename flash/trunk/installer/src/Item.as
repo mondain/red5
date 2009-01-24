@@ -7,6 +7,7 @@ package
 		public var description:String;
 		public var author:String;
 		public var filename:String;
+		public var javaVersion:String;
 
 		public function Item(){
 		}

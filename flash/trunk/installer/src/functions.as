@@ -45,13 +45,9 @@
 	}
 
 	public function onBWDone():void {
-		// have to have this for an RTMP connection
-		log('onBWDone');
 	}
 
 	public function onBWCheck(... rest):uint {
-		log('onBWCheck');
-		//have to return something, so returning anything :)
 		return 0;
 	}
 
@@ -116,7 +112,6 @@
 	//callback handler
     public function handleAppList(resp:Object):void {
 		//log('handle Application list ' + resp);
-		traceObject(resp);
 		try {
 			var s:String = resp.body as String;
 			//log('Raw string: ' + s);
@@ -130,6 +125,11 @@
 				item.description = property.desc;
 				item.author = property.author;
 				item.filename = property.filename;
+				//split the filename to get the java version
+				//ex: oflaDemo-r3074-java6.war
+				var tmpArr:Array = property.filename.split(".")[0].split("-");
+				item.javaVersion = tmpArr[tmpArr.length - 1];
+		
 				arr.push(item);
 			}
 			applicationList = new ArrayCollection(arr);
@@ -156,7 +156,6 @@
 	}	
 	
 	public function handleClick(event:ListEvent):void {
-		traceObject(event);
         if (event.rowIndex >= 0) {
         	selectedApp.text = grid.selectedItem.name;
         	selectedFilename = grid.selectedItem.filename;
@@ -189,24 +188,4 @@
 		trace(text);
 		messages.text += text + '\n';
 	}
-
-	public function traceObject(obj:Object, indent:uint = 0):void {
-	    var indentString:String = "";
-	    var i:uint;
-	    var prop:String;
-	    var val:*;
-	    for (i = 0; i < indent; i++) {
-	        indentString += "\t";
-	    }
-	    for (prop in obj) {
-	        val = obj[prop];
-	        if (typeof(val) == "object") {
-	            log(indentString + " " + i + ": [Object]");
-	            traceObject(val, indent + 1);
-	        } else {
-	            log(indentString + " " + prop + ": " + val);
-	        }
-	    }
-	}    
-    	
 	
