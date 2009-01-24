@@ -21,6 +21,9 @@ Bugfixes:
 - NullPointerException in RTMPProtocolDecoder.decodeHeader under load
   (Jira SN-103)
 - Remote Shared Objects: Sync event doesnt dispatch (Jira CS-5)
+- Server doesn't start on Windows (JIRA APPSERVER-336)
+- Cannot run red5.bat when there is existing classpath set in environment
+(INSTALL-24)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
