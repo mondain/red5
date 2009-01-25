@@ -25,6 +25,8 @@ Bugfixes:
 - Cannot run red5.bat when there is existing classpath set in environment
 (INSTALL-24)
 - NetStream.send in record mode not working (Jira APPSERVER-329)
+- NetStream.send "append" mode patch (Jira APPSERVER-338)
+- Memory leak in RemotingConnection (Jira APPSERVER-328)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
