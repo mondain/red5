@@ -24,6 +24,7 @@ Bugfixes:
 - Server doesn't start on Windows (JIRA APPSERVER-336)
 - Cannot run red5.bat when there is existing classpath set in environment
 (INSTALL-24)
+- NetStream.send in record mode not working (Jira APPSERVER-329)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
