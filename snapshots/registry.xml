@@ -11,6 +11,11 @@
 			<desc>Demo originally created for the OFLA conference</desc>
 			<filename>oflaDemo-r3339-java6.war</filename>
 		</application>
+		<application name="oflaDemo">
+			<author>Red5 Team</author>
+			<desc>Demo originally created for the OFLA conference</desc>
+			<filename>oflaDemo-r3412-java5.war</filename>
+		</application>
 		<application name="midiDemo">
 			<author>John Grden, Luke Hubbard</author>
 			<desc>Demo originally created for the FITC conference, to demonstrate Midi functionality</desc>
