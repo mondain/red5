@@ -29,6 +29,8 @@
 	[Bindable]	
 	public var selectedFilename:String = null;
 	
+	private var targetJavaVersion:String = "java6";
+	
 	public function init():void {
 		Security.allowDomain("*");
 		
@@ -79,7 +81,16 @@
 	public function onAlert(alert:Object):void {
 		log('Got an alert: '+alert);
 		Alert.show(String(alert), 'Alert');
+		
+		currentState = "main";
 	}	
+	
+	public function onJavaVersion(version:String):void {
+		log('Got the server java version: '+ version);
+		//change the version string into something we can use 
+		//1.6.0_10 == java6
+		targetJavaVersion = "java" + version.split(".")[1];
+	}		
 	
 	public function connect():void {       	
     	log('Trying to ' + connectorbtn.label);	
@@ -157,13 +168,19 @@
 	
 	public function handleClick(event:ListEvent):void {
         if (event.rowIndex >= 0) {
-        	selectedApp.text = grid.selectedItem.name;
-        	selectedFilename = grid.selectedItem.filename;
+        	//check the java version to make sure it matches the server
+        	if (grid.selectedItem.javaVersion !== targetJavaVersion) {
+        		Alert.show("The application version selected does not match the servers java version, please try again", "Version mismatch");
+        	} else {
+	        	selectedApp.text = grid.selectedItem.name;
+	        	selectedFilename = grid.selectedItem.filename;
+        	}
         }
 	}
     
    	public function install():void {   
    		if (selectedFilename != null) {
+   			currentState = "wait";
    			nc.call("installer.install", null, selectedFilename);   
    		}
    	}
