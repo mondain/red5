@@ -29,6 +29,7 @@ Bugfixes:
 - Memory leak in RemotingConnection (Jira APPSERVER-328)
 - Connection objects are not removed from parent scopes when a connection is refused in a sub-scope (Jira APPSERVER-261)
 - WAR deployer is failing to extract war files (Jira APPSERVER-337)
+- Security sandbox violation: BitmapData.draw (Jira APPSERVER-315)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
