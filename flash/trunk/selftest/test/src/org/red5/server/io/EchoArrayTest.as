@@ -75,7 +75,7 @@ package org.red5.server.io
        * This test should be re-enabled once that bug is fixed
        */
  
-      public function DISABLED_testEchoArrayAmf0():void
+      public function testEchoArrayAmf0():void
       {
         // set encoding 
 
