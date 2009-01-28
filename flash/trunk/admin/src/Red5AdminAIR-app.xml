@@ -30,7 +30,7 @@
 	<description>This is the Red5 Administration panel.</description>
 
 	<!-- Copyright information. Optional -->
-	<copyright>Copyright (c) 2006-2008 - The Red5 Project.</copyright>
+	<copyright>Copyright (c) 2006-2009 - The Red5 Project.</copyright>
 
 	<!-- Settings for the application's initial window. Required. -->
 	<initialWindow>
