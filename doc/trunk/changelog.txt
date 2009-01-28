@@ -23,7 +23,7 @@ Bugfixes:
 - Remote Shared Objects: Sync event doesnt dispatch (Jira CS-5)
 - Server doesn't start on Windows (JIRA APPSERVER-336)
 - Cannot run red5.bat when there is existing classpath set in environment
-(INSTALL-24)
+  (INSTALL-24)
 - NetStream.send in record mode not working (Jira APPSERVER-329)
 - NetStream.send "append" mode patch (Jira APPSERVER-338)
 - Memory leak in RemotingConnection (Jira APPSERVER-328)
@@ -31,6 +31,8 @@ Bugfixes:
 - WAR deployer is failing to extract war files (Jira APPSERVER-337)
 - Security sandbox violation: BitmapData.draw (Jira APPSERVER-315)
 - AMF0 does not echo Array's the way AMF3 does (Jira APPSERVER-311)
+- Red5LoggerFactory fails with an NPE if you pass in a context name that
+  hasn't been defined or is not known (Jira APPSERVER-341)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
