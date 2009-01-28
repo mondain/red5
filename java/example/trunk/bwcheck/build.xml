@@ -55,6 +55,9 @@
              optimize="${build.optimize}" verbose="${build.verbose}" fork="${build.fork}" nowarn="${build.nowarn}"
              deprecation="${build.deprecation}" debug="${debug.state}" compiler="modern"
              source="${java.target_version}" target="${java.target_version}" listfiles="false"/>
+             
+		<copy file="${src.dir}/logback-${ant.project.name}.xml" todir="${dest.dir}" />
+		<copy file="${src.dir}/*.properties" todir="${dest.dir}" />             
     </target>
     
     <target name="jar" depends="compile">
