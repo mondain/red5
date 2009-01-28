@@ -77,10 +77,5 @@
             <taglib-location>/WEB-INF/tld/spring-form.tld</taglib-location>
         </taglib>
     </jsp-config>
-
-<error-page>
-	<error-code>500</error-code>
-	<location>/error.jsp</location>
-</error-page>
  
 </web-app>
