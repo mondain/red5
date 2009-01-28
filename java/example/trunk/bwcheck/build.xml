@@ -57,7 +57,7 @@
              source="${java.target_version}" target="${java.target_version}" listfiles="false"/>
              
 		<copy file="${src.dir}/logback-${ant.project.name}.xml" todir="${dest.dir}" />
-		<copy file="${src.dir}/*.properties" todir="${dest.dir}" />             
+		<copy file="${src.dir}/*.properties" todir="${dest.dir}" failonerror="false" />           
     </target>
     
     <target name="jar" depends="compile">
