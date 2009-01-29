@@ -36,6 +36,7 @@ Bugfixes:
   hasn't been defined or is not known (Jira APPSERVER-341)
 - red5.bat doesn't work on Windows machines, red5-debug.bat works, though.
   (Jira APPSERVER-340)
+- KeepAliveJob does not disconnect client regardless of MaxInactivity setting (Jira APPSERVER-342)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
