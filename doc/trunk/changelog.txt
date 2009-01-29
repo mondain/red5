@@ -27,12 +27,15 @@ Bugfixes:
 - NetStream.send in record mode not working (Jira APPSERVER-329)
 - NetStream.send "append" mode patch (Jira APPSERVER-338)
 - Memory leak in RemotingConnection (Jira APPSERVER-328)
-- Connection objects are not removed from parent scopes when a connection is refused in a sub-scope (Jira APPSERVER-261)
+- Connection objects are not removed from parent scopes when a connection
+  is refused in a sub-scope (Jira APPSERVER-261)
 - WAR deployer is failing to extract war files (Jira APPSERVER-337)
 - Security sandbox violation: BitmapData.draw (Jira APPSERVER-315)
 - AMF0 does not echo Array's the way AMF3 does (Jira APPSERVER-311)
 - Red5LoggerFactory fails with an NPE if you pass in a context name that
   hasn't been defined or is not known (Jira APPSERVER-341)
+- red5.bat doesn't work on Windows machines, red5-debug.bat works, though.
+  (Jira APPSERVER-340)
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
