@@ -15,6 +15,7 @@ package org.red5.server.io
         addTest(new org.red5.server.io.EchoStringTest());
         addTest(new org.red5.server.io.EchoArrayTest());
         addTest(new org.red5.server.io.EchoXMLTest());
+        addTest(new org.red5.server.io.EchoObjectTest());
       }
   }
 }
