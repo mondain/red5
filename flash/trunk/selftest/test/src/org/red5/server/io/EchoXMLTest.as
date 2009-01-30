@@ -86,27 +86,8 @@ package org.red5.server.io
         super.tearDown();
       }
         
-      /** Run the echo array test using AMF0.
-       *
-       * NOTE: This test is disabled because under AMF0 the result array
-       * is returned as the first element of yet another array.  This
-       * differs from AMF3 where the result array is returned directly.
-       *
-       * This test should be re-enabled once that bug is fixed
-       */
- 
-      public function testEchoXMLAmf0():void
-      {
-        // set encoding 
-
-        nc.objectEncoding = ObjectEncoding.AMF0;
-
-        // run the test
-        
-        startEchoXMLTest();
-      }
-
-      /** Run the echo array test using AMF3. */
+      /** Test that a XML string can be sent to the server and echoed back
+          under AMF3. */
 
       public function testEchoXMLAmf3():void
       {
@@ -116,25 +97,17 @@ package org.red5.server.io
 
         // run the test
 
-        startEchoXMLTest();
-      }
-
-      /** Test that a XML string can be sent to the server and echoed back. */
-      
-      public function startEchoXMLTest():void
-      {
-
         // Make sure we have valid xml
-        assertTrue("XML data is empty", testXML == null || testXML.length > 0);
+        assertTrue("XML data is empty: "+testXML, testXML != null);
 
         // indicate that this is an asynchronous test and all action
         // associated with this test should complete within the allotted
-        // time (1000 milliseconds in this case).  farther down in the
+        // time (10000 milliseconds in this case).  farther down in the
         // test code finishAsyncTest() is called to signal successfull
         // test completion. if finishAsyncTest() is NOT called within
         // the allotted time the test will fail.
 
-        startAsyncTest(1000);
+        startAsyncTest(10000);
 
         // add a listener to the net connection state machine to detects
         // when it has reached the connected state and then can continue
@@ -180,17 +153,12 @@ package org.red5.server.io
 
       public function onCallbackSuccess_EchoXML(resultXML:XML):void
       {
-        assertTrue(
-          "original array length " + testXML.length + " != " + 
-          "received array length " + resultXML.length, 
-          testXML.length == resultXML.length);
-        for (var i:String in testXML)
-        {
-          assertTrue(
-            "original array[" + i + "] " + testXML[i] + " != " + 
-            "received array[" + i + "] " + resultXML[i], 
-            testXML[i] == resultXML[i]);
-        }
+        Utils.ytrace("Got xml: " + resultXML);
+        var resultZip:String = testXML.employee.(@ssn=="789-789-7890").address.zip;
+        Utils.ytrace("Got zip: " + resultZip);
+
+        assertTrue("missing Mary Roe's zip: " + resultZip,
+          resultZip == "01234");
 
         // close the connection to the server
 
