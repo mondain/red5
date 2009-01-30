@@ -68,11 +68,6 @@ package org.red5.server.io
         
       /** Run the echo array test using AMF0.
        *
-       * NOTE: This test is disabled because under AMF0 the result array
-       * is returned as the first element of yet another array.  This
-       * differs from AMF3 where the result array is returned directly.
-       *
-       * This test should be re-enabled once that bug is fixed
        */
  
       public function testEchoArrayAmf0():void
@@ -105,12 +100,12 @@ package org.red5.server.io
       {
         // indicate that this is an asynchronous test and all action
         // associated with this test should complete within the allotted
-        // time (1000 milliseconds in this case).  farther down in the
+        // time (10000 milliseconds in this case).  farther down in the
         // test code finishAsyncTest() is called to signal successfull
         // test completion. if finishAsyncTest() is NOT called within
         // the allotted time the test will fail.
 
-        startAsyncTest(1000);
+        startAsyncTest(10000);
 
         // add a listener to the net connection state machine to detects
         // when it has reached the connected state and then can continue
