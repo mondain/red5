@@ -47,62 +47,65 @@ public class EchoService implements IEchoService {
 	}
 
 	/** 
-	 * @see org.red5.samples.services.IEchoService#echoBoolean(boolean)
+	 * {@inheritDoc}
 	 */
 	public boolean echoBoolean(boolean bool) {
 		return bool;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoNumber(double)
+   * {@inheritDoc}
 	 */
 	public double echoNumber(double number) {
 		return number;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoString(java.lang.String)
+   * {@inheritDoc}
 	 */
 	public String echoString(String string) {
 		return string;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoDate(java.util.Date)
+   * {@inheritDoc}
 	 */
 	public Date echoDate(Date date) {
 		return date;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoObject(java.util.Map)
+   * {@inheritDoc}
 	 */
+  @SuppressWarnings("unchecked")
 	public Map echoObject(Map obj) {
 		return obj;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoArray(java.lang.Object[])
+   * {@inheritDoc}
 	 */
 	public Object[] echoArray(Object[] array) {
 		return array;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoList(java.util.List)
+   * {@inheritDoc}
 	 */
+  @SuppressWarnings("unchecked")
 	public List echoList(List list) {
 		return list;
 	}
 
 	/**
-	 * @see org.red5.samples.services.IEchoService#echoXML(org.w3c.dom.Document)
+   * {@inheritDoc}
 	 */
 	public Document echoXML(Document xml) {
 		return xml;
 	}
 
-	public Object[] echoMultiParam(Map team, List words, String str) {
+	@SuppressWarnings("unchecked")
+  public Object[] echoMultiParam(Map team, List words, String str) {
 		Object[] result = new Object[3];
 		result[0] = team;
 		result[1] = words;
@@ -118,7 +121,7 @@ public class EchoService implements IEchoService {
 	/**
 	 * Test serialization of arbitrary objects.
 	 * 
-	 * @param any
+	 * @param any object to echo
 	 * @return list containing distinct objects
 	 */
 	public List<Object> returnDistinctObjects(Object any) {
@@ -132,7 +135,7 @@ public class EchoService implements IEchoService {
 	/**
 	 * Test references.
 	 * 
-	 * @param any
+	 * @param any object to echo
 	 * @return list containing same objects
 	 */
 	public List<Object> returnSameObjects(Object any) {
@@ -147,7 +150,7 @@ public class EchoService implements IEchoService {
 	/**
 	 * Test returning of internal objects.
 	 * 
-	 * @param any
+	 * @param any object to echo
 	 * @return the current connection
 	 */
 	public IConnection returnConnection(Object any) {
