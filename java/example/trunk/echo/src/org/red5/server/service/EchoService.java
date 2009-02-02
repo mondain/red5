@@ -24,29 +24,30 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.Red5;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 /**
- * The Echo service is used to test all of the different datatypes 
- * and to make sure that they are being returned properly.
- *
+ * The Echo service is used to test all of the different data types and to make
+ * sure that they are being returned properly.
+ * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Chris Allen (mrchrisallen@gmail.com)
+ * @author Paul Gregoire (mondain@gmail.com)
  */
 public class EchoService implements IEchoService {
 
-	private Logger log = LoggerFactory.getLogger(EchoService.class);
+	private Logger log = Red5LoggerFactory.getLogger(EchoService.class, "echo");
 
 	/** {@inheritDoc} */
-    public void startUp() {
+	public void startUp() {
 		log.info("The Echo Service has started...");
 	}
 
-	/** 
+	/**
 	 * {@inheritDoc}
 	 */
 	public boolean echoBoolean(boolean bool) {
@@ -54,58 +55,57 @@ public class EchoService implements IEchoService {
 	}
 
 	/**
-   * {@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	public double echoNumber(double number) {
 		return number;
 	}
 
 	/**
-   * {@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	public String echoString(String string) {
 		return string;
 	}
 
 	/**
-   * {@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	public Date echoDate(Date date) {
 		return date;
 	}
 
 	/**
-   * {@inheritDoc}
+	 * {@inheritDoc}
 	 */
-  @SuppressWarnings("unchecked")
-	public Map echoObject(Map obj) {
+	public Object echoObject(Object obj) {
 		return obj;
 	}
 
 	/**
-   * {@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	public Object[] echoArray(Object[] array) {
 		return array;
 	}
 
 	/**
-   * {@inheritDoc}
+	 * {@inheritDoc}
 	 */
-  @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	public List echoList(List list) {
 		return list;
 	}
 
 	/**
-   * {@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	public Document echoXML(Document xml) {
 		return xml;
 	}
 
 	@SuppressWarnings("unchecked")
-  public Object[] echoMultiParam(Map team, List words, String str) {
+	public Object[] echoMultiParam(Map team, List words, String str) {
 		Object[] result = new Object[3];
 		result[0] = team;
 		result[1] = words;
@@ -114,14 +114,15 @@ public class EchoService implements IEchoService {
 	}
 
 	public Object echoAny(Object any) {
-		log.info("Received: " + any);
+		log.info("Received: {}", any);
 		return any;
 	}
 
 	/**
 	 * Test serialization of arbitrary objects.
 	 * 
-	 * @param any object to echo
+	 * @param any
+	 *            object to echo
 	 * @return list containing distinct objects
 	 */
 	public List<Object> returnDistinctObjects(Object any) {
@@ -135,7 +136,8 @@ public class EchoService implements IEchoService {
 	/**
 	 * Test references.
 	 * 
-	 * @param any object to echo
+	 * @param any
+	 *            object to echo
 	 * @return list containing same objects
 	 */
 	public List<Object> returnSameObjects(Object any) {
@@ -150,7 +152,8 @@ public class EchoService implements IEchoService {
 	/**
 	 * Test returning of internal objects.
 	 * 
-	 * @param any object to echo
+	 * @param any
+	 *            object to echo
 	 * @return the current connection
 	 */
 	public IConnection returnConnection(Object any) {
@@ -159,7 +162,7 @@ public class EchoService implements IEchoService {
 
 	/**
 	 * Sample object that contains attributes with all access possibilities.
-	 * This will test the serializer of arbitrary objects. 
+	 * This will test the serializer of arbitrary objects.
 	 */
 	public class SampleObject {
 
