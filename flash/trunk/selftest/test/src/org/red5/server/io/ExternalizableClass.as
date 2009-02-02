@@ -104,14 +104,15 @@
       checkEqual(input.readInt(), 0);
       checkEqual(input.readInt(), -1);
       checkEqual(input.readInt(), 1);
-      var preMultiFailCount = failed;
+      var preMultiFailCount:int = failed;
       checkEqual(input.readMultiByte(7, "iso-8859-1"), "\xe4\xf6\xfc\xc4\xd6\xdc\xdf");
       // Work around bug on Linux...
       if (failed == preMultiFailCount+1)
       {
         // for some reason Flash is giving us an extra 7 bytes
         // we don't need... so let's do that again.
-        input.readMultiByte(7, "iso-8859-1");
+        for(var i:int = 0; i < 7; i++)
+          input.readByte();
         --failed;
       }
 
