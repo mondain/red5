@@ -21,16 +21,16 @@ package org.red5.server.service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.w3c.dom.Document;
 
 /**
- * The Echo service is used to test all of the different datatypes 
+ * The Echo service is used to test all of the different data types 
  * and to make sure that they are being returned properly.
  *
  * @author The Red5 Project (red5@osflash.org)
  * @author Chris Allen (mrchrisallen@gmail.com)
+ * @author Paul Gregoire (mondain@gmail.com)
  */
 public interface IEchoService {
 
@@ -76,14 +76,13 @@ public interface IEchoService {
 
 	/**
 	 * Verifies that a Flash Object that is passed in returns correctly.
-	 * Flash Object = java.utils.Map
-	 * @param <K> key type
-	 * @param <V> value type
+	 * Flash Object = java.utils.Map, the Apache bean utils will make
+	 * the conversions for us.
 	 * 
 	 * @param obj object to echo
 	 * @return input value
 	 */
-	public abstract <K, V> Map<K, V> echoObject(Map<? extends K, ? extends V> obj);
+	public abstract Object echoObject(Object obj);
 
 	/**
 	 * Verifies that a Flash simple Array that is passed in returns correctly.
