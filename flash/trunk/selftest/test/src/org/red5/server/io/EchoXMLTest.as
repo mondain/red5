@@ -7,6 +7,7 @@ package org.red5.server.io
   import net.theyard.components.test.YardTestCase;
   import net.theyard.components.Utils;
   import flash.net.ObjectEncoding;
+  import flash.xml.XMLDocument;
 
   /**
    * Tests if we can transmit a array to red5 and get it back intact. 
@@ -44,6 +45,9 @@ package org.red5.server.io
               </address>
           </employee>
       </employees>;
+
+      private const testXMLDocument:XMLDocument=
+        new XMLDocument(testXML.toXMLString());
       
       /**
        * The URI the tests expect a running server on.
@@ -89,11 +93,26 @@ package org.red5.server.io
       /** Test that a XML string can be sent to the server and echoed back
           under AMF3. */
 
+      public function disabled_testEchoXMLAmf0():void
+      {
+        // set encoding 
+
+        nc.objectEncoding = ObjectEncoding.AMF0;
+
+        startTestEchoXML();
+      }
+
       public function testEchoXMLAmf3():void
       {
         // set encoding 
 
         nc.objectEncoding = ObjectEncoding.AMF3;
+
+        startTestEchoXML();
+      }
+
+      public function startTestEchoXML():void
+      {
 
         // run the test
 
@@ -141,8 +160,14 @@ package org.red5.server.io
           // server passing in the onConnect_EchoXML callback and the
           // test array
           
-          nc.call(
-            "echo.echoXML", onCallbackSuccess_EchoXML, null, testXML);
+          if (nc.objectEncoding == ObjectEncoding.AMF0)
+          {
+            nc.call(
+                "echo.echoXML", onCallbackSuccess_EchoXML, null, testXMLDocument);
+          } else {
+            nc.call(
+                "echo.echoXML", onCallbackSuccess_EchoXML, null, testXML);
+          }
         }
       }
       
@@ -151,14 +176,25 @@ package org.red5.server.io
        * @param result the return value from the call to "echoXML"
        */
 
-      public function onCallbackSuccess_EchoXML(resultXML:XML):void
+      public function onCallbackSuccess_EchoXML(result:Object):void
       {
-        Utils.ytrace("Got xml: " + resultXML);
-        var resultZip:String = testXML.employee.(@ssn=="789-789-7890").address.zip;
-        Utils.ytrace("Got zip: " + resultZip);
+        Utils.ytrace("Got result: " + result);
+        if (nc.objectEncoding == ObjectEncoding.AMF0)
+        {
+          var resultXMLDoc:XMLDocument = new XMLDocument(result as String);
+          Utils.ytrace("Got xml doc: " + resultXMLDoc.toString());
+          assertTrue("xml is different",
+            resultXMLDoc.toString() == testXMLDocument.toString());
 
-        assertTrue("missing Mary Roe's zip: " + resultZip,
-          resultZip == "01234");
+        } else {
+          var resultXML:XML = XML(result);
+          Utils.ytrace("Got xml: " + resultXML);
+          var resultZip:String = testXML.employee.(@ssn=="789-789-7890").address.zip;
+          Utils.ytrace("Got zip: " + resultZip);
+
+          assertTrue("missing Mary Roe's zip: " + resultZip,
+              resultZip == "01234");
+        }
 
         // close the connection to the server
 
