@@ -22,6 +22,7 @@
   import flash.utils.IDataInput;
   import flash.utils.IDataOutput;
   import flash.utils.IExternalizable;
+  import flash.system.Capabilities;
   import net.theyard.components.Utils;
 
   /**
@@ -104,18 +105,14 @@
       checkEqual(input.readInt(), 0);
       checkEqual(input.readInt(), -1);
       checkEqual(input.readInt(), 1);
-      var preMultiFailCount:int = failed;
-      checkEqual(input.readMultiByte(7, "iso-8859-1"), "\xe4\xf6\xfc\xc4\xd6\xdc\xdf");
-      // Work around bug on Linux...
-      if (failed == preMultiFailCount+1)
+      Utils.ytrace("Checking OS: " + Capabilities.os);
+      if (Capabilities.os.indexOf("Linux") == 0)
       {
-        // for some reason Flash is giving us an extra 7 bytes
-        // we don't need... so let's do that again.
-        for(var i:int = 0; i < 7; i++)
-          input.readByte();
-        --failed;
+        Utils.ytrace("Deserializing multibytes fails on linux flash player 9.0.124 and higher");
+        // linux has a bug with multi-byte strings; so we bail
+        return;
       }
-
+      checkEqual(input.readMultiByte(7, "iso-8859-1"), "\xe4\xf6\xfc\xc4\xd6\xdc\xdf");
       checkEqual(input.readMultiByte(14, "utf-8"), "\xe4\xf6\xfc\xc4\xd6\xdc\xdf");
       var ob: Object = input.readObject();
       if (ob is Array) {
