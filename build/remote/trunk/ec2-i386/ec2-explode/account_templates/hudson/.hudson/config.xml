@@ -19,25 +19,40 @@
       <javaHome>/usr/lib/jvm/java-1.5.0-sun</javaHome>
     </jdk>
   </jdks>
-  <slaves/>
-  <quietPeriod>120</quietPeriod>
+  <clouds/>
+  <slaves>
+    <slave>
+      <name>xuggle_hudson_xp</name>
+      <description>Xuggle&apos;s XP build server</description>
+      <remoteFS>c:\hudson\slave</remoteFS>
+      <numExecutors>1</numExecutors>
+      <mode>EXCLUSIVE</mode>
+      <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
+      <launcher class="hudson.slaves.JNLPLauncher"/>
+      <label></label>
+    </slave>
+  </slaves>
+  <quietPeriod>900</quietPeriod>
   <views>
     <hudson.model.AllView>
       <owner class="hudson" reference="../../.."/>
       <name>All</name>
+      <description>This is the Red5/Xuggle i386 Continuous Builder Server&#xd;
+</description>
     </hudson.model.AllView>
     <listView>
       <owner class="hudson" reference="../../.."/>
-      <name>Stable Builds</name>
+      <name>Stable</name>
       <description>This is the list of stable builds; if a build is successful here, we consider it stable.</description>
       <jobNames class="tree-set">
         <comparator class="hudson.util.CaseInsensitiveComparator"/>
         <string>red5_jdk5_stable</string>
-        <string>xuggle_jdk5_stable</string>
+        <string>red5_jdk6_stable</string>
+        <string>xuggler_jdk5_stable</string>
       </jobNames>
     </listView>
   </views>
   <primaryView>All</primaryView>
-  <slaveAgentPort>0</slaveAgentPort>
-  <secretKey>ecccc914cc10e9e71a87dde679ab932218d7ae8515c3b1474f1be51d37d5997f</secretKey>
+  <slaveAgentPort>6642</slaveAgentPort>
+  <label></label>
 </hudson>

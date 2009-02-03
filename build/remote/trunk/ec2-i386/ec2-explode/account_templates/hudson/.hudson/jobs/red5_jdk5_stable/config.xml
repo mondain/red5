@@ -15,7 +15,9 @@ OS: Linux</description>
   </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <hudson.plugins.googlecode.GoogleCodeProjectProperty/>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty>
+      <googlecodeWebsite>http://code.google.com/p/red5/</googlecodeWebsite>
+    </hudson.plugins.googlecode.GoogleCodeProjectProperty>
   </properties>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
@@ -25,6 +27,7 @@ OS: Linux</description>
       </hudson.scm.SubversionSCM_-ModuleLocation>
     </locations>
     <useUpdate>false</useUpdate>
+    <browser class="hudson.plugins.googlecode.GoogleCodeRepositoryBrowser"/>
   </scm>
   <quietPeriod>3600</quietPeriod>
   <canRoam>true</canRoam>
@@ -33,15 +36,13 @@ OS: Linux</description>
   <triggers class="vector"/>
   <builders>
     <hudson.tasks.Ant>
-      <targets>clean
-dist
-javadoc</targets>
+      <targets>dist-archive</targets>
       <antName>Ant7</antName>
     </hudson.tasks.Ant>
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>workingcopy/dist/red5.jar</artifacts>
+      <artifacts>workingcopy/*.zip,workingcopy/*.tar.gz,workingcopy/dist/red5.jar</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.Fingerprinter>
@@ -50,7 +51,7 @@ javadoc</targets>
     </hudson.tasks.Fingerprinter>
     <hudson.tasks.JavadocArchiver>
       <javadocDir>workingcopy/doc/api</javadocDir>
-      <keepAll>false</keepAll>
+      <keepAll>true</keepAll>
     </hudson.tasks.JavadocArchiver>
     <hudson.tasks.Mailer>
       <recipients>red5-builds@googlegroups.com</recipients>

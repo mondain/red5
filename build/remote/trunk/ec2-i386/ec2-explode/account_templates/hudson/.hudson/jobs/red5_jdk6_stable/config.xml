@@ -1,69 +1,60 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions class="java.util.concurrent.CopyOnWriteArrayList"/>
-  <description>Application: Xuggle&#xd;
-Component: Java Xuggler&#xd;
+  <description>This is the official set of red5 stable builds for Java 1.6.  These are only built if all other JDK 1.6 tests pass 100%.&#xd;
+&#xd;
+Application: Red5&#xd;
+Component: Java Server&#xd;
 Branch: Trunk&#xd;
-JVM: JDK 1.5&#xd;
+JVM: JDK 1.6&#xd;
 Platform: i386&#xd;
 OS: Linux</description>
   <logRotator>
     <daysToKeep>-1</daysToKeep>
-    <numToKeep>5</numToKeep>
+    <numToKeep>20</numToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
-        <hudson.model.StringParameterDefinition>
-          <name>RED5_HOME</name>
-          <defaultValue>/home/hudson/.hudson/jobs/red5_jdk5_stable/lastStable/archive/workingcopy/dist</defaultValue>
-        </hudson.model.StringParameterDefinition>
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
     <hudson.plugins.googlecode.GoogleCodeProjectProperty>
-      <googlecodeWebsite>http://code.google.com/p/xuggle/</googlecodeWebsite>
+      <googlecodeWebsite>http://code.google.com/p/red5/</googlecodeWebsite>
     </hudson.plugins.googlecode.GoogleCodeProjectProperty>
   </properties>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
       <hudson.scm.SubversionSCM_-ModuleLocation>
-        <remote>http://xuggle.googlecode.com/svn/trunk/java/xuggle-xuggler-red5</remote>
+        <remote>http://red5.googlecode.com/svn/java/server/trunk</remote>
         <local>workingcopy</local>
       </hudson.scm.SubversionSCM_-ModuleLocation>
     </locations>
     <useUpdate>false</useUpdate>
     <browser class="hudson.plugins.googlecode.GoogleCodeRepositoryBrowser"/>
   </scm>
+  <quietPeriod>3600</quietPeriod>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
-  <jdk>JDK5</jdk>
-  <triggers class="vector">
-    <hudson.triggers.SCMTrigger>
-      <spec>0,5,10,15,20,25,30,35,40,45,50,55 * * * *</spec>
-    </hudson.triggers.SCMTrigger>
-  </triggers>
+  <jdk>JDK6</jdk>
+  <triggers class="vector"/>
   <builders>
     <hudson.tasks.Ant>
-      <targets>clobber
-compile-tests
-doc
-dist
-stage</targets>
+      <targets>dist-archive</targets>
       <antName>Ant7</antName>
     </hudson.tasks.Ant>
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>workingcopy/dist/ivys/xuggle/xuggle-xuggler-red5/*</artifacts>
+      <artifacts>workingcopy/*.zip,workingcopy/*.tar.gz,workingcopy/dist/red5.jar</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
+    <hudson.tasks.Fingerprinter>
+      <targets>workingcopy/dist/red5.jar</targets>
+      <recordBuildArtifacts>true</recordBuildArtifacts>
+    </hudson.tasks.Fingerprinter>
     <hudson.tasks.JavadocArchiver>
-      <javadocDir>workingcopy/doc/</javadocDir>
+      <javadocDir>workingcopy/doc/api</javadocDir>
       <keepAll>true</keepAll>
     </hudson.tasks.JavadocArchiver>
     <hudson.tasks.Mailer>
-      <recipients>xuggle-builds@xuggle.com</recipients>
+      <recipients>red5-builds@googlegroups.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
