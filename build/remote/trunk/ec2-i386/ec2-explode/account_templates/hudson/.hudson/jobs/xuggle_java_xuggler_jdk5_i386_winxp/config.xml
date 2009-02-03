@@ -6,7 +6,7 @@ Component: Java Xuggler&#xd;
 Branch: Trunk&#xd;
 JVM: JDK 1.5&#xd;
 Platform: i386&#xd;
-OS: Linux</description>
+OS: Windows XP</description>
   <logRotator>
     <daysToKeep>-1</daysToKeep>
     <numToKeep>5</numToKeep>
@@ -16,8 +16,8 @@ OS: Linux</description>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
-          <name>RED5_HOME</name>
-          <defaultValue>/home/hudson/.hudson/jobs/red5_jdk5_stable/lastStable/archive/workingcopy/dist</defaultValue>
+          <name>JAVA_HOME</name>
+          <defaultValue>C:\software\Java\jdk1.5.0_17</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -28,53 +28,36 @@ OS: Linux</description>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
       <hudson.scm.SubversionSCM_-ModuleLocation>
-        <remote>http://xuggle.googlecode.com/svn/trunk/java/xuggle-xuggler-red5</remote>
+        <remote>http://xuggle.googlecode.com/svn/trunk/java/xuggle-xuggler</remote>
         <local>workingcopy</local>
       </hudson.scm.SubversionSCM_-ModuleLocation>
     </locations>
-    <useUpdate>false</useUpdate>
+    <useUpdate>true</useUpdate>
     <browser class="hudson.plugins.googlecode.GoogleCodeRepositoryBrowser"/>
   </scm>
-  <canRoam>true</canRoam>
+  <assignedNode>xuggle_hudson_xp</assignedNode>
+  <canRoam>false</canRoam>
   <disabled>false</disabled>
   <jdk>JDK5</jdk>
-  <triggers class="vector">
-    <hudson.triggers.SCMTrigger>
-      <spec>0,5,10,15,20,25,30,35,40,45,50,55 * * * *</spec>
-    </hudson.triggers.SCMTrigger>
-  </triggers>
+  <triggers class="vector"/>
   <builders>
     <hudson.tasks.Ant>
-      <targets>clobber
-compile-tests
-doc
-dist
-stage</targets>
-      <antName>Ant7</antName>
+      <targets>ivy-clear clobber run-tests doc dist</targets>
+      <antName>(Default)</antName>
     </hudson.tasks.Ant>
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>workingcopy/dist/ivys/xuggle/xuggle-xuggler-red5/*</artifacts>
+      <artifacts>workingcopy/dist/setup*.exe</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.JavadocArchiver>
       <javadocDir>workingcopy/doc/</javadocDir>
-      <keepAll>true</keepAll>
+      <keepAll>false</keepAll>
     </hudson.tasks.JavadocArchiver>
-    <hudson.tasks.Mailer>
-      <recipients>xuggle-builds@xuggle.com</recipients>
-      <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>false</sendToIndividuals>
-    </hudson.tasks.Mailer>
+    <hudson.tasks.junit.JUnitResultArchiver>
+      <testResults>workingcopy/build/test/output/*.xml</testResults>
+    </hudson.tasks.junit.JUnitResultArchiver>
   </publishers>
-  <buildWrappers>
-    <org.jvnet.hudson.plugins.port__allocator.PortAllocator>
-      <ports>
-        <org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
-          <name>1935</name>
-        </org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
-      </ports>
-    </org.jvnet.hudson.plugins.port__allocator.PortAllocator>
-  </buildWrappers>
+  <buildWrappers/>
 </project>

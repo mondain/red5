@@ -9,7 +9,7 @@ Platform: i386&#xd;
 OS: Linux</description>
   <logRotator>
     <daysToKeep>-1</daysToKeep>
-    <numToKeep>20</numToKeep>
+    <numToKeep>5</numToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties>
@@ -23,6 +23,7 @@ OS: Linux</description>
       </hudson.scm.SubversionSCM_-ModuleLocation>
     </locations>
     <useUpdate>false</useUpdate>
+    <browser class="hudson.plugins.googlecode.GoogleCodeRepositoryBrowser"/>
   </scm>
   <quietPeriod>7200</quietPeriod>
   <canRoam>true</canRoam>
@@ -37,11 +38,31 @@ OS: Linux</description>
     </hudson.tasks.Ant>
   </builders>
   <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>workingcopy/build/native/i686-pc-linux-gnu/test/**/*.log</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>xuggle_java_xuggler_jdk6_i386_ubuntu,xuggle_java_xuggler_jdk5_i386_winxp</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
     <hudson.tasks.Mailer>
       <recipients>xuggle-builds@xuggle.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
-  <buildWrappers/>
+  <buildWrappers>
+    <org.jvnet.hudson.plugins.port__allocator.PortAllocator>
+      <ports>
+        <org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
+          <name>1935</name>
+        </org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
+      </ports>
+    </org.jvnet.hudson.plugins.port__allocator.PortAllocator>
+  </buildWrappers>
 </project>

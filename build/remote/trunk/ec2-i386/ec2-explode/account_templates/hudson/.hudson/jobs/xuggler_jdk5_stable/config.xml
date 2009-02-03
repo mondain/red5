@@ -25,6 +25,7 @@ OS: Linux</description>
       </hudson.scm.SubversionSCM_-ModuleLocation>
     </locations>
     <useUpdate>false</useUpdate>
+    <browser class="hudson.plugins.googlecode.GoogleCodeRepositoryBrowser"/>
   </scm>
   <quietPeriod>7200</quietPeriod>
   <canRoam>true</canRoam>

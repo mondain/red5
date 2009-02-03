@@ -9,10 +9,12 @@ Platform: i386&#xd;
 OS: Linux</description>
   <logRotator>
     <daysToKeep>-1</daysToKeep>
-    <numToKeep>20</numToKeep>
+    <numToKeep>5</numToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty/>
+  </properties>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
       <hudson.scm.SubversionSCM_-ModuleLocation>
@@ -38,11 +40,6 @@ run-tests-systemtest</targets>
       <artifacts>workingcopy/bin/testcases/testreports/fixtures/output/**/*</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
-    <hudson.tasks.Mailer>
-      <recipients>red5-builds@googlegroups.com</recipients>
-      <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>true</sendToIndividuals>
-    </hudson.tasks.Mailer>
     <hudson.tasks.BuildTrigger>
       <childProjects>red5_jdk5_stable</childProjects>
       <threshold>
@@ -51,8 +48,16 @@ run-tests-systemtest</targets>
         <color>BLUE</color>
       </threshold>
     </hudson.tasks.BuildTrigger>
+    <hudson.tasks.Mailer>
+      <recipients>red5-builds@googlegroups.com</recipients>
+      <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
+      <sendToIndividuals>true</sendToIndividuals>
+    </hudson.tasks.Mailer>
   </publishers>
   <buildWrappers>
+    <hudson.plugins.xvnc.Xvnc>
+      <takeScreenshot>false</takeScreenshot>
+    </hudson.plugins.xvnc.Xvnc>
     <org.jvnet.hudson.plugins.port__allocator.PortAllocator>
       <ports>
         <org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
@@ -60,8 +65,5 @@ run-tests-systemtest</targets>
         </org.jvnet.hudson.plugins.port__allocator.DefaultPortType>
       </ports>
     </org.jvnet.hudson.plugins.port__allocator.PortAllocator>
-    <hudson.plugins.xvnc.Xvnc>
-      <takeScreenshot>false</takeScreenshot>
-    </hudson.plugins.xvnc.Xvnc>
   </buildWrappers>
 </project>

@@ -9,10 +9,12 @@ Platform: i386&#xd;
 OS: Linux</description>
   <logRotator>
     <daysToKeep>-1</daysToKeep>
-    <numToKeep>20</numToKeep>
+    <numToKeep>5</numToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty/>
+  </properties>
   <scm class="hudson.scm.SubversionSCM">
     <locations>
       <hudson.scm.SubversionSCM_-ModuleLocation>
@@ -48,7 +50,7 @@ doc</targets>
       <testResults>workingcopy/build/test/output/*.xml</testResults>
     </hudson.tasks.junit.JUnitResultArchiver>
     <hudson.tasks.BuildTrigger>
-      <childProjects>xuggle_java_utils_jdk6_i386_ubuntu</childProjects>
+      <childProjects>xuggle_java_xuggler_jdk5_i386_ubuntu_lgpl</childProjects>
       <threshold>
         <name>SUCCESS</name>
         <ordinal>0</ordinal>
@@ -60,10 +62,6 @@ doc</targets>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
-    <hudson.tasks.BuildTrigger>
-      <childProjects>xuggle_java_utils_jdk6_i386_ubuntu, xuggle_java_xuggler_jdk5_i386_ubuntu_lgpl</childProjects>
-      <threshold reference="../../hudson.tasks.BuildTrigger/threshold"/>
-    </hudson.tasks.BuildTrigger>
   </publishers>
   <buildWrappers/>
 </project>
