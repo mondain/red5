@@ -64,6 +64,7 @@ java -version
  apt-get install -y ant-optional
  apt-get install -y subversion
  apt-get install -y subversion-tools
+ apt-get install -y yasm
 
 # # need script to install -- and it unzips in that directory, plus comes with lnx player
 # # for web servers
