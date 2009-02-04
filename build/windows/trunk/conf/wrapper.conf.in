@@ -15,6 +15,7 @@ wrapper.java.mainclass=org.tanukisoftware.wrapper.WrapperSimpleApp
 wrapper.java.classpath.1=lib/wrapper.jar
 wrapper.java.classpath.2=conf
 wrapper.java.classpath.3=red5.jar
+wrapper.java.classpath.4=ejb3-persistence.jar
 
 # Java Library Path (location of Wrapper.DLL or libwrapper.so)
 wrapper.java.library.path.1=lib
@@ -24,6 +25,9 @@ wrapper.java.additional.1=-Xrs
 wrapper.java.additional.2=-XX:+AggressiveOpts
 wrapper.java.additional.3=-XX:+DisableExplicitGC
 wrapper.java.additional.4=-Djava.net.preferIPv4Stack=true
+wrapper.java.additional.5=-Dlogback.ContextSelector=org.red5.logging.LoggingContextSelector
+wrapper.java.additional.6=-Dcatalina.useNaming=true
+wrapper.java.additional.7=-Dpython.home=lib
 
 # Initial Java Heap Size (in MB)
 wrapper.java.initmemory=256
@@ -32,7 +36,6 @@ wrapper.java.initmemory=256
 wrapper.java.maxmemory=768
 
 # Application parameters.  Add parameters as needed starting from 1
-#wrapper.app.parameter.1=org.red5.server.Standalone
 wrapper.app.parameter.1=org.red5.server.Bootstrap
 
 #********************************************************************
