@@ -22,8 +22,8 @@
 		<property name="virtualHosts" value="@virtual.hosts@" />
 	</bean>
 
-	<bean id="web.handler.oflaDemo" class="org.red5.server.webapp.oflaDemo.Application"/>
+	<bean id="web.handler.oflaDemo" class="org.red5.demos.oflaDemo.Application"/>
 
-    <bean id="demoService.service" class="org.red5.server.webapp.oflaDemo.DemoService" lazy-init="true" />
+    <bean id="demoService.service" class="org.red5.demos.oflaDemo.DemoService" lazy-init="true" />
 
 </beans>
