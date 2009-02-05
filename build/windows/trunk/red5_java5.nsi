@@ -6,6 +6,9 @@
 
 Name Red5
 
+; Request application privileges for Windows Vista
+RequestExecutionLevel admin
+
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION 0.8.0
@@ -16,13 +19,15 @@ Name Red5
 !define BuildRoot "..\..\..\java\server\trunk"
 
 # MUI defines
-!define MUI_ICON images\red5_big.ico
+!define MUI_ICON images\red5.ico
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_BITMAP images\red5_header.bmp
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER Red5
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
+;;!define MUI_UNICON ".\images\red5_uninstall.ico"
 
 # Included files
 !include Sections.nsh
@@ -70,7 +75,7 @@ Section -Main SEC0000
     SetOverwrite on
     ; copy wrapper files
     File /r /x .svn bin\*
-    ; copy the java6 files
+    ; copy the java5 files
     File /r /x war /x *.sh /x Makefile ${BuildRoot}\dist.java5\*
     ; cd to conf dir
     SetOutPath $INSTDIR\conf
@@ -84,13 +89,15 @@ Section -Main SEC0000
     File /r /x .svn lib\*
     ; create the log dir
     SetOutPath $INSTDIR\log
+    ; create the temp dir
+    SetOutPath $INSTDIR\temp
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd
 
 Section -post SEC0001
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     SetOutPath $INSTDIR
-    WriteUninstaller $INSTDIR\uninstall.exe
+
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Start $(^Name).lnk" $INSTDIR\Red5.bat
@@ -102,6 +109,9 @@ Section -post SEC0001
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Tutorials.lnk" "http://jira.red5.org/confluence/display/docs/Home"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
+
+    WriteUninstaller $INSTDIR\uninstall.exe
+
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
@@ -110,6 +120,7 @@ Section -post SEC0001
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
+
     # Add the service
     ExecWait '"$INSTDIR\InstallRed5-NT.bat"'
     ; send them to osflash
