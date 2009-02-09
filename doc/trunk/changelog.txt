@@ -10,6 +10,7 @@ New Features:
 Bugfixes:
 - Red5 War Version Does not Shutdown Gracefully (APPSERVER-325; patch from
   Gordon Hempton).
+- Scope Memory Leak (APPSERVER-347; patch from Gordon Hempton)
 
 ---------------------------
 Red5 0.8.0 RC2
