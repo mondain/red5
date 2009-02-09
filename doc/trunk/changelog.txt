@@ -4,7 +4,15 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
-Red5 0.8.0 RC2 (unreleased)
+Red5 0.8.0 RC3 (unreleased)
+New Features:
+
+Bugfixes:
+- Red5 War Version Does not Shutdown Gracefully (APPSERVER-325; patch from
+  Gordon Hempton).
+
+---------------------------
+Red5 0.8.0 RC2
 ---------------------------
 New Features:
 - Testing: Added a new automated testing framework
