@@ -76,5 +76,25 @@
 			<desc>Load tester for video playback and shared objects</desc>
 			<filename>loadtest-r2977-java6.war</filename>
 		</application>						
+		<application name="audiotranscoder">
+			<author>Art Clarke</author>
+                        <desc>Transcode audio to new formats.  You must install Xuggle first.</desc>
+			<filename>audiotranscoder-r195-java6.war</filename>
+		</application>						
+		<application name="audiotranscoder">
+			<author>Art Clarke</author>
+                        <desc>Transcode audio to new formats.  You must install Xuggle first.</desc>
+			<filename>audiotranscoder-r195-java5.war</filename>
+		</application>						
+		<application name="videotranscoder">
+			<author>Art Clarke</author>
+                        <desc>Change video on the fly to mirror half the screen.  You must install Xuggle first.</desc>
+			<filename>videotranscoder-r195-java6.war</filename>
+		</application>						
+		<application name="videotranscoder">
+			<author>Art Clarke</author>
+                        <desc>Change video on the fly to mirror half the screen.  You must install Xuggle first.</desc>
+			<filename>videotranscoder-r195-java5.war</filename>
+		</application>						
 	</applications>
 </registry>
