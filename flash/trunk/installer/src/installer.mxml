@@ -1,55 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
-	applicationComplete="init()" currentState="main">
-	<!--
-	Application installer
-	
- 	@author Paul Gregoire (mondain@gmail.com)
-	-->
-	<mx:Script source="functions.as"/>		
-	<mx:states>
-		<mx:State name="main">
-			<mx:AddChild position="lastChild">
-				<mx:Panel x="10" y="10" width="638" height="343" layout="absolute" title="Red5 Application Installer">
-					<mx:DataGrid id="grid" x="10" y="38" width="581" height="225" dataProvider="{applicationList}" itemClick="handleClick(event)">
-						<mx:columns>
-							<mx:DataGridColumn headerText="Name" dataField="name"/>
-							<mx:DataGridColumn headerText="Description" dataField="description"/>
-							<mx:DataGridColumn headerText="Author" dataField="author"/>
-							<mx:DataGridColumn headerText="Java Version" dataField="javaVersion"/>
-							<mx:DataGridColumn headerText="File Name" dataField="filename"/>
-						</mx:columns>
-					</mx:DataGrid>
-					<mx:Button x="10" y="271" label="Install" enabled="{selectedFilename != null}" click="install()" 
-						toolTip="Please take note of the java version before installing on your server (use the filename field)"/>
-					<mx:Button x="81" y="271" label="Uninstall" enabled="false" click="uninstall()"/>
-					<mx:Button x="164" y="271" id="listbtn" label="List" click="getList()" enabled="false"/>
-					<mx:TextInput id="selectedApp" x="87" y="10" editable="false" width="283"/>
-					<mx:Label x="10" y="12" text="Application" fontWeight="bold"/>
-					<mx:Button x="378" y="10" id="connectorbtn" label="Connect" click="connect()"/>
-					<mx:Button x="528" y="271" label="Debug" click="debugMessages.visible=!debugMessages.visible"/>
-				</mx:Panel>
-			</mx:AddChild>
-		</mx:State>
-		<mx:State name="wait">
-			<mx:AddChild position="lastChild">
-				<mx:VBox height="159" horizontalAlign="center" verticalGap="10" horizontalCenter="-374" top="10">
-					<mx:Label text="Installing" fontSize="24" fontWeight="bold"/>
-					<mx:Image/>
-					<mx:Label text="This may take a couple minutes, please wait..." fontWeight="bold"/>
-				</mx:VBox>
-			</mx:AddChild>
-		</mx:State>
-	</mx:states>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                layout="absolute"
+                applicationComplete="init()"
+                backgroundColor="white">
+    <!--
+         Application installer
 
-	<mx:HTTPService id="applistRPC" url="http://red5.googlecode.com/svn/snapshots/registry.xml" 
-		result="rpcHandler(event)" resultFormat="e4x" />
+         @author Paul Gregoire (mondain@gmail.com)
+         @author Jay Araujo (jay@lacedinteractive.com)
+    -->
+    <mx:Script source="functions.as"/>
 
-	<mx:Panel x="10" y="361" width="638" height="244" layout="absolute" title="Debug messages" id="debugMessages" visible="false">
-		<mx:TextArea x="0" y="0" width="100%" height="100%" id="messages"
-			editable="false" verticalScrollPolicy="on" liveScrolling="true" 
-			valueCommit="messages.verticalScrollPosition=messages.maxVerticalScrollPosition"
-			/>
-	</mx:Panel>
-	
+    <mx:HTTPService id="applistRPC"
+                    url="http://red5.googlecode.com/svn/snapshots/registry.xml"
+                    result="rpcHandler(event)"
+                    resultFormat="e4x"/>
+
+
+    <mx:ApplicationControlBar x="0"
+                              y="0"
+                              width="100%"
+                              height="50"
+                              fillAlphas="[1.0, 1.0]"
+                              fillColors="[#FF8787, #FD0303]">
+        <mx:Image source="@Embed('assets/red5_logo.png')"/>
+        <mx:Label text="Red5 Application Installer"
+                  fontWeight="bold"
+                  fontSize="11"/>
+    </mx:ApplicationControlBar>
+
+
+    <mx:VBox minWidth="560"
+             width="80%"
+             y="70"
+             horizontalCenter="0">
+        <mx:ViewStack width="100%"
+                      id="vs"
+                      minHeight="340">
+
+            <mx:Canvas>
+                <mx:Label id="LabelConnecting"
+                          text="Connecting..."
+                          horizontalCenter="0"
+                          y="30"/>
+            </mx:Canvas>
+
+
+            <mx:Canvas>
+                <mx:DataGrid id="grid"
+                             width="100%"
+                             minWidth="550"
+                             height="300"
+                             dataProvider="{applicationList}"
+                             itemClick="handleClick(event)"
+                             y="0"
+                             horizontalCenter="0">
+                    <mx:columns>
+                        <mx:DataGridColumn headerText="App Name"
+                                           dataField="name"/>
+                        <mx:DataGridColumn headerText="Description"
+                                           dataField="description"/>
+                        <mx:DataGridColumn headerText="Author"
+                                           dataField="author"/>
+                        <mx:DataGridColumn headerText="Java Version"
+                                           dataField="javaVersion"/>
+                        <mx:DataGridColumn headerText="File Name"
+                                           dataField="filename"/>
+                    </mx:columns>
+                </mx:DataGrid>
+                <mx:Button y="308"
+                           right="142"
+                           label="Install"
+                           enabled="{selectedFilename != null}"
+                           click="install()"
+                           toolTip="Please take note of the java version before installing on your server (use the filename field)"/>
+                <mx:Button y="308"
+                           right="59"
+                           label="Uninstall"
+                           enabled="false"
+                           click="uninstall()"/>
+                <mx:Button y="308"
+                           right="5"
+                           id="listbtn"
+                           label="List"
+                           click="getList()"
+                           enabled="false"/>
+                <mx:CheckBox id="debug"
+                             x="164"
+                             y="308"
+                             label="Show debug messages"/>
+                <mx:CheckBox id="ckFilter"
+                             x="10"
+                             y="308"
+                             label="Show compatible only"
+                             change="refilter()"
+                             selected="true"/>
+            </mx:Canvas>
+
+        </mx:ViewStack>
+
+        <mx:TextArea width="100%"
+                     minHeight="150"
+                     id="messages"
+                     visible="{ debug.selected }"
+                     editable="false"
+                     verticalScrollPolicy="on"
+                     liveScrolling="true"
+                     valueCommit="messages.verticalScrollPosition=messages.maxVerticalScrollPosition"/>
+
+    </mx:VBox>
+
+
 </mx:Application>
