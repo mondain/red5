@@ -18,6 +18,9 @@ Bugfixes:
   (APPSERVER-318; patch from Damien Raude-Morvan)
 - References are stored too late when deserializing AMF3 arrays (CODECS-12;
   patch from Peter Rendl).
+- ConversionUtils fail to convert to primitive arrays (CODECS-14;
+  patch from Peter Rendl).
+- ConversionUtils fail to convert to sets (CODECS-15; patch from Peter Rendl).
 
 ---------------------------
 Red5 0.8.0 RC2
