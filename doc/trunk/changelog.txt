@@ -6,11 +6,18 @@ versions of Red5.
 
 Red5 0.8.0 RC3 (unreleased)
 New Features:
+- Use ExtendedPropertyPlaceholderConfigurer for Spring placeholderConfig bean
+  (APPSERVER-333; Patch from Michael Guymon)
 
 Bugfixes:
 - Red5 War Version Does not Shutdown Gracefully (APPSERVER-325; patch from
   Gordon Hempton).
 - Scope Memory Leak (APPSERVER-347; patch from Gordon Hempton)
+- AMF3 uses Maps for references (CODECS-13; patch from Peter Rendl)
+- src/org/red5/io/flv/meta/MetaService.java use Jetty log instead of slf4j
+  (APPSERVER-318; patch from Damien Raude-Morvan)
+- References are stored too late when deserializing AMF3 arrays (CODECS-12;
+  patch from Peter Rendl).
 
 ---------------------------
 Red5 0.8.0 RC2
