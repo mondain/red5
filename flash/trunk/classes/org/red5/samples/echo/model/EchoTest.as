@@ -31,6 +31,7 @@
 	import mx.rpc.events.FaultEvent;
 	
 	import org.red5.samples.echo.events.EchoTestEvent;
+	import org.red5.samples.echo.vo.EchoTestResult;
 	import org.red5.samples.echo.vo.ExternalizableClass;
 
 	[Event(name="testInit", type="org.red5.samples.echo.events.EchoTestEvent")]
@@ -84,6 +85,7 @@
 			_input = input;
 			_testTimer = getTimer();
 			
+			_result.type = flash.utils.getQualifiedClassName( input );
 			_result.id = _id + 1;
 			_result.status = EchoTestEvent.TEST_INIT;
 			_result.request = getObjectDescription( _input );

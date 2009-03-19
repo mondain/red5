@@ -29,13 +29,15 @@
 	import mx.collections.ArrayCollection;
 	import mx.rpc.remoting.RemoteObject;
 	
+	import org.red5.samples.echo.vo.User;
+	
  	[Bindable]
 	/**
 	 * @author Thijs Triemstra (info@collab.nl)
 	 */ 	
 	public class ModelLocator implements IModelLocator
 	{
-		public const appVersion		: String = "0.4.0";
+		public const appVersion		: String = "0.4.1";
 	   	public const fpVersion 		: String = "Flash Player " + Capabilities.version + " - " +
 	   											Capabilities.playerType;
 
@@ -54,7 +56,7 @@
 		public var amf3_tests		: Array = [ "XML", "Externalizable", "ArrayCollection", "ObjectProxy", 
 			               						"ByteArray", "Unsupported" ];
 		
-		public var tests_selection 	: Array = new Array();
+		public var tests_selection 	: Array = [];
 		public var connecting		: Boolean = false;
 		public var user				: User 	= new User();
 		public var local_so			: SharedObject = SharedObject.getLocal("EchoTest");

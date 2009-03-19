@@ -25,12 +25,29 @@
 	public class BaseTest
 	{
 		private var _items : Array = new Array();
+		private var _name : String;
 		
-		public function BaseTest(items:Array=null):void
+		public function BaseTest(name:String=null, items:Array=null):void
 		{
-			if (items != null) {
+			if (items != null)
+			{
 				this._items = items;
 			}
+			
+			if (name != null)
+			{
+				this._name = name;
+			}
+		}
+		
+		public function get name():String
+		{
+			return this.name;
+		}
+		
+		public function set name(val:String):void
+		{
+			_name = val;
 		}
 		
 		public function get tests():Array

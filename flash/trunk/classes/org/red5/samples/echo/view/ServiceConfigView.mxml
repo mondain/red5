@@ -29,6 +29,8 @@ with this library; if not, write to the Free Software Foundation, Inc.,
 	<mx:Script>
 		<![CDATA[
 		
+			public static const HOST_UPDATE:String = 'hostUpdate';
+			
 			[Bindable]
 			public var defaultHost	: String;
 			
@@ -46,9 +48,12 @@ with this library; if not, write to the Free Software Foundation, Inc.,
 	</mx:Script>
 	
 	<mx:HBox width="100%">
-		<mx:TextInput id="host_txt" width="100%" text="{hostName}" change="{this.dispatchEvent(new Event('hostUpdate'))}"/>
-		<mx:Label text="Method" width="65"/>
-		<mx:TextInput id="method_txt" width="100%" text="{methodName}"/>
+		<mx:TextInput id="host_txt" fontWeight="normal"
+					 width="100%" text="{hostName}"
+					 change="{this.dispatchEvent(new Event(HOST_UPDATE))}"/>
+		<mx:Label text="Method:"  width="65"/>
+		<mx:TextInput id="method_txt" width="100%" text="{methodName}"
+					  fontWeight="normal"/>
 	</mx:HBox>
 
 </mx:FormItem>
