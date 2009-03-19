@@ -1,25 +1,25 @@
-﻿package org.red5.samples.echo.model 
+﻿/**
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ *
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+*/
+package org.red5.samples.echo.model 
 {
-	/**
-	 * RED5 Open Source Flash Server - http://www.osflash.org/red5
-	 *
-	 * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the
-	 * terms of the GNU Lesser General Public License as published by the Free Software
-	 * Foundation; either version 2.1 of the License, or (at your option) any later
-	 * version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY
-	 * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-	 * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along
-	 * with this library; if not, write to the Free Software Foundation, Inc.,
-	 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-	*/
-	
 	import org.red5.samples.echo.model.tests.*;
+	import org.red5.samples.echo.vo.TestSelection;
 	
 	/**
 	 * Sample data for AMF0 and AMF3 data type tests.
@@ -66,10 +66,27 @@
 			return _amf0count;
 		}
 		
-		private function addTest(arr:Array):void 
+		/**
+		 * @param val Number of AMF0 tests.
+		 */		
+		public function set AMF0COUNT(val:Number):void
 		{
-			for (var s:int=0;s<arr.length;s++) {
-				_items.push(arr[s]);
+			_amf0count = val;
+		}
+		
+		/**
+		 * @param selection
+		 * @param test
+		 */		
+		private function addTest(selection:TestSelection, test:BaseTest):void 
+		{
+			if ( selection && selection.selected )
+			{
+				var tests:Array = test.tests;
+				for (var s:int=0;s<tests.length;s++)
+				{
+					_items.push(tests[s]);
+				}
 			}
 		}
 		
@@ -83,78 +100,44 @@
 			// AMF0 specific tests below
 			
 			// null
-			if ( tests[0].selected ) {
-				addTest(_nullTest.tests);
-			}
+			addTest(TestSelection(tests[0]), _nullTest);
 			// undefined
-			if ( tests[1].selected ) {
-				addTest(_undefinedTest.tests);
-			}
+			addTest(TestSelection(tests[1]), _undefinedTest);
 			// Boolean
-			if ( tests[2].selected ) {
-				addTest(_booleanTest.tests);
-			}
+			addTest(TestSelection(tests[2]),  _booleanTest);
 			// String
-			if ( tests[3].selected ) {
-				addTest(_stringTest.tests);
-			}
+			addTest(TestSelection(tests[3]), _stringTest);
 			// Number
-			if ( tests[4].selected ) {
-				addTest(_numberTest.tests);
-			}
+			addTest(TestSelection(tests[4]), _numberTest);
 			// Array
-			if ( tests[5].selected ) {
-				addTest(_arrayTest.tests);
-			}
+			addTest(TestSelection(tests[5]), _arrayTest);
 			// Object
-			if ( tests[6].selected ) {
-				addTest(_objectTest.tests);
-			}
+			addTest(TestSelection(tests[6]), _objectTest);
 			// Date
-			if ( tests[7].selected ) {
-				addTest(_dateTest.tests);
-			}
+			addTest(TestSelection(tests[7]), _dateTest);
 			// XML for ActionScript 1.0 and 2.0
-			if ( tests[8].selected ) {
-				addTest(_xmlDocumentTest.tests);
-			}
+			addTest(TestSelection(tests[8]), _xmlDocumentTest);
 			// Custom class
-			if ( tests[9].selected ) {
-				addTest(_customClassTest.tests);
-			}
+			addTest(TestSelection(tests[9]), _customClassTest);
 			// Remote class
-			if ( tests[10].selected ) {
-				addTest(_remoteClassTest.tests);
-			}
+			addTest(TestSelection(tests[10]), _remoteClassTest);
 			
 			_amf0count = _items.length;
 			
 			// AMF3 specific tests below
 			
 			// XML top-level class for ActionScript 3.0
-			if ( tests[11].selected ) {
-				addTest(_xmlTest.tests);
-			}
+			addTest(TestSelection(tests[11]), _xmlTest);
 			// Externalizable
-			if ( tests[12].selected ) {
-				addTest(_externalizableTest.tests);
-			}
+			addTest(TestSelection(tests[12]), _externalizableTest);
 			// ArrayCollection
-			if ( tests[13].selected ) {
-				addTest(_arrayCollectionTest.tests);
-			}
+			addTest(TestSelection(tests[13]), _arrayCollectionTest);
 			// ObjectProxy
-			if ( tests[14].selected ) {
-				addTest(_objectProxyTest.tests);
-			}
+			addTest(TestSelection(tests[14]), _objectProxyTest);
 			// ByteArray
-			if ( tests[15].selected ) {
-				addTest(_byteArrayTest.tests);
-			}
+			addTest(TestSelection(tests[15]), _byteArrayTest);
 			// Unsupported
-			if ( tests[16].selected ) {
-				addTest(_unsupportedTest.tests);
-			}
+			addTest(TestSelection(tests[16]), _unsupportedTest);
 		}
 		
 	}

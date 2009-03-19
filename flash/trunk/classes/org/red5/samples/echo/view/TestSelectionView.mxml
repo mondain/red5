@@ -26,7 +26,7 @@ with this library; if not, write to the Free Software Foundation, Inc.,
 	
 	<mx:Script>
 		<![CDATA[
-			import org.red5.samples.echo.model.TestSelection;
+			import org.red5.samples.echo.vo.TestSelection;
 			import org.red5.samples.echo.events.TestSelectEvent;
 			
 			[Bindable]
@@ -51,7 +51,7 @@ with this library; if not, write to the Free Software Foundation, Inc.,
     
 	<mx:HBox horizontalGap="2">
 		<mx:Repeater id="r" dataProvider="{dataProvider}">
-    		<mx:CheckBox label="{r.currentItem}" selected="true" 
+    		<mx:CheckBox label="{r.currentItem}" selected="true" fontWeight="bold" 
     					 creationComplete="init(event)" change="change(event)"/>
     	</mx:Repeater>
 	</mx:HBox>

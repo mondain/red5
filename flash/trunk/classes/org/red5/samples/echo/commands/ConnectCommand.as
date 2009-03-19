@@ -1,24 +1,23 @@
-﻿package org.red5.samples.echo.commands
+﻿/**
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ *
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+package org.red5.samples.echo.commands
 {	
-	/**
-	 * RED5 Open Source Flash Server - http://www.osflash.org/red5
-	 *
-	 * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the
-	 * terms of the GNU Lesser General Public License as published by the Free Software
-	 * Foundation; either version 2.1 of the License, or (at your option) any later
-	 * version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY
-	 * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-	 * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along
-	 * with this library; if not, write to the Free Software Foundation, Inc.,
-	 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-	 */
-	 
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
@@ -34,10 +33,10 @@
 	 */	
 	public class ConnectCommand implements ICommand 
 	{	
-		private var model 		: ModelLocator = ModelLocator.getInstance();
-		private var url			: String;
-		private var protocol	: String;
-		private var encoding	: uint;
+		private var _model 		: ModelLocator = ModelLocator.getInstance();
+		private var _url		: String;
+		private var _protocol	: String;
+		private var _encoding	: uint;
 		
 	 	/**
 	 	 * @param cgEvent
@@ -48,84 +47,99 @@
 	    	var startTestsEvent	: StartTestsEvent = new StartTestsEvent();
 			var event			: ConnectEvent = ConnectEvent(cgEvent);
 			
-			if (model.nc.connected) {
-				model.nc.close();
+			if (_model.nc.connected)
+			{
+				_model.nc.close();
 			}
 			
-			protocol = event.protocol;
-			encoding = event.encoding;
-			model.nc.objectEncoding = encoding;
+			_protocol = event.protocol;
+			_encoding = event.encoding;
+			_model.nc.objectEncoding = _encoding;
 			
-			if (protocol == "http") {
+			if (_protocol == "http")
+			{
 			    // Remoting...
-				url = model.httpServer;
-				model.local_so.data.httpUri = url;
+				_url = _model.httpServer;
+				_model.local_so.data.httpUri = _url;
 			}
 			else
 			{
 				// RTMP...
-				url = model.rtmpServer;
-				model.local_so.data.rtmpUri = url;
+				_url = _model.rtmpServer;
+				_model.local_so.data.rtmpUri = _url;
 			}
             
-            model.statusText = "Connecting through <b>" + protocol.toUpperCase() + "</b> using <b>AMF" 
-                         		+ encoding  + "</b> encoding...";
-            try {
-                flushStatus = model.local_so.flush();
-            } 
-            catch (error:Error) 
+            _model.statusText = "Connecting through <b>" + _protocol.toUpperCase() + "</b> using <b>AMF" 
+                         		+ _encoding  + "</b> encoding...";
+            try
             {
-            	var printTextEvent:PrintTextEvent = new PrintTextEvent("<br/><b>" + model.failure +
+                flushStatus = _model.local_so.flush();
+            } 
+            catch ( error:Error ) 
+            {
+            	var printTextEvent:PrintTextEvent = new PrintTextEvent("<br/><b>" + _model.failure +
             										"Local SharedObject error: </font></b>" +
             										error.getStackTrace() + "<br/>");
 				printTextEvent.dispatch();
             }
             
-			if (protocol == "remoteObject") 
+			if (_protocol == "remoteObject") 
 			{
 				// Setup a RemoteObject
-            	model.echoService = new RemoteObject("Red5Echo");
-            	model.echoService.source = "EchoService";
+            	_model.echoService = new RemoteObject("Red5Echo");
+            	_model.echoService.source = "EchoService";
             	
             	// echoService.addEventListener( ResultEvent.RESULT, onRem );
             	
-				if (model.user.userid.length > 0) {
+				if (_model.user.userid.length > 0)
+				{
 					// test credentials feature
-					model.echoService.setCredentials(model.user.userid, model.user.password);
-					model.statusText += " ( using setCredentials )";
+					_model.echoService.setCredentials(_model.user.userid, _model.user.password);
+					_model.statusText += " ( using setCredentials )";
 				}
-				model.statusText += "...";
+				_model.statusText += "...";
 				
 				startTestsEvent.dispatch();
 				// ignore rest of setup logic
 				return;
 			}
-			else if (protocol == "sharedObject")
+			else if (_protocol == "sharedObject")
 			{
 				
 			}
 			
-			if (model.user.userid.length > 0) {
+			if (_model.user.userid.length > 0)
+			{
 				// test credentials feature
-				model.nc.addHeader("Credentials", false, Object(model.user));
-				model.statusText += " ( using setCredentials )";
+				_model.nc.addHeader("Credentials", false, Object(_model.user));
+				_model.statusText += " ( using setCredentials )";
 			}
 
-			model.statusText += "...";
-			if (model.echoService != null) {
+			_model.statusText += "...";
+			if (_model.echoService != null)
+			{
 				// http_txt.text
-				model.echoService.destination = null;
+				_model.echoService.destination = null;
 			}
-			// connect to server
-			model.nc.connect(url);
-			//			
-			if ( protocol == "http" ) {
-				// Don't wait for a successfull connection for AMF0/AMF3 remoting tests.
-				startTestsEvent.dispatch();
+			// connect to server if a url is given
+			if (_url != '')
+			{
+				_model.nc.connect(_url);
+				//			
+				if ( _protocol == "http" )
+				{
+					// Don't wait for a successfull connection for AMF0/AMF3 remoting tests.
+					startTestsEvent.dispatch();
+				}
+				
+				_model.connecting = true;
 			}
-			
-			model.connecting = true;
-			trace(url);
+			else
+			{
+				printTextEvent = new PrintTextEvent("\n<b>Host should not be empty</b>");
+				printTextEvent.dispatch();
+			}
+			trace(_url);
 		}
 		
 	}
