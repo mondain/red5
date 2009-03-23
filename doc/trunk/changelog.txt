@@ -21,6 +21,7 @@ Bugfixes:
 - ConversionUtils fail to convert to primitive arrays (CODECS-14;
   patch from Peter Rendl).
 - ConversionUtils fail to convert to sets (CODECS-15; patch from Peter Rendl).
+- Encoded double arrays contain integer values (APPSERVER-362)
 
 ---------------------------
 Red5 0.8.0 RC2
