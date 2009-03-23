@@ -24,6 +24,8 @@ Bugfixes:
 - Encoded double arrays contain integer values (APPSERVER-362; patch from
   Christoph Botsch)
 - Errors logged for empty class name (CODECS-17; patch from Peter Rendl)
+- Destroy and disposible bean lifecycle events were not firing in the server
+  upon shutdown and jvm exit (No jira)
 
 ---------------------------
 Red5 0.8.0 RC2
