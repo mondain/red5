@@ -26,6 +26,9 @@ Bugfixes:
 - Errors logged for empty class name (CODECS-17; patch from Peter Rendl)
 - Destroy and disposible bean lifecycle events were not firing in the server
   upon shutdown and jvm exit (No jira)
+- Created means for segregated Quartz schedulers per application. The bug was
+  that the main scheduler has no idea where to location classes you try 
+  to access in your scheduled job (No jira)
 
 ---------------------------
 Red5 0.8.0 RC2
