@@ -30,6 +30,8 @@ Bugfixes:
   that the main scheduler has no idea where to location classes you try 
   to access in your scheduled job (No jira)
 - Issue when reading empty persistent shared objects (APPSERVER-364)
+- Removed Jacksum API, replaced with function available in commons-codec (APPSERVER-350)
+
 
 ---------------------------
 Red5 0.8.0 RC2
