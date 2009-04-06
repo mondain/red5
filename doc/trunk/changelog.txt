@@ -29,6 +29,7 @@ Bugfixes:
 - Created means for segregated Quartz schedulers per application. The bug was
   that the main scheduler has no idea where to location classes you try 
   to access in your scheduled job (No jira)
+- Issue when reading empty persistent shared objects (APPSERVER-364)
 
 ---------------------------
 Red5 0.8.0 RC2
