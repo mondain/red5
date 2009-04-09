@@ -4,7 +4,9 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
+
 Red5 0.8.0 RC3 (unreleased)
+---------------------------
 New Features:
 - Use ExtendedPropertyPlaceholderConfigurer for Spring placeholderConfig bean
   (APPSERVER-333; Patch from Michael Guymon)
@@ -33,8 +35,7 @@ Bugfixes:
 - Removed Jacksum API, replaced with function available in commons-codec (APPSERVER-350)
 
 
----------------------------
-Red5 0.8.0 RC2
+Red5 0.8.0 RC2 (2009-02-07)
 ---------------------------
 New Features:
 - Testing: Added a new automated testing framework
@@ -68,6 +69,7 @@ Bugfixes:
   (Jira APPSERVER-340)
 - KeepAliveJob does not disconnect client regardless of MaxInactivity setting (Jira APPSERVER-342)
 - Issues serializing Custom Objects contained in Arrays or collections (Jira APPSERVER-320)
+
 
 Red5 0.8.0 RC1 (2008-09-29)
 ---------------------------
@@ -119,6 +121,7 @@ Bugfixes:
 - Added application snapshot repository
 - Applied patches for JUnit (Jira DT-4)
 
+
 Red5 0.7.0  (2008-02-23)
 ------------------------
 New Features:
@@ -152,6 +155,7 @@ Bugfixes:
 - Enabled bidirectional class serialization (Jira APPSERVER-219)
 - Array typed parameters in remoting service methods converted properly
   (Jira APPSERVER-161)
+
 
 Red5 0.6.3  (2007-09-17)
 ------------------------
