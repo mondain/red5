@@ -10,6 +10,7 @@ Red5 0.8.0 RC3 (unreleased)
 New Features:
 - Use ExtendedPropertyPlaceholderConfigurer for Spring placeholderConfig bean
   (APPSERVER-333; Patch from Michael Guymon)
+- Updated Mina to 2.0.0-M5
 
 Bugfixes:
 - Red5 War Version Does not Shutdown Gracefully (APPSERVER-325; patch from
