@@ -7,7 +7,7 @@
 
 	<appender name="BWFILE" 
 		class="ch.qos.logback.core.rolling.RollingFileAppender"> 
-		<File>logs/bwcheck.log</File>
+		<File>log/bwcheck.log</File>
 		<rollingPolicy 
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
 			<FileNamePattern>logs/bwcheck.%d{yyyy-MM-dd}.log.gz</FileNamePattern> 
