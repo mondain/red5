@@ -11,12 +11,6 @@
     -->
     <mx:Script source="functions.as"/>
 
-    <mx:HTTPService id="applistRPC"
-                    url="http://red5.googlecode.com/svn/snapshots/registry.xml"
-                    result="rpcHandler(event)"
-                    resultFormat="e4x"/>
-
-
     <mx:ApplicationControlBar x="0"
                               y="0"
                               width="100%"

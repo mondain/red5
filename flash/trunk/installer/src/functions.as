@@ -69,7 +69,6 @@ private function netStatusHandler(event:NetStatusEvent):void {
         case "NetConnection.Connect.Success":
             getList();
             vs.selectedIndex=1
-            //applistRPC.send();
             break;
         case "NetConnection.Connect.Failed":
         case "NetConnection.Connect.Rejected":
