@@ -10,6 +10,9 @@
 	default="build"
 	basedir=".">
 	
+        <!-- Environment settings -->
+        <property environment="env"/>
+
 	<!-- Flex SDK settings -->
 	<property file="../flex.properties" />
 
