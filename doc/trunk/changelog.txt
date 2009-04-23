@@ -35,6 +35,7 @@ Bugfixes:
 - Issue when reading empty persistent shared objects (APPSERVER-364)
 - Removed Jacksum API, replaced with function available in commons-codec (APPSERVER-350)
 - Added updated implementation of RtmpSampleAccess (APPSERVER-315)
+- Added configuration to ContextLoader for shutdown hook to fix APPSERVER-372
 
 
 Red5 0.8.0 RC2 (2009-02-07)
