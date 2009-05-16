@@ -36,6 +36,8 @@ Bugfixes:
 - Removed Jacksum API, replaced with function available in commons-codec (APPSERVER-350)
 - Added updated implementation of RtmpSampleAccess (APPSERVER-315)
 - Added configuration to ContextLoader for shutdown hook to fix APPSERVER-372
+- Allow usage of different SLF4J implementations instead of logback only as forced by Red5LoggerFactory (APPSERVER-369)
+- Logging broken by revision 3606 (APPSERVER-383)
 
 
 Red5 0.8.0 RC2 (2009-02-07)
