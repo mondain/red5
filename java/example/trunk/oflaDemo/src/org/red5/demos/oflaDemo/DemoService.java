@@ -45,10 +45,9 @@ public class DemoService {
 
 			Resource[] mp3s = scope.getResources("streams/*.mp3");
 			addToMap(filesMap, mp3s);
-
 			
 		} catch (IOException e) {
-			log.error("{}", e);
+			log.error("", e);
 		}
 		return filesMap;
 	}
