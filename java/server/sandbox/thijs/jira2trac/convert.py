@@ -27,9 +27,10 @@ if __name__ == "__main__":
         jira.readBackupFile()
         jira.showResults()
         
-        trac = TracEncoder(options)
-        trac.writeDatabase(repr(jira.data))
-        trac.showResults()
+        if options.output:
+            trac = TracEncoder(options)
+            trac.writeDatabase(repr(jira.data))
+            trac.showResults()
         
         end = time.time() - start
         print('\nCompleted in %s sec.\n' % (Decimal(str(end)).quantize(Decimal('.0001'))))
