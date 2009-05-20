@@ -1,4 +1,4 @@
-# Copyright Thijs Triemstra 2008
+# Copyright Thijs Triemstra 2008-2009
 
 """
 Convert Jira backups to Trac databases.
@@ -13,11 +13,12 @@ import xml.parsers.expat
 
 class JiraDecoder(object):
     """
-    1. Decode Jira backup file (XML format)
+    Parse Jira backup file (XML format)
     """
-    def __init__(self, options=None):
-        if options:
-            self.options = options
+    def __init__(self, input, logger):
+        if input:
+            self.logger = logger
+            self.input = input
             self.lastItem = None
             self.allItems = []
             self.data = dict()
@@ -36,20 +37,20 @@ class JiraDecoder(object):
             self.data['memberships'] = []
             self.data['statuses'] = []
             self.data['actions'] = []
-            self.size = Decimal(str(os.stat(options.input)[stat.ST_SIZE]/(1024*1024))
+            self.size = Decimal(str(os.stat(input)[stat.ST_SIZE]/(1024*1024))
                                 ).quantize(Decimal('.01'))
-            
             print()
-            print(self.__doc__.strip())
-            print('Reading: %s (%s MB)...\n' % (options.input, self.size))
+            logger.info(self.__doc__.strip())
+            logger.info('Reading data from %s (%s MB)' % (input, self.size))
+            logger.info('Processing...\n')
         else:
-            raise BaseException('Please pass in some options')
+            raise BaseException("Please specify the 'input' option")
             
     def readBackupFile(self):
         """
         Read the Jira XML backup dump file.
         """
-        self.markup = io.FileIO(self.options.input, 'r').readall()
+        self.markup = io.FileIO(self.input, 'r').readall()
         
         p = xml.parsers.expat.ParserCreate()
         p.StartElementHandler = self.start_element
@@ -59,35 +60,53 @@ class JiraDecoder(object):
     
     def showResults(self):
         """
-        Print the results on the commandline.
+        Print the results on stdout.
         """
         print('Results')
         print(7 * '-')
         
-        cat = ['versions', 'resolutions', 'projects', 'priorities',
-               'users', 'issues', 'components', 'attachments',
-               'issueTypes', 'groups', 'actions']
+        categories = ['versions', 'resolutions', 'projects', 'priorities',
+                      'components', 'issueTypes', 'groups', 'issues',
+                      'attachments', 'users', 'actions']
         
-        for x in cat:
-            name = x.title()
-            if x == 'issueTypes':
+        for category in categories:
+            name = category.title()
+            if category == 'issueTypes':
                 name = 'Issue Types'
             
-            print('%25s:  %d' % (name, len(self.data[x])))
+            print('\n%25s:  %d\n' % (name, len(self.data[category])))
             
-            if self.options.verbose == True:
-                for y in self.data[x]:
-                    print('%40s' % y)
+            for item in self.data[category]:
+                if category == 'versions':
+                    print('%50s - %s' % (item['number'], item['releasedate']))
+                
+                elif category == 'resolutions':
+                    print('%50s' % (item['name']))
             
-    
+                elif category == 'projects':
+                    print('%50s (%s - %s)' % (item['name'], item['owner'],
+                                              item['id']))
+
+                elif category == 'priorities':
+                    print('%50s' % (item['name']))
+                
+                elif category == 'components':
+                    print('%50s (%s - %s)' % (item['name'], item['owner'],
+                                              item['project']))
+
+                elif category == 'issueTypes':
+                    print('%50s. %s' % (item['sequence'], item['name']))
+
+                elif category == 'groups':
+                    print('%50s' % (item['name']))
+                    
     def addItem(self, category, data):
         self.data[category].append(data)
         self.allItems.append(data)
         self.category = category
     
     def char_data(self, data):
-        if self.options.verbose == True:
-            print('Character data:', repr(data))
+        self.logger.debug('Character data: %s' % repr(data))
             
         if self.lastItem:
             try:
@@ -101,8 +120,7 @@ class JiraDecoder(object):
             self.lastItem['body'] += data
         
     def end_element(self, name):
-        if self.options.verbose == True:
-            print('End element:', name)
+        self.logger.debug('End element: %s' % name)
     
         if name == 'body':
             # finish update
@@ -110,20 +128,19 @@ class JiraDecoder(object):
             self.lastItem = None
 
     def start_element(self, name, attrs):
-        if self.options.verbose == True:
-            print('Start element:', name, attrs)
+        self.logger.debug('Start element: %s %s' % (name, attrs))
             
         if name == 'Version':
             version = {'number':attrs['name']}
             try:
                 version['description'] = attrs['description']
             except KeyError:
-                pass
+                version['description'] = None
             
             try:
                 version['releasedate'] = attrs['releasedate']
             except KeyError:
-                pass
+                version['releasedate'] = None
                 
             self.addItem('versions', version)
             
@@ -176,7 +193,7 @@ class JiraDecoder(object):
         elif name == 'Component':
             component = {'project': attrs['project'], 'id': attrs['id'],
                          'name': attrs['name'], 'description': attrs['description'],
-                         'lead': attrs['lead']}
+                         'owner': attrs['lead']}
 
             self.addItem('components', component)
         
@@ -246,30 +263,24 @@ class JiraDecoder(object):
 
 class TracEncoder(object):
     """
-    2. Write data to Trac database
+    Save data in Trac database
     """
     
-    def __init__(self, options=None):
-        if options:
-            self.options = options
+    def __init__(self, output, logger):
+        if output:
+            self.output = output
+            self.logger = logger
             print()
-            print(self.__doc__.strip())
+            logger.info(self.__doc__.strip())
 
         else:
-            raise BaseException('Please pass in some options')
+            raise BaseException("Please specify the 'output' option")
     
     def writeDatabase(self, jiraData):
-        print('Writing: %s...\n' % self.options.output)
-        self.outputFile = io.FileIO(self.options.output, 'w')
+        """
+        Write the data to the Trac database.
+        """
+        self.logger.info('Writing data to %s' % self.output)
+        self.outputFile = io.FileIO(self.output, 'w')
         self.outputFile.write(jiraData)
         self.outputFile.close()
-
-    def showResults(self):
-        """
-        Print the results on the commandline.
-        """
-        print('Results')
-        print(7 * '-')
-        self.size = Decimal(str(os.stat(self.options.output)[stat.ST_SIZE]/(1024*1024))
-                   ).quantize(Decimal('.0001'))
-
