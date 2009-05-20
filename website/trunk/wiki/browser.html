@@ -1,0 +1,158 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude">
+  <xi:include href="layout.html" />
+  <xi:include href="macros.html" />
+  <head>
+    <title>$path</title>
+    <meta py:if="file and file.annotate" name="ROBOTS" content="NOINDEX, NOFOLLOW" />
+    <meta py:if="dir" name="ROBOTS" content="NOINDEX" />
+    <script type="text/javascript">
+      jQuery(document).ready(function($) {
+        $("#jumploc input").hide();
+        $("#jumploc select").change(function () {
+          this.parentNode.parentNode.submit();
+        })
+
+        <py:if test="dir">
+          /* browsers using old WebKits have issues with expandDir... */
+          var webkit_rev = /AppleWebKit\/(\d+)/.exec(navigator.userAgent);
+          if ( !webkit_rev || (521 - webkit_rev[1]).toString()[0] == "-" )
+            enableExpandDir(null, $("#dirlist tr"), {
+                action: 'inplace',
+                range_min_secs: '$dir.range_min_secs',
+                range_max_secs: '$dir.range_max_secs'
+            });
+        </py:if>
+        <py:if test="file and file.annotate">
+          enableBlame("${href.changeset()}/", "${path}");
+        </py:if>
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="content" class="browser">
+
+      <b>Browse Source</b><br/> 
+      ${browser_path_links(path_links, stickyrev)}
+
+      <div id="jumprev">
+        <form action="" method="get">
+          <div>
+            <label for="rev" title="${stickyrev and 'Hint: clear the field to view latest revision' or None}">
+              View revision:</label>
+            <input type="text" id="rev" name="rev" value="$stickyrev" size="6" />
+          </div>
+        </form>
+      </div>
+
+      <div py:if="quickjump_entries" id="jumploc">
+        <form action="" method="get">
+          <div class="buttons">
+            <label for="preselected">Visit:</label>
+            <select id="preselected" name="preselected">
+              <option selected="selected" />
+              <optgroup py:for="category, locations in groupby(quickjump_entries, key=lambda q: q[0])"
+                label="${category}">
+                <option py:for="_, name, path, rev in locations" value="${href.browser(path, rev=rev)}">$name</option>
+              </optgroup>
+            </select>
+            <input type="submit" value="${_('Go!')}" title="${_('Jump to the chosen preselected path')}" />
+          </div>
+        </form>
+      </div>
+
+      <py:if test="dir">
+        <table class="listing" id="dirlist">
+          <thead>
+            <tr>
+              <py:def function="sortable_th(order, desc, class_, title)">
+                <th class="$class_${order == class_ and (desc and ' desc' or ' asc') or ''}">
+                  <a title="Sort by $class_${order == class_ and not desc and
+                                             ' (descending)' or ''}"
+                    href="${href.browser(path, rev=stickyrev, order=(class_ != 'name' and class_ or None),
+                    desc=(class_ == order and not desc and 1 or None))}">$title</a>
+                </th>
+              </py:def>
+              ${sortable_th(dir.order, dir.desc, 'name', 'Name')}
+              ${sortable_th(dir.order, dir.desc, 'size', 'Size')}
+              <th class="rev">Rev</th>
+              ${sortable_th(dir.order, dir.desc, 'date', 'Age')}
+              <th class="change">Last Change</th>
+            </tr>
+          </thead>
+          <tbody>
+            <py:if test="'up' in chrome.links">
+              <tr class="even">
+                <td class="name" colspan="5">
+                  <a class="parent" title="Parent Directory" href="${chrome.links.up[0].href}">../</a>
+                </td>
+              </tr>
+            </py:if>
+            <xi:include href="dir_entries.html" />
+          </tbody>
+        </table>
+      </py:if>
+
+      <table py:if="properties or file" id="info" summary="Revision info">
+        <tr py:if="file">
+          <th scope="col">
+            Revision <a href="${href.changeset(rev)}">$rev</a>, ${sizeinfo(file.size)}
+            (checked in by ${authorinfo(file.changeset.author)}, ${dateinfo(file.changeset.date)} ago)
+          </th>
+        </tr>
+        <tr py:if="file">
+          <td class="message searchable" py:choose="">
+            <py:when test="wiki_format_messages" xml:space="preserve">
+              ${wiki_to_html(context('changeset', file.changeset.rev), file.changeset.message, escape_newlines=True)}
+            </py:when>
+            <py:otherwise>${file.changeset.message}</py:otherwise>
+          </td>
+        </tr>
+        <tr py:if="properties">
+          <td colspan="2">
+            <ul class="props">
+              <li py:for="prop in properties" py:choose="">
+                <py:when test="prop.rendered">
+                   <span py:if="prop.rendered.name"
+                         py:attrs="prop.rendered.name_attributes" py:content="prop.rendered.name" />
+                   <div py:attrs="prop.rendered.content_attributes" py:content="prop.rendered.content" />
+                </py:when>
+                <py:otherwise>
+                  Property <strong>$prop.name</strong> set to
+                  <py:choose>
+                    <em py:when="istext(prop.value)"><code>$prop.value</code></em>
+                    <py:otherwise>$prop.value</py:otherwise>
+                  </py:choose>
+                </py:otherwise>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </table>
+
+      <div py:if="file and file.preview" id="preview" class="searchable">
+        ${preview_file(file.preview)}
+      </div>
+
+	<p/>
+
+      <div id="anydiff">
+        <form action="${href.diff()}" method="get">
+          <div class="buttons">
+            <input type="hidden" name="new_path" value="$path" />
+            <input type="hidden" name="old_path" value="$path" />
+            <input type="hidden" name="new_rev" value="$rev" />
+            <input type="hidden" name="old_rev" value="$rev" />
+            <input type="submit" value="${_('View changes...')}" title="${_('Select paths and revs for Diff')}" />
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </body>
+</html>

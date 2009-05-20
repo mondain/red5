@@ -1,0 +1,103 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/"
+      py:strip="">
+
+  <py:match path="head" once="true"><head>
+    <title py:with="title = list(select('title/text()'))">
+      <py:if test="title">${title} –</py:if>
+      ${' – '.join(filter(None, [project.name, '']))}
+    </title>
+    <py:if test="chrome.links">
+      <py:for each="rel, links in chrome.links.items()">
+        <link rel="${rel}" py:for="link in links" py:attrs="link" />
+      </py:for>
+    </py:if>
+    <py:if test="'SEARCH_VIEW' in perm" id="search">
+      <link type="application/opensearchdescription+xml" rel="search"
+            href="${href.search('opensearch')}" title="Search $project.name"/>
+    </py:if>
+    <script py:for="script in chrome.scripts"
+            type="${script.type}" src="${script.href}"></script>
+    ${Markup('&lt;!--[if lt IE 7]&gt;')}
+    <script type="text/javascript" src="${chrome.htdocs_location}js/ie_pre7_hacks.js"></script>
+    ${Markup('&lt;![endif]--&gt;')}
+    ${select("*[local-name() != 'title']")}
+  </head></py:match>
+
+  <py:match path="body" once="true" buffer="false"><body>
+	<div id="leftbox">
+		<div>
+			<div id="menu">
+				<div class="box">
+					<h3>Download</h3>
+
+					<a href="/wiki/Download"><b>0.8.0 RC2</b></a>
+					<br/>
+					<a href="http://red5.googlecode.com/svn/doc/trunk/changelog.txt">Changelog</a>
+					<br/>
+					Unreleased
+				</div>
+	
+				<h3>Documentation</h3>
+				<ul>
+					<li><a href="/wiki/Features">Features</a></li>
+					<li><a href="/wiki/Examples">Examples</a></li>
+					<li><a href="/wiki/Install">Installation</a></li>
+					<li><a href="/wiki/Documentation">Documentation</a></li>
+					<li><a href="http://red5.googlecode.com/svn/doc/trunk/licenseInfo/Red5LicenseInfo.txt">License</a></li>
+				</ul>
+				
+				<h3>Community</h3>
+				<ul>
+					<li><a href="/wiki/MailingLists">Mailing Lists</a></li>
+					<li><a href="/wiki/IrcChannel">IRC Channel</a></li>
+					<li><a href="/wiki/Blogs">Weblogs</a></li>
+					<li><a href="/wiki/Logo">Logos</a></li>
+				</ul>
+				
+				<h3>Development</h3>
+				<ul>
+                                        <li><a href="/wiki/Download#LatestDevelopmentSourceCode">SVN Access</a></li>
+					<li py:for="idx, item in  enumerate(chrome.nav.mainnav)"
+					  class="${classes(first_last(idx, chrome.nav.mainnav), active=item.active)}">${item.label}</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div id="middlebox">
+		${select('*|text()')}
+		<div id="footer" xml:lang="en">
+			<p class="right"><a href='http://red5.googlecode.com/svn/doc/trunk/licenseInfo/Red5LicenseInfo.txt'>Copyright</a> &copy; 
+2005-2009 
+			<a href="http://red5.org/">The Red5 Project</a> - ${chrome.footer}</p>
+		</div>
+	</div>
+
+    <script type="text/javascript" py:if="chrome.late_links">
+      <py:for each="link in chrome.late_links.get('stylesheet')">
+        jQuery.loadStyleSheet("${link.href}", "${link.type}");
+      </py:for>
+    </script>
+    <script py:for="script in chrome.late_scripts"
+            type="${script.type}" src="${script.href}"></script>
+
+    <div id="altlinks" py:if="'alternate' in chrome.links">
+      <h3>Download in other formats:</h3>
+      <ul>
+        <li py:for="idx, link in enumerate(chrome.links.alternate)"
+            class="${first_last(idx, chrome.links.alternate)}">
+          <a rel="nofollow" href="${link.href}" class="${link['class']}"
+             py:content="link.title" />
+        </li>
+      </ul>
+    </div>
+  </body></py:match>
+
+  <xi:include href="$chrome.theme"><xi:fallback /></xi:include>
+  <xi:include href="site.html"><xi:fallback /></xi:include>
+</html>

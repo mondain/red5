@@ -1,0 +1,20 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/" py:strip="">
+
+        <head py:match="head" py:attrs="select('@*')">
+                ${select('*')}
+       <link rel="stylesheet" type="text/css"
+          href="${href.chrome('site/css/ticket.css')}" />
+        <link rel="stylesheet" type="text/css"
+          href="${href.chrome('site/css/admin.css')}" />
+        <link rel="stylesheet" type="text/css"
+          href="${href.chrome('site/css/prefs.css')}" />
+	<link rel="stylesheet" type="text/css"
+          href="${href.chrome('site/css/trac.css')}" />
+	<link rel="stylesheet" type="text/css"
+          href="${href.chrome('site/css/wiki.css')}" />
+        ${Markup('&lt;!--[if lte IE 7]&gt;')}
+    <link rel="stylesheet" type="text/css" href="${href.chrome('site/css/ie.css')}" />
+    ${Markup('&lt;![endif]--&gt;')}
+        </head>
+</html>
