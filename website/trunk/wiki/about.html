@@ -1,0 +1,91 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+      
+  <xi:include href="layout.html" />
+  <head>
+    <title>About Red5</title>
+    <link rel="stylesheet" type="text/css" href="${chrome.htdocs_location}css/about.css" />
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $("#systeminfo table").append("<tr><th>jQuery:</th><td>"+$().jquery+"</td></tr>");
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="content" class="about">
+
+		<h1>About Red5</h1>
+		<p>Red5 is an Open Source Flash Server written in Java that supports:</p>
+		<p><ul>
+		<li>Streaming Audio/Video (FLV and MP3)</li>
+		<li>Recording Client Streams (FLV only)</li>
+		<li>Shared Objects</li>
+		<li>Live Stream Publishing</li>
+		<li>Remoting</li>
+		</ul></p>
+		<p>The content on the Red5 site is distributed under the LGPL License.<br />
+        The complete text of the license can be found
+        <a href="http://red5.googlecode.com/svn/doc/trunk/licenseInfo/Red5LicenseInfo.txt">online</a>.</p>
+        
+		<hr/>
+
+		<script type="text/javascript" src="http://www.ohloh.net/projects/5522/widgets/project_languages"></script>
+        	<script type="text/javascript" src="http://www.ohloh.net/projects/5522/widgets/project_cocomo"></script>
+
+      <py:if test="systeminfo or config">
+        <hr />
+
+        <div py:if="systeminfo" id="systeminfo">
+          <h2>System Information</h2>
+          <table class="listing">
+            <tr py:for="name, value in systeminfo">
+              <th>$name:</th>
+              <td>$value</td>
+            </tr>
+          </table>
+        </div>
+
+        <div py:if="config" id="config">
+          <h2>Configuration</h2>
+          <table class="listing">
+            <thead>
+              <tr>
+                <th class="section">Section</th>
+                <th class="name">Name</th>
+                <th class="value">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <div py:for="section in config" py:strip="">
+                <tr py:for="idx,option in enumerate(section.options)"
+                    class="${option.modified and 'modified' or None}">
+                  <th py:if="idx == 0" class="section"
+                      rowspan="${len(section.options)}">${section.name}</th>
+                  <td class="name">${option.name}</td>
+                  <td class="value">${option.value}</td>
+                </tr>
+              </div>
+            </tbody>
+          </table>
+        </div>
+      </py:if>
+
+	<hr/>	
+    <a href="http://python.org/" style="border: none; float: left; margin-bottom: 20px">
+        <img style="display: block" src="${chrome.htdocs_location}python.png"
+          alt="Python powered" width="140" height="56" />
+      </a>
+      <a href="http://trac.edgewall.org/"
+        style="border: none; float: left; margin-left: 2em; margin-top: 10px;">
+        <img style="display: block" src="${chrome.htdocs_location}trac_logo_mini.png"
+          alt="Trac: Integrated SCM &amp; Project Management"/>
+      </a>
+	  
+    </div>
+  </body>
+</html>
