@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.1
 # Copyright Thijs Triemstra 2008-2009
 
 """
@@ -8,6 +9,7 @@ Convert Jira backups to Trac databases.
 """
 
 from decimal import Decimal
+from xmlrpc import client
 import io, os, stat
 import xml.parsers.expat
 
@@ -17,7 +19,7 @@ class JiraDecoder(object):
     """
     def __init__(self, input, logger):
         if input:
-            self.logger = logger
+            self.log = logger
             self.input = input
             self.lastItem = None
             self.allItems = []
@@ -106,7 +108,7 @@ class JiraDecoder(object):
         self.category = category
     
     def char_data(self, data):
-        self.logger.debug('Character data: %s' % repr(data))
+        self.log.debug('Character data: %s' % repr(data))
             
         if self.lastItem:
             try:
@@ -120,7 +122,7 @@ class JiraDecoder(object):
             self.lastItem['body'] += data
         
     def end_element(self, name):
-        self.logger.debug('End element: %s' % name)
+        self.log.debug('End element: %s' % name)
     
         if name == 'body':
             # finish update
@@ -128,7 +130,7 @@ class JiraDecoder(object):
             self.lastItem = None
 
     def start_element(self, name, attrs):
-        self.logger.debug('Start element: %s %s' % (name, attrs))
+        self.log.debug('Start element: %s %s' % (name, attrs))
             
         if name == 'Version':
             version = {'number':attrs['name']}
@@ -263,24 +265,94 @@ class JiraDecoder(object):
 
 class TracEncoder(object):
     """
-    Save data in Trac database
+    Save data in Trac database using XML-RPC
     """
-    
-    def __init__(self, output, logger):
-        if output:
-            self.output = output
-            self.logger = logger
+    def __init__(self, username, password, url, logger):
+        if url:
+            self.url = url
+            self.username = username
+            self.password = password
+            self.log = logger
+
             print()
-            logger.info(self.__doc__.strip())
+            self.log.info(self.__doc__.strip())
 
         else:
-            raise BaseException("Please specify the 'output' option")
+            raise BaseException("Please specify the 'url' option")
     
-    def writeDatabase(self, jiraData):
+    def importData(self, jiraData):
         """
-        Write the data to the Trac database.
+        Save the data to the Trac database.
         """
-        self.logger.info('Writing data to %s' % self.output)
-        self.outputFile = io.FileIO(self.output, 'w')
-        self.outputFile.write(jiraData)
-        self.outputFile.close()
+        location = "http://%s:%s@%s/login/xmlrpc" % (self.username, self.password, self.url)
+        self.log.info('Connecting to %s' % location)
+        
+        proxy = client.ServerProxy(location)
+        multicall = client.MultiCall(proxy)
+        
+        self.log.info('Loading...')
+        
+        try:
+            myTickets = proxy.ticket.query("owner=thijs")
+            for ticket in myTickets:
+                multicall.ticket.get(ticket)
+            
+            result = list(multicall())
+            
+            for t in result:
+                print(t[3]['summary'])
+
+        except client.ProtocolError as err:
+            self.log.error("A protocol error occurred!")
+            self.log.error("URL: %s" % err.url)
+            self.log.error("HTTP/HTTPS headers: %s" % err.headers)
+            self.log.error("Error: %d - %s" % (err.errcode, err.errmsg))
+
+        except client.Fault as err:
+            self.log.error("A fault occurred!")
+            self.log.error("Fault code: %d" % err.faultCode)
+            self.log.error("Fault string: %s" % err.faultString)
+
+if __name__ == "__main__":
+    import time, logging
+    from optparse import OptionParser
+    
+    usage = "Usage: Jira2Trac [options]"
+    parser = OptionParser(usage=usage, version="Jira2Trac 1.0")
+    
+    parser.add_option("-i", "--input", dest="input", 
+                      help="Load Jira backup data from XML file", metavar="FILE")
+    parser.add_option("-v", "--verbose",
+                      action="store_true", dest="verbose", default=False,
+                      help="Print debug messages to stdout [default: %default]")
+    parser.add_option("-u", "--username", dest="username", help="Username for Trac instance")
+    parser.add_option("-p", "--password", dest="password", help="Password for Trac instance")
+    parser.add_option("-l", "--url", dest="url", help="URL for Trac instance")
+    (options, args) = parser.parse_args()
+    
+    # create logger
+    FORMAT = "%(asctime)-15s - %(message)s"
+    LEVEL = logging.INFO
+
+    if options.verbose == True:
+        LEVEL = logging.DEBUG
+    
+    logging.basicConfig(format=FORMAT, level=LEVEL)
+
+    if options.input:
+        start = time.time()
+        
+        jira = JiraDecoder(options.input, logging)
+        jira.readBackupFile()
+        jira.showResults()
+        
+        if options.username:
+            trac = TracEncoder(options.username, options.password, options.url, logging)
+            trac.importData(repr(jira.data))
+        
+        end = time.time() - start
+
+        logging.info('Completed in %s sec.\n' % (Decimal(str(end)).quantize(Decimal('.0001'))))
+        
+    else:
+        parser.error("Please supply values for the 'input' option")
