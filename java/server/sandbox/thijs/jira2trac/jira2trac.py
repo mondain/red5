@@ -17,7 +17,7 @@ from datetime import datetime
 
 class JiraDecoder(object):
     """
-    Parse Jira backup file (XML format)
+    Load Jira backup file
     """
     def __init__(self, input, logger):
         if input:
@@ -43,8 +43,8 @@ class JiraDecoder(object):
             self.data['actions'] = []
             self.size = Decimal(str(os.stat(input)[stat.ST_SIZE]/(1024*1024))
                                 ).quantize(Decimal('.01'))
-            print()
-            logger.info(self.__doc__.strip())
+
+            logger.info('%s...' % self.__doc__.strip())
             logger.info('Reading data from %s (%s MB)' % (input, self.size))
             logger.info('Processing data...')
         else:
@@ -76,18 +76,10 @@ class JiraDecoder(object):
             if category == 'issueTypes':
                 name = 'Issue Types'
             
-            self.log.info('%d %s' % (len(self.data[category]), name))
-            
-            for item in self.data[category]:
-                if category == 'projects':
-                    print('%50s (%s - %s)' % (item['name'], item['owner'],
-                                              item['id']))
-                
-                elif category == 'components':
-                    print('%50s (%s - %s)' % (item['name'], item['owner'],
-                                              item['project']))
-                elif category == 'groups':
-                    print('%50s' % (item['name']))
+            self.log.info('  %d %s' % (len(self.data[category]), name))
+        
+        for item in self.data['users']:
+            print('%50s - %s' % (item['name'], item['password']))
                     
     def _addItem(self, category, data):
         self.data[category].append(data)
@@ -253,7 +245,7 @@ class JiraDecoder(object):
 
 class TracEncoder(object):
     """
-    Save data in Trac database using XML-RPC
+    Save data in remote Trac database using XML-RPC
     """
     def __init__(self, username, password, url, logger):
         if url:
@@ -261,13 +253,17 @@ class TracEncoder(object):
             self.username = username
             self.password = password
             self.log = logger
-            self.location = "http://%s:%s@%s/login/xmlrpc" % (username, password,
-                                                              url)
-            print()
-            self.log.info(self.__doc__.strip())
-
+            
+            if username is not None and password is not None:
+                auth = '%s:%s@' % (username, password)
+            else:
+                auth = ''
+            
+            self.location = "http://%s%s/login/xmlrpc" % (auth, url)
+            self.log.info('%s...' % self.__doc__.strip())
+            
         else:
-            raise BaseException("Please specify the 'url' option")
+            raise BaseException("Please specify a value for the 'url' option")
     
     def importData(self, jiraData):
         """
@@ -283,6 +279,8 @@ class TracEncoder(object):
         self.call(self.importResolutions)
         self.call(self.importPriorities)
         self.call(self.importIssueTypes)
+        self.call(self.importMilestones)
+        self.call(self.importComponents)
         self.call(self.importUsers)
         self.call(self.importIssues)
         self.call(self.importActions)
@@ -324,7 +322,7 @@ class TracEncoder(object):
             attr = {'name': nr, 'time': date, 'description': desc}
             self.proxy.ticket.version.create(nr, attr)
         
-        self.log.info('%d Versions' % len(self.jiraData['versions']))
+        self.log.info('  %d Versions' % len(self.jiraData['versions']))
         
     def importResolutions(self):
         # get existing resolutions from trac
@@ -342,7 +340,7 @@ class TracEncoder(object):
             self.proxy.ticket.resolution.create(name, order)
             order += 1
         
-        self.log.info('%d Resolutions' % len(self.jiraData['resolutions']))
+        self.log.info('  %d Resolutions' % len(self.jiraData['resolutions']))
     
     def importPriorities(self):
         # get existing priorities from trac
@@ -360,7 +358,7 @@ class TracEncoder(object):
             self.proxy.ticket.priority.create(name, order)
             order += 1
         
-        self.log.info('%d Priorities' % len(self.jiraData['priorities']))
+        self.log.info('  %d Priorities' % len(self.jiraData['priorities']))
 
     def importIssueTypes(self):
         # get existing issue types from trac
@@ -377,8 +375,38 @@ class TracEncoder(object):
             order = issueType['sequence']
             self.proxy.ticket.type.create(name, order)
         
-        self.log.info('%d Issue Types' % len(self.jiraData['issueTypes']))
+        self.log.info('  %d Issue Types' % len(self.jiraData['issueTypes']))
     
+    def importMilestones(self):
+        # get existing milestones from trac
+        milestones = self.proxy.ticket.milestone.getAll()
+         
+        # seems Jira doesn't support milestones or we never used them
+        # so remove all existing milestones from trac
+        if len(milestones) > 0:
+            for milestone in milestones:
+                self.proxy.ticket.milestone.delete(milestone)
+    
+    def importComponents(self):
+        # get existing components from trac
+        components = self.proxy.ticket.component.getAll()
+
+        # remove existing components from trac if necessary
+        if len(components) > 0:
+            for component in components:
+                self.proxy.ticket.component.delete(component)
+        
+        # import new components into trac
+        # note: we import jira's projects as components in trac
+        for component in self.jiraData['projects']:
+            name = component['name']
+            owner = component['owner']
+            desc = component['description']
+            attr = {'name': name, 'owner': owner, 'description': desc}
+            self.proxy.ticket.component.create(name, attr)
+        
+        self.log.info('  %d Components' % len(self.jiraData['projects']))
+                                              
     def importUsers(self):
         pass
     
@@ -433,4 +461,4 @@ if __name__ == "__main__":
         logging.info('Completed in %s sec.\n' % (Decimal(str(end)).quantize(Decimal('.0001'))))
         
     else:
-        parser.error("Please supply values for the 'input' option")
+        parser.error("Please specify a value for the 'input' option")
