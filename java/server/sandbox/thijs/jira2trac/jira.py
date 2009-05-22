@@ -8,10 +8,12 @@ Convert Jira backups to Trac databases.
 @author: Thijs Triemstra
 """
 
+import io, os, stat, time
+import xml.parsers.expat
+
 from decimal import Decimal
 from xmlrpc import client
-import io, os, stat
-import xml.parsers.expat
+from datetime import datetime
 
 class JiraDecoder(object):
     """
@@ -79,13 +81,7 @@ class JiraDecoder(object):
             print('\n%25s:  %d\n' % (name, len(self.data[category])))
             
             for item in self.data[category]:
-                if category == 'versions':
-                    print('%50s - %s' % (item['number'], item['releasedate']))
-                
-                elif category == 'resolutions':
-                    print('%50s' % (item['name']))
-            
-                elif category == 'projects':
+                if category == 'projects':
                     print('%50s (%s - %s)' % (item['name'], item['owner'],
                                               item['id']))
 
@@ -140,9 +136,10 @@ class JiraDecoder(object):
                 version['description'] = None
             
             try:
-                version['releasedate'] = attrs['releasedate']
+                version['releasedate'] =  datetime.strptime(attrs['releasedate'][:-2],
+                                                            '%Y-%m-%d %H:%M:%S')
             except KeyError:
-                version['releasedate'] = None
+                version['releasedate'] = 0
                 
             self.addItem('versions', version)
             
@@ -273,7 +270,8 @@ class TracEncoder(object):
             self.username = username
             self.password = password
             self.log = logger
-
+            self.location = "http://%s:%s@%s/login/xmlrpc" % (username, password,
+                                                              url)
             print()
             self.log.info(self.__doc__.strip())
 
@@ -282,25 +280,30 @@ class TracEncoder(object):
     
     def importData(self, jiraData):
         """
-        Save the data to the Trac database.
+        Save all data to the Trac database.
         """
-        location = "http://%s:%s@%s/login/xmlrpc" % (self.username, self.password, self.url)
-        self.log.info('Connecting to %s' % location)
+        self.log.info('Connecting to %s' % self.location)
         
-        proxy = client.ServerProxy(location)
-        multicall = client.MultiCall(proxy)
-        
-        self.log.info('Loading...')
-        
+        self.jiraData = jiraData
+        self.proxy = client.ServerProxy(self.location, use_datetime=True)
+
+        self.log.info('Importing data...')
+            
+        self.call(self.importVersions)
+        self.call(self.importResolutions)
+        self.call(self.importPriorities)
+        self.call(self.importIssueTypes)
+        self.call(self.importUsers)
+        self.call(self.importIssues)
+        self.call(self.importActions)
+        self.call(self.importAttachments)
+
+    def call(self, func):
+        """
+        Invoke a method and handle exceptions.
+        """
         try:
-            myTickets = proxy.ticket.query("owner=thijs")
-            for ticket in myTickets:
-                multicall.ticket.get(ticket)
-            
-            result = list(multicall())
-            
-            for t in result:
-                print(t[3]['summary'])
+            func()
 
         except client.ProtocolError as err:
             self.log.error("A protocol error occurred!")
@@ -313,8 +316,64 @@ class TracEncoder(object):
             self.log.error("Fault code: %d" % err.faultCode)
             self.log.error("Fault string: %s" % err.faultString)
 
+    def importVersions(self):
+        # get existing versions from trac
+        versions = self.proxy.ticket.version.getAll()
+         
+        # remove existing versions from trac if necessary
+        if len(versions) > 0:
+            for version in versions:
+                self.proxy.ticket.version.delete(version)
+    
+        # import new versions into trac
+        for version in self.jiraData['versions']:
+            # exclude trailing 'v' from version number
+            nr = version['number'][1:]
+            desc = version['description']
+            date = version['releasedate']
+            attr = {'name': nr, 'time': date, 'description': desc}
+            self.proxy.ticket.version.create(nr, attr)
+        
+        self.log.info('Imported %d versions' % len(self.jiraData['versions']))
+        
+    def importResolutions(self):
+        # get existing resolutions from trac
+        resolutions = self.proxy.ticket.resolution.getAll()
+         
+        # remove existing resolutions from trac if necessary
+        if len(resolutions) > 0:
+            for resolution in resolutions:
+                self.proxy.ticket.resolution.delete(resolution)
+    
+        # import new resolutions into trac
+        order = 1
+        for resolution in self.jiraData['resolutions']:
+            name = resolution['name']
+            self.proxy.ticket.resolution.create(name, order)
+            order += 1
+        
+        self.log.info('Imported %d resolutions' % len(self.jiraData['resolutions']))
+    
+    def importPriorities(self):
+        pass
+    
+    def importIssueTypes(self):
+        pass
+    
+    def importUsers(self):
+        pass
+    
+    def importIssues(self):
+        pass
+    
+    def importActions(self):
+        pass
+    
+    def importAttachments(self):
+        pass
+            
 if __name__ == "__main__":
-    import time, logging
+    import logging
     from optparse import OptionParser
     
     usage = "Usage: Jira2Trac [options]"
@@ -348,7 +407,7 @@ if __name__ == "__main__":
         
         if options.username:
             trac = TracEncoder(options.username, options.password, options.url, logging)
-            trac.importData(repr(jira.data))
+            trac.importData(jira.data)
         
         end = time.time() - start
 
