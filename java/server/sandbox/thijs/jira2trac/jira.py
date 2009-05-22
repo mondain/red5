@@ -46,78 +46,69 @@ class JiraDecoder(object):
             print()
             logger.info(self.__doc__.strip())
             logger.info('Reading data from %s (%s MB)' % (input, self.size))
-            logger.info('Processing...\n')
+            logger.info('Processing data...')
         else:
             raise BaseException("Please specify the 'input' option")
             
-    def readBackupFile(self):
+    def parseBackupFile(self):
         """
-        Read the Jira XML backup dump file.
+        Load the Jira XML backup dump file and start parsing it.
         """
-        self.markup = io.FileIO(self.input, 'r').readall()
+        markup = io.FileIO(self.input, 'r').readall()
         
         p = xml.parsers.expat.ParserCreate()
-        p.StartElementHandler = self.start_element
-        p.EndElementHandler = self.end_element
-        p.CharacterDataHandler = self.char_data
-        p.Parse(self.markup, 1)
+        p.StartElementHandler = self._start_element
+        p.EndElementHandler = self._end_element
+        p.CharacterDataHandler = self._char_data
+        p.Parse(markup, 1)
     
     def showResults(self):
         """
-        Print the results on stdout.
-        """
-        print('Results')
-        print(7 * '-')
-        
+        Print the parse results on stdout.
+        """       
         categories = ['versions', 'resolutions', 'projects', 'priorities',
                       'components', 'issueTypes', 'groups', 'issues',
                       'attachments', 'users', 'actions']
         
         for category in categories:
             name = category.title()
+            
             if category == 'issueTypes':
                 name = 'Issue Types'
             
-            print('\n%25s:  %d\n' % (name, len(self.data[category])))
+            self.log.info('%d %s' % (len(self.data[category]), name))
             
             for item in self.data[category]:
                 if category == 'projects':
                     print('%50s (%s - %s)' % (item['name'], item['owner'],
                                               item['id']))
-
-                elif category == 'priorities':
-                    print('%50s' % (item['name']))
                 
                 elif category == 'components':
                     print('%50s (%s - %s)' % (item['name'], item['owner'],
                                               item['project']))
-
-                elif category == 'issueTypes':
-                    print('%50s. %s' % (item['sequence'], item['name']))
-
                 elif category == 'groups':
                     print('%50s' % (item['name']))
                     
-    def addItem(self, category, data):
+    def _addItem(self, category, data):
         self.data[category].append(data)
         self.allItems.append(data)
         self.category = category
     
-    def char_data(self, data):
+    def _char_data(self, data):
         self.log.debug('Character data: %s' % repr(data))
             
         if self.lastItem:
             try:
                 # start update
-                self.updateItem(data)
+                self._updateItem(data)
             except KeyError:
                 pass
     
-    def updateItem(self, data):
+    def _updateItem(self, data):
         if (data != "'\n'") or (data[1:len(data)-1].isspace() == False):
             self.lastItem['body'] += data
         
-    def end_element(self, name):
+    def _end_element(self, name):
         self.log.debug('End element: %s' % name)
     
         if name == 'body':
@@ -125,7 +116,7 @@ class JiraDecoder(object):
             self.data[self.category][len(self.data[self.category])-1] = self.lastItem
             self.lastItem = None
 
-    def start_element(self, name, attrs):
+    def _start_element(self, name, attrs):
         self.log.debug('Start element: %s %s' % (name, attrs))
             
         if name == 'Version':
@@ -136,42 +127,42 @@ class JiraDecoder(object):
                 version['description'] = None
             
             try:
-                version['releasedate'] =  datetime.strptime(attrs['releasedate'][:-2],
-                                                            '%Y-%m-%d %H:%M:%S')
+                version['releasedate'] = datetime.strptime(attrs['releasedate'][:-2],
+                                                           '%Y-%m-%d %H:%M:%S')
             except KeyError:
                 version['releasedate'] = 0
                 
-            self.addItem('versions', version)
+            self._addItem('versions', version)
             
         elif name == 'Resolution':
             resolution = {'name': attrs['name'], 'description': attrs['description']}
             
-            self.addItem('resolutions', resolution)
+            self._addItem('resolutions', resolution)
         
         elif name == 'Status':
             status = {'id': attrs['id'], 'sequence': attrs['sequence'],
                       'name': attrs['name'], 'description': attrs['description']}
             
-            self.addItem('statuses', status)
+            self._addItem('statuses', status)
             
         elif name == 'Project':
             project = {'name': attrs['name'], 'owner': attrs['lead'],
                        'description': attrs['description'], 'id': attrs['id']}
             
-            self.addItem('projects', project)
+            self._addItem('projects', project)
         
         elif name == 'Priority':
             priority = {'name': attrs['name'], 'description': attrs['description'],
                         'id': attrs['id']}
             
-            self.addItem('priorities', priority)
+            self._addItem('priorities', priority)
         
         elif name == 'OSUser':
             user = {'name': attrs['name'], 'id': attrs['id']}
             
             try:
                 user['password'] = attrs['passwordHash']
-                self.addItem('users', user)
+                self._addItem('users', user)
             except KeyError:
                 pass
     
@@ -187,32 +178,32 @@ class JiraDecoder(object):
             except KeyError:
                 pass
                 
-            self.addItem('issues', issue)
+            self._addItem('issues', issue)
         
         elif name == 'Component':
             component = {'project': attrs['project'], 'id': attrs['id'],
                          'name': attrs['name'], 'description': attrs['description'],
                          'owner': attrs['lead']}
 
-            self.addItem('components', component)
+            self._addItem('components', component)
         
         elif name == 'CustomFieldValue' and attrs['customfield'] == '10001':
             customFieldValue = {'issue': attrs['issue'], 'id': attrs['id'],
                                 'value': attrs['stringvalue']}
 
-            self.addItem('customFieldValues', customFieldValue)
+            self._addItem('customFieldValues', customFieldValue)
          
         elif name == 'EventType':
             eventType = {'id': attrs['id'], 'name': attrs['name'],
                          'description': attrs['description']}
 
-            self.addItem('eventTypes', eventType)
+            self._addItem('eventTypes', eventType)
         
         elif name == 'IssueType':
             issueType = {'id': attrs['id'], 'sequence': attrs['sequence'],
                          'name': attrs['name'], 'description': attrs['description']}
 
-            self.addItem('issueTypes', issueType)
+            self._addItem('issueTypes', issueType)
             
         elif name == 'FileAttachment':
             attachment = {'id': attrs['id'], 'issue': attrs['issue'],
@@ -220,12 +211,12 @@ class JiraDecoder(object):
                          'filename': attrs['filename'], 'filesize': attrs['filesize'],
                          'author': attrs['author']}
 
-            self.addItem('attachments', attachment)
+            self._addItem('attachments', attachment)
         
         elif name == 'OSGroup':
             group = {'id': attrs['id'], 'name': attrs['name']}
 
-            self.addItem('groups', group)
+            self._addItem('groups', group)
         
         elif name == 'Action':
             action = {'id': attrs['id'], 'issue': attrs['issue'],
@@ -237,13 +228,13 @@ class JiraDecoder(object):
             except KeyError:
                 pass
             
-            self.addItem('actions', action)
+            self._addItem('actions', action)
             
         elif name == 'OSMembership':
             membership = {'id': attrs['id'], 'username': attrs['userName'],
                           'groupName': attrs['groupName']}
 
-            self.addItem('memberships', membership)
+            self._addItem('memberships', membership)
         
         elif name == 'body':
             # create update object
@@ -288,7 +279,6 @@ class TracEncoder(object):
         self.proxy = client.ServerProxy(self.location, use_datetime=True)
 
         self.log.info('Importing data...')
-            
         self.call(self.importVersions)
         self.call(self.importResolutions)
         self.call(self.importPriorities)
@@ -334,7 +324,7 @@ class TracEncoder(object):
             attr = {'name': nr, 'time': date, 'description': desc}
             self.proxy.ticket.version.create(nr, attr)
         
-        self.log.info('Imported %d versions' % len(self.jiraData['versions']))
+        self.log.info('%d Versions' % len(self.jiraData['versions']))
         
     def importResolutions(self):
         # get existing resolutions from trac
@@ -352,13 +342,42 @@ class TracEncoder(object):
             self.proxy.ticket.resolution.create(name, order)
             order += 1
         
-        self.log.info('Imported %d resolutions' % len(self.jiraData['resolutions']))
+        self.log.info('%d Resolutions' % len(self.jiraData['resolutions']))
     
     def importPriorities(self):
-        pass
+        # get existing priorities from trac
+        priorities = self.proxy.ticket.priority.getAll()
+         
+        # remove existing priorities from trac if necessary
+        if len(priorities) > 0:
+            for priority in priorities:
+                self.proxy.ticket.priority.delete(priority)
     
+        # import new priorities into trac
+        order = 1
+        for priority in self.jiraData['priorities']:
+            name = priority['name']
+            self.proxy.ticket.priority.create(name, order)
+            order += 1
+        
+        self.log.info('%d Priorities' % len(self.jiraData['priorities']))
+
     def importIssueTypes(self):
-        pass
+        # get existing issue types from trac
+        issueTypes = self.proxy.ticket.type.getAll()
+         
+        # remove existing issue types from trac if necessary
+        if len(issueTypes) > 0:
+            for issueType in issueTypes:
+                self.proxy.ticket.type.delete(issueType)
+    
+        # import new issue types into trac
+        for issueType in self.jiraData['issueTypes']:
+            name = issueType['name']
+            order = issueType['sequence']
+            self.proxy.ticket.type.create(name, order)
+        
+        self.log.info('%d Issue Types' % len(self.jiraData['issueTypes']))
     
     def importUsers(self):
         pass
@@ -402,7 +421,7 @@ if __name__ == "__main__":
         start = time.time()
         
         jira = JiraDecoder(options.input, logging)
-        jira.readBackupFile()
+        jira.parseBackupFile()
         jira.showResults()
         
         if options.username:
