@@ -2,7 +2,7 @@
 # Copyright Thijs Triemstra 2008-2009
 
 """
-Convert Jira backups to Trac databases.
+Import a Jira backup into a Trac database using XML-RPC.
 
 @since: 2008-12-20
 @author: Thijs Triemstra
