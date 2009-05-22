@@ -67,8 +67,8 @@ class JiraDecoder(object):
         Print the parse results on stdout.
         """       
         categories = ['versions', 'resolutions', 'projects', 'priorities',
-                      'components', 'issueTypes', 'groups', 'issues',
-                      'attachments', 'users', 'actions']
+                      'components', 'issueTypes', 'statuses', 'groups',
+                      'issues', 'attachments', 'users', 'actions']
         
         for category in categories:
             name = category.title()
@@ -78,8 +78,8 @@ class JiraDecoder(object):
             
             self.log.info('  %d %s' % (len(self.data[category]), name))
         
-        for item in self.data['users']:
-            print('%50s - %s' % (item['name'], item['password']))
+        #for item in self.data['statuses']:
+        #    print('%50s - %s' % (item['name'], item['description']))
                     
     def _addItem(self, category, data):
         self.data[category].append(data)
@@ -119,8 +119,7 @@ class JiraDecoder(object):
                 version['description'] = None
             
             try:
-                version['releasedate'] = datetime.strptime(attrs['releasedate'][:-2],
-                                                           '%Y-%m-%d %H:%M:%S')
+                version['releasedate'] = self.to_datetime(attrs['releasedate'][:-2])
             except KeyError:
                 version['releasedate'] = 0
                 
@@ -165,10 +164,12 @@ class JiraDecoder(object):
                      'priority': attrs['priority'], 'status': attrs['status'],
                      'created': attrs['created'], 'votes': attrs['votes']}
             
+            issue['created'] = self.to_datetime(attrs['created'][:-2])
+            
             try:
                 issue['resolution'] = attrs['resolution']
             except KeyError:
-                pass
+                issue['resolution'] = 1
                 
             self._addItem('issues', issue)
         
@@ -243,6 +244,12 @@ class JiraDecoder(object):
         #  - OSWorkflowEntry
         #  - UserAssociation
 
+    def to_datetime(self, timestamp):
+        """
+        Turn timestamp string into datetime.datetime object.
+        """
+        return datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+
 class TracEncoder(object):
     """
     Save data in remote Trac database using XML-RPC
@@ -275,18 +282,19 @@ class TracEncoder(object):
         self.proxy = client.ServerProxy(self.location, use_datetime=True)
 
         self.log.info('Importing data...')
-        self.call(self.importVersions)
-        self.call(self.importResolutions)
-        self.call(self.importPriorities)
-        self.call(self.importIssueTypes)
-        self.call(self.importMilestones)
-        self.call(self.importComponents)
-        self.call(self.importUsers)
-        self.call(self.importIssues)
-        self.call(self.importActions)
-        self.call(self.importAttachments)
+        self._call(self._importVersions)
+        self._call(self._importResolutions)
+        self._call(self._importPriorities)
+        self._call(self._importIssueTypes)
+        self._call(self._importMilestones)
+        self._call(self._importComponents)
+        self._call(self._importStatus)
+        self._call(self._importUsers)
+        self._call(self._importIssues)
+        self._call(self._importActions)
+        self._call(self._importAttachments)
 
-    def call(self, func):
+    def _call(self, func):
         """
         Invoke a method and handle exceptions.
         """
@@ -304,7 +312,7 @@ class TracEncoder(object):
             self.log.error("Fault code: %d" % err.faultCode)
             self.log.error("Fault string: %s" % err.faultString)
 
-    def importVersions(self):
+    def _importVersions(self):
         # get existing versions from trac
         versions = self.proxy.ticket.version.getAll()
          
@@ -324,7 +332,7 @@ class TracEncoder(object):
         
         self.log.info('  %d Versions' % len(self.jiraData['versions']))
         
-    def importResolutions(self):
+    def _importResolutions(self):
         # get existing resolutions from trac
         resolutions = self.proxy.ticket.resolution.getAll()
          
@@ -342,7 +350,7 @@ class TracEncoder(object):
         
         self.log.info('  %d Resolutions' % len(self.jiraData['resolutions']))
     
-    def importPriorities(self):
+    def _importPriorities(self):
         # get existing priorities from trac
         priorities = self.proxy.ticket.priority.getAll()
          
@@ -360,7 +368,7 @@ class TracEncoder(object):
         
         self.log.info('  %d Priorities' % len(self.jiraData['priorities']))
 
-    def importIssueTypes(self):
+    def _importIssueTypes(self):
         # get existing issue types from trac
         issueTypes = self.proxy.ticket.type.getAll()
          
@@ -377,7 +385,7 @@ class TracEncoder(object):
         
         self.log.info('  %d Issue Types' % len(self.jiraData['issueTypes']))
     
-    def importMilestones(self):
+    def _importMilestones(self):
         # get existing milestones from trac
         milestones = self.proxy.ticket.milestone.getAll()
          
@@ -387,7 +395,7 @@ class TracEncoder(object):
             for milestone in milestones:
                 self.proxy.ticket.milestone.delete(milestone)
     
-    def importComponents(self):
+    def _importComponents(self):
         # get existing components from trac
         components = self.proxy.ticket.component.getAll()
 
@@ -406,19 +414,113 @@ class TracEncoder(object):
             self.proxy.ticket.component.create(name, attr)
         
         self.log.info('  %d Components' % len(self.jiraData['projects']))
-                                              
-    def importUsers(self):
+    
+    def _importStatus(self):
+        # get existing statuses from trac
+        statuses = self.proxy.ticket.status.getAll()
+        
+        # Note: ticket.status.delete() and ticket.status.update() aren't working
+        # due to a bug in the XML-RPC plugin for Trac, see this link for more
+        # information: http://trac-hacks.org/ticket/5268
+                
+        self.log.info('  %d Statuses' % len(self.jiraData['statuses']))
+        
+        """
+        ['accepted', 'assigned', 'closed', 'new', 'reopened']
+        
+        Open - The issue is open and ready for the assignee to start work on it.
+        In Progress - This issue is being actively worked on at the moment by the assignee.
+        Reopened - This issue was once resolved, but the resolution was deemed incorrect. From here issues are either marked assigned or resolved.
+        Resolved - A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.
+        Closed - The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.
+        """
+
+    def _importUsers(self):
+        # TODO
         pass
     
-    def importIssues(self):
-        pass
-    
-    def importActions(self):
-        pass
-    
-    def importAttachments(self):
-        pass
+    def _importIssues(self):
+        # import new issues into trac
+        for issue in self.jiraData['issues']:
+            # start todo
+            description = 'todo'
+            # version?
+            # end todo
+            reporter = issue['reporter']
+            owner = issue['assignee']
+            summary = issue['summary']
+            time = issue['created']
+            #status = self._getStatus(int(issue['status'])-1)['name']
+            component = self._getProject(issue['project'])['name']
+            resolution = self._getResolution(int(issue['resolution'])-1)['name']
+            type = self._getIssueType(issue['type'])['name']
+            priority = self._getPriority(int(issue['priority'])-1)['name']
+            attr = {'reporter': reporter, 'owner': owner, 'component': component,
+                    'resolution': resolution, 'type': type, 'priority': priority}
+            self.proxy.ticket.create(summary, description, time, attr)
+        
+        self.log.info('  %d Issues' % len(self.jiraData['issues']))
+        """
+        # int ticket.create(string summary, string description, DateTime when,
+                            struct attributes={}, boolean notify=False)
+        
+        # {'status': '5', 'reporter': 'thijs', 'assignee': 'joachim', 'id': '10020',
+        # 'priority': '4', 'votes': '0', 'created': '2006-11-27 20:56:16.0',
+        # 'type': '4', 'summary': 'NetConnection.Connect.AppShutdown',
+        # 'project': '10004', 'resolution': '1'}
             
+       ('type', model.Type),
+       ('status', model.Status),
+       ('priority', model.Priority),
+       ('milestone', model.Milestone),
+       ('component', model.Component),
+       ('version', model.Version),
+       ('severity', model.Severity),
+       ('resolution', model.Resolution)]
+
+        t['status'] = 'new'
+        t['summary'] = summary
+        t['description'] = description
+        t['reporter'] = req.authname or 'anonymous'
+        """
+    
+    def _importActions(self):
+        # TODO
+        pass
+    
+    def _importAttachments(self):
+        # TODO
+        pass
+
+    def _getProject(self, id):
+        for d in self.jiraData['projects']:
+            if d['id'] == id:
+                return d
+     
+    def _getResolution(self, index):
+        l =[]
+        for x in self.jiraData['resolutions']:
+            l.append(x)
+        return l[index]
+    
+    def _getIssueType(self, index):
+        for d in self.jiraData['issueTypes']:
+            if d['sequence'] == index:
+                return d
+
+    def _getPriority(self, index):
+        l =[]
+        for x in self.jiraData['priorities']:
+            l.append(x)
+        return l[index]
+    
+    def _getStatus(self, index):
+        l =[]
+        for x in self.jiraData['statuses']:
+            l.append(x)
+        print(index)
+        return l[index]
+
 if __name__ == "__main__":
     import logging
     from optparse import OptionParser
