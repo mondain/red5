@@ -38,6 +38,7 @@ Bugfixes:
 - Added configuration to ContextLoader for shutdown hook to fix APPSERVER-372
 - Allow usage of different SLF4J implementations instead of logback only as forced by Red5LoggerFactory (APPSERVER-369)
 - Logging broken by revision 3606 (APPSERVER-383)
+- Added ping calculation patch 
 
 
 Red5 0.8.0 RC2 (2009-02-07)
