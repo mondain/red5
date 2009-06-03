@@ -5,12 +5,14 @@ This file contains informations about the changes between the different
 versions of Red5.
 
 
-Red5 0.8.0 RC3 (unreleased)
+Red5 0.8.0 (2009-06-04)
 ---------------------------
 New Features:
 - Use ExtendedPropertyPlaceholderConfigurer for Spring placeholderConfig bean
   (APPSERVER-333; Patch from Michael Guymon)
-- Updated Mina to 2.0.0-M5
+- Updated Mina to 2.0.0-M6
+- Multiple socket binding on single RTMP transports
+- Context duplication on each Catalina host
 
 Bugfixes:
 - Red5 War Version Does not Shutdown Gracefully (APPSERVER-325; patch from
@@ -39,6 +41,7 @@ Bugfixes:
 - Allow usage of different SLF4J implementations instead of logback only as forced by Red5LoggerFactory (APPSERVER-369)
 - Logging broken by revision 3606 (APPSERVER-383)
 - Added ping calculation patch 
+- War deployment (APPSERVER-357)
 
 
 Red5 0.8.0 RC2 (2009-02-07)
