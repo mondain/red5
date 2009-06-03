@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.5.xsd">
 	
 	<bean id="web.context.echo" class="org.red5.server.Context">
 		<property name="scopeResolver" ref="red5.scopeResolver" />
@@ -15,7 +18,7 @@
 		<property name="context" ref="web.context.echo" />
 		<property name="handler" ref="web.handler.echo" />
 		<property name="contextPath" value="/echo" />
-		<property name="virtualHosts" value="@virtual.hosts@" />
+		<property name="virtualHosts" value="*" />
 	</bean>
 
 	<bean id="web.handler.echo" class="org.red5.server.webapp.echo.Application"/>

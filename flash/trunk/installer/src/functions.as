@@ -72,6 +72,8 @@ private function netStatusHandler(event:NetStatusEvent):void {
             break;
         case "NetConnection.Connect.Failed":
         case "NetConnection.Connect.Rejected":
+        	//try the war location
+        	callLater(connectToWar);
         case "NetConnection.Connect.Closed":
             LabelConnecting.text='Error: ' + event.info.code
             break;
@@ -116,6 +118,24 @@ private function connect():void {
 
     nc.connect('rtmp://' + hostString + '/installer', null);
 
+}
+
+private function connectToWar():void {
+    log('Trying to connect to war location');
+    //  create the netConnection
+    if (!nc) {
+	    nc=new NetConnection();
+	    nc.objectEncoding=ObjectEncoding.AMF3;
+	    //  set it's client/focus to this
+	    nc.client=this;
+	
+	    // add listeners for netstatus and security issues
+	    nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+	    nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+	    nc.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+	    nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+    }
+    nc.connect('rtmp://' + hostString + '/', null);
 }
 
 public function disconnect():void {
