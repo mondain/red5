@@ -2,8 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:lang="http://www.springframework.org/schema/lang"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-                           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.5.xsd">
 
 	<!-- oflaDemo web context -->
 	<bean id="web.context.oflaDemo" class="org.red5.server.Context">
@@ -19,7 +19,7 @@
 		<property name="context" ref="web.context.oflaDemo" />
 		<property name="handler" ref="web.handler.oflaDemo" />
 		<property name="contextPath" value="/oflaDemo" />
-		<property name="virtualHosts" value="@virtual.hosts@" />
+		<property name="virtualHosts" value="*" />
 	</bean>
 
 	<bean id="web.handler.oflaDemo" class="org.red5.demos.oflaDemo.Application"/>

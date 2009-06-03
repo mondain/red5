@@ -111,7 +111,6 @@
 	
 		<property name="snapshot.name" value="${ant.project.name}-r${svn.info.rev}-${java.version.name}.war"/>
 		
-	
 		<echo message="Destination: ${snapshot.path}${snapshot.name}"/>
 	
 		<!-- make a copy of the red5.jar with a versioned name + the java version -->
