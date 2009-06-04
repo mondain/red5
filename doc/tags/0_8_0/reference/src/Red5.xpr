@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <meta>
+        <filters directoryPatterns="" filePatterns=""
+            positiveFilePatterns="" showHiddenFiles="false"/>
+        <options/>
+    </meta>
+    <projectTree name="Red5.xpr">
+        <file name="applications-stream-directory.xml"/>
+        <file name="applications-war.xml"/>
+        <file name="applications.xml"/>
+        <file name="building.xml"/>
+        <file name="changelog.xml"/>
+        <file name="clustering.xml"/>
+        <file name="configuration-files.xml"/>
+        <file name="core-technologies.xml"/>
+        <file name="eclipse-setup.xml"/>
+        <file name="environment.xml"/>
+        <file name="faq.xml"/>
+        <file name="getting-started.xml"/>
+        <file name="index.xml"/>
+        <file name="introduction.xml"/>
+        <file name="libraries.xml"/>
+        <file name="management.xml"/>
+        <file name="migration-guide.xml"/>
+        <file name="new-in.xml"/>
+        <file name="preface.xml"/>
+        <file name="releases.xml"/>
+        <file name="rtmpt-spec.xml"/>
+        <file name="scripting.xml"/>
+        <file name="security.xml"/>
+    </projectTree>
+</project>

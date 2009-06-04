@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xml:id="security" xmlns="http://docbook.org/ns/docbook" 
+   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
+   <title>Security</title>
+   <para>This document describes the Red5 API that was introduced in version 0.6 to
+      protect access to streams and/or shared objects similar to what the properties
+      <citetitle>Client.readAccess</citetitle> and <citetitle>Client.writeAccess</citetitle> provide in the Macromedia Flash
+      Communication Server / Flash Media Server 2.</para>
+   <section xml:id="security-streams">
+      <title>Streams</title>
+      <para>Read (playback) and write (publishing/recording) access to streams is protected
+         separately in Red5.</para>
+      <section xml:id="security-stream-playback-security">
+         <title>Stream playback security</title>
+         <para>For applications that want to limit the playback of streams per user or only
+            want to provide access to streams with a given name, the interface
+            <link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPlaybackSecurity.html">IStreamPlaybackSecurity</link> is available in Red5.</para>
+         <para>It can be implemented by any object and registered in the <link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html">ApplicationAdapter</link>.
+            An arbitrary number of stream security handlers is supported per application.
+            If at least one of the handlers denies access to the stream, the client
+            receives an error <citetitle>NetStream.Failed</citetitle> with a <citetitle>description</citetitle> field giving a
+            corresponding error message.</para>
+         <para>An example handler that only allows access to streams that have a name
+            starting with <citetitle>liveStream</citetitle> is described below:</para>
+         <programlisting language="java">
+            <![CDATA[ 
+            import org.red5.server.api.IScope;
+            import org.red5.server.api.stream.IStreamPlaybackSecurity;
+            
+            public class NamePlaybackSecurity implements IStreamPlaybackSecurity {
+            
+            public boolean isPlaybackAllowed(IScope scope, String name, int start,
+            int length, boolean flushPlaylist) {
+            if (!name.startswith("liveStream")) {
+            return false;
+            } else {
+            return true;
+            }
+            };
+            
+            }]]> 
+         </programlisting>
+         <para>To register this handler in the application, add the following code in the
+            <citetitle>appStart</citetitle> method:</para>
+         <programlisting>registerStreamPlaybackSecurity(new NamePlaybackSecurity());</programlisting>
+         <para>Red5 includes a sample security handler that denies all access to streams
+            (<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/support/DenyAllStreamAccess.html">DenyAllStreamAccess</link>).</para>
+      </section>
+      <section xml:id="security-stream-publishing-security">
+         <title>Stream publishing security</title>
+         <para>In most applications that allow the user to publish and/or record streams,
+            this access must be limited to prevent the server from being misused.
+            Therefore, Red5 provides the interface <link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPublishSecurity.html">IStreamPublishSecurity</link> to deny
+            publishing of certain streams.</para>
+         <para>Similar to <link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPlaybackSecurity.html">IStreamPlaybackSecurity</link>, it can be implemented by any object
+            and registered in the <link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html">ApplicationAdapter</link>. If one of the registered handlers
+            denies access, the client receives an error <citetitle>NetStream.Failed</citetitle> with a
+            <citetitle>description</citetitle> field giving a corresponding error message.</para>
+         <para>An example handler that only allows authenticated connections to publish a
+            live stream starting with <citetitle>liveStream</citetitle> and deny all other access is described
+            below:</para>
+         <programlisting language="java">
+            <![CDATA[
+            import org.red5.server.api.IConnection;
+            import org.red5.server.api.IScope;
+            import org.red5.server.api.Red5;
+            import org.red5.server.api.stream.IStreamPublishSecurity;
+            
+            public class AuthNamePublishSecurity implements IStreamPublishSecurity {
+            
+            public isPublishAllowed(IScope scope, String name, String mode) {
+            if (!"live".equals(mode)) {
+            // Not a live stream
+            return false;
+            }
+            
+            IConnection conn = Red5.getConnectionLocal();
+            if (!"authenticated".equals(conn.getAttribute("UserType"))) {
+            // User was not authenticated
+            return false;
+            }
+            
+            if (!name.startswith("liveStream")) {
+            return false;
+            } else {
+            return true;
+            }
+            };
+            
+            }]]>
+         </programlisting>
+         <para>To register this handler in the application, add the following code in the
+            <citetitle>appStart</citetitle> method:</para>
+         <programlisting>registerStreamPublishSecurity(new AuthNamePublishSecurity());</programlisting>
+         <para>Of course, you will also have to add code in one of the <citetitle>*Connect</citetitle> or <citetitle>*Join</citetitle>
+            methods that set the <citetitle>UserType</citetitle> attribute of a connection to <citetitle>authenticated</citetitle>
+            for users that are allowed to publish streams.</para>
+         <para>Red5 includes a sample security handler that denies all access to streams
+            (<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/support/DenyAllStreamAccess.html">DenyAllStreamAccess</link>).</para>
+      </section>
+   </section>
+   <section xml:id="security-shared-objects">
+      <title>Shared objects</title>
+      <para>Once applications get complex, you might want to control the data that is
+         stored in a shared object, thus not allowing the clients to modify SOs directly
+         but only through methods exposed by the application.</para>
+      <para>The interface <link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectSecurity.html">ISharedObjectSecurity</link> can be used to write handlers that deny
+         certain actions on a given shared object or prevent the client from creating
+         arbitrary shared objects.</para>
+      <para>Below is an example handler that only allows the creation of the persistent
+         shared object <citetitle>Chat</citetitle>. Any client may connect to it and only sending messages
+         <citetitle>saySomething</citetitle> through the SO is allowed. All write access to properties is
+         denied. You could however change properties through serverside code as these
+         changes are never protected by the security handlers.</para>
+      <programlisting language="java">
+         <![CDATA[
+         import java.util.List;
+         import org.red5.server.api.IScope;
+         import org.red5.server.api.so.ISharedObject;
+         import org.red5.server.api.so.ISharedObjectSecurity;
+         
+         public class SampleSOSecurityHandler implements ISharedObjectSecurity {
+         
+         public boolean isConnectionAllowed(ISharedObject so) {
+         // Note: we don't check for the name here as only one SO can be
+         //       created with this handler
+        .
+         return true;
+         }
+         
+         public boolean isCreationAllowed(IScope scope, String name,
+         boolean persistent) {
+         if (!"Chat".equals(name) || !persistent) {
+         return false;
+         } else {
+         return true;
+         }
+         }
+         
+         public boolean isDeleteAllowed(ISharedObject so, String key) {
+         return false;
+         }
+         
+         public boolean isSendAllowed(ISharedObject so, String message,
+         List arguments) {
+         if (!"saySomething".equals(message)) {
+         return false;
+         } else {
+         return true;
+         }
+         }
+         
+         public boolean isWriteAllowed(ISharedObject so, String key,
+         Object value) {
+         return false;
+         }
+         
+         }]]>
+      </programlisting>
+      <para>To register this handler in the application, add the following code in the
+         <citetitle>appStart</citetitle> method:</para>
+      <programlisting>registerSharedObjectSecurity(new SampleSOSecurityHandler());</programlisting>
+      <para>If you want to register a security handler only for a given shared object,
+         use code like this:</para>
+      <programlisting language="java">
+         <![CDATA[
+ISharedObject so = getSharedObject(scope, "MySharedObject");
+so.registerSharedObjectSecurity(new MySOSecurityHandler());]]>
+      </programlisting>
+   </section>
+</chapter>
