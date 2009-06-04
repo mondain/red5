@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	applicationComplete="init()">
+	<!--
+	SimplePlayer x4
+	
+ 	@author Paul Gregoire (mondain@gmail.com)
+	-->
+	<mx:Script source="functions.as"/>
+	<mx:Panel x="10" y="10" width="659" height="532" layout="absolute">
+		<mx:Label id="playerDisplay" x="10" y="10" width="320" height="240" />
+		<mx:Button x="10" y="460" id="connector" label="Connect" click="connect()"/>
+		<mx:TextInput x="110" y="460" id="server" text="rtmp://{hostString}/oflaDemo" width="220"/>
+		<mx:TextInput x="453" y="460" id="location" text="01 Carcinogen Crush.mp3" width="176"/>
+		<mx:TextArea x="338" y="10" width="291" height="431" id="messages" editable="false"/>
+		<mx:Canvas x="10" y="258" width="320" height="183" id="canvas" click="resize(event)"
+				   doubleClick="hide(event)" doubleClickEnabled="true"/>
+		<mx:Label x="388" y="464" text="Filename" fontWeight="bold"/>
+	</mx:Panel>
+	
+</mx:Application>
