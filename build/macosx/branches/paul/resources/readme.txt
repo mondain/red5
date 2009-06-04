@@ -17,3 +17,7 @@ Features:
 - Live Stream Publishing
 - Remoting
 
+Installation:
+
+Drag the Red5 icon into your Applications folder
+
