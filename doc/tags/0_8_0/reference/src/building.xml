@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xml:id="building" xmlns="http://docbook.org/ns/docbook" 
+   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
+   <title>Building Red5</title>
+   <section xml:id="building-introduction">
+      <title>Introduction</title>
+         <para>This chapter covers the work environment setup for building red5 with ant.</para>
+   </section>
+   <section xml:id="building-ant">
+         <title>Running the ant build</title>
+         <para>
+            To build the red5 source simply run the following command 
+            from the command line inside the red5 source directory.
+         </para>
+         <programlisting>
+            ant dist
+         </programlisting>
+   </section>
+   <section xml:id="building-debian">
+      <title>Red5 debian package</title>
+      <orderedlist numeration="arabic">
+         <listitem>
+            <para>Install the debian packages "dpkg-dev", "debhelper", "dh-make",
+               "devscripts" and "fakeroot".</para>
+         </listitem>
+         <listitem>
+            <para>Checkout the debian build scripts to a folder "debian" inside the Red5
+               root from <link xl:href="http://svn1.cvsdude.com/osflash/red5/debian/trunk">http://svn1.cvsdude.com/osflash/red5/debian/trunk</link>
+            </para>
+         </listitem>
+         <listitem>
+            <para>Update "debian/changelog" and add an entry for the new version you are
+               building. Note that the syntax must match the previous entries!</para>
+         </listitem>
+         <listitem>
+            <para>Update the filename in "debian/files" to match the version you are
+               building.</para>
+         </listitem>
+         <listitem>
+            <para>Make sure you run from a clean Red5 checkout of the tag to build!!!</para>
+         </listitem>
+         <listitem>
+            <para>From the red5 root run "dpkg-buildpackage -uc -b -rfakeroot"</para>
+         </listitem>
+         <listitem>
+            <para>If all goes well, you should have a debian package one folder below the
+               Red5 root.</para>
+         </listitem>
+      </orderedlist>
+   </section>
+</chapter>

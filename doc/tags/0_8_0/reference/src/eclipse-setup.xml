@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xml:id="eclipse-setup" xmlns="http://docbook.org/ns/docbook" 
+   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
+   <title>How to build with eclipse</title>
+   <para>This guide assumes eclipse 3.1.0 and you have downloaded the entire red5
+      build from the subversion repository at
+      <link xl:href="http://svn1.cvsdude.com/osflash/red5">http://svn1.cvsdude.com/osflash/red5</link>
+   </para>
+   <section xml:id="eclipse-import">
+      <title>Importing the Red5 Project</title>
+      <procedure>
+         <step>
+            <para>Start Eclipse</para>
+         </step>
+         <step>
+            <para>From the File menu select "import"</para>
+         </step>
+         <step>
+            <para>In the Import dialog box select the item "Existing Projects into
+            Workspace" and hit next</para>
+             <mediaobject>
+                <imageobject>
+                   <imagedata  width="70%" scalefit="1" format="PNG"
+                      fileref="file:images/eclipse-import.png"/>
+                </imageobject>
+             </mediaobject>
+         </step>
+         <step>
+            <para>hit the "browse" button next to the "Select root directory" text box</para>
+         </step>
+         <step>
+            <para>select the root folder where you downloaded the red5 repository,(e.g.
+               c:\projects\osflash\red5 or /www/red5_server) and hit ok</para>
+         </step>
+         <step>
+            <para>Make sure red5 is selected in the projects area and hit "Finish"</para>
+            <mediaobject>
+               <imageobject>
+                  <imagedata width="70%" scalefit="1" format="PNG"
+                     fileref="file:images/eclipse-import-project.png"/>
+               </imageobject>
+            </mediaobject>
+         </step>
+         <step>
+            <para>Eclipse should automatically build the project, you can force a build
+               from the "project" menu and selecting "build project"</para>
+         </step>
+      </procedure>
+   </section> 
+   <section xml:id="eclipse-running">
+      <title>Debugging Red5 in Eclipse</title>
+      <procedure>
+         <step>
+            <para>Click the arrow next to the Debug icon menu  
+               <mediaobject>
+                  <imageobject>
+                     <imagedata width="38" format="PNG"
+                        fileref="file:images/eclipse-debug-icon.png"/>
+                  </imageobject>
+               </mediaobject>
+               and then click "Open Debug Dialog". </para>
+         </step>
+         <step>
+            <para>Click "Java Application" in the menu then right click and "New".</para>
+         </step>
+         <step>
+            <para>Type a name for the debug configuration (ie "Red") and type "org.red5.server.Standalone" an the main class. Add extra VM arguments in the arguments tab if required.</para>
+            <mediaobject>
+               <imageobject>
+                  <imagedata width="70%" scalefit="1" format="PNG"
+                     fileref="file:images/eclipse-debug-setup.png"/>
+               </imageobject>
+            </mediaobject>
+         </step>
+         <step>
+            <para>With the imported red5 project selected click the debug icon and it will launch the server.</para>
+         </step>
+         <step>
+            <para>Console logging will appear in the console window.</para>
+            <mediaobject>
+               <imageobject>
+                  <imagedata width="70%" scalefit="1" format="PNG"
+                     fileref="file:images/eclipse-console.png"/>
+               </imageobject>
+            </mediaobject>
+         </step>
+      </procedure>
+      <para>If you get an error in the console like :</para>
+      <para>java.net.BindException: Address already in use: bind at
+         sun.nio.ch.Net.bind(Native Method) at
+         sun.nio.ch.ServerSocketChannelImpl.bind(Unknown Source) at
+         sun.nio.ch.ServerSocketAdaptor.bind(Unknown Source) at
+         org.apache.mina.io.socket.SocketAcceptor.registerNew(SocketAcceptor.java:362)
+         at
+         org.apache.mina.io.socket.SocketAcceptor.access$800(SocketAcceptor.java:46)
+         at
+         org.apache.mina.io.socket.SocketAcceptor$Worker.run(SocketAcceptor.java:238)
+         Exception in thread "main"</para>
+      <para>Then the socket red5 wants to run is in use, you can change the socket and I
+         will write this up later today once I speak with Luke.</para>
+   </section>
+</chapter>
