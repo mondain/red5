@@ -14,10 +14,11 @@ wrapper.java.mainclass=org.tanukisoftware.wrapper.WrapperSimpleApp
 #  needed starting from 1
 wrapper.java.classpath.1=lib/wrapper.jar
 wrapper.java.classpath.2=conf
-wrapper.java.classpath.3=red5.jar
-wrapper.java.classpath.4=lib/ejb3-persistence-.jar
-wrapper.java.classpath.5=lib/annotations-api-.jar
-wrapper.java.classpath.6=lib/aopalliance-.jar
+wrapper.java.classpath.3=boot.jar
+wrapper.java.classpath.4=red5.jar
+wrapper.java.classpath.5=lib/ejb3-persistence-.jar
+wrapper.java.classpath.6=lib/annotations-api-.jar
+wrapper.java.classpath.7=lib/aopalliance-.jar
 
 # Java Library Path (location of Wrapper.DLL or libwrapper.so)
 wrapper.java.library.path.1=lib
