@@ -1,6 +1,6 @@
 <?xml version = "1.0"?>
 <project name = "Red5" 
-         default = "compile" 
+         default = "distro" 
          basedir = ".">
 
   <!-- build variables -->
@@ -112,6 +112,8 @@
           todir = "${dmg-dir}"/>
     <copy file = "${icons}/${app-title}Icon.icns"
           tofile = "${dmg-dir}/.VolumeIcon.icns"/>
+          
+          
 
     <!-- build and attach temporary disk image -->
 
