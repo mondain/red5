@@ -53,7 +53,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile setup-Red5-${VERSION}-RC2-java5.exe
+OutFile setup-Red5-${VERSION}-java5.exe
 InstallDir $PROGRAMFILES\Red5
 CRCCheck on
 XPStyle on
