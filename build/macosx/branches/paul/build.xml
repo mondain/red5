@@ -64,7 +64,9 @@
     <copy file = "${icons}/${app-title}Icon.icns"
           todir = "${app-dir}/Contents/Resources"/>
           
-    <copy file = "${red5.dist.dir}/red5-*.sh"
+    <copy file = "${red5.dist.dir}/red5.sh"
+          todir = "${app-dir}/Contents/Resources/Java"/>                   
+    <copy file = "${red5.dist.dir}/red5-shutdown.sh"
           todir = "${app-dir}/Contents/Resources/Java"/>                   
     <copy file = "${red5.dist.dir}/boot.jar"
           todir = "${app-dir}/Contents/Resources/Java"/>         
