@@ -1,0 +1,169 @@
+<?xml version = "1.0"?>
+<project name = "Red5" 
+         default = "compile" 
+         basedir = ".">
+
+  <!-- build variables -->
+
+  <property name = "app-name"           value = "red5"/>
+  <property name = "app-title"          value = "Red5"/>
+  <property name = "domain"             value = "red5.org"/>
+  <property name = "domain-scope"       value = "org.red5"/>
+  <property name = "domain-scope-dir"   value = "org/red5"/>
+  <property name = "red5.dist.dir"      value = "../../../../java/server/trunk/dist"/>
+  <property name = "doc-dir"            value = "doc"/>
+  <property name = "resources"          value = "resources"/>
+  <property name = "icons"              value = "${resources}/icons"/>
+  <property name = "jar-name"           value = "${app-name}.jar"/>
+  <property name = "app-dir"            value = "${app-title}.app"/>
+  <property name = "dmg-dir"            value = "disk-image"/>
+  <property name = "dmg-name"           value = "red5.dmg"/>
+  <property name = "dmg-vol-name"       value = "Red5"/>
+  <property name = "java-framework-mac"
+            value = "/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS"/>
+
+  <!-- remove all built files -->
+     
+  <target name = "clean" 
+          description = "remove all generated files">
+    <delete dir = "${doc-dir}"/>
+    <delete dir = "${app-dir}"/>
+    <delete dir = "${dmg-dir}"/>
+    <delete dir = "${zip-dir}"/>
+    <delete dir = "${build-env-dir}"/>
+    <delete file = "${jar-name}"/>
+    <delete file = "${dmg-name}"/>
+    <delete file = "${zip-name}"/>
+    <delete file = "${build-env-dmg}"/>
+    <delete file = "${build-env-zip}"/>
+  </target>
+  
+  <!-- construct mac .app -->
+  <target name = "app" description = "construct os x application (mac only)">
+
+    <!-- build directory structure -->
+
+    <mkdir dir = "${app-dir}"/>
+    <mkdir dir = "${app-dir}/Contents"/>
+    <mkdir dir = "${app-dir}/Contents/MacOS"/>
+    <mkdir dir = "${app-dir}/Contents/Resources"/>
+    <mkdir dir = "${app-dir}/Contents/Resources/Java"/>
+    <mkdir dir = "${app-dir}/Contents/Resources/Java/conf"/>
+    <mkdir dir = "${app-dir}/Contents/Resources/Java/lib"/>
+    <mkdir dir = "${app-dir}/Contents/Resources/Java/log"/>
+    <mkdir dir = "${app-dir}/Contents/Resources/Java/webapps"/>
+
+    <!-- assemble files -->
+
+    <copy file = "${java-framework-mac}/JavaApplicationStub"
+          todir = "${app-dir}/Contents/MacOS"/>
+    <exec executable = "chmod">
+      <arg value = "755"/>
+      <arg value = "${app-dir}/Contents/MacOS/JavaApplicationStub"/>
+    </exec>
+    <copy file = "${resources}/Info.plist"
+          todir = "${app-dir}/Contents"/>
+    <copy file = "${icons}/${app-title}Icon.icns" 
+          tofile = "${app-dir}/Icon&#13;"/>
+    <copy file = "${icons}/${app-title}Icon.icns"
+          todir = "${app-dir}/Contents/Resources"/>
+          
+    <copy file = "${red5.dist.dir}/boot.jar"
+          todir = "${app-dir}/Contents/Resources/Java"/>         
+    <copy file = "${red5.dist.dir}/red5.jar"
+          todir = "${app-dir}/Contents/Resources/Java"/>                   
+    <copy todir = "${app-dir}/Contents/Resources/Java/conf/">
+      <fileset dir = "${red5.dist.dir}/conf"/>
+    </copy>   
+    <copy todir = "${app-dir}/Contents/Resources/Java/lib/">
+      <fileset dir = "${red5.dist.dir}/lib"/>
+    </copy>   
+    <copy todir = "${app-dir}/Contents/Resources/Java/webapps/">
+      <fileset dir = "${red5.dist.dir}/webapps"/>
+    </copy>   
+
+    <!-- identify this as an application bundle (B) with an icon (C) -->
+
+    <exec executable = "/Developer/Tools/SetFile">
+      <arg value = "-a"/>
+      <arg value = "BC"/>
+      <arg value = "${app-dir}"/>
+    </exec>
+
+  </target>
+
+  <!-- construct distribution disk image -->
+
+  <target name = "dmg" 
+          depends = "app" 
+          description = "construct os x distribution disk image (mac only)">
+
+    <!-- assemble disk image contents -->
+
+    <mkdir dir = "${dmg-dir}"/>
+    <exec executable = "rsync">
+      <arg value = "-aE"/>
+      <arg value = "${app-dir}"/>
+      <arg value = "${dmg-dir}"/>
+    </exec>
+    <copy file = "${resources}/readme.txt" 
+          todir = "${dmg-dir}"/>
+    <copy file = "${resources}/license.txt" 
+          todir = "${dmg-dir}"/>
+    <copy file = "${icons}/${app-title}Icon.icns"
+          tofile = "${dmg-dir}/.VolumeIcon.icns"/>
+
+    <!-- build and attach temporary disk image -->
+
+    <exec executable = "hdiutil">
+      <arg value = "create"/>
+      <arg value = "-srcdir"/>
+      <arg value = "${dmg-dir}"/>
+      <arg value = "-ov"/>
+      <arg value = "-volname"/>
+      <arg value = "${dmg-vol-name}"/>
+      <arg value = "-format"/>
+      <arg value = "UDRW"/>
+      <arg value = "-attach"/>
+      <arg value = "tmp-${dmg-name}"/>
+    </exec>
+
+    <!-- activate custom volume icon -->
+
+    <exec executable = "/Developer/Tools/SetFile">
+      <arg value = "-a"/>
+      <arg value = "C"/>
+      <arg value = "/Volumes/${dmg-vol-name}"/>
+    </exec>
+
+    <!-- detach temporary disk image -->
+
+    <exec executable = "hdiutil">
+      <arg value = "detach"/>
+      <arg value = "/Volumes/${dmg-vol-name}"/>
+    </exec>
+
+    <!-- convert temporary disk image to compressed final disk image -->
+
+    <exec executable = "hdiutil">
+      <arg value = "convert"/>
+      <arg value = "tmp-${dmg-name}"/>
+      <arg value = "-format"/>
+      <arg value = "UDZO"/>
+      <arg value = "-o"/>
+      <arg value = "${dmg-name}"/>
+      <arg value = "-ov"/>
+    </exec>
+
+    <!-- delete temporary disk image -->
+
+    <delete file = "tmp-${dmg-name}"/>
+  </target>
+
+  <!-- build all distribtions -->
+
+  <target name = "distro" depends = "dmg"
+          description = "build distributions">
+  </target>
+
+</project>
