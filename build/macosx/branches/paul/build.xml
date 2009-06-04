@@ -29,13 +29,9 @@
     <delete dir = "${doc-dir}"/>
     <delete dir = "${app-dir}"/>
     <delete dir = "${dmg-dir}"/>
-    <delete dir = "${zip-dir}"/>
-    <delete dir = "${build-env-dir}"/>
     <delete file = "${jar-name}"/>
     <delete file = "${dmg-name}"/>
     <delete file = "${zip-name}"/>
-    <delete file = "${build-env-dmg}"/>
-    <delete file = "${build-env-zip}"/>
   </target>
   
   <!-- construct mac .app -->
@@ -68,6 +64,8 @@
     <copy file = "${icons}/${app-title}Icon.icns"
           todir = "${app-dir}/Contents/Resources"/>
           
+    <copy file = "${red5.dist.dir}/red5-*.sh"
+          todir = "${app-dir}/Contents/Resources/Java"/>                   
     <copy file = "${red5.dist.dir}/boot.jar"
           todir = "${app-dir}/Contents/Resources/Java"/>         
     <copy file = "${red5.dist.dir}/red5.jar"
