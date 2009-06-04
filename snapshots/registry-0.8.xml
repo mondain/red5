@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<registry lastupdate="2009-01-28T11:45">
+	<applications>
+		<application name="admin">
+			<author>Martin M, Dan Rossi</author>
+			<desc>Administration console</desc>
+			<filename>admin-r3451-java6.war</filename>
+		</application>
+		<application name="admin">
+			<author>Martin M, Dan Rossi</author>
+			<desc>Administration console</desc>
+			<filename>admin-r3445-java5.war</filename>
+		</application>
+		<application name="oflaDemo">
+			<author>Red5 Team</author>
+			<desc>Demo originally created for the OFLA conference</desc>
+			<filename>oflaDemo-r3635-java6.war</filename>
+		</application>
+		<application name="oflaDemo">
+			<author>Red5 Team</author>
+			<desc>Demo originally created for the OFLA conference</desc>
+			<filename>oflaDemo-r3635-java5.war</filename>
+		</application>
+		<application name="midiDemo">
+			<author>John Grden, Luke Hubbard</author>
+			<desc>Demo originally created for the FITC conference, to demonstrate Midi functionality</desc>
+			<filename>midiDemo-r3339-java6.war</filename>
+		</application>
+		<application name="echo">
+			<author>Red5 Team</author>
+			<desc>Test tool for AMF0/AMF3 and RTMP/HTTP functionality</desc>
+			<filename>echo-r3451-java6.war</filename>
+		</application>
+		<application name="echo">
+			<author>Red5 Team</author>
+			<desc>Test tool for AMF0/AMF3 and RTMP/HTTP functionality</desc>
+			<filename>echo-r3445-java5.war</filename>
+		</application>
+		<application name="dump">
+			<author>Red5 Team</author>
+			<desc>Test tool for diagnosing protocol issues</desc>
+			<filename>dump-r2953-java6.war</filename>
+		</application>		
+		<application name="bwcheck">
+			<author>Dan Rossi</author>
+			<desc>Bandwidth demo</desc>
+			<filename>bwcheck-r3451-java6.war</filename>
+		</application>	
+		<application name="bwcheck">
+			<author>Dan Rossi</author>
+			<desc>Bandwidth demo</desc>
+			<filename>bwcheck-r3445-java5.war</filename>
+		</application>	
+		<application name="fitcDemo">
+			<author>Red5 Team</author>
+			<desc>Demo created for FITC conference</desc>
+			<filename>fitcDemo-r3451-java6.war</filename>
+		</application>		
+		<application name="fitcDemo">
+			<author>Red5 Team</author>
+			<desc>Demo created for FITC conference</desc>
+			<filename>fitcDemo-r3445-java5.war</filename>
+		</application>		
+		<application name="messageRecorder">
+			<author>John Grden</author>
+			<desc>Demo created for Chris and Rebecca's wedding</desc>
+			<filename>messageRecorder-r2967-java6.war</filename>
+		</application>	
+		<application name="SOSample">
+			<author>Red5 Team</author>
+			<desc>Shared object demo</desc>
+			<filename>SOSample-r2967-java6.war</filename>
+		</application>						
+		<application name="loadtest">
+			<author>Paul Gregoire</author>
+			<desc>Load tester for video playback and shared objects</desc>
+			<filename>loadtest-r2977-java6.war</filename>
+		</application>						
+		<application name="audiotranscoder">
+			<author>Art Clarke</author>
+                        <desc>Transcode audio to new formats.  You must install Xuggle first.</desc>
+			<filename>audiotranscoder-r366-java6.war</filename>
+		</application>						
+		<application name="audiotranscoder">
+			<author>Art Clarke</author>
+                        <desc>Transcode audio to new formats.  You must install Xuggle first.</desc>
+			<filename>audiotranscoder-r366-java5.war</filename>
+		</application>						
+		<application name="videotranscoder">
+			<author>Art Clarke</author>
+                        <desc>Change video on the fly to mirror half the screen.  You must install Xuggle first.</desc>
+			<filename>videotranscoder-r366-java6.war</filename>
+		</application>						
+		<application name="videotranscoder">
+			<author>Art Clarke</author>
+                        <desc>Change video on the fly to mirror half the screen.  You must install Xuggle first.</desc>
+			<filename>videotranscoder-r366-java5.war</filename>
+		</application>						
+	</applications>
+</registry>

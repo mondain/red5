@@ -93,6 +93,17 @@
 			</manifest>
 		</war>		
     </target>
+    
+    <!-- checks out the source tree -->
+	<target name="checkout">
+		<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="svnant.jar"/>
+		<svn username="${svn.login}" password="${svn.password}">
+			<checkout url="${svn.url}java/example/trunk/oflaDemo" revision="HEAD" destPath="."/>
+			<status path="build.xml" textStatusProperty="svn.info.status" lastChangedRevisionProperty="svn.info.lastrev"
+				 revisionProperty="svn.info.rev"/>
+		</svn>
+		<echo message="Svn info - status: ${svn.info.status} last rev: ${svn.info.lastrev} rev: ${svn.info.rev}"/>
+	</target>
 	
 	<!-- Updates snapshot repository -->
 	<target name="upload-snapshot" depends="war">
@@ -104,11 +115,14 @@
 			</not>
 		</condition>
 	
-		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
-			<status path="build.xml" textStatusProperty="svn.info.status" lastChangedRevisionProperty="svn.info.lastrev" revisionProperty="svn.info.rev"/> 
+		<svn username="${svn.login}" password="${svn.password}">
+			<update dir="${basedir}"/>
+			<checkout url="${svn.url}snapshots" revision="HEAD" destPath="${snapshot.path}"/>	
+			<status path="build.xml" textStatusProperty="svn.info.status" lastChangedRevisionProperty="svn.info.lastrev"
+				 revisionProperty="svn.info.rev"/>
 		</svn>
 		<echo message="Svn info - status: ${svn.info.status} last rev: ${svn.info.lastrev} rev: ${svn.info.rev}"/>
-	
+		
 		<property name="snapshot.name" value="${ant.project.name}-r${svn.info.rev}-${java.version.name}.war"/>
 		
 		<echo message="Destination: ${snapshot.path}${snapshot.name}"/>
@@ -131,13 +145,16 @@
 			<param name="file.path" value="${snapshot.path}${snapshot.name}"/>
 		</antcall>
 		
-		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
+		<svn username="${svn.login}" password="${svn.password}">
 			<commit message="Added snapshot" file="${snapshot.path}${snapshot.name}"/>
 		</svn>	
 	</target>
 	
 	<target name="svn-add" if="add-file">
-		<svn username="${svn.login}" password="${svn.password}" failonerror="false">
+		<svn username="${svn.login}" password="${svn.password}">
+			<!--
+			<update dir="${snapshot.path}"/>
+			-->
 			<add file="${file.path}" force="true"/>
 		</svn>	
 	</target>		
