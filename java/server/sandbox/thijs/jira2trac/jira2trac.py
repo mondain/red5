@@ -1,5 +1,24 @@
 #!/usr/bin/env python3.1
-# Copyright Thijs Triemstra 2008-2009
+#
+# Copyright (c) 2008-2009 Thijs Triemstra
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software. 
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
 
 """
 Import a Jira backup into a Trac database using XML-RPC.
@@ -437,9 +456,9 @@ class TracEncoder(object):
                 self.proxy.ticket.component.delete(component)
         
         # import new components into trac
-        # note: we import jira's projects as components in trac,
-        # because components in jira are children of projects and trac
-        # doesn't support this type of hierarchy
+        # note: we import jira's projects as components into trac because
+        # components in jira are children of projects, and trac doesn't
+        # support this type of hierarchy
         for component in self.jiraData['projects']:
             name = component['name']
             owner = component['owner']
@@ -465,10 +484,6 @@ class TracEncoder(object):
         self.jiraData['statuses'][4]['name'] = statuses[2] # closed/closed
         
         log.info('  %d Statuses' % len(self.jiraData['statuses']))
-
-    def _importUsers(self):
-        # TODO
-        pass
 
     def _importIssues(self):
         # import new issues into trac
@@ -496,14 +511,18 @@ class TracEncoder(object):
             id = self.proxy.ticket.create(summary, description, time, attr)
             
             # import associated comments for issue in trac
-            #for comment in comments[1:]:
-            #    print('%s - %s - %s' % (comment['id'], comment['commentId'], comment['body']))
-            #    self.proxy.ticket.update(id, comment['body'], comment['created'],
-            #                             comment['author'])
-            #print()
+            cnum = 0
+            for comment in comments:
+                cnum += 1
+                self.proxy.ticket.update(id, comment['body'], comment['created'],
+                                         comment['author'], cnum+1)
 
         log.info('  %d Issues' % len(self.jiraData['issues']))
-            
+    
+    def _importUsers(self):
+        # TODO
+        pass
+    
     def _importAttachments(self):
         # TODO
         pass
