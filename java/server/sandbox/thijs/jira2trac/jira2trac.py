@@ -29,8 +29,11 @@ class JiraDecoder(object):
     def __init__(self, input):
         if input:
             self.input = input
-            self.lastItem = None
+            self.lastComment = None
+            self.lastIssue = None
             self.allItems = []
+            self.comments = []
+            self.issues = []
             self.data = dict()
             self.data['versions'] = []
             self.data['resolutions'] = []
@@ -88,33 +91,42 @@ class JiraDecoder(object):
         #    print('%50s - %s - %s - %s' % (item['issue'], item['author'], item['type'],
         #                          item['body']))
                     
-    def _addItem(self, category, data):
+    def _addItem(self, category, data, type=None):
+        if type == None:
+            type = self.allItems
+        
         self.data[category].append(data)
-        self.allItems.append(data)
+        type.append(data)
         self.category = category
-    
+
     def _char_data(self, data):
         log.debug('Character data: %s' % repr(data))
             
-        if self.lastItem:
-            try:
-                # start update
-                self._updateItem(data)
-            except KeyError:
-                pass
+        if self.lastComment:
+            self._updateItem(data, self.lastComment)
+        elif self.lastIssue:
+            self._updateItem(data, self.lastIssue)
     
-    def _updateItem(self, data):
+    def _updateItem(self, data, target):
         if (data != "'\n'") or (data[1:len(data)-1].isspace() == False):
-            self.lastItem['body'] += data
-        
+            if target == self.lastComment:
+                field = 'body'
+            elif target == self.lastIssue:
+                field = 'description'
+            
+            target[field] += data
+
     def _end_element(self, name):
         log.debug('End element: %s' % name)
-    
+        index = len(self.data[self.category]) - 1
+        
         if name == 'body':
-            # finish update
-            self.data[self.category][len(self.data[self.category])-1] = self.lastItem
-            self.lastItem = None
-
+            self.data[self.category][index] = self.lastComment
+            self.lastComment = None
+        elif name == 'description':
+            self.data[self.category][index] = self.lastIssue
+            self.lastIssue = None
+            
     def _start_element(self, name, attrs):
         log.debug('Start element: %s %s' % (name, attrs))
             
@@ -149,13 +161,13 @@ class JiraDecoder(object):
                        'description': attrs['description'], 'id': attrs['id']}
             
             self._addItem('projects', project)
-        
+
         elif name == 'Priority':
             priority = {'name': attrs['name'], 'description': attrs['description'],
                         'id': attrs['id']}
-            
+
             self._addItem('priorities', priority)
-        
+
         elif name == 'OSUser':
             user = {'name': attrs['name'], 'id': attrs['id']}
             
@@ -164,36 +176,41 @@ class JiraDecoder(object):
                 self._addItem('users', user)
             except KeyError:
                 pass
-    
+
         elif name == 'Issue':
             issue = {'project': attrs['project'], 'id': attrs['id'],
                      'reporter': attrs['reporter'], 'assignee': attrs['assignee'],
                      'type': attrs['type'], 'summary': attrs['summary'],
                      'priority': attrs['priority'], 'status': attrs['status'],
                      'votes': attrs['votes']}
-            
+
             issue['created'] = self.to_datetime(attrs['created'][:-2])
-            
+
             try:
                 issue['resolution'] = attrs['resolution']
             except KeyError:
                 issue['resolution'] = 1
-                
-            self._addItem('issues', issue)
-        
+
+            try:
+                issue['description'] = attrs['description']
+            except:
+                issue['description'] = ''
+
+            self._addItem('issues', issue, self.issues)
+
         elif name == 'Component':
             component = {'project': attrs['project'], 'id': attrs['id'],
                          'name': attrs['name'], 'description': attrs['description'],
                          'owner': attrs['lead']}
 
             self._addItem('components', component)
-        
+
         elif name == 'CustomFieldValue' and attrs['customfield'] == '10001':
             customFieldValue = {'issue': attrs['issue'], 'id': attrs['id'],
                                 'value': attrs['stringvalue']}
 
             self._addItem('customFieldValues', customFieldValue)
-         
+
         elif name == 'EventType':
             eventType = {'id': attrs['id'], 'name': attrs['name'],
                          'description': attrs['description']}
@@ -231,7 +248,7 @@ class JiraDecoder(object):
             except KeyError:
                 action['body'] = ''
             
-            self._addItem('actions', action)
+            self._addItem('actions', action, self.comments)
             
         elif name == 'OSMembership':
             membership = {'id': attrs['id'], 'username': attrs['userName'],
@@ -240,9 +257,12 @@ class JiraDecoder(object):
             self._addItem('memberships', membership)
         
         elif name == 'body':
-            # create update object
-            self.lastItem = self.allItems[len(self.allItems)-1]
-            self.lastItem['body'] = ''
+            self.lastComment = self.comments[len(self.comments)-1]
+            self.lastComment['body'] = ''
+        
+        elif name == 'description':
+            self.lastIssue = self.issues[len(self.issues)-1]
+            self.lastIssue['description'] = ''
         
         # Unused:
         #  - OSCurrentStep
@@ -454,6 +474,7 @@ class TracEncoder(object):
         # import new issues into trac
         for issue in self.jiraData['issues']:
             # todo: version
+            description = issue['description']            
             reporter = issue['reporter']
             owner = issue['assignee']
             summary = issue['summary']
@@ -465,11 +486,6 @@ class TracEncoder(object):
             priority = self._getItem(issue['priority'], 'priorities')
             comments = self._getComments(issue['id'])
             
-            try:
-                description = comments[0]['body']
-            except IndexError:
-                description = ''
-            
             attr = {'reporter': reporter, 'owner': owner, 'component': component,
                     'type': type, 'priority': priority, 'status': status}
 
@@ -478,7 +494,6 @@ class TracEncoder(object):
 
             # import issue in trac
             id = self.proxy.ticket.create(summary, description, time, attr)
-            #print(comments[0])
             
             # import associated comments for issue in trac
             #for comment in comments[1:]:
