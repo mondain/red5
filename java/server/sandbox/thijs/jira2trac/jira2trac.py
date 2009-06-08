@@ -29,6 +29,7 @@ Import a Jira backup into a Trac database using XML-RPC.
 
 import io
 import os
+import sys
 import stat
 import time
 import socket
@@ -106,7 +107,8 @@ class JiraDecoder(object):
             
             log.info('  %d %s' % (len(self.data[category]), name))
 
-        #for item in self.data['actions']:
+        #for item in self.data['projects']:
+        #    print(item)
         #    print('%50s - %s - %s - %s' % (item['issue'], item['author'], item['type'],
         #                          item['body']))
                     
@@ -157,7 +159,7 @@ class JiraDecoder(object):
                 version['description'] = None
             
             try:
-                version['releasedate'] = self.to_datetime(attrs['releasedate'][:-2])
+                version['releasedate'] = self.to_datetime(attrs['releasedate'])
             except KeyError:
                 version['releasedate'] = 0
                 
@@ -201,9 +203,9 @@ class JiraDecoder(object):
                      'reporter': attrs['reporter'], 'assignee': attrs['assignee'],
                      'type': attrs['type'], 'summary': attrs['summary'],
                      'priority': attrs['priority'], 'status': attrs['status'],
-                     'votes': attrs['votes']}
+                     'votes': attrs['votes'], 'key': attrs['key']}
 
-            issue['created'] = self.to_datetime(attrs['created'][:-2])
+            issue['created'] = self.to_datetime(attrs['created'])
 
             try:
                 issue['resolution'] = attrs['resolution']
@@ -244,10 +246,15 @@ class JiraDecoder(object):
             
         elif name == 'FileAttachment':
             attachment = {'id': attrs['id'], 'issue': attrs['issue'],
-                         'mimetype': attrs['mimetype'], 'author': attrs['author'],
-                         'filename': attrs['filename'], 'filesize': attrs['filesize']}
+                         'mimetype': attrs['mimetype'], 'filename': attrs['filename'],
+                         'filesize': attrs['filesize']}
 
-            attachment['created'] = self.to_datetime(attrs['created'][:-2])
+            attachment['created'] = self.to_datetime(attrs['created'])
+            
+            try:
+                attachment['author'] = attrs['author']
+            except KeyError:
+                attachment['author'] = ''
             
             self._addItem('attachments', attachment)
         
@@ -260,7 +267,7 @@ class JiraDecoder(object):
             action = {'id': attrs['id'], 'issue': attrs['issue'],
                       'author': attrs['author'], 'type': attrs['type']}
 
-            action['created'] = self.to_datetime(attrs['created'][:-2])
+            action['created'] = self.to_datetime(attrs['created'])
             
             try:
                 action['body'] = attrs['body']
@@ -297,18 +304,19 @@ class JiraDecoder(object):
         """
         Turn timestamp string into C{datetime.datetime} object.
         """
-        return datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+        return datetime.strptime(timestamp[:-2], '%Y-%m-%d %H:%M:%S')
 
 
 class TracEncoder(object):
     """
-    Save data in remote Trac database using XML-RPC.
+    Import data into remote Trac database using XML-RPC.
     """
-    def __init__(self, username, password, url):
+    def __init__(self, username, password, url, attachments):
         if url:
             self.url = url
             self.username = username
             self.password = password
+            self.attachments = attachments
             
             if username is not None and password is not None:
                 auth = '%s:%s@' % (username, password)
@@ -326,7 +334,8 @@ class TracEncoder(object):
         Save all data to the Trac database.
         """
         log.info('Connecting to %s' % self.location)
-        
+        log.info('Attachments location: %s' % self.attachments)
+
         self.jiraData = jiraData
         self.proxy = client.ServerProxy(self.location, use_datetime=True)
 
@@ -338,9 +347,8 @@ class TracEncoder(object):
         self._call(self._importMilestones)
         self._call(self._importComponents)
         self._call(self._importStatuses)
-        self._call(self._importUsers)
         self._call(self._importIssues)
-        self._call(self._importAttachments)
+        self._call(self._importUsers)
 
     def _call(self, func):
         """
@@ -359,19 +367,21 @@ class TracEncoder(object):
             log.error("A fault occurred!")
             log.error("Fault code: %d" % err.faultCode)
             log.error("Fault string: %s" % err.faultString)
-            
+
         except socket.error as err:
+            log.error("A socket error occurred!")
             log.error("Error while connecting: %s" % err)
+            sys.exit()
 
     def _importVersions(self):
         # get existing versions from trac
         versions = self.proxy.ticket.version.getAll()
-         
+
         # remove existing versions from trac if necessary
         if len(versions) > 0:
             for version in versions:
                 self.proxy.ticket.version.delete(version)
-    
+
         # import new versions into trac
         for version in self.jiraData['versions']:
             # exclude trailing 'v' from version number
@@ -382,70 +392,70 @@ class TracEncoder(object):
             self.proxy.ticket.version.create(nr, attr)
         
         log.info('  %d Versions' % len(self.jiraData['versions']))
-        
+
     def _importResolutions(self):
         # get existing resolutions from trac
         resolutions = self.proxy.ticket.resolution.getAll()
-         
+
         # remove existing resolutions from trac if necessary
         if len(resolutions) > 0:
             for resolution in resolutions:
                 self.proxy.ticket.resolution.delete(resolution)
-    
+
         # import new resolutions into trac
         order = 1
         for resolution in self.jiraData['resolutions']:
             name = resolution['name']
             self.proxy.ticket.resolution.create(name, order)
             order += 1
-        
+
         log.info('  %d Resolutions' % len(self.jiraData['resolutions']))
-    
+
     def _importPriorities(self):
         # get existing priorities from trac
         priorities = self.proxy.ticket.priority.getAll()
-         
+
         # remove existing priorities from trac if necessary
         if len(priorities) > 0:
             for priority in priorities:
                 self.proxy.ticket.priority.delete(priority)
-    
+
         # import new priorities into trac
         order = 1
         for priority in self.jiraData['priorities']:
             name = priority['name']
             self.proxy.ticket.priority.create(name, order)
             order += 1
-        
+
         log.info('  %d Priorities' % len(self.jiraData['priorities']))
 
     def _importIssueTypes(self):
         # get existing issue types from trac
         issueTypes = self.proxy.ticket.type.getAll()
-         
+
         # remove existing issue types from trac if necessary
         if len(issueTypes) > 0:
             for issueType in issueTypes:
                 self.proxy.ticket.type.delete(issueType)
-    
+
         # import new issue types into trac
         for issueType in self.jiraData['issueTypes']:
             name = issueType['name']
             order = issueType['sequence']
             self.proxy.ticket.type.create(name, order)
-        
+
         log.info('  %d Issue Types' % len(self.jiraData['issueTypes']))
-    
+
     def _importMilestones(self):
         # get existing milestones from trac
         milestones = self.proxy.ticket.milestone.getAll()
-         
+
         # seems Jira doesn't support milestones or we never used them
         # so remove all existing milestones from trac
         if len(milestones) > 0:
             for milestone in milestones:
                 self.proxy.ticket.milestone.delete(milestone)
-    
+
     def _importComponents(self):
         # get existing components from trac
         components = self.proxy.ticket.component.getAll()
@@ -454,7 +464,7 @@ class TracEncoder(object):
         if len(components) > 0:
             for component in components:
                 self.proxy.ticket.component.delete(component)
-        
+
         # import new components into trac
         # note: we import jira's projects as components into trac because
         # components in jira are children of projects, and trac doesn't
@@ -465,13 +475,13 @@ class TracEncoder(object):
             desc = component['description']
             attr = {'name': name, 'owner': owner, 'description': desc}
             self.proxy.ticket.component.create(name, attr)
-        
+
         log.info('  %d Components' % len(self.jiraData['projects']))
-    
+
     def _importStatuses(self):
         # get existing statuses from trac
         statuses = self.proxy.ticket.status.getAll()
-        
+
         # Note: ticket.status.delete() and ticket.status.update() aren't working
         # due to a bug in the XML-RPC plugin for Trac, see this link for more
         # information: http://trac-hacks.org/ticket/5268
@@ -482,7 +492,7 @@ class TracEncoder(object):
         self.jiraData['statuses'][2]['name'] = statuses[4] # reopened/reopened
         self.jiraData['statuses'][3]['name'] = statuses[2] # resolved/closed
         self.jiraData['statuses'][4]['name'] = statuses[2] # closed/closed
-        
+
         log.info('  %d Statuses' % len(self.jiraData['statuses']))
 
     def _importIssues(self):
@@ -500,7 +510,8 @@ class TracEncoder(object):
             type = self._getItem(issue['type'], 'issueTypes')
             priority = self._getItem(issue['priority'], 'priorities')
             comments = self._getComments(issue['id'])
-            
+            attachments = self._getAttachments(issue['id'])
+
             attr = {'reporter': reporter, 'owner': owner, 'component': component,
                     'type': type, 'priority': priority, 'status': status}
 
@@ -509,7 +520,7 @@ class TracEncoder(object):
 
             # import issue in trac
             id = self.proxy.ticket.create(summary, description, time, attr)
-            
+
             # import associated comments for issue in trac
             cnum = 0
             for comment in comments:
@@ -517,15 +528,34 @@ class TracEncoder(object):
                 self.proxy.ticket.update(id, comment['body'], comment['created'],
                                          comment['author'], cnum+1)
 
+            # import associated attachments for issue in trac
+            for attachment in attachments:
+                author = attachment['author']
+                description = ''
+                key = issue['key']
+                created = attachment['created']
+                filename = attachment['filename']
+                path = self._getAttachmentPath(attachment['attachmentId'], key,
+                                               filename)
+                if os.path.exists(path):
+                    print(path)
+                    file = open(path, 'rb').read()
+                    data = client.Binary(file)
+                    self.proxy.ticket.putAttachment(id, filename, description, data, author, created)
+
         log.info('  %d Issues' % len(self.jiraData['issues']))
+        log.info('  %d Actions' % len(self.jiraData['actions']))
+        log.info('  %d Attachments' % len(self.jiraData['attachments']))
     
     def _importUsers(self):
-        # TODO
+        log.info('  TODO: %d Users' % len(self.jiraData['users']))
         pass
-    
-    def _importAttachments(self):
-        # TODO
-        pass
+
+    def _getAttachmentPath(self, id, key, filename):
+        project = key.rsplit('-')[0]
+        file = '%d_%s' % (id, filename)
+        path = os.path.join(self.attachments, project, key, file)
+        return path
 
     def _getItem(self, id, target, field='name'):
         for d in self.jiraData[target]:
@@ -548,14 +578,35 @@ class TracEncoder(object):
         # sort comments with oldest id first
         return sorted(comments, key=itemgetter('commentId'), reverse=True)
 
+    def _getAttachments(self, id):
+        # grab associated attachments for issue
+        attachments = []
+        for attachment in self.jiraData['attachments']:
+            if attachment['issue'] == id:
+                mimetype = attachment['mimetype']
+                created = attachment['created']
+                author = attachment['author']
+                filename = attachment['filename']
+                filesize = attachment['filesize']
+                att = {'id': attachment['issue'], 'mimetype': mimetype,
+                        'created': created, 'author': author,
+                        'attachmentId': int(attachment['id']),
+                        'filename': filename, 'filesize': filesize}
+                attachments.append(att)
+
+        # sort attachments with oldest id first
+        return sorted(attachments, key=itemgetter('attachmentId'), reverse=False)
+
 if __name__ == "__main__":
     from optparse import OptionParser
-    
+
     usage = "Usage: Jira2Trac [options]"
     parser = OptionParser(usage=usage, version="Jira2Trac 1.0")
-    
+
     parser.add_option("-i", "--input", dest="input", 
                       help="Load Jira backup data from XML file", metavar="FILE")
+    parser.add_option("-a", "--attachments", dest="attachments", 
+                      help="Location of the attachments folder", metavar="FILE")
     parser.add_option("-v", "--verbose",
                       action="store_true", dest="verbose", default=False,
                       help="Print debug messages to stdout [default: %default]")
@@ -563,18 +614,18 @@ if __name__ == "__main__":
     parser.add_option("-p", "--password", dest="password", help="Password for Trac instance")
     parser.add_option("-l", "--url", dest="url", help="URL for Trac instance")
     (options, args) = parser.parse_args()
-    
-    FORMAT = "%(asctime)-15s - %(levelname)3s - %(message)s"
+
+    FORMAT = "%(asctime)-15s - %(levelname)-3s - %(message)s"
     LEVEL = log.INFO
 
     if options.verbose == True:
         LEVEL = log.DEBUG
-    
+
     log.basicConfig(format=FORMAT, level=LEVEL)
 
     if options.input:
         start = time.time()
-        
+
         jira = JiraDecoder(options.input)
         try:
             jira.parseBackupFile()
@@ -582,9 +633,10 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             log.info('Cancelled data parsing')
             exit()
-        
+
         if options.username:
-            trac = TracEncoder(options.username, options.password, options.url)
+            trac = TracEncoder(options.username, options.password, options.url,
+                               options.attachments)
             try:
                 trac.importData(jira.data)
             except KeyboardInterrupt:
