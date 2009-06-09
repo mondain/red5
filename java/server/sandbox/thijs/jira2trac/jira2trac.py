@@ -44,7 +44,7 @@ from operator import itemgetter
 
 class JiraDecoder(object):
     """
-    Load Jira backup file
+    Parse a Jira XML backup file.
     """
     def __init__(self, input):
         if input:
@@ -70,42 +70,42 @@ class JiraDecoder(object):
             self.data['memberships'] = []
             self.data['statuses'] = []
             self.data['actions'] = []
-            self.size = Decimal(str(os.stat(input)[stat.ST_SIZE]/(1024*1024))
-                                ).quantize(Decimal('.01'))
-
-            log.info('%s...' % self.__doc__.strip())
-            log.info('Reading data from %s (%s MB)' % (input, self.size))
-            log.info('Processing data...')
         else:
             raise BaseException("Please specify the 'input' option")
-            
+
     def parseBackupFile(self):
         """
-        Load the Jira XML backup dump file and start parsing it.
+        Load Jira backup file.
         """
-        markup = io.FileIO(self.input, 'r').readall()
-        
+        self.size = Decimal(str(os.stat(self.input)[stat.ST_SIZE]/(1024*1024))
+                            ).quantize(Decimal('.01'))
+
+        log.info('Load Jira backup file...')
+        log.info('Reading data from: %s (%s MB)' % (self.input, self.size))
+        log.info('Processing data...')
+
+        file = io.FileIO(self.input, 'r').readall()
         p = xml.parsers.expat.ParserCreate()
         p.StartElementHandler = self._start_element
         p.EndElementHandler = self._end_element
         p.CharacterDataHandler = self._char_data
-        p.Parse(markup, 1)
-    
+        p.Parse(file, 1)
+
     def showResults(self):
         """
-        Print the parse results on stdout.
+        Display the parse results.
         """       
         categories = ['versions', 'resolutions', 'projects', 'priorities',
                       'components', 'issueTypes', 'statuses', 'groups',
                       'issues', 'attachments', 'users', 'actions']
-        
+
         for category in categories:
             name = category.title()
-            
+
             if category == 'issueTypes':
                 name = 'Issue Types'
-            
-            log.info('  %d %s' % (len(self.data[category]), name))
+
+            log.info('  %d %s...' % (len(self.data[category]), name))
 
         #for item in self.data['projects']:
         #    print(item)
@@ -115,72 +115,72 @@ class JiraDecoder(object):
     def _addItem(self, category, data, type=None):
         if type == None:
             type = self.allItems
-        
+
         self.data[category].append(data)
         type.append(data)
         self.category = category
 
     def _char_data(self, data):
         log.debug('Character data: %s' % repr(data))
-            
+
         if self.lastComment:
             self._updateItem(data, self.lastComment)
         elif self.lastIssue:
             self._updateItem(data, self.lastIssue)
-    
+
     def _updateItem(self, data, target):
         if (data != "'\n'") or (data[1:len(data)-1].isspace() == False):
             if target == self.lastComment:
                 field = 'body'
             elif target == self.lastIssue:
                 field = 'description'
-            
+
             target[field] += data
 
     def _end_element(self, name):
         log.debug('End element: %s' % name)
         index = len(self.data[self.category]) - 1
-        
+
         if name == 'body':
             self.data[self.category][index] = self.lastComment
             self.lastComment = None
         elif name == 'description':
             self.data[self.category][index] = self.lastIssue
             self.lastIssue = None
-            
+
     def _start_element(self, name, attrs):
         log.debug('Start element: %s %s' % (name, attrs))
-            
+
         if name == 'Version':
             version = {'number':attrs['name']}
             try:
                 version['description'] = attrs['description']
             except KeyError:
                 version['description'] = None
-            
+
             try:
                 version['releasedate'] = self.to_datetime(attrs['releasedate'])
             except KeyError:
                 version['releasedate'] = 0
-                
+
             self._addItem('versions', version)
-            
+
         elif name == 'Resolution':
             resolution = {'name': attrs['name'], 'description': attrs['description'],
                           'id': attrs['id']}
             
             self._addItem('resolutions', resolution)
-        
+
         elif name == 'Status':
             status = {'id': attrs['id'], 'sequence': attrs['sequence'],
                       'name': attrs['name'], 'description': attrs['description']}
-            
+
             self._addItem('statuses', status)
-            
+
         elif name == 'Project':
             project = {'name': attrs['name'], 'owner': attrs['lead'],
                        'description': attrs['description'], 'id': attrs['id']}
-            
+
             self._addItem('projects', project)
 
         elif name == 'Priority':
@@ -237,45 +237,45 @@ class JiraDecoder(object):
                          'description': attrs['description']}
 
             self._addItem('eventTypes', eventType)
-        
+
         elif name == 'IssueType':
             issueType = {'id': attrs['id'], 'sequence': attrs['sequence'],
                          'name': attrs['name'], 'description': attrs['description']}
 
             self._addItem('issueTypes', issueType)
-            
+
         elif name == 'FileAttachment':
             attachment = {'id': attrs['id'], 'issue': attrs['issue'],
                          'mimetype': attrs['mimetype'], 'filename': attrs['filename'],
                          'filesize': attrs['filesize']}
 
             attachment['created'] = self.to_datetime(attrs['created'])
-            
+
             try:
                 attachment['author'] = attrs['author']
             except KeyError:
                 attachment['author'] = ''
-            
+
             self._addItem('attachments', attachment)
-        
+
         elif name == 'OSGroup':
             group = {'id': attrs['id'], 'name': attrs['name']}
 
             self._addItem('groups', group)
-        
+
         elif name == 'Action':
             action = {'id': attrs['id'], 'issue': attrs['issue'],
                       'author': attrs['author'], 'type': attrs['type']}
 
             action['created'] = self.to_datetime(attrs['created'])
-            
+
             try:
                 action['body'] = attrs['body']
             except KeyError:
                 action['body'] = ''
-            
+
             self._addItem('actions', action, self.comments)
-            
+
         elif name == 'OSMembership':
             membership = {'id': attrs['id'], 'username': attrs['userName'],
                           'groupName': attrs['groupName']}
@@ -285,11 +285,11 @@ class JiraDecoder(object):
         elif name == 'body':
             self.lastComment = self.comments[len(self.comments)-1]
             self.lastComment['body'] = ''
-        
+
         elif name == 'description':
             self.lastIssue = self.issues[len(self.issues)-1]
             self.lastIssue['description'] = ''
-        
+
         # Unused:
         #  - OSCurrentStep
         #  - OSCurrentStepPrev
@@ -317,15 +317,15 @@ class TracEncoder(object):
             self.username = username
             self.password = password
             self.attachments = attachments
-            
+
             if username is not None and password is not None:
                 auth = '%s:%s@' % (username, password)
             else:
                 auth = ''
-            
+
             self.location = "http://%s%s/login/xmlrpc" % (auth, url)
             log.info('%s...' % self.__doc__.strip())
-            
+
         else:
             raise BaseException("Please specify a value for the 'url' option")
     
@@ -333,7 +333,7 @@ class TracEncoder(object):
         """
         Save all data to the Trac database.
         """
-        log.info('Connecting to %s' % self.location)
+        log.info('Connecting to: %s' % self.location)
         log.info('Attachments location: %s' % self.attachments)
 
         self.jiraData = jiraData
@@ -382,6 +382,10 @@ class TracEncoder(object):
             for version in versions:
                 self.proxy.ticket.version.delete(version)
 
+        # show progress bar
+        progress = DisplayProgress(len(self.jiraData['versions']),
+                                   'Versions')
+        
         # import new versions into trac
         for version in self.jiraData['versions']:
             # exclude trailing 'v' from version number
@@ -390,8 +394,7 @@ class TracEncoder(object):
             date = version['releasedate']
             attr = {'name': nr, 'time': date, 'description': desc}
             self.proxy.ticket.version.create(nr, attr)
-        
-        log.info('  %d Versions' % len(self.jiraData['versions']))
+            progress.update()
 
     def _importResolutions(self):
         # get existing resolutions from trac
@@ -402,14 +405,17 @@ class TracEncoder(object):
             for resolution in resolutions:
                 self.proxy.ticket.resolution.delete(resolution)
 
+        # show progress bar
+        progress = DisplayProgress(len(self.jiraData['resolutions']),
+                                   'Resolutions')
+
         # import new resolutions into trac
         order = 1
         for resolution in self.jiraData['resolutions']:
             name = resolution['name']
             self.proxy.ticket.resolution.create(name, order)
             order += 1
-
-        log.info('  %d Resolutions' % len(self.jiraData['resolutions']))
+            progress.update()
 
     def _importPriorities(self):
         # get existing priorities from trac
@@ -420,14 +426,17 @@ class TracEncoder(object):
             for priority in priorities:
                 self.proxy.ticket.priority.delete(priority)
 
+        # show progress bar
+        progress = DisplayProgress(len(self.jiraData['priorities']),
+                                   'Priorities')
+
         # import new priorities into trac
         order = 1
         for priority in self.jiraData['priorities']:
             name = priority['name']
             self.proxy.ticket.priority.create(name, order)
             order += 1
-
-        log.info('  %d Priorities' % len(self.jiraData['priorities']))
+            progress.update()
 
     def _importIssueTypes(self):
         # get existing issue types from trac
@@ -438,13 +447,16 @@ class TracEncoder(object):
             for issueType in issueTypes:
                 self.proxy.ticket.type.delete(issueType)
 
+        # show progress bar
+        progress = DisplayProgress(len(self.jiraData['issueTypes']),
+                                   'Issue Types')
+
         # import new issue types into trac
         for issueType in self.jiraData['issueTypes']:
             name = issueType['name']
             order = issueType['sequence']
             self.proxy.ticket.type.create(name, order)
-
-        log.info('  %d Issue Types' % len(self.jiraData['issueTypes']))
+            progress.update()
 
     def _importMilestones(self):
         # get existing milestones from trac
@@ -465,6 +477,10 @@ class TracEncoder(object):
             for component in components:
                 self.proxy.ticket.component.delete(component)
 
+        # show progress bar
+        progress = DisplayProgress(len(self.jiraData['projects']),
+                                   'Components')
+
         # import new components into trac
         # note: we import jira's projects as components into trac because
         # components in jira are children of projects, and trac doesn't
@@ -475,8 +491,7 @@ class TracEncoder(object):
             desc = component['description']
             attr = {'name': name, 'owner': owner, 'description': desc}
             self.proxy.ticket.component.create(name, attr)
-
-        log.info('  %d Components' % len(self.jiraData['projects']))
+            progress.update()
 
     def _importStatuses(self):
         # get existing statuses from trac
@@ -493,9 +508,13 @@ class TracEncoder(object):
         self.jiraData['statuses'][3]['name'] = statuses[2] # resolved/closed
         self.jiraData['statuses'][4]['name'] = statuses[2] # closed/closed
 
-        log.info('  %d Statuses' % len(self.jiraData['statuses']))
+        log.info('  %d Statuses...' % len(self.jiraData['statuses']))
 
     def _importIssues(self):
+        # show progress bar
+        progress = DisplayProgress(len(self.jiraData['issues']),
+                                   'Issues')
+        
         # import new issues into trac
         for issue in self.jiraData['issues']:
             # todo: version
@@ -538,15 +557,15 @@ class TracEncoder(object):
                 path = self._getAttachmentPath(attachment['attachmentId'], key,
                                                filename)
                 if os.path.exists(path):
-                    print(path)
                     file = open(path, 'rb').read()
                     data = client.Binary(file)
-                    self.proxy.ticket.putAttachment(id, filename, description, data, author, created)
+                    self.proxy.ticket.putAttachment(id, filename, description,
+                                            data, author, created, False)
+            progress.update()
 
-        log.info('  %d Issues' % len(self.jiraData['issues']))
         log.info('  %d Actions' % len(self.jiraData['actions']))
         log.info('  %d Attachments' % len(self.jiraData['attachments']))
-    
+
     def _importUsers(self):
         log.info('  TODO: %d Users' % len(self.jiraData['users']))
         pass
@@ -597,19 +616,102 @@ class TracEncoder(object):
         # sort attachments with oldest id first
         return sorted(attachments, key=itemgetter('attachmentId'), reverse=False)
 
+class ProgressBar:
+    """
+    Creates a text-based progress bar. Call the object with the `print'
+    command to see the progress bar, which looks something like this:
+
+        [=======>        22%                  ]
+
+    You may specify the progress bar's width, min and max values on init.
+    
+    Taken from http://code.activestate.com/recipes/168639/
+    """
+
+    def __init__(self, minValue = 0, maxValue = 100, totalWidth=40):
+        self.progBar = "[]"   # This holds the progress bar string
+        self.min = minValue
+        self.max = maxValue
+        self.span = maxValue - minValue
+        self.width = totalWidth
+        self.amount = 0       # When amount == max, we are 100% done
+        self.updateAmount(0)  # Build progress bar string
+
+    def updateAmount(self, newAmount = 0):
+        """
+        Update the progress bar with the new amount (with min and max
+        values set at initialization; if it is over or under, it takes the
+        min or max value as a default.
+        """
+        if newAmount < self.min: newAmount = self.min
+        if newAmount > self.max: newAmount = self.max
+        self.amount = newAmount
+
+        # Figure out the new percent done, round to an integer
+        diffFromMin = float(self.amount - self.min)
+        percentDone = (diffFromMin / float(self.span)) * 100.0
+        percentDone = int(round(percentDone))
+
+        # Figure out how many hash bars the percentage should be
+        allFull = self.width - 2
+        numHashes = (percentDone / 100.0) * allFull
+        numHashes = int(round(numHashes))
+
+        # Build a progress bar with an arrow of equal signs; special cases for
+        # empty and full
+        if numHashes == 0:
+            self.progBar = "[>%s]" % (' '*(allFull-1))
+        elif numHashes == allFull:
+            self.progBar = "[%s]" % ('='*allFull)
+        else:
+            self.progBar = "[%s>%s]" % ('='*(numHashes-1),
+                                        ' '*(allFull-numHashes))
+
+        # figure out where to put the percentage, roughly centered
+        percentPlace = int(len(self.progBar) / 2) - len(str(percentDone))
+        percentString = str(percentDone) + "%"
+        
+        # slice the percentage into the bar
+        self.progBar = ' '.join([self.progBar[0:percentPlace], percentString,
+                                self.progBar[percentPlace+len(percentString):]
+                                ])
+
+    def __str__(self):
+        return str(self.progBar)
+
+
+class DisplayProgress(object):
+    """
+    Display progress bar.
+    """
+
+    def __init__(self, total, title):
+        self.progress = 0
+        self.title = title
+        self.total = total
+        self.pb = ProgressBar(self.progress, self.total)
+        log.info('  %d %s...' % (self.total, self.title))
+
+    def update(self):
+        self.progress += 1
+        self.pb.updateAmount(self.progress)
+        sys.stdout.write(str(self.pb)+'\r')
+        sys.stdout.flush()
+
+
 if __name__ == "__main__":
     from optparse import OptionParser
 
     usage = "Usage: Jira2Trac [options]"
     parser = OptionParser(usage=usage, version="Jira2Trac 1.0")
 
-    parser.add_option("-i", "--input", dest="input", 
-                      help="Load Jira backup data from XML file", metavar="FILE")
-    parser.add_option("-a", "--attachments", dest="attachments", 
-                      help="Location of the attachments folder", metavar="FILE")
-    parser.add_option("-v", "--verbose",
-                      action="store_true", dest="verbose", default=False,
-                      help="Print debug messages to stdout [default: %default]")
+    parser.add_option("-i", "--input", dest="input",
+                      help="Location of Jira backup XML file", metavar="FILE")
+    parser.add_option("-a", "--attachments", dest="attachments", metavar="FILE",
+                      help="Location of the Jira attachments folder")
+    parser.add_option("-v", "--verbose", default=False, action="store_true",
+                      help="Print debug messages to stdout [default: %default]",
+                      dest="verbose")
     parser.add_option("-u", "--username", dest="username", help="Username for Trac instance")
     parser.add_option("-p", "--password", dest="password", help="Password for Trac instance")
     parser.add_option("-l", "--url", dest="url", help="URL for Trac instance")
@@ -631,7 +733,7 @@ if __name__ == "__main__":
             jira.parseBackupFile()
             jira.showResults()
         except KeyboardInterrupt:
-            log.info('Cancelled data parsing')
+            log.warn('Cancelled data parsing!')
             exit()
 
         if options.username:
@@ -640,13 +742,13 @@ if __name__ == "__main__":
             try:
                 trac.importData(jira.data)
             except KeyboardInterrupt:
-                log.info('Cancelled data import')
+                log.warn('Cancelled data import!')
                 exit()
-        
+
         end = time.time() - start
 
-        log.info('Completed in %s sec.\n' % (Decimal(str(end)).quantize(Decimal('.0001'))))
-        
+        log.info('Completed in %s sec.' % (Decimal(str(end)).quantize(Decimal('.0001'))))
+
     else:
         parser.error("Please specify a value for the 'input' option")
 
