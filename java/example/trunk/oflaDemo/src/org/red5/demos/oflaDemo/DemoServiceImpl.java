@@ -21,7 +21,7 @@ public class DemoServiceImpl implements IDemoService {
 	}
 
     public Map<String, Map<String, Object>> getListOfAvailableFLVs(String string) {
-    	log.debug("getListOfAvailableFLVs, Got a string: " + string);
+    	log.debug("getListOfAvailableFLVs, Got a string: {}", string);
     	return getListOfAvailableFLVs();
     }
 

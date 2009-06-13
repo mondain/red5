@@ -40,11 +40,19 @@ public class DemoService {
 		Map<String, Map<String, Object>> filesMap = new HashMap<String, Map<String, Object>>();
 		try {
 			log.debug("getting the FLV files");
-			Resource[] flvs = scope.getResources("streams/*.flv");
-			addToMap(filesMap, flvs);
+			addToMap(filesMap, scope.getResources("streams/*.flv"));
 
-			Resource[] mp3s = scope.getResources("streams/*.mp3");
-			addToMap(filesMap, mp3s);
+			addToMap(filesMap, scope.getResources("streams/*.f4v"));
+
+			addToMap(filesMap, scope.getResources("streams/*.mp3"));
+			
+			addToMap(filesMap, scope.getResources("streams/*.mp4"));
+
+			addToMap(filesMap, scope.getResources("streams/*.m4a"));
+
+			addToMap(filesMap, scope.getResources("streams/*.3g2"));			
+
+			addToMap(filesMap, scope.getResources("streams/*.3gp"));			
 			
 		} catch (IOException e) {
 			log.error("", e);
