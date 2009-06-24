@@ -5,8 +5,8 @@ This document describes how to use the jira.py script that allows
 you to import existing Jira data into a Trac database using XML-RPC.
 This script requires Python 3.1 or newer. It was tested with
 Atlassian Jira Enterprise 3.6.5 (build 161) and Edgewall Trac
-0.11.4. The Trac instance needs to have the XML-RPC 1.0 plugin
-installed.
+0.11.4. The Trac instance needs to have the XML-RPC 1.0 and
+AccountManager plugins installed.
 
 Instructions
 ============

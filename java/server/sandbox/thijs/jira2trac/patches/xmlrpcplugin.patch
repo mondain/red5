@@ -1,0 +1,156 @@
+Index: tracrpc/util.py
+===================================================================
+--- tracrpc/util.py	(revision 5830)
++++ tracrpc/util.py	(working copy)
+@@ -1,10 +1,16 @@
+ import time
+ import xmlrpclib
++from datetime import datetime
++from trac.util.datefmt import utc
+ 
+ def to_timestamp(datetime):
+     """ Convert xmlrpclib.DateTime string representation to UNIX timestamp. """
+     return time.mktime(time.strptime('%s UTC' % datetime.value, '%Y%m%dT%H:%M:%S %Z')) - time.timezone
+ 
+-def to_datetime(dt):
++def to_xmlrpc_datetime(dt):
+     """ Convert a datetime.datetime object to a xmlrpclib DateTime object """
+-    return xmlrpclib.DateTime(dt.utctimetuple())
+\ No newline at end of file
++    return xmlrpclib.DateTime(dt.utctimetuple())
++    
++def to_datetime(x):
++    """ Convert a xmlrpclib DateTime object to a datetime.datetime object """
++    return datetime.fromtimestamp(to_timestamp(x), utc)
+\ No newline at end of file
+Index: tracrpc/ticket.py
+===================================================================
+--- tracrpc/ticket.py	(revision 5830)
++++ tracrpc/ticket.py	(working copy)
+@@ -2,7 +2,7 @@
+ from trac.core import *
+ from trac.perm import PermissionCache
+ from tracrpc.api import IXMLRPCHandler, expose_rpc
+-from tracrpc.util import to_timestamp, to_datetime
++from tracrpc.util import to_timestamp, to_datetime, to_xmlrpc_datetime
+ import trac.ticket.model as model
+ import trac.ticket.query as query
+ from trac.ticket.api import TicketSystem
+@@ -71,10 +71,10 @@
+     def get(self, req, id):
+         """ Fetch a ticket. Returns [id, time_created, time_changed, attributes]. """
+         t = model.Ticket(self.env, id)
+-        return (t.id, to_datetime(t.time_created), 
+-                to_datetime(t.time_changed), t.values)
++        return (t.id, to_xmlrpc_datetime(t.time_created), 
++                to_xmlrpc_datetime(t.time_changed), t.values)
+ 
+-    def create(self, req, summary, description, attributes = {}, notify=False):
++    def create(self, req, summary, description, when, attributes = {}, notify=False):
+         """ Create a new ticket, returning the ticket ID. """
+         t = model.Ticket(self.env)
+         t['status'] = 'new'
+@@ -83,7 +83,7 @@
+         t['reporter'] = req.authname or 'anonymous'
+         for k, v in attributes.iteritems():
+             t[k] = v
+-        t.insert()
++        t.insert(to_datetime(when))
+ 
+         if notify:
+             try:
+@@ -95,19 +95,28 @@
+ 		
+         return t.id
+ 
+-    def update(self, req, id, comment, attributes = {}, notify=False):
++    def update(self, req, id, comment, when, author, index=1, attributes = {}, notify=False):
+         """ Update a ticket, returning the new ticket in the same form as getTicket(). """
+-        now = datetime.now(utc)
++        if when is None:
++            when = datetime.now(utc)
++        elif isinstance(when, xmlrpclib.DateTime):
++            when = to_datetime(when)
+ 
+-        t = model.Ticket(self.env, id)
++        db = self.env.get_db_cnx()
++        t = model.Ticket(self.env, id, db)
+         for k, v in attributes.iteritems():
+             t[k] = v
+-        t.save_changes(req.authname or 'anonymous', comment)
++        
++        if author is None:
++            author = req.authname or 'anonymous'
++        
++        t.save_changes(author, comment, when, db, index)
++        db.commit()
+ 
+         if notify:
+             try:
+                 tn = TicketNotifyEmail(self.env)
+-                tn.notify(t, newticket=False, modtime=now)
++                tn.notify(t, newticket=False, modtime=when)
+             except Exception, e:
+                 self.log.exception("Failure sending notification on change of "
+                                    "ticket #%s: %s" % (t.id, e))
+@@ -122,7 +131,7 @@
+     def changeLog(self, req, id, when=0):
+         t = model.Ticket(self.env, id)
+         for date, author, field, old, new, permanent in t.get_changelog(when):
+-            yield (to_datetime(date), author, field, old, new, permanent)
++            yield (to_xmlrpc_datetime(date), author, field, old, new, permanent)
+     # Use existing documentation from Ticket model
+     changeLog.__doc__ = inspect.getdoc(model.Ticket.get_changelog)
+ 
+@@ -131,14 +140,14 @@
+         description, size, time, author) for each attachment."""
+         for t in Attachment.select(self.env, 'ticket', ticket):
+             yield (t.filename, t.description or '', t.size, 
+-                   to_datetime(t.date), t.author)
++                   to_xmlrpc_datetime(t.date), t.author)
+ 
+     def getAttachment(self, req, ticket, filename):
+         """ returns the content of an attachment. """
+         attachment = Attachment(self.env, 'ticket', ticket, filename)
+         return xmlrpclib.Binary(attachment.open().read())
+ 
+-    def putAttachment(self, req, ticket, filename, description, data, replace=True):
++    def putAttachment(self, req, ticket, filename, description, data, author, created, replace=True):
+         """ Add an attachment, optionally (and defaulting to) overwriting an
+         existing one. Returns filename."""
+         if not model.Ticket(self.env, ticket).exists:
+@@ -149,8 +158,11 @@
+                 attachment.delete()
+             except TracError:
+                 pass
++        if author == '':
++            author = req.authname or 'anonymous'
+         attachment = Attachment(self.env, 'ticket', ticket)
+-        attachment.author = req.authname or 'anonymous'
++        attachment.author = author
++        attachment.date = created
+         attachment.description = description
+         attachment.insert(filename, StringIO(data.data), len(data.data))
+         return attachment.filename
+@@ -207,6 +219,8 @@
+             i = cls(self.env)
+             i.name = name
+             for k, v in attributes.iteritems():
++                if isinstance(v, xmlrpclib.DateTime):
++                    v = to_datetime(v)
+                 setattr(i, k, v)
+             i.insert();
+         create.__doc__ = """ Create a new ticket %s with the given attributes. """ % cls.__name__.lower()
+Index: tracrpc/wiki.py
+===================================================================
+--- tracrpc/wiki.py	(revision 5830)
++++ tracrpc/wiki.py	(working copy)
+@@ -13,7 +13,7 @@
+ from trac.wiki.formatter import wiki_to_html
+ from trac.attachment import Attachment
+ from tracrpc.api import IXMLRPCHandler, expose_rpc
+-from tracrpc.util import to_timestamp, to_datetime
++from tracrpc.util import to_timestamp
+ 
+ class WikiRPC(Component):
+     """Superset of the
