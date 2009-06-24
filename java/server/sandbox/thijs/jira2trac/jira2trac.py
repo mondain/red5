@@ -33,11 +33,13 @@ import sys
 import stat
 import time
 import socket
-import xml.parsers.expat
+import base64
+import hashlib
 import logging as log
+import xml.parsers.expat
 
-from decimal import Decimal
 from xmlrpc import client
+from decimal import Decimal
 from datetime import datetime
 from operator import itemgetter
 
@@ -107,6 +109,7 @@ class JiraDecoder(object):
 
             log.info('  %d %s...' % (len(self.data[category]), name))
 
+        # print a parsed category
         #for item in self.data['projects']:
         #    print(item)
         #    print('%50s - %s - %s - %s' % (item['issue'], item['author'], item['type'],
@@ -311,32 +314,34 @@ class TracEncoder(object):
     """
     Import data into remote Trac database using XML-RPC.
     """
-    def __init__(self, username, password, url, attachments):
+    def __init__(self, jiraData, username, password, url, attachments, auth):
         if url:
+            self.jiraData = jiraData
             self.url = url
             self.username = username
             self.password = password
             self.attachments = attachments
+            self.authentication = auth
 
             if username is not None and password is not None:
-                auth = '%s:%s@' % (username, password)
+                cred = '%s:%s@' % (username, password)
             else:
-                auth = ''
+                cred = ''
 
-            self.location = "http://%s%s/login/xmlrpc" % (auth, url)
+            self.location = "http://%s%s/login/xmlrpc" % (cred, url)
             log.info('%s...' % self.__doc__.strip())
 
         else:
-            raise BaseException("Please specify a value for the 'url' option")
-    
-    def importData(self, jiraData):
+            raise ValueError("Please specify a value for the 'url' option")
+
+    def importData(self):
         """
         Save all data to the Trac database.
         """
         log.info('Connecting to: %s' % self.location)
         log.info('Attachments location: %s' % self.attachments)
+        log.info('Credentials type: %s' % self.authentication)
 
-        self.jiraData = jiraData
         self.proxy = client.ServerProxy(self.location, use_datetime=True)
 
         log.info('Importing data...')
@@ -348,7 +353,21 @@ class TracEncoder(object):
         self._call(self._importComponents)
         self._call(self._importStatuses)
         self._call(self._importIssues)
-        self._call(self._importUsers)
+
+    def importUsers(self):
+        """
+        Store imported users in a new .htpasswd style file.
+        """
+        log.info('  %d Users...' % (len(self.jiraData['users'])))
+
+        line = '%s:%s\n'
+        output = io.FileIO(self.authentication, 'w')
+        output.write(line % (self.username, self.createHash(self.password)))
+        
+        for user in self.jiraData['users']:
+            output.write(line % (user['name'], user['password']))
+
+        output.close()
 
     def _call(self, func):
         """
@@ -362,6 +381,7 @@ class TracEncoder(object):
             log.error("URL: %s" % err.url)
             log.error("HTTP/HTTPS headers: %s" % err.headers)
             log.error("Error: %d - %s" % (err.errcode, err.errmsg))
+            sys.exit()
 
         except client.Fault as err:
             log.error("A fault occurred!")
@@ -373,6 +393,18 @@ class TracEncoder(object):
             log.error("Error while connecting: %s" % err)
             sys.exit()
 
+    def createHash(self, password):
+        """
+        Turns strings into base64 encoded SHA-512 hashes.
+        
+        For example, the word 'sphere' should produce the hash:
+        'uQieO/1CGMUIXXftw3ynrsaYLShI+GTcPS4LdUGWbIusFvHPfUzD7CZvms6yMMvA8I7FViHVEqr6Mj4pCLKAFQ=='
+        """
+        digested = hashlib.sha512(bytes(password, 'utf-8')).digest()
+        hash = base64.b64encode(digested)
+
+        return str(hash, encoding='utf8')
+    
     def _importVersions(self):
         # get existing versions from trac
         versions = self.proxy.ticket.version.getAll()
@@ -517,7 +549,7 @@ class TracEncoder(object):
         
         # import new issues into trac
         for issue in self.jiraData['issues']:
-            # todo: version
+            # TODO: version
             description = issue['description']            
             reporter = issue['reporter']
             owner = issue['assignee']
@@ -565,10 +597,6 @@ class TracEncoder(object):
 
         log.info('  %d Actions' % len(self.jiraData['actions']))
         log.info('  %d Attachments' % len(self.jiraData['attachments']))
-
-    def _importUsers(self):
-        log.info('  TODO: %d Users' % len(self.jiraData['users']))
-        pass
 
     def _getAttachmentPath(self, id, key, filename):
         project = key.rsplit('-')[0]
@@ -619,13 +647,13 @@ class TracEncoder(object):
 class ProgressBar:
     """
     Creates a text-based progress bar. Call the object with the `print'
-    command to see the progress bar, which looks something like this:
+    command to see the progress bar, which looks something like this::
 
         [=======>        22%                  ]
 
     You may specify the progress bar's width, min and max values on init.
     
-    Taken from http://code.activestate.com/recipes/168639/
+    Taken from U{http://code.activestate.com/recipes/168639/}
     """
 
     def __init__(self, minValue = 0, maxValue = 100, totalWidth=40):
@@ -695,7 +723,7 @@ class DisplayProgress(object):
     def update(self):
         self.progress += 1
         self.pb.updateAmount(self.progress)
-        sys.stdout.write(str(self.pb)+'\r')
+        sys.stdout.write("%s%s" % (str(self.pb), '\r'))
         sys.stdout.flush()
 
 
@@ -709,12 +737,15 @@ if __name__ == "__main__":
                       help="Location of Jira backup XML file", metavar="FILE")
     parser.add_option("-a", "--attachments", dest="attachments", metavar="FILE",
                       help="Location of the Jira attachments folder")
+    parser.add_option("-t", "--authentication", dest="authentication", metavar="FILE",
+                      help="Location of the .htpasswd file (optional)")
+    parser.add_option("-l", "--url", dest="url", help="URL for Trac instance")
+    parser.add_option("-u", "--username", dest="username", help="Username for Trac instance")
+    parser.add_option("-p", "--password", dest="password", help="Password for Trac instance")
     parser.add_option("-v", "--verbose", default=False, action="store_true",
                       help="Print debug messages to stdout [default: %default]",
                       dest="verbose")
-    parser.add_option("-u", "--username", dest="username", help="Username for Trac instance")
-    parser.add_option("-p", "--password", dest="password", help="Password for Trac instance")
-    parser.add_option("-l", "--url", dest="url", help="URL for Trac instance")
+
     (options, args) = parser.parse_args()
 
     FORMAT = "%(asctime)-15s - %(levelname)-3s - %(message)s"
@@ -727,20 +758,25 @@ if __name__ == "__main__":
 
     if options.input:
         start = time.time()
-
         jira = JiraDecoder(options.input)
+
         try:
             jira.parseBackupFile()
-            jira.showResults()
+            jira.showResults()            
         except KeyboardInterrupt:
             log.warn('Cancelled data parsing!')
             exit()
 
         if options.username:
-            trac = TracEncoder(options.username, options.password, options.url,
-                               options.attachments)
+            trac = TracEncoder(jira.data, options.username, options.password,
+                               options.url, options.attachments,
+                               options.authentication)
             try:
-                trac.importData(jira.data)
+                trac.importData()
+
+                if options.authentication is not None:
+                    trac.importUsers()
+
             except KeyboardInterrupt:
                 log.warn('Cancelled data import!')
                 exit()
