@@ -24,14 +24,12 @@
 Import a Jira backup into a Trac database using XML-RPC.
 
 @since: 2008-12-20
-@author: Thijs Triemstra
 """
 
 import io
 import os
 import sys
 import stat
-import time
 import socket
 import base64
 import hashlib
@@ -45,6 +43,8 @@ from operator import itemgetter
 
 
 __all__ = ['JiraDecoder', 'DisplayProgress', 'ProgressBar', 'TracEncoder']
+
+__version__ = (0, 1)
 
 
 class JiraDecoder(object):
