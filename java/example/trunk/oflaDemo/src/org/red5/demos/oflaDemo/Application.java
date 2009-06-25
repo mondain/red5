@@ -12,20 +12,14 @@ import org.slf4j.Logger;
 
 public class Application extends ApplicationAdapter {
 
-	private static Logger log = Red5LoggerFactory.getLogger(Application.class, "oflaDemo");
-	
 	private IScope appScope;
 
 	private IServerStream serverStream;
-
-	{
-		log.info("oflaDemo created");
-		System.out.println("oflaDemo created");
-	}
 	
 	/** {@inheritDoc} */
     @Override
 	public boolean appStart(IScope app) {
+	    super.appStart(app);
 		log.info("oflaDemo appStart");
 		System.out.println("oflaDemo appStart");    	
 		appScope = app;
