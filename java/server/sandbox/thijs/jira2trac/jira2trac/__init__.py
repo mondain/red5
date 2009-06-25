@@ -44,6 +44,9 @@ from datetime import datetime
 from operator import itemgetter
 
 
+__all__ = ['JiraDecoder', 'DisplayProgress', 'ProgressBar', 'TracEncoder']
+
+
 class JiraDecoder(object):
     """
     Parse a Jira XML backup file.
@@ -728,63 +731,6 @@ class DisplayProgress(object):
 
 
 if __name__ == "__main__":
-    from optparse import OptionParser
-
-    usage = "Usage: Jira2Trac [options]"
-    parser = OptionParser(usage=usage, version="Jira2Trac 1.0")
-
-    parser.add_option("-i", "--input", dest="input",
-                      help="Location of Jira backup XML file", metavar="FILE")
-    parser.add_option("-a", "--attachments", dest="attachments", metavar="FILE",
-                      help="Location of the Jira attachments folder")
-    parser.add_option("-t", "--authentication", dest="authentication", metavar="FILE",
-                      help="Location of the .htpasswd file (optional)")
-    parser.add_option("-l", "--url", dest="url", help="URL for Trac instance")
-    parser.add_option("-u", "--username", dest="username", help="Username for Trac instance")
-    parser.add_option("-p", "--password", dest="password", help="Password for Trac instance")
-    parser.add_option("-v", "--verbose", default=False, action="store_true",
-                      help="Print debug messages to stdout [default: %default]",
-                      dest="verbose")
-
-    (options, args) = parser.parse_args()
-
-    FORMAT = "%(asctime)-15s - %(levelname)-3s - %(message)s"
-    LEVEL = log.INFO
-
-    if options.verbose == True:
-        LEVEL = log.DEBUG
-
-    log.basicConfig(format=FORMAT, level=LEVEL)
-
-    if options.input:
-        start = time.time()
-        jira = JiraDecoder(options.input)
-
-        try:
-            jira.parseBackupFile()
-            jira.showResults()            
-        except KeyboardInterrupt:
-            log.warn('Cancelled data parsing!')
-            exit()
-
-        if options.username:
-            trac = TracEncoder(jira.data, options.username, options.password,
-                               options.url, options.attachments,
-                               options.authentication)
-            try:
-                trac.importData()
-
-                if options.authentication is not None:
-                    trac.importUsers()
-
-            except KeyboardInterrupt:
-                log.warn('Cancelled data import!')
-                exit()
-
-        end = time.time() - start
-
-        log.info('Completed in %s sec.' % (Decimal(str(end)).quantize(Decimal('.0001'))))
-
-    else:
-        parser.error("Please specify a value for the 'input' option")
+    from jira2trac.scripts import run
+    run()
 
