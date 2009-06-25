@@ -20,6 +20,8 @@
 
 """
 The jira2trac Daemon.
+
+@since: 2009-06-25
 """
 
 
@@ -28,14 +30,17 @@ import logging as log
 
 from optparse import OptionParser
 
+import jira2trac
 from jira2trac import JiraDecoder
 from jira2trac import TracEncoder
 
 
 def run():
-    usage = "Usage: Jira2Trac [options]"
-    parser = OptionParser(usage=usage, version="Jira2Trac 1.0")
-
+    name = "Jira2Trac"
+    version = '.'.join(map(lambda x: str(x), jira2trac.__version__))
+    usage = "Usage: %s [options]" % name
+    
+    parser = OptionParser(usage=usage, version="%s %s" % (name, version))
     parser.add_option("-i", "--input", dest="input",
                       help="Location of Jira backup XML file", metavar="FILE")
     parser.add_option("-a", "--attachments", dest="attachments", metavar="FILE",
@@ -90,6 +95,6 @@ def run():
 
     else:
         parser.error("Please specify a value for the 'input' option")
-        app.run(runApp, ServerOptions)
+
 
 __all__ = ['run']
