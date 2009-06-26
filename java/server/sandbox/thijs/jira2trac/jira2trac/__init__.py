@@ -26,25 +26,27 @@ Import a Jira backup into a Trac database using XML-RPC.
 @since: 2008-12-20
 """
 
-import io
 import os
 import sys
-import stat
-import socket
-import base64
-import hashlib
 import logging as log
-import xml.parsers.expat
 
+from io import FileIO
+from stat import ST_SIZE
 from xmlrpc import client
 from decimal import Decimal
 from datetime import datetime
+from xml.parsers import expat
 from operator import itemgetter
+from socket import error as socketError
+from jira2trac.util import create_hash
+from jira2trac.util import DisplayProgress
 
 
-__all__ = ['JiraDecoder', 'DisplayProgress', 'ProgressBar', 'TracEncoder']
+__all__ = ['JiraDecoder', 'TracEncoder']
 
 __version__ = (0, 1)
+
+version = '.'.join(map(lambda x: str(x), __version__))
 
 
 class JiraDecoder(object):
@@ -82,15 +84,14 @@ class JiraDecoder(object):
         """
         Load Jira backup file.
         """
-        self.size = Decimal(str(os.stat(self.input)[stat.ST_SIZE]/(1024*1024))
+        self.size = Decimal(str(os.stat(self.input)[ST_SIZE]/(1024*1024))
                             ).quantize(Decimal('.01'))
 
-        log.info('Load Jira backup file...')
-        log.info('Reading data from: %s (%s MB)' % (self.input, self.size))
+        log.info('Loading Jira backup file: %s (%s MB)' % (self.input, self.size))
         log.info('Processing data...')
 
-        file = io.FileIO(self.input, 'r').readall()
-        p = xml.parsers.expat.ParserCreate()
+        file = FileIO(self.input, 'r').readall()
+        p = expat.ParserCreate()
         p.StartElementHandler = self._start_element
         p.EndElementHandler = self._end_element
         p.CharacterDataHandler = self._char_data
@@ -364,8 +365,8 @@ class TracEncoder(object):
         log.info('  %d Users...' % (len(self.jiraData['users'])))
 
         line = '%s:%s\n'
-        output = io.FileIO(self.authentication, 'w')
-        output.write(line % (self.username, self.createHash(self.password)))
+        output = FileIO(self.authentication, 'w')
+        output.write(line % (self.username, create_hash(self.password)))
         
         for user in self.jiraData['users']:
             output.write(line % (user['name'], user['password']))
@@ -391,22 +392,12 @@ class TracEncoder(object):
             log.error("Fault code: %d" % err.faultCode)
             log.error("Fault string: %s" % err.faultString)
 
-        except socket.error as err:
+        except socketError as err:
             log.error("A socket error occurred!")
             log.error("Error while connecting: %s" % err)
             sys.exit()
 
-    def createHash(self, password):
-        """
-        Turns strings into base64 encoded SHA-512 hashes.
-        
-        For example, the word 'sphere' should produce the hash:
-        'uQieO/1CGMUIXXftw3ynrsaYLShI+GTcPS4LdUGWbIusFvHPfUzD7CZvms6yMMvA8I7FViHVEqr6Mj4pCLKAFQ=='
-        """
-        digested = hashlib.sha512(bytes(password, 'utf-8')).digest()
-        hash = base64.b64encode(digested)
-
-        return str(hash, encoding='utf8')
+    
     
     def _importVersions(self):
         # get existing versions from trac
@@ -442,7 +433,7 @@ class TracEncoder(object):
 
         # show progress bar
         progress = DisplayProgress(len(self.jiraData['resolutions']),
-                                   'Resolutions')
+                                    'Resolutions')
 
         # import new resolutions into trac
         order = 1
@@ -647,90 +638,7 @@ class TracEncoder(object):
         # sort attachments with oldest id first
         return sorted(attachments, key=itemgetter('attachmentId'), reverse=False)
 
-class ProgressBar:
-    """
-    Creates a text-based progress bar. Call the object with the `print'
-    command to see the progress bar, which looks something like this::
-
-        [=======>        22%                  ]
-
-    You may specify the progress bar's width, min and max values on init.
-    
-    Taken from U{http://code.activestate.com/recipes/168639/}
-    """
-
-    def __init__(self, minValue = 0, maxValue = 100, totalWidth=40):
-        self.progBar = "[]"   # This holds the progress bar string
-        self.min = minValue
-        self.max = maxValue
-        self.span = maxValue - minValue
-        self.width = totalWidth
-        self.amount = 0       # When amount == max, we are 100% done
-        self.updateAmount(0)  # Build progress bar string
-
-    def updateAmount(self, newAmount = 0):
-        """
-        Update the progress bar with the new amount (with min and max
-        values set at initialization; if it is over or under, it takes the
-        min or max value as a default.
-        """
-        if newAmount < self.min: newAmount = self.min
-        if newAmount > self.max: newAmount = self.max
-        self.amount = newAmount
-
-        # Figure out the new percent done, round to an integer
-        diffFromMin = float(self.amount - self.min)
-        percentDone = (diffFromMin / float(self.span)) * 100.0
-        percentDone = int(round(percentDone))
-
-        # Figure out how many hash bars the percentage should be
-        allFull = self.width - 2
-        numHashes = (percentDone / 100.0) * allFull
-        numHashes = int(round(numHashes))
-
-        # Build a progress bar with an arrow of equal signs; special cases for
-        # empty and full
-        if numHashes == 0:
-            self.progBar = "[>%s]" % (' '*(allFull-1))
-        elif numHashes == allFull:
-            self.progBar = "[%s]" % ('='*allFull)
-        else:
-            self.progBar = "[%s>%s]" % ('='*(numHashes-1),
-                                        ' '*(allFull-numHashes))
-
-        # figure out where to put the percentage, roughly centered
-        percentPlace = int(len(self.progBar) / 2) - len(str(percentDone))
-        percentString = str(percentDone) + "%"
-        
-        # slice the percentage into the bar
-        self.progBar = ' '.join([self.progBar[0:percentPlace], percentString,
-                                self.progBar[percentPlace+len(percentString):]
-                                ])
-
-    def __str__(self):
-        return str(self.progBar)
-
-
-class DisplayProgress(object):
-    """
-    Display progress bar.
-    """
-
-    def __init__(self, total, title):
-        self.progress = 0
-        self.title = title
-        self.total = total
-        self.pb = ProgressBar(self.progress, self.total)
-        log.info('  %d %s...' % (self.total, self.title))
-
-    def update(self):
-        self.progress += 1
-        self.pb.updateAmount(self.progress)
-        sys.stdout.write("%s%s" % (str(self.pb), '\r'))
-        sys.stdout.flush()
-
 
 if __name__ == "__main__":
     from jira2trac.scripts import run
     run()
-
