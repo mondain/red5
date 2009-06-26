@@ -1,8 +1,0 @@
- - make 'jira2trac' commandline tool
- - allow for choice of transport; amf, xmlrpc, etc..
- - ability to (create and) use a local trac db
- - flash interface for full automation
- - add acct_mgr jira auth
- - get rid of xmlrpc-plugin dependency
- - implement ticket based trac api calls
- - settings.cfg file for commandline tool
