@@ -25,19 +25,18 @@ The jira2trac Daemon.
 """
 
 
-import time
 import logging as log
 
+from time import time
 from optparse import OptionParser
 
-import jira2trac
+from jira2trac import version
 from jira2trac import JiraDecoder
 from jira2trac import TracEncoder
 
 
 def run():
     name = "Jira2Trac"
-    version = '.'.join(map(lambda x: str(x), jira2trac.__version__))
     usage = "Usage: %s [options]" % name
     
     parser = OptionParser(usage=usage, version="%s %s" % (name, version))
@@ -56,16 +55,17 @@ def run():
 
     (options, args) = parser.parse_args()
 
-    FORMAT = "%(asctime)-15s - %(levelname)-3s - %(message)s"
+    FORMAT = "%(message)s"
     LEVEL = log.INFO
 
     if options.verbose == True:
+        FORMAT = "%(asctime)-15s - %(levelname)-3s - " + FORMAT
         LEVEL = log.DEBUG
 
     log.basicConfig(format=FORMAT, level=LEVEL)
 
     if options.input:
-        start = time.time()
+        start = time()
         jira = JiraDecoder(options.input)
 
         try:
@@ -89,7 +89,7 @@ def run():
                 log.warn('Cancelled data import!')
                 exit()
 
-        end = time.time() - start
+        end = time() - start
 
         log.info('Completed in %s sec.' % (Decimal(str(end)).quantize(Decimal('.0001'))))
 
