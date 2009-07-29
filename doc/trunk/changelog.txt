@@ -9,6 +9,8 @@ Red5 0.9.0 (unreleased)
 New Features:
 
 Bugfixes:
+- Fixed bug with recording, where meta files were not removed when using the same name
+- Changed VideoCodecFactory into a "true" factory class
 
 
 Red5 0.8.0 (2009-06-04)
