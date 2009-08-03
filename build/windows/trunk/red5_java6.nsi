@@ -11,7 +11,7 @@ RequestExecutionLevel admin
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.8.0
+!define VERSION 0.9.0
 !define COMPANY "Red5 Server"
 !define DESCRIPTION "Red5 is an Open Source Flash Server written in Java"
 !define URL http://red5.googlecode.com
@@ -102,11 +102,10 @@ Section -post SEC0001
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Start $(^Name).lnk" $INSTDIR\Red5.bat
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) on the Web.lnk" "http://red5.googlecode.com/"
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions.lnk" "http://jira.red5.org/confluence/display/docs/FAQ"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\API documents.lnk" $INSTDIR\doc\api\index.html
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Eclipse setup.lnk" $INSTDIR\doc\eclipsesetup.html
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Bugtracker.lnk" "http://jira.red5.org/"
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Tutorials.lnk" "http://jira.red5.org/confluence/display/docs/Home"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Bugtracker.lnk" "http://trac.red5.org/report"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Wiki.lnk" "http://trac.red5.org/wiki/Documentation"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
 
@@ -154,7 +153,6 @@ Section -un.post UNSEC0001
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) on the Web.lnk" 
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Bugtracker.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Tutorials.lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Frequently Asked Questions.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\API documents.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Eclipse setup.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
