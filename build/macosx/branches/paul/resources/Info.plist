@@ -5,7 +5,7 @@
     <key>CFBundleName</key>
     <string>Red5</string>
     <key>CFBundleVersion</key>
-    <string>0.8.0</string>
+    <string>0.9.RC1</string>
     <key>CFBundleAllowMixedLocalizations</key>
     <string>true</string>
     <key>CFBundleExecutable</key>
