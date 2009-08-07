@@ -13,11 +13,11 @@ Red5 includes interpreters for the following scripting languages:
 	- Jython - version 2.2 (Python version 2.1)
 	- Groovy - version 1.0
 	- Beanshell - version 2.0b4
+	- PHP 5 (Via Quercus)
 
 Future versions may include:
 	- JudoScript
 	- Scala
-	- PHP (This one is non-trivial, I may just provide a bridge)
 	- Actionscript (Maybe SSAS)
 
 The scripting implementation classes are pre-specified in the following locations depending upon your Java version:
@@ -443,4 +443,33 @@ http://jpype.sourceforge.net/
 
 Groovy -
 http://groovy.codehaus.org/
+
+
+VI. Required libraries
+
+Groovy:
+asm-2.2.2.jar
+antlr-2.7.6.jar
+groovy-1.0.jar
+
+Beanshell:
+bsh-2.0b5.jar
+cglib-nodep-2.1_3.jar
+
+Ruby:
+jruby.jar
+cglib-nodep-2.1_3.jar
+
+Jython / Python:
+jython.jar
+
+The following are need for Java 5 only:
+
+Script related JSR's:
+jsr-223-1.0-pr.jar
+jsr173_1.0_api.jar
+
+Javascript / Rhino:
+js.jar
+xbean.jar - needed for E4X
 
