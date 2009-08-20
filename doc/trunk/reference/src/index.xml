@@ -47,7 +47,8 @@
 	</info>
 	<!-- front matter -->
 	<toc/>
-    <xi:include href="preface.xml" />
+    	<!--
+    <xi:include href="preface.xml" />-->
     
     <xi:include href="Introduction.xml" />
     
