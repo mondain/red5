@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <meta>
+        <filters directoryPatterns="" filePatterns=""
+            positiveFilePatterns="" showHiddenFiles="false"/>
+        <options/>
+    </meta>
+    <projectTree name="Red5.xpr">
+        <folder name="GettingStarted">
+            <file
+                name="GettingStarted/01-Frequently-Asked-Questions.xml"/>
+            <file name="GettingStarted/02-Configuration-Files.xml"/>
+            <file name="GettingStarted/03-Migration-Guide.xml"/>
+            <file name="GettingStarted/04-Red5-Libraries.xml"/>
+            <file name="GettingStarted/05-Building-Red5.xml"/>
+            <file name="GettingStarted/06-Releasing-Red5.xml"/>
+            <file name="GettingStarted/07-System-Requirements.xml"/>
+        </folder>
+        <folder name="Red5CoreTechnologies">
+            <file
+                name="Red5CoreTechnologies/01-Creating-New-Applications.xml"/>
+            <file name="Red5CoreTechnologies/02-Deploying-To-Tomcat.xml"/>
+            <file
+                name="Red5CoreTechnologies/03-Customize-Stream-Paths.xml"/>
+            <file name="Red5CoreTechnologies/04-Security.xml"/>
+            <file
+                name="Red5CoreTechnologies/05-Scripting-Implementations.xml"/>
+            <file name="Red5CoreTechnologies/06-Clustering.xml"/>
+            <file name="Red5CoreTechnologies/07-Management.xml"/>
+            <file name="Red5CoreTechnologies/08-Bean-Definitions.xml"/>
+            <file name="Red5CoreTechnologies/09-Demo-Applications.xml"/>
+            <file name="Red5CoreTechnologies/10-Testing.xml"/>
+        </folder>
+        <file name="changelog.xml"/>
+        <file name="core-technologies.xml"/>
+        <file name="getting-started.xml"/>
+        <file name="index.xml"/>
+        <file name="Introduction.xml"/>
+        <file name="rtmpt-spec.xml"/>
+        <file name="WhatsNew.xml"/>
+    </projectTree>
+</project>

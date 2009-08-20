@@ -1,0 +1,26 @@
+<?xml version='1.0' ?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="Introduction">
+	<title>Introduction</title>
+	<para>Red5 is an Open Source Flash Server written in Java that supports:</para>
+	<itemizedlist>
+		<listitem>
+			<para>Streaming Audio/Video (FLV and MP3)</para>
+		</listitem>
+		<listitem>
+			<para>Recording Client Streams (FLV only)</para>
+		</listitem>
+		<listitem>
+			<para>Shared Objects</para>
+		</listitem>
+		<listitem>
+			<para>Live Stream Publishing</para>
+		</listitem>
+		<listitem>
+			<para>Remoting (AMF)</para>
+		</listitem>
+	</itemizedlist>
+	<para>The project is currently at 0.8.0 RC1. To find about our timescales and planned features checkout the roadmap and read our FAQ. If you want to know more about RED5, keep browsing this manual.</para>
+	<para>Lastly the documentation is under development at the moment.  If you have unanswered questions after using it, please check out our 
+		<link xl:href="http://osflash.org/mailman/listinfo/red5_osflash.org">mailing list</link>
+	</para>
+</chapter>

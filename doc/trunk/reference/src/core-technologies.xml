@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<part xml:id="red5-core-technologies" xmlns="http://docbook.org/ns/docbook" 
+    xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+    <title>Red5 Core Technologies</title>
+    <partintro xml:id="red5-core-intro">
+        <para>
+            Red5 core intro here
+        </para>
+        <itemizedlist>
+            <listitem>
+                <para><xref linkend="CreatenewapplicationsinRed5"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="DeployingRed5ToTomcat"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="CustomizeStreamPaths"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="Security"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="ScriptingImplementations"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="Clustering"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="Management"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="ListofCustombeandefinitions"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="Red5DemoApplications"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="TestingRed5"/></para>
+            </listitem>
+        </itemizedlist>
+    </partintro>
+    
+    <xi:include href="Red5CoreTechnologies/01-Creating-New-Applications.xml" /> 
+    
+    <xi:include href="Red5CoreTechnologies/02-Deploying-To-Tomcat.xml" />
+    
+    <xi:include href="Red5CoreTechnologies/03-Customize-Stream-Paths.xml" /> 
+    
+    <xi:include href="Red5CoreTechnologies/04-Security.xml" />
+    
+    <xi:include href="Red5CoreTechnologies/05-Scripting-Implementations.xml" />
+    
+    <xi:include href="Red5CoreTechnologies/06-Clustering.xml" />
+    
+    <xi:include href="Red5CoreTechnologies/07-Management.xml" />
+    
+    <xi:include href="Red5CoreTechnologies/08-Bean-Definitions.xml" />
+    
+    <xi:include href="Red5CoreTechnologies/09-Demo-Applications.xml" />    
+    
+    <xi:include href="Red5CoreTechnologies/10-Testing.xml" />
+    
+</part>
