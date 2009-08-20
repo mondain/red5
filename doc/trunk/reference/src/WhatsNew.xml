@@ -1,0 +1,37 @@
+<?xml version='1.0' ?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="WhatsnewinRed50.8RC1">
+	<title>What's new in Red5 0.8 RC1</title>
+	<section xml:id="a0.8PublicBetaRelease">
+		<title>0.8 Public Beta Release</title>
+		<para> More stable version of 0.7 for production environment testing. This public beta release will have many more features and so the focus should be on testing and bug reports.</para>
+		<itemizedlist>
+			<listitem>
+				<para>Hot Deployment </para>
+			</listitem>
+			<listitem>
+				<para>Auto-unpacking of wars</para>
+			</listitem>
+			<listitem>
+				<para>New Install application for example apps</para>
+			</listitem>
+		</itemizedlist>
+		<para> ** examples are downloaded and installed on demand</para>
+		<itemizedlist>
+			<listitem>
+				<para>No installed examples by default</para>
+			</listitem>
+			<listitem>
+				<para>New Download Repository</para>
+			</listitem>
+			<listitem>
+				<para>Official Release Home (red5.org)</para>
+			</listitem>
+			<listitem>
+				<para>New Welcome page with new styles</para>
+			</listitem>
+			<listitem>
+				<para>Bug fixes</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>
