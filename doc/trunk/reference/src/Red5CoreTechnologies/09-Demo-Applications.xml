@@ -4,7 +4,7 @@
 	<para>This document explains how to add and maintain Red5 demo applications which are downloaded on demand using the installer application located at 
 		<link xl:href="http://localhost:5080/installer">http://localhost:5080/installer</link>.
 	</para>
-	<section xml:id="GettingRed5DemoApplicationsServerSideandClientSideSource">
+	<section xml:id="Red5DemoApplicationsGettingRed5DemoApplicationsServerSideandClientSideSource">
 		<title>Getting Red5 Demo Applications Server-Side and Client-Side Source</title>
 		<orderedlist>
 			<listitem>
@@ -23,7 +23,7 @@
 			</listitem>
 		</orderedlist>
 	</section>
-	<section xml:id="ListOfAvailableDemoApplicationsServerSide">
+	<section xml:id="Red5DemoApplicationsListOfAvailableDemoApplicationsServerSide">
 		<title>List Of Available Demo Applications (Server Side)</title>
 		<itemizedlist>
 			<listitem>
@@ -46,7 +46,7 @@
 			</listitem>
 		</itemizedlist>
 	</section>
-	<section xml:id="ListOfAvailableDemoApplicationsClientSide">
+	<section xml:id="Red5DemoApplicationsListOfAvailableDemoApplicationsClientSide">
 		<title>List Of Available Demo Applications (Client Side)</title>
 		<itemizedlist>
 			<listitem>
@@ -69,7 +69,7 @@
 			</listitem>
 		</itemizedlist>
 	</section>
-	<section xml:id="EnvironmentBuildSetup">
+	<section xml:id="Red5DemoApplicationsEnvironmentBuildSetup">
 		<title>Environment Build Setup</title>
 		<para>To build the demo applications and add WAR snapshots to the subversion repository, the ant environment requires a SvnAnt task library added to the ant common library directory:</para>
 		<orderedlist>
@@ -108,14 +108,14 @@ ex: C:\dev\ant\lib
 			 snapshot.path=/www/red5_snapshots/
 			 Where snapshot.path is the path to the checked out snapshots directory. </para>
 	</section>
-	<section xml:id="BuildingTheDemoApplication">
+	<section xml:id="Red5DemoApplicationsBuildingTheDemoApplication">
 		<title>Building The Demo Application</title>
 		<para>To build the application and upload the created WAR file to the snapshots repository run the following ant target.</para>
 		<literallayout>
 ant upload-snapshot
 </literallayout>
 	</section>
-	<section xml:id="UpdatingTheApplicationsRegistry">
+	<section xml:id="Red5DemoApplicationsUpdatingTheApplicationsRegistry">
 		<title>Updating The Applications Registry</title>
 		<para>Once the updated WAR has been uploaded to the snapshots repository, the registry.xml file requires to be updated so the demo applications installer will collect the update. </para>
 		<orderedlist>
@@ -150,10 +150,10 @@ ant upload-snapshot
 </para>
 </note>
 	</section>
-	<section xml:id="BandwidthCheckApplication">
+	<section xml:id="Red5DemoApplicationsBandwidthCheckApplication">
 		<title>Bandwidth Check Application</title>
 		<para> This section explains the bandwidth check application and how to use it. The bandwidth check application handles two service method calls to trigger a download or upload rate check and return information to the flash client to determine what video bitrate to use. </para>
-		<section xml:id="SourceCode">
+		<section xml:id="Red5DemoApplicationsSourceCode">
 			<title>Source Code</title>
 			<itemizedlist>
 				<listitem>
@@ -168,7 +168,7 @@ ant upload-snapshot
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="BandwidthCheckServiceMethods">
+		<section xml:id="Red5DemoApplicationsBandwidthCheckServiceMethods">
 			<title>Bandwidth Check Service Methods</title>
 			<para>The service method is enabled in the bean with a name bwCheckService.service.</para>
 			<programlisting language="xml">
@@ -208,7 +208,7 @@ ant upload-snapshot
 ]]>
 </programlisting>
 		</section>
-		<section xml:id="ServerClientDetection">
+		<section xml:id="Red5DemoApplicationsServerClientDetection">
 			<title>ServerClientDetection</title>
 			<para>The ServerClientDetection class detects server to client bandwidth. 3 set of payload data arrays are intialized, the first with 1200 keys, and the next two with 12000 keys ie</para>
 			<programlisting language="java">
@@ -322,7 +322,7 @@ private void callBWDone()
 	}
 ]]>
 </programlisting>
-			<section xml:id="ClientSideDownloadDetection">
+			<section xml:id="Red5DemoApplicationsClientSideDownloadDetection">
 				<title>Client Side Download Detection</title>
 				<para>Client side callback methods are setup to enable the detection.</para>
 				<literallayout>
@@ -349,7 +349,7 @@ public function onServerClientComplete(event:BandwidthDetectEvent):void
 </literallayout>
 			</section>
 		</section>
-		<section xml:id="ClientServerDetection">
+		<section xml:id="Red5DemoApplicationsClientServerDetection">
 			<title>ClientServerDetection</title>
 			<para>The ClientServerDetection class helps detect client to server bandwidth. The server side method 
 				<emphasis role="bold">onClientBWCheck</emphasis> is called with some information to help the client to determine the bandwidth.

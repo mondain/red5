@@ -6,6 +6,15 @@
         <options/>
     </meta>
     <projectTree name="Red5.xpr">
+        <folder name="Codecs">
+            <file name="Codecs/AMFSpecification.xml"/>
+            <file name="Codecs/DataTypeMappings.xml"/>
+            <file name="Codecs/FLV.xml"/>
+            <file name="Codecs/H264.xml"/>
+            <file name="Codecs/RTMPSpecification.xml"/>
+            <file name="Codecs/RTMPTSpecification.xml"/>
+            <file name="Codecs/SpeexCodec.xml"/>
+        </folder>
         <folder name="GettingStarted">
             <file
                 name="GettingStarted/01-Frequently-Asked-Questions.xml"/>
@@ -31,7 +40,7 @@
             <file name="Red5CoreTechnologies/09-Demo-Applications.xml"/>
             <file name="Red5CoreTechnologies/10-Testing.xml"/>
         </folder>
-        <file name="changelog.xml"/>
+        <file name="Changelog.xml"/>
         <file name="core-technologies.xml"/>
         <file name="getting-started.xml"/>
         <file name="index.xml"/>

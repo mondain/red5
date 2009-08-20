@@ -11,9 +11,9 @@
 		</listitem>
 	</itemizedlist>
 	<para>----</para>
-	<section xml:id="Questions">
+	<section xml:id="FrequentlyAskedQuestionsQuestions">
 		<title>Questions</title>
-		<section xml:id="GENERAL">
+		<section xml:id="FrequentlyAskedQuestionsGENERAL">
 			<title>GENERAL</title>
 			<itemizedlist>
 				<listitem>
@@ -69,7 +69,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="DOCUMENTATION">
+		<section xml:id="FrequentlyAskedQuestionsDOCUMENTATION">
 			<title>DOCUMENTATION</title>
 			<itemizedlist>
 				<listitem>
@@ -89,7 +89,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="CONFIGURATION">
+		<section xml:id="FrequentlyAskedQuestionsCONFIGURATION">
 			<title>CONFIGURATION</title>
 			<itemizedlist>
 				<listitem>
@@ -99,7 +99,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="STREAMING">
+		<section xml:id="FrequentlyAskedQuestionsSTREAMING">
 			<title>STREAMING</title>
 			<itemizedlist>
 				<listitem>
@@ -131,7 +131,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="CODECS">
+		<section xml:id="FrequentlyAskedQuestionsCODECS">
 			<title>CODECS</title>
 			<itemizedlist>
 				<listitem>
@@ -146,7 +146,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="DATABASE">
+		<section xml:id="FrequentlyAskedQuestionsDATABASE">
 			<title>DATABASE</title>
 			<itemizedlist>
 				<listitem>
@@ -163,7 +163,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="SCRIPTING">
+		<section xml:id="FrequentlyAskedQuestionsSCRIPTING">
 			<title>SCRIPTING</title>
 			<itemizedlist>
 				<listitem>
@@ -183,7 +183,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="SHAREDOBJECTS">
+		<section xml:id="FrequentlyAskedQuestionsSHAREDOBJECTS">
 			<title>SHARED OBJECTS</title>
 			<itemizedlist>
 				<listitem>
@@ -206,7 +206,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="LEGALSTUFF">
+		<section xml:id="FrequentlyAskedQuestionsLEGALSTUFF">
 			<title>LEGAL STUFF</title>
 			<itemizedlist>
 				<listitem>
@@ -233,7 +233,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="Red5WARversion">
+		<section xml:id="FrequentlyAskedQuestionsRed5WARversion">
 			<title>Red5 WAR version</title>
 			<itemizedlist>
 				<listitem>
@@ -243,7 +243,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="MISC">
+		<section xml:id="FrequentlyAskedQuestionsMISC">
 			<title>MISC</title>
 			<itemizedlist>
 				<listitem>
@@ -310,7 +310,7 @@
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="TROUBLESHOOTING">
+		<section xml:id="FrequentlyAskedQuestionsTROUBLESHOOTING">
 			<title>TROUBLESHOOTING</title>
 			<itemizedlist>
 				<listitem>
@@ -321,10 +321,10 @@
 			</itemizedlist>
 		</section>
 	</section>
-	<section xml:id="Answers">
+	<section xml:id="FrequentlyAskedQuestionsAnswers">
 		<title>Answers</title>
 		<para>----</para>
-		<section xml:id="GENERAL2">
+		<section xml:id="FrequentlyAskedQuestionsGENERAL2">
 			<title>GENERAL</title>
 			<para>
 				<anchor xml:id="WHATISRED5"></anchor>
@@ -470,14 +470,14 @@
 				</phrase>
 			</para>
 			<para>The Red5 Project (red5 AT osflash.org)</para>
-			<section xml:id="ProjectManagers">
+			<section xml:id="FrequentlyAskedQuestionsProjectManagers">
 				<title>Project Managers</title>
 				<para>Chris Allen (mrchrisallen AT gmail.com) 
 
 					John Grden (johng AT acmewebworks.com) 
 </para>
 			</section>
-			<section xml:id="ActiveMembers">
+			<section xml:id="FrequentlyAskedQuestionsActiveMembers">
 				<title>Active Members</title>
 				<para>Dominick Accattato (daccattato AT gmail.com) 
 
@@ -492,7 +492,7 @@
 					Anton Lebedevich (mabrek AT gmail.com) 
 </para>
 			</section>
-			<section xml:id="InactiveMembers">
+			<section xml:id="FrequentlyAskedQuestionsInactiveMembers">
 				<title>Inactive Members</title>
 				<para>Luke Hubbard (luke AT codegent.com) 
 
@@ -513,7 +513,7 @@
 				<para>----</para>
 			</section>
 		</section>
-		<section xml:id="DOCUMENTATION2">
+		<section xml:id="FrequentlyAskedQuestionsDOCUMENTATION2">
 			<title>DOCUMENTATION</title>
 			<para>
 				<anchor xml:id="Whereistheofficialdocumentation"></anchor>
@@ -555,7 +555,7 @@
 			</para>
 			<para>----</para>
 		</section>
-		<section xml:id="CONFIGURATION2">
+		<section xml:id="FrequentlyAskedQuestionsCONFIGURATION2">
 			<title>CONFIGURATION</title>
 			<para>
 				<anchor xml:id="HowtodisableSocketpolicycheckingfor443rtmpsandhttps"></anchor>
@@ -567,7 +567,7 @@
 			<para>You can change the port to something over 1024 like 8443 or comment out the RTMPS section.</para>
 			<para>----</para>
 		</section>
-		<section xml:id="STREAMING2">
+		<section xml:id="FrequentlyAskedQuestionsSTREAMING2">
 			<title>STREAMING</title>
 			<para>
 				<anchor xml:id="HowdoIstreamtofromcustomdirectories"></anchor>
@@ -621,7 +621,7 @@
 			<para>No.  Even though Java can stream using UDP, the Flash Player can not receive data sent using UDP.</para>
 			<para>----</para>
 		</section>
-		<section xml:id="CODECS2">
+		<section xml:id="FrequentlyAskedQuestionsCODECS2">
 			<title>CODECS</title>
 			<para>
 				<anchor xml:id="WhatCodecsdoesRed5Support"></anchor>
@@ -670,7 +670,7 @@
 			<para>Red5 does not support RTMFP.  At the moment, there isn't enough exposure to RTMFP and discussion can resume once it is released and more is known about the protocol.</para>
 			<para>----</para>
 		</section>
-		<section xml:id="DATABASE2">
+		<section xml:id="FrequentlyAskedQuestionsDATABASE2">
 			<title>DATABASE</title>
 			<para>
 				<anchor xml:id="Whatdatabasesaresupported"></anchor>
@@ -694,7 +694,7 @@
 			</para>
 			<para>----</para>
 		</section>
-		<section xml:id="SCRIPTING2">
+		<section xml:id="FrequentlyAskedQuestionsSCRIPTING2">
 			<title>SCRIPTING</title>
 			<para>
 				<anchor xml:id="Whatscriptinglanguagesareavailable"></anchor>
@@ -724,7 +724,7 @@
 			<para>Not yet, but there is development in this area and proof of concepts have viewed by Red5 team members.</para>
 			<para>----</para>
 		</section>
-		<section xml:id="SHAREDOBJECTS2">
+		<section xml:id="FrequentlyAskedQuestionsSHAREDOBJECTS2">
 			<title>SHARED OBJECTS</title>
 			<para>
 				<anchor xml:id="HowdoyousetupaRemoteSharedObject"></anchor>
@@ -749,7 +749,7 @@
 			</para>
 			<para>----</para>
 		</section>
-		<section xml:id="LEGALSTUFF2">
+		<section xml:id="FrequentlyAskedQuestionsLEGALSTUFF2">
 			<title>LEGAL STUFF</title>
 			<para>
 				<anchor xml:id="LicenceInformation"></anchor>
@@ -777,7 +777,7 @@
 			</para>
 			<para>----</para>
 		</section>
-		<section xml:id="Red5WARversion2">
+		<section xml:id="FrequentlyAskedQuestionsRed5WARversion2">
 			<title>Red5 WAR version</title>
 			<para>
 				<anchor xml:id="IsthereanydocumentationontheRed5warversion"></anchor>
@@ -791,7 +791,7 @@
 			</para>
 			<para>----</para>
 		</section>
-		<section xml:id="MISC2">
+		<section xml:id="FrequentlyAskedQuestionsMISC2">
 			<title>MISC</title>
 			<para>
 				<anchor xml:id="IsthereanIRCchannel"></anchor>
@@ -1080,7 +1080,7 @@
 			</para>
 			<para>----</para>
 		</section>
-		<section xml:id="TROUBLESHOOTING2">
+		<section xml:id="FrequentlyAskedQuestionsTROUBLESHOOTING2">
 			<title>TROUBLESHOOTING</title>
 			<para>
 				<anchor xml:id="WhyamIreceivingclosingduetolonghandshake"></anchor>

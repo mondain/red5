@@ -19,4 +19,24 @@
 			<td>Java JRE 1.5 or 1.6 \\ Service Scripts (Java Service Wrapper, FireDaemon Pro) </td>
 		</tr>
 	</informaltable>
+	<section xml:id="SystemRequirementsForRed5JavaMemoryTweaking">
+		<title>Java Memory Tweaking</title>
+		<itemizedlist>
+			<listitem>
+				<para>
+					<link xl:href="http://www.peuss.de/node/67">http://www.peuss.de/node/67</link>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<link xl:href="http://andrigoss.blogspot.com/2008/02/jvm-performance-tuning.html">http://andrigoss.blogspot.com/2008/02/jvm-performance-tuning.html</link>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<link xl:href="http://java.sun.com/javase/technologies/hotspot/largememory.jsp">http://java.sun.com/javase/technologies/hotspot/largememory.jsp</link>
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
 </chapter>

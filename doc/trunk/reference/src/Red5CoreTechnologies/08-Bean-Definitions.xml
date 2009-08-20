@@ -2,13 +2,13 @@
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="ListofCustombeandefinitions">
 	<title>List of Custom bean definitions</title>
 	<para>This document gives a list of available custom-bean names</para>
-	<section xml:id="howtousethecustomsettings">
+	<section xml:id="ListofCustombeandefinitionshowtousethecustomsettings">
 		<title>how to use the custom settings</title>
 		<para>see: 
 			<link xl:href="Documentation/UsersReferenceManual/Red5CoreTechnologies/Chapter3">Customize Stream Paths</link>
 		</para>
 	</section>
-	<section xml:id="BeanDefinitions">
+	<section xml:id="ListofCustombeandefinitionsBeanDefinitions">
 		<title>Bean Definitions</title>
 		<informaltable>
 			<tr>

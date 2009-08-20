@@ -1,7 +1,7 @@
 <?xml version='1.0' ?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="Management">
 	<title>Management</title>
-	<section xml:id="JMXClasses">
+	<section xml:id="ManagementJMXClasses">
 		<title>JMX Classes</title>
 		<para>Red5's implementation consists of the following classes and various other 
 			MBeans: </para>
@@ -14,7 +14,7 @@
 		<para>org.red5.server.jmx.JMXUtil - Helper methods for working with ObjectName 
 			or MBean instances. </para>
 	</section>
-	<section xml:id="Springconfiguration">
+	<section xml:id="ManagementSpringconfiguration">
 		<title>Spring configuration</title>
 		<para>The Spring configuration for the JMX implementation allows you to configure the "domain" 
 			for MBean registration and listener port for the HTML adaptor. The default entries are 
@@ -94,7 +94,7 @@ jmx.http.port=8082
 		</orderedlist>
 		<para>allows easy management of MBeans from a web browser. </para>
 	</section>
-	<section xml:id="RMIAuthentication">
+	<section xml:id="ManagementRMIAuthentication">
 		<title>RMI Authentication</title>
 		<para>RMI authentication is configured and enabled by default. This is to secure the RMI 
 			connection from anonymous clients. 
@@ -125,7 +125,7 @@ red5user changeme
 </para>
 </tip>
 	</section>
-	<section xml:id="JMXRMISSL">
+	<section xml:id="ManagementJMXRMISSL">
 		<title>JMX / RMI / SSL</title>
 		<para>When RMI is enabled with SSL, the bean properties remoteSSLKeystore and 
 			remoteSSLKeystorePass are required to load the SSL keystore and the keystore password 
@@ -140,7 +140,7 @@ red5user changeme
 </literallayout>
 		<para>This will generate a keystore.jmx, red5server.cer and truststore.jmx certificate.</para>
 	</section>
-	<section xml:id="jConsoleJMXClient">
+	<section xml:id="ManagementjConsoleJMXClient">
 		<title>jConsole / JMX Client</title>
 		<para>JConsole is a utility that ships with the JRE (since 1.5), it allows you to manage local and 
 			remote JMX implementations. To enable introspection you must add the following VM 
@@ -148,7 +148,7 @@ red5user changeme
 		<literallayout>
 -Dcom.sun.management.jmxremote 
 </literallayout>
-		<section xml:id="LocalManagement">
+		<section xml:id="ManagementLocalManagement">
 			<title>Local Management</title>
 			<para>After the parameter is set and the application initialized you can start jConsole at the 
 				command line by typing: </para>
@@ -158,14 +158,14 @@ red5user changeme
 			<para>A Swing application will appear and you must select the implementation (agent) you wish to 
 				manage, for local simply select "org.red5.server.Standalone". </para>
 		</section>
-		<section xml:id="RemoteManagement">
+		<section xml:id="ManagementRemoteManagement">
 			<title>Remote Management</title>
 			<para>For remote connections with jconsole / JMX clients the command is</para>
 			<literallayout>
 jconsole service:jmx:rmi://host:port/jndi/rmi://host:port/red5 
 </literallayout>
 		</section>
-		<section xml:id="SSLRemoteManagement">
+		<section xml:id="ManagementSSLRemoteManagement">
 			<title>SSL Remote Management</title>
 			<para>For remote ssl connections with jconsole / JMX clients the client is required to load the 
 				truststore certificate generated previouslly. </para>
@@ -177,7 +177,7 @@ service:jmx:rmi://host:port/jndi/rmi://host:port/red5
 </literallayout>
 		</section>
 	</section>
-	<section xml:id="Links">
+	<section xml:id="ManagementLinks">
 		<title>Links</title>
 		<itemizedlist>
 			<listitem>

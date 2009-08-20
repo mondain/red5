@@ -3,11 +3,11 @@
    <title>Chapter&nbsp;5.&nbsp;Migration Guide</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="red5-getting-started.html" title="Part&nbsp;I.&nbsp;Getting Started"><link rel="prev" href="ConfigurationFiles.html" title="Chapter&nbsp;4.&nbsp;Configuration Files"><link rel="next" href="Red5Libraries.html" title="Chapter&nbsp;6.&nbsp;Red5 Libraries"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="MigrationGuide"></a>Chapter&nbsp;5.&nbsp;Migration Guide</h2></div></div></div><p>This document describes API differences between the Macromedia Flash Communication 
 		Server / Adobe Flash Media Server and Red5. It aims at helping migrate existing 
 		applications to Red5. </p><p>If you don't have an application in Red5 yet, please read the tutorial about howto create 
-		new applications first. </p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Applicationcallbacks"></a>5.1.&nbsp;Application callbacks</h2></div></div></div><p>When implementing serverside applications, one of the most important functionalities is to 
+		new applications first. </p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="MigrationGuideApplicationcallbacks"></a>5.1.&nbsp;Application callbacks</h2></div></div></div><p>When implementing serverside applications, one of the most important functionalities is to 
 			get notified about clients that connect or disconnect and to be informed about the creation 
-			of new instances of the application. </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="InterfaceIScopeHandler"></a>5.1.1.&nbsp;Interface IScopeHandler</h3></div></div></div><p>Red5 specifies these actions in the interface IScopeHandler 
+			of new instances of the application. </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="MigrationGuideInterfaceIScopeHandler"></a>5.1.1.&nbsp;Interface IScopeHandler</h3></div></div></div><p>Red5 specifies these actions in the interface IScopeHandler 
 				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/IScopeHandler.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/IScopeHandler.html</a>. See the API documentation for further details.
-			</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="ClassApplicationAdapter"></a>5.1.2.&nbsp;Class ApplicationAdapter</h3></div></div></div><p>As some methods may be called multiple times for one request (e.g. connect will be called 
+			</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="MigrationGuideClassApplicationAdapter"></a>5.1.2.&nbsp;Class ApplicationAdapter</h3></div></div></div><p>As some methods may be called multiple times for one request (e.g. connect will be called 
 				once for every scope in the tree the client connects to), the class ApplicationAdapter 
 
 				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html</a> defines 
@@ -34,19 +34,19 @@
 				rooms (i.e. instances) of the application. </p><p>You can also also use the ApplicationAdapter 
 				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html</a> to check for streams, shared objects, or subscribe 
 				them. See the API documentation for further details. 
-			</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="Executionorderofconnectionmethods"></a>5.1.2.1.&nbsp;Execution order of connection methods</h4></div></div></div><p>Assuming you connect to rtmp://server/app/room1/room2 </p><p>At first, the connection is established, so the user "connects" to all scopes that are 
+			</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="MigrationGuideExecutionorderofconnectionmethods"></a>5.1.2.1.&nbsp;Execution order of connection methods</h4></div></div></div><p>Assuming you connect to rtmp://server/app/room1/room2 </p><p>At first, the connection is established, so the user "connects" to all scopes that are 
 					traversed up to room2: </p><div class="orderedlist"><ol type="1"><li><p>app (-&gt; appConnect)</p></li><li><p>room1 (-&gt; roomConnect) </p></li><li><p>room2 (-&gt; roomConnect) </p></li></ol></div><p>After the connection is established, the client object is retrieved and if it's the first 
 					connection by this client to the scope, he "joins" the scopes: </p><div class="orderedlist"><ol type="1"><li><p>app (-&gt; appJoin)</p></li><li><p>room1 (-&gt; roomJoin)</p></li><li><p>room2 (-&gt; roomJoin)</p></li></ol></div><p>If the same client establishes a second connection to the same scope, only the connect 
 					methods will be called. If you conect to partially the same scopes, only a few join methods 
 					might be called, e.g. rtmp://server/app/room1/room3 will trigger </p><div class="orderedlist"><ol type="1"><li><p>appConnect("app") </p></li><li><p>joinConnect("room1") </p></li><li><p>joinConnect("room3") </p></li><li><p>roomJoin("room3")</p></li></ol></div><p>The appStart method currently is only called once during startup of Red5 as it currently 
 					can't unload/load applications like FCS/FMS does. The roomStart methods are called when 
-					the first client connects to a room. </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="Acceptingrejectingclients"></a>5.1.3.&nbsp;Accepting / rejecting clients</h3></div></div></div><p>FCS / FMS provide the methods acceptConnection and rejectConnection to accept and 
+					the first client connects to a room. </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="MigrationGuideAcceptingrejectingclients"></a>5.1.3.&nbsp;Accepting / rejecting clients</h3></div></div></div><p>FCS / FMS provide the methods acceptConnection and rejectConnection to accept and 
 				reject new clients. To allow clients to connect, no special action is required by Red5 
 				applications, the *Connect methods just need to return true in this case. </p><p>If a client should not be allowed to connect, the method rejectClient can be called which is 
 				implemented by the ApplicationAdapter 
 				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html</a> class. Any parameter passed to rejectClient is available 
 				as the application property of the status object that is returned to the caller. 
-			</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Currentconnectionandclient"></a>5.2.&nbsp;Current connection and client</h2></div></div></div><p>Red5 supports two different ways to access the current connection from an invoked 
+			</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="MigrationGuideCurrentconnectionandclient"></a>5.2.&nbsp;Current connection and client</h2></div></div></div><p>Red5 supports two different ways to access the current connection from an invoked 
 			method. The connection can be used to get the active client and the scope he is connected 
 			to. The first possibility uses the "magic" Red5 
 			<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/Red5.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/Red5.html</a> object: 
@@ -81,14 +81,14 @@
     <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">// ... </font>
 } 
 
-</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Additionalhandlers"></a>5.3.&nbsp;Additional handlers</h2></div></div></div><p>For many applications, existing classes containing application logic that is not related to 
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="MigrationGuideAdditionalhandlers"></a>5.3.&nbsp;Additional handlers</h2></div></div></div><p>For many applications, existing classes containing application logic that is not related to 
 			Red5 are required to be reused. In order to make them available for clients connecting 
 			through RTMP, these classes need to be registered as handlers in Red5. </p><p>There are currently two ways to register these handlers: </p><div class="orderedlist"><ol type="1"><li><p>By adding them to the configuration files.</p></li><li><p>By registering them manually from the application code. </p></li></ol></div><p>The handlers can be executed by clients with code similar to this:</p><div class="literallayout"><p><br>
 nc&nbsp;=&nbsp;new&nbsp;NetConnection();&nbsp;<br>
 nc.connect("rtmp://localhost/myapp");&nbsp;<br>
 nc.call("handler.method",&nbsp;nc,&nbsp;"Hello&nbsp;world!");&nbsp;<br>
 </p></div><p>If a handler is requested, Red5 always looks it up in the custom scope handlers before 
-			checking the handlers that have been set up in the context through the configuration file. </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="Handlersinconfigurationfiles"></a>5.3.1.&nbsp;Handlers in configuration files</h3></div></div></div><p>This method is best suited for handlers that are common to all scopes the application runs 
+			checking the handlers that have been set up in the context through the configuration file. </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="MigrationGuideHandlersinconfigurationfiles"></a>5.3.1.&nbsp;Handlers in configuration files</h3></div></div></div><p>This method is best suited for handlers that are common to all scopes the application runs 
 				in and that don't need to change during the lifetime of an application. </p><p>To register the class com.fancycode.red5.HandlerSample as handler sample, the following 
 				bean needs to be added to WEB-INF/red5-web.xml:</p><pre class="programlisting">
 
@@ -98,7 +98,7 @@ nc.call("handler.method",&nbsp;nc,&nbsp;"Hello&nbsp;world!");&nbsp;<br>
    <span class="hl-attribute" style="color: blue">singleton</span>=<span class="hl-value" style="color: blue">"true"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
 
 </pre><p>Note that the id of the bean is constructed as the name of the handler (here sample) and 
-				the keyword service. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="Handlersfromapplicationcode"></a>5.3.2.&nbsp;Handlers from application code</h3></div></div></div><p>All applications that use handlers which are different for the various scopes or want to 
+				the keyword service. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="MigrationGuideHandlersfromapplicationcode"></a>5.3.2.&nbsp;Handlers from application code</h3></div></div></div><p>All applications that use handlers which are different for the various scopes or want to 
 				change handlers, need a way to register them from the serverside code. These handlers 
 				always override the handlers configured in red5-web.xml. The methods required for 
 				registration are described in the interface IServiceHandlerProvider 
@@ -118,7 +118,7 @@ nc.call("handler.method",&nbsp;nc,&nbsp;"Hello&nbsp;world!");&nbsp;<br>
 
 </pre><p>Note that in this example, only the application scope has the sample handler but not the 
 				subscopes! If the handler should be available in the rooms as well, it must be registered in 
-				roomStart for the room scopes.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Callstoclientmethods"></a>5.4.&nbsp;Calls to client methods</h2></div></div></div><p>To call methods from your Red5 application on the client, you will first need a reference to 
+				roomStart for the room scopes.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="MigrationGuideCallstoclientmethods"></a>5.4.&nbsp;Calls to client methods</h2></div></div></div><p>To call methods from your Red5 application on the client, you will first need a reference to 
 			the current connection object: </p><pre class="programlisting">
 
 
@@ -162,7 +162,7 @@ IConnection conn = Red5.getConnectionLocal();
 } 
 
 </pre><p>Of course you can implement this interface in your application and pass a reference to the 
-			application instance.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="SharedObjects"></a>5.5.&nbsp;SharedObjects</h2></div></div></div><p>The methods to access shared objects from an application are specified in the interface 
+			application instance.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="MigrationGuideSharedObjects"></a>5.5.&nbsp;SharedObjects</h2></div></div></div><p>The methods to access shared objects from an application are specified in the interface 
 			ISharedObjectService 
 			<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectService.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectService.html</a>. 
 		</p><p>When dealing with shared objects in serverside scripts, special care must be taken about 
@@ -187,7 +187,7 @@ IConnection conn = Red5.getConnectionLocal();
 </pre><p>Now everytime a first user connects to a room of a application, e.g. through rtmp://server/application/room1, a shared object sampleSO is created by the server. </p><p>If a shared object should be created for connections to the main application, e.g. rtmp://server/application, the same must be done in the method appStart. </p><p>For further informations about the possible methods a shared object provides please refer 
 			to the api documentation of the interface ISharedObject 
 			<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObject.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObject.html</a>. 
-		</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="Serversidechangelisteners"></a>5.5.1.&nbsp;Serverside change listeners</h3></div></div></div><p>To get notified about changes of the shared object similar to onSync in FCS / FMS, a 
+		</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="MigrationGuideServersidechangelisteners"></a>5.5.1.&nbsp;Serverside change listeners</h3></div></div></div><p>To get notified about changes of the shared object similar to onSync in FCS / FMS, a 
 				listener must implement the interface ISharedObjectListener 
 				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectListener.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObjectListener.html</a>: 
 			</p><pre class="programlisting">
@@ -220,7 +220,7 @@ Migration Guide
 ISharedObject so = getSharedObject(scope, <b class="hl-string"><i style="color:red">"sampleSO"</i></b>); 
 so.addSharedObjectListener(<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> SampleSharedObjectListener()) 
 
-</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="Changingfromapplicationcode"></a>5.5.2.&nbsp;Changing from application code</h3></div></div></div><p>A shared object can be changed by the server as well: </p><pre class="programlisting">
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="MigrationGuideChangingfromapplicationcode"></a>5.5.2.&nbsp;Changing from application code</h3></div></div></div><p>A shared object can be changed by the server as well: </p><pre class="programlisting">
 
 
 ISharedObject so = getSharedObject(scope, <b class="hl-string"><i style="color:red">"sampleSO"</i></b>); 
@@ -274,7 +274,7 @@ so.registerServiceHandler(<b class="hl-string"><i style="color:red">"one.two"</i
    <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"com.fancycode.red5.MySharedObjectHandler"</span> 
    <span class="hl-attribute" style="color: blue">singleton</span>=<span class="hl-value" style="color: blue">"true"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
 
-</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Persistence"></a>5.6.&nbsp;Persistence</h2></div></div></div><p>Persistence is used so properties of objects can be used even after the server has been 
+</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="MigrationGuidePersistence"></a>5.6.&nbsp;Persistence</h2></div></div></div><p>Persistence is used so properties of objects can be used even after the server has been 
 			restarted. In FCS / FMS usually local shared objects on the serverside are used for this. </p><p>Red5 allows arbitrary objects to be persistent, all they need to do is implement the 
 			interface IPersistable 
 			<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/persistence/IPersistable.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/persistence/IPersistable.html</a>. Basically these objects have a type, a path, a name (all strings) and 
@@ -331,7 +331,7 @@ so.registerServiceHandler(<b class="hl-string"><i style="color:red">"one.two"</i
 			and in the filesystem is available. </p><p>When using filesystem persistence for every object a file is created in "webapps/&lt;app&gt;/ 
 			persistence/&lt;type&gt;/&lt;path&gt;/&lt;name&gt;.red5", e.g. for a shared object "theSO" in the 
 			connection to "rtmp://server/myApp/room1" a file at "webapps/myApp/persistence/ 
-			SharedObject/room1/theSO.red5" would be created. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Periodicevents"></a>5.7.&nbsp;Periodic events</h2></div></div></div><p>Applications that need to perform tasks regularly can use the setInterval in FCS / FMS to 
+			SharedObject/room1/theSO.red5" would be created. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="MigrationGuidePeriodicevents"></a>5.7.&nbsp;Periodic events</h2></div></div></div><p>Applications that need to perform tasks regularly can use the setInterval in FCS / FMS to 
 			schedule methods for periodic execution. </p><p>Red5 provides a scheduling service (ISchedulingService 
 			<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/scheduling/ISchedulingService.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/scheduling/ISchedulingService.html</a>) that is implemented 
 			by ApplicationAdapter 
@@ -372,8 +372,8 @@ so.registerServiceHandler(<b class="hl-string"><i style="color:red">"one.two"</i
     <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">super</font>.roomStop(room); 
 } 
 
-</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Remoting"></a>5.8.&nbsp;Remoting</h2></div></div></div><p>Remoting can be used by non-rtmp clients to invoke methods in Red5. Another possibility 
-			is to call methods from Red5 to other servers that provide a remoting service. </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="Remotingserver"></a>5.8.1.&nbsp;Remoting server</h3></div></div></div><p>Services that should be available for clients need to be registered the same way as 
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="MigrationGuideRemoting"></a>5.8.&nbsp;Remoting</h2></div></div></div><p>Remoting can be used by non-rtmp clients to invoke methods in Red5. Another possibility 
+			is to call methods from Red5 to other servers that provide a remoting service. </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="MigrationGuideRemotingserver"></a>5.8.1.&nbsp;Remoting server</h3></div></div></div><p>Services that should be available for clients need to be registered the same way as 
 				additional application handlers are registered. See above for details. </p><p>To enable remoting support for an application, the following section must be added to the 
 				WEB-INF/web.xml file: </p><p>
 				<span class="bold"><strong>web.xml</strong></span> - 
@@ -399,7 +399,7 @@ http://localhost:5080/myApp/gateway&nbsp;<br>
 				scope. If the methods should be executed in subscopes, the path to the subscopes must be 
 				added to the URL like: </p><div class="literallayout"><p><br>
 http://localhost:5080/myApp/gateway/room1/room2&nbsp;<br>
-</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="Remotingclient"></a>5.8.2.&nbsp;Remoting client</h3></div></div></div><p>The class RemotingClient 
+</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="MigrationGuideRemotingclient"></a>5.8.2.&nbsp;Remoting client</h3></div></div></div><p>The class RemotingClient 
 				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/net/remoting/RemotingClient.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/net/remoting/RemotingClient.html</a> defines all methods that are required to call methods through the 
 				remoting protocol. 
 			</p><p>The following code serves as example about how to use the remoting client:</p><pre class="programlisting">
@@ -439,4 +439,4 @@ Object[] args = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weig
 IRemotingCallback callback = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> CallbackHandler(); 
 client.invokeMethod(<b class="hl-string"><i style="color:red">"service.remotingMethod"</i></b>, args, callback); 
 
-</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Streams"></a>5.9.&nbsp;Streams</h2></div></div></div><p>TODO: How can streams be accessed from an application?</p></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ConfigurationFiles.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="Red5Libraries.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;4.&nbsp;Configuration Files&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;6.&nbsp;Red5 Libraries</td></tr></table></div></body></html>
+</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="MigrationGuideStreams"></a>5.9.&nbsp;Streams</h2></div></div></div><p>TODO: How can streams be accessed from an application?</p></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ConfigurationFiles.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="Red5Libraries.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;4.&nbsp;Configuration Files&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;6.&nbsp;Red5 Libraries</td></tr></table></div></body></html>
