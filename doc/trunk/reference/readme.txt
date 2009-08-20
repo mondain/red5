@@ -14,17 +14,9 @@ for Ant. Targets included are:
 To generate documentation, you need to include a lot
 of libraries, which haven't been added to SVN because
 they're simply too big. The libraries can be found at:
-http://red5.electroteque.org/dev/doc/reference/docbook-reference-libs.zip.
-Download them, create a lib directory in the
-docs/reference directory and unzip the zip there.
-Then, the targets should work.
+http://red5.electroteque.org/doc/reference/docbook-reference-libs.tar.bz2.
 
-I have also not included the source images to SVN that you can download from:
-http://red5.electroteque.org/dev/doc/reference/docbook-reference-admon-images.zip
-and extract to the directory doc/reference/images
-
-Download http://red5.electroteque.org/dev/doc/reference/docbook-reference-src-images.zip
-and extract to the directory doc/reference/src/images
+doc-prepare target will download these libs and extract them to the lib directory.
 
 The fulllist of required libraries are:
 
