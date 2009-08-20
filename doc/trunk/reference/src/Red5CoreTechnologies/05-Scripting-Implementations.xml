@@ -1,7 +1,7 @@
 <?xml version='1.0' ?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="ScriptingImplementations">
 	<title>Scripting Implementations</title>
-	<section xml:id="I.Selectascriptingimplementation">
+	<section xml:id="ScriptingImplementationsI.Selectascriptingimplementation">
 		<title>I. Select a scripting implementation</title>
 		<para>Level: Beginner </para>
 		<para>Red5 includes interpreters for the following scripting languages: </para>
@@ -47,7 +47,7 @@ Java6 - resources.jar
 		<para>It is most likely that the classes read from the jdk or jre will be prefered over any specified 
 			elsewhere. </para>
 	</section>
-	<section xml:id="II.ConfiguringSpring">
+	<section xml:id="ScriptingImplementationsII.ConfiguringSpring">
 		<title>II. Configuring Spring</title>
 		<para>Level: Intermediate </para>
 		<para>Step one is to locate your web applications red5-web.xml file. Within the xml config file the 
@@ -180,9 +180,9 @@ Scripting Implementations
 		<para>The example location starts with classpath:applications which in physical disk terms for the 
 			"oflaDemo" application equates to webapps/oflaDemo/WEB-INF/applications </para>
 	</section>
-	<section xml:id="III.Creatinganapplicationscript">
+	<section xml:id="ScriptingImplementationsIII.Creatinganapplicationscript">
 		<title>III. Creating an application script</title>
-		<section xml:id="a1.Applicationadapter">
+		<section xml:id="ScriptingImplementations1.Applicationadapter">
 			<title>1. Application adapter</title>
 			<para>Scripting an application adapter is more difficult in some languages than it is in others, 
 				because of this I present the Ruby example which works really well and is easy to write and 
@@ -252,7 +252,7 @@ end
 
 </literallayout>
 		</section>
-		<section xml:id="a2.Applicationservices">
+		<section xml:id="ScriptingImplementations2.Applicationservices">
 			<title>2. Application services</title>
 			<para>Here is an example of a Java interface (Yes, the methods are supposed to be empty) which 
 				is used in the examples to provide a template for applications which will gather a list of files 
@@ -462,7 +462,7 @@ public function getMediaList(list:Object):void{
 </literallayout>
 		</section>
 	</section>
-	<section xml:id="IV.Creatingyourowninterpreter">
+	<section xml:id="ScriptingImplementationsIV.Creatingyourowninterpreter">
 		<title>IV. Creating your own interpreter</title>
 		<para>Level: Advanced </para>
 		<para>Lets just open this up by saying that I attempted to build an interpreter for PHP this last 
@@ -471,7 +471,7 @@ public function getMediaList(list:Object):void{
 			not as http request processors. Heres a test: Can X language be compiled into an 
 			executable or be run on the command-line? If yes then it should be trivial to integrate. </para>
 	</section>
-	<section xml:id="V.Linkswithscriptinginformation">
+	<section xml:id="ScriptingImplementationsV.Linkswithscriptinginformation">
 		<title>V. Links with scripting information</title>
 		<itemizedlist>
 			<listitem>

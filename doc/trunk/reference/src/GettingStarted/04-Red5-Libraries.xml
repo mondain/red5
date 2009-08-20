@@ -1,7 +1,7 @@
 <?xml version='1.0' ?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="Red5Libraries">
 	<title>Red5 Libraries</title>
-	<section xml:id="Springscriptingsupport">
+	<section xml:id="Red5LibrariesSpringscriptingsupport">
 		<title>Spring scripting support</title>
 		<itemizedlist>
 			<listitem>
@@ -19,7 +19,7 @@
 			</listitem>
 		</itemizedlist>
 	</section>
-	<section xml:id="Groovy">
+	<section xml:id="Red5LibrariesGroovy">
 		<title>Groovy</title>
 		<itemizedlist>
 			<listitem>
@@ -38,7 +38,7 @@
 			</listitem>
 		</itemizedlist>
 	</section>
-	<section xml:id="Beanshell">
+	<section xml:id="Red5LibrariesBeanshell">
 		<title>Beanshell</title>
 		<itemizedlist>
 			<listitem>
@@ -54,7 +54,7 @@
 			</listitem>
 		</itemizedlist>
 	</section>
-	<section xml:id="Ruby">
+	<section xml:id="Red5LibrariesRuby">
 		<title>Ruby</title>
 		<itemizedlist>
 			<listitem>
@@ -70,7 +70,7 @@
 			</listitem>
 		</itemizedlist>
 	</section>
-	<section xml:id="JythonPython">
+	<section xml:id="Red5LibrariesJythonPython">
 		<title>Jython / Python</title>
 		<itemizedlist>
 			<listitem>
@@ -83,11 +83,11 @@
 			</listitem>
 		</itemizedlist>
 	</section>
-	<section xml:id="Java5Libraries">
+	<section xml:id="Red5LibrariesJava5Libraries">
 		<title>Java 5 Libraries</title>
 		<para>The following are need for Java 5 only:</para>
 	</section>
-	<section xml:id="ScriptrelatedJSRs">
+	<section xml:id="Red5LibrariesScriptrelatedJSRs">
 		<title>Script related JSR's</title>
 		<itemizedlist>
 			<listitem>
@@ -98,7 +98,7 @@
 			</listitem>
 		</itemizedlist>
 	</section>
-	<section xml:id="JavascriptRhino">
+	<section xml:id="Red5LibrariesJavascriptRhino">
 		<title>Javascript / Rhino</title>
 		<itemizedlist>
 			<listitem>

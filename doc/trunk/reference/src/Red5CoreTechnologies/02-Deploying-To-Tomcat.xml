@@ -1,14 +1,14 @@
 <?xml version='1.0' ?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="DeployingRed5ToTomcat">
 	<title>Deploying Red5 To Tomcat</title>
-	<section xml:id="Preface">
+	<section xml:id="DeployingRed5ToTomcatPreface">
 		<title>Preface</title>
 		<para>This document describes how to deploy Red5 to Tomcat as web application 
 			archive (WAR). The standard Red5 deployment consists of a standalone Java 
 			application with an embedded J2EE container (Jetty or Tomcat) running as a 
 			system service, whereas the WAR version runs inside of a J2EE container.</para>
 	</section>
-	<section xml:id="Deployment">
+	<section xml:id="DeployingRed5ToTomcatDeployment">
 		<title>Deployment</title>
 		<para>The Tomcat war deployer scans the webapps directory for wars periodically. 
 			When a war is found that has not yet been deployed, the deployer will expand 
@@ -30,7 +30,7 @@
 			build except for embedded server classes and select configuration files.
 		</para>
 	</section>
-	<section xml:id="Contextdescriptors">
+	<section xml:id="DeployingRed5ToTomcatContextdescriptors">
 		<title>Context descriptors</title>
 		<para>A Context XML descriptor is a fragment of XML data which contains a valid 
 			Context element which would normally be found in the main Tomcat server 
@@ -45,7 +45,7 @@
 			.WAR or the directory which will be created when the .WAR is expanded or the 
 			.WAR itself. </para>
 	</section>
-	<section xml:id="Red5Configuration">
+	<section xml:id="DeployingRed5ToTomcatRed5Configuration">
 		<title>Red5 Configuration</title>
 		<para>Configuration of the Red5 server consists of a few context parameters in the 
 			web.xml, a default context file, a bean ref file, and a Spring web context file for 
@@ -70,12 +70,12 @@
 		<para>This listener is responsible for starting and stopping Red5 upon receipt of context 
 			initialized and context destroyed container events. The war loader is similar in 
 			function to the Spring ContextLoaderListener servlet but is specialized for Red5.</para>
-		<section xml:id="Springcontexts">
+		<section xml:id="DeployingRed5ToTomcatSpringcontexts">
 			<title>Spring contexts</title>
 			<para>There are two types of contexts used by Red5, "default" and "web"; there may be 
 				only one default context but any number of web contexts. </para>
 		</section>
-		<section xml:id="Defaultcontext">
+		<section xml:id="DeployingRed5ToTomcatDefaultcontext">
 			<title>Default context</title>
 			<para>The default context is synonymous with the global application context and is 
 				responsible for providing objects and resources at the top or global level. Spring 
@@ -114,7 +114,7 @@
 ]]>
 </programlisting>
 		</section>
-		<section xml:id="Webcontext">
+		<section xml:id="DeployingRed5ToTomcatWebcontext">
 			<title>Web context</title>
 			<para>Web context definitions are specified in Spring configuration files suffixed with 
 				-web.xml; If your application is named oflaDemo then its configuration file would 
@@ -282,7 +282,7 @@ class="org.red5.server.webapp.oflaDemo.Application"/>
 ]]>
 </programlisting>
 		</section>
-		<section xml:id="Externalapplications">
+		<section xml:id="DeployingRed5ToTomcatExternalapplications">
 			<title>External applications</title>
 			<para>An external application refers to a web application that accesses Red5 outside of 
 				the ROOT web application. Whether these applications exist within the same 
@@ -320,7 +320,7 @@ C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib
 </literallayout>
 		</section>
 	</section>
-	<section xml:id="Creatinganddeployingyourapplication">
+	<section xml:id="DeployingRed5ToTomcatCreatinganddeployingyourapplication">
 		<title>Creating and deploying your application</title>
 		<para>In the following section, two applications will be covered. The first will be a web 
 			application that communicates with Red5 via AMF or RTMP and has its own 
@@ -329,7 +329,7 @@ C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib
 			Any IDE may be used to create these applications as long as it supports Java; 
 			the Eclipse IDE is suggested. SWF files outlined in the examples were created 
 			using AS3 in Flex. </para>
-		<section xml:id="Remoteapplication">
+		<section xml:id="DeployingRed5ToTomcatRemoteapplication">
 			<title>Remote application</title>
 			<para>This example will provide you with the minimum amount of configuration needed 
 				for a remote Red5 application. The following resources will be created: </para>
@@ -398,7 +398,7 @@ C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib
 				</listitem>
 			</orderedlist>
 		</section>
-		<section xml:id="Localapplication">
+		<section xml:id="DeployingRed5ToTomcatLocalapplication">
 			<title>Local application</title>
 			<para>A simple application that resides entirely within the ROOT web application. This 
 				example consists of a Spring web context, handler class, and a client SWF. </para>
@@ -439,7 +439,7 @@ C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib
 				</listitem>
 			</orderedlist>
 		</section>
-		<section xml:id="ExampleSource">
+		<section xml:id="DeployingRed5ToTomcatExampleSource">
 			<title>Example Source</title>
 			<para>The example application source is available in Subversion at 
 
@@ -447,7 +447,7 @@ C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib
 			</para>
 		</section>
 	</section>
-	<section xml:id="Additionalwebconfiguration">
+	<section xml:id="DeployingRed5ToTomcatAdditionalwebconfiguration">
 		<title>Additional web configuration</title>
 		<para>
 			<emphasis role="bold">Log4j</emphasis> - The path to the logging configuration file and the Spring logging startup 
@@ -545,7 +545,7 @@ C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib
 ]]>
 </programlisting>
 	</section>
-	<section xml:id="Troubleshooting">
+	<section xml:id="DeployingRed5ToTomcatTroubleshooting">
 		<title>Troubleshooting</title>
 		<para>If you have problems with deployment or if your application does not start, follow 
 			these steps prior to posting a bug. Directory examples use a typical windows 
@@ -620,7 +620,7 @@ C:\Program Files\Apache\Tomcat\webapps\SOSample.war
 			</listitem>
 		</orderedlist>
 	</section>
-	<section xml:id="Definitions">
+	<section xml:id="DeployingRed5ToTomcatDefinitions">
 		<title>Definitions</title>
 		<para> AMF:: </para>
 		<blockquote>
@@ -655,7 +655,7 @@ C:\Program Files\Apache\Tomcat\webapps\SOSample.war
 			<para> A web container, or application server developed at the Apache Software Foundation (ASF). Tomcat implements the servlet and the JavaServer Pages (JSP) specifications from Sun Microsystems, providing an environment for Java code to run in cooperation with a web server. It adds tools for configuration and management but can also be configured by editing configuration files that are normally XML-formatted. Tomcat includes its own internal HTTP server.</para>
 		</blockquote>
 	</section>
-	<section xml:id="Bibliography">
+	<section xml:id="DeployingRed5ToTomcatBibliography">
 		<title>Bibliography</title>
 		<itemizedlist>
 			<listitem>

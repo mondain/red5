@@ -6,18 +6,18 @@
 		applications to Red5. </para>
 	<para>If you don't have an application in Red5 yet, please read the tutorial about howto create 
 		new applications first. </para>
-	<section xml:id="Applicationcallbacks">
+	<section xml:id="MigrationGuideApplicationcallbacks">
 		<title>Application callbacks</title>
 		<para>When implementing serverside applications, one of the most important functionalities is to 
 			get notified about clients that connect or disconnect and to be informed about the creation 
 			of new instances of the application. </para>
-		<section xml:id="InterfaceIScopeHandler">
+		<section xml:id="MigrationGuideInterfaceIScopeHandler">
 			<title>Interface IScopeHandler</title>
 			<para>Red5 specifies these actions in the interface IScopeHandler 
 				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/IScopeHandler.html">http://dl.fancycode.com/red5/api/org/red5/server/api/IScopeHandler.html</link>. See the API documentation for further details.
 			</para>
 		</section>
-		<section xml:id="ClassApplicationAdapter">
+		<section xml:id="MigrationGuideClassApplicationAdapter">
 			<title>Class ApplicationAdapter</title>
 			<para>As some methods may be called multiple times for one request (e.g. connect will be called 
 				once for every scope in the tree the client connects to), the class ApplicationAdapter 
@@ -58,7 +58,7 @@
 				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html">http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html</link> to check for streams, shared objects, or subscribe 
 				them. See the API documentation for further details. 
 			</para>
-			<section xml:id="Executionorderofconnectionmethods">
+			<section xml:id="MigrationGuideExecutionorderofconnectionmethods">
 				<title>Execution order of connection methods</title>
 				<para>Assuming you connect to rtmp://server/app/room1/room2 </para>
 				<para>At first, the connection is established, so the user "connects" to all scopes that are 
@@ -109,7 +109,7 @@
 					the first client connects to a room. </para>
 			</section>
 		</section>
-		<section xml:id="Acceptingrejectingclients">
+		<section xml:id="MigrationGuideAcceptingrejectingclients">
 			<title>Accepting / rejecting clients</title>
 			<para>FCS / FMS provide the methods acceptConnection and rejectConnection to accept and 
 				reject new clients. To allow clients to connect, no special action is required by Red5 
@@ -121,7 +121,7 @@
 			</para>
 		</section>
 	</section>
-	<section xml:id="Currentconnectionandclient">
+	<section xml:id="MigrationGuideCurrentconnectionandclient">
 		<title>Current connection and client</title>
 		<para>Red5 supports two different ways to access the current connection from an invoked 
 			method. The connection can be used to get the active client and the scope he is connected 
@@ -163,7 +163,7 @@ public void whoami(IConnection conn) {
 ]]>
 </programlisting>
 	</section>
-	<section xml:id="Additionalhandlers">
+	<section xml:id="MigrationGuideAdditionalhandlers">
 		<title>Additional handlers</title>
 		<para>For many applications, existing classes containing application logic that is not related to 
 			Red5 are required to be reused. In order to make them available for clients connecting 
@@ -185,7 +185,7 @@ nc.call("handler.method", nc, "Hello world!");
 </literallayout>
 		<para>If a handler is requested, Red5 always looks it up in the custom scope handlers before 
 			checking the handlers that have been set up in the context through the configuration file. </para>
-		<section xml:id="Handlersinconfigurationfiles">
+		<section xml:id="MigrationGuideHandlersinconfigurationfiles">
 			<title>Handlers in configuration files</title>
 			<para>This method is best suited for handlers that are common to all scopes the application runs 
 				in and that don't need to change during the lifetime of an application. </para>
@@ -202,7 +202,7 @@ nc.call("handler.method", nc, "Hello world!");
 			<para>Note that the id of the bean is constructed as the name of the handler (here sample) and 
 				the keyword service. </para>
 		</section>
-		<section xml:id="Handlersfromapplicationcode">
+		<section xml:id="MigrationGuideHandlersfromapplicationcode">
 			<title>Handlers from application code</title>
 			<para>All applications that use handlers which are different for the various scopes or want to 
 				change handlers, need a way to register them from the serverside code. These handlers 
@@ -230,7 +230,7 @@ public boolean appStart(IScope app) {
 				roomStart for the room scopes.</para>
 		</section>
 	</section>
-	<section xml:id="Callstoclientmethods">
+	<section xml:id="MigrationGuideCallstoclientmethods">
 		<title>Calls to client methods</title>
 		<para>To call methods from your Red5 application on the client, you will first need a reference to 
 			the current connection object: </para>
@@ -286,7 +286,7 @@ if (conn instanceof IServiceCapableConnection) {
 		<para>Of course you can implement this interface in your application and pass a reference to the 
 			application instance.</para>
 	</section>
-	<section xml:id="SharedObjects">
+	<section xml:id="MigrationGuideSharedObjects">
 		<title>SharedObjects</title>
 		<para>The methods to access shared objects from an application are specified in the interface 
 			ISharedObjectService 
@@ -320,7 +320,7 @@ public class SampleApplication extends ApplicationAdapter {
 			to the api documentation of the interface ISharedObject 
 			<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObject.html">http://dl.fancycode.com/red5/api/org/red5/server/api/so/ISharedObject.html</link>. 
 		</para>
-		<section xml:id="Serversidechangelisteners">
+		<section xml:id="MigrationGuideServersidechangelisteners">
 			<title>Serverside change listeners</title>
 			<para>To get notified about changes of the shared object similar to onSync in FCS / FMS, a 
 				listener must implement the interface ISharedObjectListener 
@@ -360,7 +360,7 @@ so.addSharedObjectListener(new SampleSharedObjectListener())
 ]]>
 </programlisting>
 		</section>
-		<section xml:id="Changingfromapplicationcode">
+		<section xml:id="MigrationGuideChangingfromapplicationcode">
 			<title>Changing from application code</title>
 			<para>A shared object can be changed by the server as well: </para>
 			<programlisting language="java">
@@ -430,7 +430,7 @@ so.registerServiceHandler("one.two", new MySharedObjectHandler());
 </programlisting>
 		</section>
 	</section>
-	<section xml:id="Persistence">
+	<section xml:id="MigrationGuidePersistence">
 		<title>Persistence</title>
 		<para>Persistence is used so properties of objects can be used even after the server has been 
 			restarted. In FCS / FMS usually local shared objects on the serverside are used for this. </para>
@@ -499,7 +499,7 @@ class MyApplication extends ApplicationAdapter {
 			connection to "rtmp://server/myApp/room1" a file at "webapps/myApp/persistence/ 
 			SharedObject/room1/theSO.red5" would be created. </para>
 	</section>
-	<section xml:id="Periodicevents">
+	<section xml:id="MigrationGuidePeriodicevents">
 		<title>Periodic events</title>
 		<para>Applications that need to perform tasks regularly can use the setInterval in FCS / FMS to 
 			schedule methods for periodic execution. </para>
@@ -549,11 +549,11 @@ public void roomStop(IScope room) {
 ]]>
 </programlisting>
 	</section>
-	<section xml:id="Remoting">
+	<section xml:id="MigrationGuideRemoting">
 		<title>Remoting</title>
 		<para>Remoting can be used by non-rtmp clients to invoke methods in Red5. Another possibility 
 			is to call methods from Red5 to other servers that provide a remoting service. </para>
-		<section xml:id="Remotingserver">
+		<section xml:id="MigrationGuideRemotingserver">
 			<title>Remoting server</title>
 			<para>Services that should be available for clients need to be registered the same way as 
 				additional application handlers are registered. See above for details. </para>
@@ -590,7 +590,7 @@ http://localhost:5080/myApp/gateway
 http://localhost:5080/myApp/gateway/room1/room2 
 </literallayout>
 		</section>
-		<section xml:id="Remotingclient">
+		<section xml:id="MigrationGuideRemotingclient">
 			<title>Remoting client</title>
 			<para>The class RemotingClient 
 				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/net/remoting/RemotingClient.html">http://dl.fancycode.com/red5/api/org/red5/server/net/remoting/RemotingClient.html</link> defines all methods that are required to call methods through the 
@@ -641,7 +641,7 @@ client.invokeMethod("service.remotingMethod", args, callback);
 </programlisting>
 		</section>
 	</section>
-	<section xml:id="Streams">
+	<section xml:id="MigrationGuideStreams">
 		<title>Streams</title>
 		<para>TODO: How can streams be accessed from an application?</para>
 	</section>

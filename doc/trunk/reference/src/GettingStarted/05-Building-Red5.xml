@@ -1,9 +1,9 @@
 <?xml version='1.0' ?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="BuildingRed5">
 	<title>Building Red5</title>
-	<section xml:id="BuildEnvironmentSetup">
+	<section xml:id="BuildingRed5BuildEnvironmentSetup">
 		<title>Build Environment Setup</title>
-		<section xml:id="Ant">
+		<section xml:id="BuildingRed5Ant">
 			<title>Ant</title>
 			<para>Apache Ant 1.7 and above is required for building the Red5 project source code. 
 				download here 
@@ -16,7 +16,7 @@ PATH=$PATH:/usr/local/ant
 </literallayout>
 			<para>You can check this on windows by typing set PATH or on unix by typing echo $PATH </para>
 		</section>
-		<section xml:id="Java">
+		<section xml:id="BuildingRed5Java">
 			<title>Java</title>
 			<para>Java 1.5 or 1.6 and above is required for running ant, compiling the source and running the 
 				Red5 server. </para>
@@ -33,7 +33,7 @@ JAVA_HOME=C:\development\j2sdk\1.5.0_07 JAVA_VERSION=1.5 You can check this on
 windows by typing set JAVA_HOME or on unix by typing echo $JAVA_HOME 
 </literallayout>
 		</section>
-		<section xml:id="Red5">
+		<section xml:id="BuildingRed5Red5">
 			<title>Red5</title>
 			<para>You must have the environment variables for RED5_HOME defined, 
 				typically </para>
@@ -60,9 +60,9 @@ RED5_HOME=/www/red5_server
 </note>
 		</section>
 	</section>
-	<section xml:id="Building">
+	<section xml:id="BuildingRed5Building">
 		<title>Building</title>
-		<section xml:id="GettingRed5Source">
+		<section xml:id="BuildingRed5GettingRed5Source">
 			<title>Getting Red5 Source</title>
 			<para>The Red5 source code is available at the 
 				<link xl:href="http://code.google.com/p/red5/">google code project page</link> and svn repository.
@@ -81,7 +81,7 @@ RED5_HOME=/www/red5_server
 				</listitem>
 			</orderedlist>
 		</section>
-		<section xml:id="GettingRed5DemoApplicationsSource">
+		<section xml:id="BuildingRed5GettingRed5DemoApplicationsSource">
 			<title>Getting Red5 Demo Applications Source</title>
 			<orderedlist>
 				<listitem>
@@ -92,7 +92,7 @@ RED5_HOME=/www/red5_server
 				</listitem>
 			</orderedlist>
 		</section>
-		<section xml:id="GettingRed5FlashDemoSource">
+		<section xml:id="BuildingRed5GettingRed5FlashDemoSource">
 			<title>Getting Red5 Flash Demo Source</title>
 			<orderedlist>
 				<listitem>
@@ -103,7 +103,7 @@ RED5_HOME=/www/red5_server
 				</listitem>
 			</orderedlist>
 		</section>
-		<section xml:id="Runningtheantbuild">
+		<section xml:id="BuildingRed5Runningtheantbuild">
 			<title>Running the ant build</title>
 			<para>To build the red5 source simply run the following command from the command line inside 
 				the red5 source directory. </para>
@@ -111,7 +111,7 @@ RED5_HOME=/www/red5_server
 ant dist 
 </literallayout>
 		</section>
-		<section xml:id="CurrentAntTargets">
+		<section xml:id="BuildingRed5CurrentAntTargets">
 			<title>Current Ant Targets</title>
 			<itemizedlist>
 				<listitem>
@@ -266,7 +266,7 @@ ant dist
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="AntandIvy">
+		<section xml:id="BuildingRed5AntandIvy">
 			<title>Ant and Ivy</title>
 			<para>When cleaning the dependancy libraries using and ant ivy with the following command</para>
 			<literallayout>
@@ -281,13 +281,13 @@ ant -Divy.conf.name="java6, eclipse" dist
 			</para>
 		</section>
 	</section>
-	<section xml:id="Howtobuildwitheclipse">
+	<section xml:id="BuildingRed5Howtobuildwitheclipse">
 		<title>How to build with eclipse</title>
 		<para>This guide assumes eclipse 3.1.0 and you have downloaded the entire red5 build from the 
 			subversion repository at 
 			<link xl:href="https://red5.googlecode.com/svn/java/server/trunk">https://red5.googlecode.com/svn/java/server/trunk</link> 
 		</para>
-		<section xml:id="RecommendedEclipsePlugins">
+		<section xml:id="BuildingRed5RecommendedEclipsePlugins">
 			<title>Recommended Eclipse Plugins</title>
 			<para>The following plugins are recommended or required for building red5 in eclipse.</para>
 			<itemizedlist>
@@ -309,7 +309,7 @@ ant -Divy.conf.name="java6, eclipse" dist
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="ImportingtheRed5Project">
+		<section xml:id="BuildingRed5ImportingtheRed5Project">
 			<title>Importing the Red5 Project</title>
 			<para>There are two ways to import the Red5 project. Either import an already downloaded working copy of the Red5 project or import the project directly from SVN.</para>
 			<itemizedlist>
@@ -386,7 +386,7 @@ ant -Divy.conf.name="java6, eclipse" dist
 				<para>menu and selecting "build project" </para>
 			</blockquote>
 		</section>
-		<section xml:id="UpdatingtheRed5source">
+		<section xml:id="BuildingRed5UpdatingtheRed5source">
 			<title>Updating the Red5 source</title>
 			<orderedlist>
 				<listitem>
@@ -406,7 +406,7 @@ ant -Divy.conf.name="java6, eclipse" dist
 				</listitem>
 			</orderedlist>
 		</section>
-		<section xml:id="DebuggingRed5inEclipse">
+		<section xml:id="BuildingRed5DebuggingRed5inEclipse">
 			<title>Debugging Red5 in Eclipse</title>
 			<orderedlist>
 				<listitem>
@@ -495,7 +495,7 @@ Then the socket red5 wants to run is in use, you can change the socket and I wil
 up later today once I speak with Luke.
 </literallayout>
 		</section>
-		<section xml:id="AntIvyandEclipse">
+		<section xml:id="BuildingRed5AntIvyandEclipse">
 			<title>Ant, Ivy and Eclipse</title>
 			<para>When cleaning the dependancy libraries using ant and ivy with the following command</para>
 			<literallayout>

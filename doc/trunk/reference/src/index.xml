@@ -47,8 +47,7 @@
 	</info>
 	<!-- front matter -->
 	<toc/>
-    	<!--
-    <xi:include href="preface.xml" />-->
+
     
     <xi:include href="Introduction.xml" />
     
@@ -58,7 +57,12 @@
 	
 	<xi:include  href="core-technologies.xml" />
 	
-	<xi:include  href="rtmpt-spec.xml" />
+	<xi:include  href="Codecs/RTMPSpecification.xml" />
+	<xi:include  href="Codecs/RTMPTSpecification.xml" />
+	<xi:include  href="Codecs/FLV.xml" />
+	<xi:include  href="Codecs/H264.xml" />
+
 	
-	<xi:include  href="changelog.xml" />
+	
+	<xi:include  href="Changelog.xml" />
 </book>

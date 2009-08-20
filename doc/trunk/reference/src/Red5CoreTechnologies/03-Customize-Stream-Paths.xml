@@ -3,7 +3,7 @@
 	<title>Customize Stream Paths</title>
 	<para>This document describes how applications can stream ondemand videos (VOD) from or 
 		record to custom directories other than the default streams folder inside the webapp. </para>
-	<section xml:id="Filenamegeneratorservice">
+	<section xml:id="CustomizeStreamPathsFilenamegeneratorservice">
 		<title>Filename generator service</title>
 		<para>Red5 uses a concept called scope services for functionality that is provided for a certain 
 			scope. One of these scope services is IStreamFilenameGenerator 
@@ -11,7 +11,7 @@
 			filenames for VOD streams that should be played or recorded. 
 		</para>
 	</section>
-	<section xml:id="Customgenerator">
+	<section xml:id="CustomizeStreamPathsCustomgenerator">
 		<title>Custom generator</title>
 		<para>To generate filename in different folders, a new filename generator must be implemented: </para>
 		<programlisting language="java">
@@ -55,7 +55,7 @@ public class CustomFilenameGenerator implements IStreamFilenameGenerator {
 			red5RecordDemo1234.flv and use the directory videoStreams as source for all VOD 
 			streams.</para>
 	</section>
-	<section xml:id="Activatecustomgenerator">
+	<section xml:id="CustomizeStreamPathsActivatecustomgenerator">
 		<title>Activate custom generator</title>
 		<para>In the next step, the custom generator must be activate in the configuration files for the 
 			desired application. </para>
@@ -69,7 +69,7 @@ public class CustomFilenameGenerator implements IStreamFilenameGenerator {
 </programlisting>
 		<para>This will use the class defined above to generate stream filenames. </para>
 	</section>
-	<section xml:id="Changepathsthroughconfiguration">
+	<section xml:id="CustomizeStreamPathsChangepathsthroughconfiguration">
 		<title>Change paths through configuration</title>
 		<para>While the class described here works as expected, it's a bit unhandy to change the paths 
 			inside the code as every change requires recompilation of the class. </para>

@@ -1,12 +1,12 @@
 <?xml version='1.0' ?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="TestingRed5">
 	<title>Testing Red5</title>
-	<section xml:id="Overview">
+	<section xml:id="TestingRed5Overview">
 		<title>Overview</title>
 		<para>As of version 0.8, the Red5 Testing framework has been modified and updated. The unit-tests have been updated to pass, and a automated system-testing and continuous integration framework has been added.
 			This document attempts to explain the thoughts and architecture involved so as to facilitate review by the Red5 core team.</para>
 	</section>
-	<section xml:id="HowtoStartTestingWithoutReadingThisChapter">
+	<section xml:id="TestingRed5HowtoStartTestingWithoutReadingThisChapter">
 		<title>How to Start Testing Without Reading This Chapter</title>
 		<para>To see the results of the Red5 continuous build server (this URL may change), go to:</para>
 		<literallayout> 
@@ -43,7 +43,7 @@ bin/testcases/testreports/dist/log
 </note>
 		<para>And that's it.</para>
 	</section>
-	<section xml:id="WhoShouldReadThisChapterInDepth">
+	<section xml:id="TestingRed5WhoShouldReadThisChapterInDepth">
 		<title>Who Should Read This Chapter In Depth?</title>
 		<para>This chapter is targeted at people who are:</para>
 		<orderedlist>
@@ -61,7 +61,7 @@ bin/testcases/testreports/dist/log
 			</listitem>
 		</orderedlist>
 	</section>
-	<section xml:id="Red5TestingStrategy">
+	<section xml:id="TestingRed5Red5TestingStrategy">
 		<title>Red5 Testing Strategy</title>
 		<para>The Red5 Testing Strategy has 5 components to it:</para>
 		<informaltable>
@@ -102,7 +102,7 @@ bin/testcases/testreports/dist/log
 			</tr>
 		</informaltable>
 	</section>
-	<section xml:id="Red5TestingProps">
+	<section xml:id="TestingRed5Red5TestingProps">
 		<title>Red5 Testing Props</title>
 		<para>Major props go to the following folks:</para>
 		<orderedlist>
@@ -114,22 +114,22 @@ bin/testcases/testreports/dist/log
 			</listitem>
 		</orderedlist>
 	</section>
-	<section xml:id="UnitTesting">
+	<section xml:id="TestingRed5UnitTesting">
 		<title>Unit Testing</title>
-		<section xml:id="Purpose">
+		<section xml:id="TestingRed5Purpose">
 			<title>Purpose</title>
 			<para>The purpose of a unit test is to make sure a java object operates according to its specification, regardless of how it is plugged in with other objects. For a good overview of check out this 
 				<link xl:href="http://en.wikipedia.org/wiki/Unit_testing">Wikipedia Unit Testing web page</link>.
 				For example, you can (and we do) have Unit Tests that test we're encoding and decoding data from AMF codec's correctly using Mock Objects, that test whether or not we can load information from Spring, and whether or not we can inject Meta Data into FLV viles correctly.
 			</para>
 		</section>
-		<section xml:id="Technology">
+		<section xml:id="TestingRed5Technology">
 			<title>Technology</title>
 			<para>Red5 uses the 
 				<link xl:href="http://junit.org/">JUnit</link> unit testing framework. If you're not familiar with that suite, please check it out. It is the de-facto standard for Java Unit Testing.
 			</para>
 		</section>
-		<section xml:id="RunningTests">
+		<section xml:id="TestingRed5RunningTests">
 			<title>Running Tests</title>
 			<para> To run tests, checkout the latest server build, and run the following ant command:</para>
 			<literallayout> 
@@ -140,7 +140,7 @@ ant run-tests
 firefox doc/test/index.html
 </literallayout>
 		</section>
-		<section xml:id="CreatingNewTests">
+		<section xml:id="TestingRed5CreatingNewTests">
 			<title>Creating New Tests</title>
 			<para>Writing unit tests in the 
 				<link xl:href="http://junit.org">JUnit</link> framework is beyond the scope of this document, but you can find help at the JUnit site. The Red5 unit test framework support JUnit 4.0, but can run JUnit 3.x-style tests as well.
@@ -155,14 +155,14 @@ test/org/red5/server/api/ANewClassTest.java
 bin/testcases/testreports
 </literallayout>
 		</section>
-		<section xml:id="Runningunittestsfromeclipse">
+		<section xml:id="TestingRed5Runningunittestsfromeclipse">
 			<title>Running unit tests from eclipse</title>
 			<para>In theory every should work, but you may need to set the directory eclipse runs the test from.  Make sure it is set to:</para>
 			<literallayout> 
 bin/testcases/testreports
 </literallayout>
 		</section>
-		<section xml:id="GuidelinesforNewUnitTests">
+		<section xml:id="TestingRed5GuidelinesforNewUnitTests">
 			<title>Guidelines for New Unit Tests</title>
 			<para>Unit tests help make the code base stronger, but that said we do need to make sure that unit tests meet certain guidelines so we can have a useful build process. Those guidelines are:</para>
 			<itemizedlist>
@@ -196,7 +196,7 @@ bin/testcases/testreports
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="SubmittingNewUnitTests">
+		<section xml:id="TestingRed5SubmittingNewUnitTests">
 			<title>Submitting New Unit Tests</title>
 			<para>We really want new Unit Tests, so if you have a Unit Test that meets the above guidelines we'd love to consider it. To submit it, do the following:</para>
 			<itemizedlist>
@@ -235,25 +235,25 @@ bin/testcases/testreports
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="SuggestingNewUnitTests">
+		<section xml:id="TestingRed5SuggestingNewUnitTests">
 			<title>Suggesting New Unit Tests</title>
 			<para>We really do want new unit tests, and would love suggestions. But bear in mind that Red5 is a 100% volunteer project and most people who work on it have full time day jobs (their time spent on red5 is a labor of love). So don't be hurt if your suggestion for a test is not picked up on.</para>
 			<para>That said, a great way to suggest an area to test is to go ahead and write the system test yourself\! Send it to the list, and it'll probably get a warm reception.</para>
 		</section>
 	</section>
-	<section xml:id="IntegrationTesting">
+	<section xml:id="TestingRed5IntegrationTesting">
 		<title>Integration Testing</title>
 		<para>We currently don't have a 
 			<link xl:href="http://en.wikipedia.org/wiki/Integration_testing">integration testing framework</link>, but when I next return to this area, I'll try adding one. The basic idea for this (which I love) is to make a framework based on the RTMPClient.
 		</para>
-		<section xml:id="Purpose2">
+		<section xml:id="TestingRed5Purpose2">
 			<title>Purpose</title>
 			<para>The purpose of integration testing is to start to plug together different simpler modules (that hopefully have been unit tested) to see if they play nice together. See this Integration Testing Wikipedia Pagefor an overview of the concepts.</para>
 		</section>
 	</section>
-	<section xml:id="SystemTesting">
+	<section xml:id="TestingRed5SystemTesting">
 		<title>System Testing</title>
-		<section xml:id="Purpose3">
+		<section xml:id="TestingRed5Purpose3">
 			<title>Purpose</title>
 			<para>When all is set and done, and you've Unit tested everything, and did integration testing by mixing together different components, you're still not done. At some point, a user is going to pick up your application, and start using it. And if you haven't tested from that end to your code and back, well chances are something will break.</para>
 			<para>That's where 
@@ -261,7 +261,7 @@ bin/testcases/testreports
 			</para>
 		</section>
 	</section>
-	<section xml:id="Technology2">
+	<section xml:id="TestingRed5Technology2">
 		<title>Technology</title>
 		<para>For Flash system testing (a.k.a selftest), we use the 
 			<link xl:href="http://junit.org/">ASUnit|http://asunit.org/</link> framework, which is very similar to 
@@ -271,7 +271,7 @@ bin/testcases/testreports
 			<link xl:href="http://theyard.googlecode.com/">The Yard Flash Libraries</link> to abstract away some components of Flash connecting and stream playing, but you're not required to use those libraries if you submit new flash unit tests.
 		</para>
 	</section>
-	<section xml:id="RunningTests2">
+	<section xml:id="TestingRed5RunningTests2">
 		<title>Running Tests</title>
 		<para>The Red5 system tests require a special test server to be running. This is just a mostly empty red5 server with one special application installed:</para>
 		<literallayout> 
@@ -317,7 +317,7 @@ test/scripts/red5-flash-player-headless
 </literallayout>
 		<para>It assumes it's running under a Windowing system (e.g. XWindows) with a Bourne Shell, and then starts a clean red5 server, runs the Flash system tests, and cleans up afterwards.</para>
 	</section>
-	<section xml:id="CreatingNewTests2">
+	<section xml:id="TestingRed5CreatingNewTests2">
 		<title>Creating New Tests</title>
 		<para>Writing unit tests in theAsUnit framework is beyond the scope of this document, but you can find help at the AsUnit site.</para>
 		<para>But to create a new system test, you can start with the Flash selftest application:svn checkout 
@@ -336,7 +336,7 @@ test/org/red5/server/decodingComplexObjectOverAMFTest3.as
 ant doc
 </literallayout>
 	</section>
-	<section xml:id="ASampleSystemTest">
+	<section xml:id="TestingRed5ASampleSystemTest">
 		<title>A Sample System Test</title>
 		<para>Here's a very straightforward System Test submitted by trebor (at) vlideshow.com.</para>
 		<para>This test connects to the test server and calls the "echo.echoString" method to pass a String to Red5, and then make sure we get the same array back.&amp;nbsp; It tests both AMF0 and AMF3 using the same code path because they should be the same.</para>
@@ -345,7 +345,7 @@ EchoStringTest.as: AMF0 and AMF3 Strings sent over RTMP Test
 [http://code.google.com/p/red5/source/browse/flash/trunk/selftest/test/src/org/red5/server/io/EchoStringTest.as]
 </literallayout>
 	</section>
-	<section xml:id="GuidelinesforNewSystemTests">
+	<section xml:id="TestingRed5GuidelinesforNewSystemTests">
 		<title>Guidelines for New System Tests</title>
 		<para>Unfortunately Flash ActionScript is not as forgiving as Java is about cleaning up after a test is finished, so the guidelines for writing System Tests are somewhat more involved.&amp;nbsp; Also, these tests MUST be runnable in a "unattended" mode \-\- meaning requiring no human interaction, to the bar is higher.</para>
 		<itemizedlist>
@@ -380,7 +380,7 @@ EchoStringTest.as: AMF0 and AMF3 Strings sent over RTMP Test
 			</listitem>
 		</itemizedlist>
 	</section>
-	<section xml:id="SubmittingNewSystemTests">
+	<section xml:id="TestingRed5SubmittingNewSystemTests">
 		<title>Submitting New System Tests</title>
 		<para>We really want new System Tests, so if you have a System Test that meets the above guidelines we'd love to consider it. To submit it, do the following:</para>
 		<itemizedlist>
@@ -420,19 +420,19 @@ EchoStringTest.as: AMF0 and AMF3 Strings sent over RTMP Test
 		</itemizedlist>
 		<para>If your change is accepted, we'll integrate it into the Flash self-test, and update the Java Server trunk to use the new Flash selftest as our system test.</para>
 	</section>
-	<section xml:id="SuggestingNewSystemTests">
+	<section xml:id="TestingRed5SuggestingNewSystemTests">
 		<title>Suggesting New System Tests</title>
 		<para>We really do want new tests, and would love suggestions. But bear in mind that Red5 is a 100% volunteer project and most people who work on it have full time day jobs (their time spent on red5 is a labor of love). So don't be hurt if your suggestion for a test is not picked up on.</para>
 		<para>That said, a great way to suggest an area to test is to go ahead and write the system test yourself\! Send it to the list, and it'll probably get a warm reception.</para>
 	</section>
-	<section xml:id="ContinuousIntegration">
+	<section xml:id="TestingRed5ContinuousIntegration">
 		<title>Continuous Integration</title>
-		<section xml:id="Overview2">
+		<section xml:id="TestingRed5Overview2">
 			<title>Overview</title>
 			<para>The last step of our testing framework is to run a continuous build. See this Wikipedia Pagefor some of the principles involved.</para>
 			<para>The basic idea is to do a checkout, run all unit, functional and system tests, and then notify the person who checked in, and any others that are interested, about the current state of the build. The idea is that it is easier to fix bugs when they are introduced, than if they are found days or weeks later.</para>
 		</section>
-		<section xml:id="Technology3">
+		<section xml:id="TestingRed5Technology3">
 			<title>Technology</title>
 			<para>We use Hudson as our continuous build server running inside a Tomcat instance (running as the Hudson, not root, user) that is forwarded to by Apache2. This currently runs on an Amazon EC2 small instance hosted at:</para>
 			<literallayout> 
@@ -455,20 +455,20 @@ EchoStringTest.as: AMF0 and AMF3 Strings sent over RTMP Test
 				</listitem>
 			</itemizedlist>
 		</section>
-		<section xml:id="HowToRunTheContinuousBuild">
+		<section xml:id="TestingRed5HowToRunTheContinuousBuild">
 			<title>How To Run The Continuous Build</title>
 			<para>The Continuous Build server will run any time you check something into the Java Server.  It also runs once every night.</para>
 			<para>If you're on the Red5 dev team and want to set up new job, or log-in to hudson directly, talk to Art Clarke and he'll hook you up.</para>
 		</section>
-		<section xml:id="HowtoSubmitNewJobsforContinuousBuilding">
+		<section xml:id="TestingRed5HowtoSubmitNewJobsforContinuousBuilding">
 			<title>How to Submit New Jobs for Continuous Building</title>
 			<para>For now, send a request to red5devs@osflash.org and we'll evaluate it.</para>
 		</section>
 	</section>
-	<section xml:id="HowyoucanhelpwithContinuousBuilding">
+	<section xml:id="TestingRed5HowyoucanhelpwithContinuousBuilding">
 		<title>How you can help with Continuous Building</title>
 		<para>If you're willing do donate a i386 Amazon EC2 instance or an i86_64 Amazon EC2 instance, we're in need of both to do testing on. The current set up is temporary.</para>
-		<section xml:id="HowtoSetupaContinuousBuildServer">
+		<section xml:id="TestingRed5HowtoSetupaContinuousBuildServer">
 			<title>How to Set up a Continuous Build Server</title>
 			<para>NOTE: THIS SECTION IS MEANT FOR SERIOUSLY ADVANCED RED5 USERS. 99.999999% of people shouldn't even read this.</para>
 			<para>Glad you asked. We used an Amazon EC2 instance to get us started. Specifically this AMI from Eric Hammon at alestic.com.</para>

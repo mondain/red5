@@ -1,9 +1,9 @@
 <?xml version='1.0' ?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="ConfigurationFiles">
 	<title>Configuration Files</title>
-	<section xml:id="Directoryconf">
+	<section xml:id="ConfigurationFilesDirectoryconf">
 		<title>Directory "conf"</title>
-		<section xml:id="jetty.xml">
+		<section xml:id="ConfigurationFilesjetty.xml">
 			<title>jetty.xml</title>
 			<para>The settings of the HTTP server and servlet container are specified using this file. It runs on 
 				all available interfaces on port 5080 by default. </para>
@@ -12,18 +12,18 @@
 				syntax of this file. 
 			</para>
 		</section>
-		<section xml:id="keystore">
+		<section xml:id="ConfigurationFileskeystore">
 			<title>keystore</title>
 			<para>Contains a sample private key and certificate to be used for secure connections. </para>
 		</section>
-		<section xml:id="log4j.properties">
+		<section xml:id="ConfigurationFileslog4j.properties">
 			<title>log4j.properties</title>
 			<para>Controls the log levels and output handlers for the logging subsystem. </para>
 			<para>Further information about log4j can be found on the official homepage 
 				<link xl:href="http://logging.apache.org/log4j/docs/">http://logging.apache.org/log4j/docs/</link>. 
 			</para>
 		</section>
-		<section xml:id="realm.propertiesJetty">
+		<section xml:id="ConfigurationFilesrealm.propertiesJetty">
 			<title>realm.properties (Jetty)</title>
 			<para>This file defines users passwords and roles that can be used for protected areas. </para>
 			<para>The format is: </para>
@@ -34,7 +34,7 @@
 				"org.mortbay.util.Password" should be used to generate obfuscated passwords or 
 				password checksums </para>
 		</section>
-		<section xml:id="tomcatusers.xmlTomcat">
+		<section xml:id="ConfigurationFilestomcatusers.xmlTomcat">
 			<title>tomcat-users.xml (Tomcat)</title>
 			<para>This file defines users passwords and roles that can be used for protected areas.</para>
 			<para>The format is: </para>
@@ -52,17 +52,17 @@
 				<link xl:href="http://tomcat.apache.org/tomcat-5.5-doc/catalina/docs/api/org/apache/catalina/realm/package-summary.html">http://tomcat.apache.org/tomcat-5.5-doc/catalina/docs/api/org/apache/catalina/realm/package-summary.html</link> 
 			</para>
 		</section>
-		<section xml:id="red5.globals">
+		<section xml:id="ConfigurationFilesred5.globals">
 			<title>red5.globals</title>
 			<para>Specifies the path to the configuration file for the default global context to be used for Red5. </para>
 			<para>By default this file is located in "/webapps/red5-default.xml". </para>
 		</section>
-		<section xml:id="red5.properties">
+		<section xml:id="ConfigurationFilesred5.properties">
 			<title>red5.properties</title>
 			<para>File containing key / value pairs to configure the host and port of basic services like RTMP 
 				or remoting. </para>
 		</section>
-		<section xml:id="red5.xml">
+		<section xml:id="ConfigurationFilesred5.xml">
 			<title>red5.xml</title>
 			<para>The main configuration file that wires together the context tree. It takes care of loading 
 				"red5-common.xml" and "red5-core.xml" and sets up the rest of the server. This is the 
@@ -93,7 +93,7 @@
 ]]>
 </programlisting>
 		</section>
-		<section xml:id="red5common.xml">
+		<section xml:id="ConfigurationFilesred5common.xml">
 			<title>red5-common.xml</title>
 			<para>Classes that are shared between all child contexts are declared in this file. It contains 
 				information about the object serializers / deserializers, the codecs to be used for the 
@@ -184,7 +184,7 @@ Configuration files used by Red5
 ]]>
 </programlisting>
 		</section>
-		<section xml:id="red5core.xml">
+		<section xml:id="ConfigurationFilesred5core.xml">
 			<title>red5-core.xml</title>
 			<para>All available network services are specified here. By default these are RTMP and RTMPT. 
 				The actual settings for the RTMPT server can be found in "red5-rtmpt.xml" when using 
@@ -215,7 +215,7 @@ Configuration files used by Red5
 ]]>
 </programlisting>
 		</section>
-		<section xml:id="red5rtmpt.xml">
+		<section xml:id="ConfigurationFilesred5rtmpt.xml">
 			<title>red5-rtmpt.xml</title>
 			<para>Sets up the mapping between the RTMPT URLs and the servlets to use as well as specify 
 				the host and port to run on. By default the RTMPT server runs on all available interfaces on 
@@ -225,7 +225,7 @@ Configuration files used by Red5
 				syntax of this file. 
 			</para>
 		</section>
-		<section xml:id="web.xmlTomcat">
+		<section xml:id="ConfigurationFilesweb.xmlTomcat">
 			<title>web.xml (Tomcat)</title>
 			<para>Default web.xml file used by Tomcat. The settings from this file are applied to a web 
 				application before it's own WEB_INF/web.xml file. Further info about the configuration 
@@ -233,15 +233,15 @@ Configuration files used by Red5
 				<link xl:href="http://tomcat.apache.org/tomcat-5.5-doc/jasper-howto.html#Configuration">http://tomcat.apache.org/tomcat-5.5-doc/jasper-howto.html#Configuration</link> 
 			</para>
 		</section>
-		<section xml:id="webdefault.xmlJetty">
+		<section xml:id="ConfigurationFileswebdefault.xmlJetty">
 			<title>web-default.xml (Jetty)</title>
 			<para>Default web.xml file used by Jetty. The settings from this file are applied to a web 
 				application before it's own WEB_INF/web.xml file.</para>
 		</section>
 	</section>
-	<section xml:id="Webappconfigdirectory">
+	<section xml:id="ConfigurationFilesWebappconfigdirectory">
 		<title>Webapp config directory</title>
-		<section xml:id="red5web.xml">
+		<section xml:id="ConfigurationFilesred5web.xml">
 			<title>red5-web.xml</title>
 			<para>Red5 applications are configured within this file. The scripting implementations or Java 
 				applications are configured via Spring bean elements. </para>
