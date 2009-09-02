@@ -11,6 +11,18 @@ for Ant. Targets included are:
 * doc-htmlsingle - generates single page HTML documentation
 * doc-clean      - clean any output directories for docs
 
+NOTE: You will need to setup trac login details so the wiki2docbook tool is able 
+to collect the trac wiki pages to convert to docbook xml.
+
+In the red5 build.properties file locate these properties, and place your
+trac login details here.
+
+trac.url=http://trac.red5.org/login/xmlrpc
+trac.username=
+trac.password=
+trac.page=Documentation/UsersReferenceManual
+
+
 To generate documentation, you need to include a lot
 of libraries, which haven't been added to SVN because
 they're simply too big. The libraries can be found at:
