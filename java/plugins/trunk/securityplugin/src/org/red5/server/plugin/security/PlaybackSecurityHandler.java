@@ -31,9 +31,12 @@ public class PlaybackSecurityHandler extends SecurityBase implements IStreamPlay
 	
 
 	
-	
-	public PlaybackSecurityHandler()
+	@Override
+	public void init()
     {
+		if (this.properties.containsKey("htmlDomains")) htmlDomains = this.properties.get("htmlDomains").toString();
+		if (this.properties.containsKey("swfDomains")) swfDomains = this.properties.get("swfDomains").toString();
+		
 		this.allowedHTMLDomains = this.readValidDomains(htmlDomains,"HTMLDomains");
 
 		// Populating the list of domains which are allowed to host a SWF file
@@ -50,17 +53,6 @@ public class PlaybackSecurityHandler extends SecurityBase implements IStreamPlay
 
 		log.debug("...loading completed.");
     }
-	
-	public void setHtmlDomains(String value)
-	{
-		htmlDomains = value;
-	}
-	
-	public void setSwfDomains(String value)
-	{
-		swfDomains = value;
-	}
-
 	
 	public boolean isPlaybackAllowed(IScope scope, String name, int start, int length, boolean flushPlaylist) {
 		IConnection conn = Red5.getConnectionLocal();

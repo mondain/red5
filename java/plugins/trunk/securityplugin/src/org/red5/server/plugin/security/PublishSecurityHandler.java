@@ -25,26 +25,18 @@ public class PublishSecurityHandler extends SecurityBase implements IStreamPubli
     
     private static Logger log = Red5LoggerFactory.getLogger(PublishSecurityHandler.class, "securityTest");
 	
-	
-	public PublishSecurityHandler()
+    @Override
+	public void init()
     {
-		allowedPublishNames = this.readValidNames(publishNames);
+    	if (this.properties.containsKey("publishNames")) publishNames = this.properties.get("publishNames").toString();
+    	if (this.properties.containsKey("enablePublish")) enablePublish = (Boolean)this.properties.get("enablePublish");
+    	allowedPublishNames = this.readValidNames(publishNames);
 		
 		if(this.NamesAuth){
 			log.debug("Authentication of Publish Names is enabled");
 		}
     }
-	
-	public void setEnablePublish(Boolean value)
-	{
-		enablePublish = value;
-	}
-    
-	public void setPublishNames(String names)
-	{
-		publishNames = names;
-	}
-	
+
 	public boolean isPublishAllowed(IScope scope, String name, String mode) {
 		
 		if (enablePublish)
