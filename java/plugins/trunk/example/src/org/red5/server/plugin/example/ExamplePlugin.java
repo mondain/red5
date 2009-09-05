@@ -21,7 +21,7 @@ package org.red5.server.plugin.example;
 
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.Server;
-import org.red5.server.api.plugin.IRed5Plugin;
+import org.red5.server.plugin.Red5Plugin;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 
@@ -30,32 +30,28 @@ import org.springframework.context.ApplicationContext;
  * 
  * @author Paul Gregoire
  */
-public class ExamplePlugin implements IRed5Plugin {
+public class ExamplePlugin extends Red5Plugin {
 
 	private static Logger log = Red5LoggerFactory.getLogger(ExamplePlugin.class, "plugins");
 	
-	@SuppressWarnings("unused")
-	private ApplicationContext context;
-	
-	@SuppressWarnings("unused")
-	private Server server;
-	
 	public void doStart() throws Exception {
 		log.debug("Start");
+		super.doStart();
 	}
 
 	public void doStop() throws Exception {
 		log.debug("Stop");
+		super.doStop();
 	}
 
 	public void setApplicationContext(ApplicationContext context) {
 		log.debug("Set application context: {}", context);
-		this.context = context;
+		super.setApplicationContext(context);
 	}
 
 	public void setServer(Server server) {
 		log.debug("Set server: {}", server);
-		this.server = server;
+		super.setServer(server);
 	}
 
 	public String getName() {
