@@ -23,19 +23,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Hashtable;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-import org.red5.webapps.admin.Application;
-
+import org.red5.logging.Red5LoggerFactory;
+import org.red5.server.plugin.admin.domain.UserDetails;
+import org.slf4j.Logger;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
-
-import org.red5.logging.Red5LoggerFactory;
-import org.slf4j.Logger;
 
 /**
  * Simple DAO for manipulation of the user database.
@@ -53,14 +48,7 @@ public class UserDAO {
 		PreparedStatement stmt = null;
 		try {
             // JDBC stuff
-			Hashtable  env = new Hashtable();
-			env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-			env.put("org.osjava.sj.root", "webapps/admin/WEB-INF/classes/config/");
-			env.put("org.osjava.sj.delimiter", "/");
-
-			Context ctx = new InitialContext(env);
-
-            DataSource ds = (DataSource) ctx.lookup("jdbc/admin");
+            DataSource ds = UserDatabase.getDataSource();
             
 			conn = ds.getConnection();
 			//make a statement
@@ -99,14 +87,7 @@ public class UserDAO {
 		PreparedStatement stmt = null;
 		try {
             // JDBC stuff
-			Hashtable  env = new Hashtable();
-			env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-			env.put("org.osjava.sj.root", "webapps/admin/WEB-INF/classes/config/");
-			env.put("org.osjava.sj.delimiter", "/");
-
-			Context ctx = new InitialContext(env);
-
-            DataSource ds = (DataSource) ctx.lookup("jdbc/admin");
+            DataSource ds = UserDatabase.getDataSource();
 			
 			conn = ds.getConnection();
 			//make a statement

@@ -19,19 +19,14 @@ package org.red5.server.plugin.admin.dao;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Hashtable;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.apache.derby.jdbc.EmbeddedDataSource;
-
 import org.red5.logging.Red5LoggerFactory;
 import org.slf4j.Logger;
 
@@ -53,6 +48,8 @@ public class UserDatabase {
 
 	private static String password;
 
+	private static DataSource ds;
+	
 	public void init() {
 		if (debug) {
 			System.setProperty("derby.debug.true", "");
@@ -71,29 +68,15 @@ public class UserDatabase {
 		Statement stmt = null;
 		try {
             // JDBC stuff
-			Hashtable  env = new Hashtable();
-			env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-			env.put("org.osjava.sj.root", "webapps/admin/WEB-INF/classes/config/");
-			env.put("org.osjava.sj.delimiter", "/");
-
-			Context ctx = new InitialContext(env);
-
-			DataSource ds = null;
-			
 			try {
-				Object o = ctx.lookup("jdbc/admin");
-				if (o == null) {
+				if (ds == null) {
 					EmbeddedDataSource eds = new EmbeddedDataSource();
 					eds.setCreateDatabase("create");
 					eds.setDatabaseName(database);
 					eds.setPassword(password);
 					eds.setUser(userName);
 
-					ctx.rebind("jdbc/admin", eds);
-
 					ds = eds;
-				} else {
-					ds = (DataSource) o;
 				}
 			} catch (Exception e) {
 				log.error("Context check for datasource", e);
@@ -161,20 +144,9 @@ public class UserDatabase {
 
 	public void shutdown() {
 		log.debug("Shutdown {} db", UserDatabase.database);
-
 		try {
 			//DriverManager.getConnection("jdbc:derby:" + UserDatabase.database + ";shutdown=true");
-			
-			Hashtable  env = new Hashtable();
-			env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-			env.put("org.osjava.sj.root", "webapps/admin/WEB-INF/classes/config/");
-			env.put("org.osjava.sj.delimiter", "/");
-
-			Context ctx = new InitialContext(env);
-
-			EmbeddedDataSource ds = (EmbeddedDataSource) ctx.lookup("jdbc/admin");
-            ds.setShutdownDatabase("shutdown");
-            
+            ((EmbeddedDataSource) ds).setShutdownDatabase("shutdown");            
 		} catch (Exception e) {
 			log.debug("Error in db shutdown", e);
 		}
@@ -212,4 +184,8 @@ public class UserDatabase {
 		UserDatabase.password = password;
 	}
 
+	public static DataSource getDataSource() {
+		return ds;
+	}	
+	
 }
