@@ -30,6 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.Arrays;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.ApplicationLifecycle;
 import org.red5.server.api.IConnection;
@@ -155,8 +156,11 @@ public class Red5AuthenticationHandler extends ApplicationLifecycle {
         				challenge = sessionChallenges.get(sessionId);
         				//generate response hash to compare
         				String responseHash = calculateHMACSHA256(challenge, password);
-            			log.debug("Generated response: {}", responseHash);        			
-        				if (responseHash.equals(response)) {
+            			log.debug("Generated response: {}", responseHash);        	
+            			//decode both hashes before we compare otherwise we will have issues like
+            			//4+5WioxdBLhx4qajIybxkBkynDsv7KxtNzqj4V/VbzU != 4+5WioxdBLhx4qajIybxkBkynDsv7KxtNzqj4V/VbzU=           			
+            			if (Arrays.areEqual(Base64.decodeBase64(responseHash), Base64.decodeBase64(response))) {
+            			//if (responseHash.equals(response)) {
             				//dont send success or this will override the rest of the listeners, just send true
             				result = true;
         				}
