@@ -1,4 +1,4 @@
-package org.red5.server.plugin;
+package org.red5.server.plugin.admin;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -19,70 +19,53 @@ package org.red5.server.plugin;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-
-import org.red5.io.object.Serializer;
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.Server;
-import org.red5.server.api.plugin.IRed5Plugin;
-import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
 import org.red5.server.Context;
-
+import org.red5.server.plugin.Red5Plugin;
 import org.red5.webapps.admin.client.AuthClientRegistry;
+import org.slf4j.Logger;
 
 /**
- * Provides FMS-style authentication features.
+ * Admin for Red5
  * 
  * @author Paul Gregoire
+ * @author Dan Rossi
  */
-public class AdminPlugin implements IRed5Plugin {
+public class AdminPlugin extends Red5Plugin {
 
-	private static Logger log = Red5LoggerFactory.getLogger(AdminPlugin.class, "plugins");
-	
-	private static Serializer serializer = new Serializer();
-	
-	@SuppressWarnings("unused")
-	private ApplicationContext context;
-	
-	@SuppressWarnings("unused")
-	private Server server;
-	
+	private static Logger log = Red5LoggerFactory.getLogger(AdminPlugin.class, "admin");
+
+	@Override
 	public void doStart() throws Exception {
-		log.debug("Start");
-		Context ctx = (Context)this.context.getBean("web.context");
-		ctx.setClientRegistry(new AuthClientRegistry());
+		super.doStart();
 	}
 
+	@Override
 	public void doStop() throws Exception {
-		log.debug("Stop");
+		super.doStop();
 	}
 
-
-	public void setApplicationContext(ApplicationContext context) {
-		log.debug("Set application context: {}", context);
-		this.context = context;
-	}
-
-
-	public void setServer(Server server) {
-		log.debug("Set server: {}", server);
-		this.server = server;
-	}
-
-	
+	@Override
 	public String getName() {
 		return "adminPlugin";
 	}
-	
-	public AdminHandler getHandler()
-	{
+
+	@Override
+	public void init() {
+		log.debug("Initializing");
+		super.init();
+		Context ctx = (Context) context.getBean("web.context");
+		ctx.setClientRegistry(new AuthClientRegistry());
+	}
+
+	public AdminHandler getHandler() {
 		AdminHandler ah = null;
 		try {
-			ah = (AdminHandler) Class.forName("org.red5.server.plugin.AdminHandler").newInstance();
+			ah = (AdminHandler) Class.forName("org.red5.server.plugin.admin.AdminHandler").newInstance();
 		} catch (Exception e) {
 			log.error("AdminHandler could not be loaded", e);
 		}
-		return ah;	
+		return ah;
 	}
-	
+
 }

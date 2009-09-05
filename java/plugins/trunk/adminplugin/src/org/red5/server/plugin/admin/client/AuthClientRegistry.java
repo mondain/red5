@@ -1,4 +1,4 @@
-package org.red5.webapps.admin.client;
+package org.red5.server.plugin.admin.client;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
