@@ -25,21 +25,21 @@
             <list>
                 <bean class="org.red5.server.plugin.PluginDescriptor">
                     <property name="pluginName" value="authPlugin"/>
-                    <property name="pluginType" value="org.red5.server.plugin.AuthPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.auth.AuthPlugin"/>
                     <property name="method" value="getRed5AuthenticationHandler"/>
-                    <property name="methodReturnType" value="org.red5.server.plugin.Red5AuthenticationHandler"/>
+                    <property name="methodReturnType" value="org.red5.server.plugin.auth.Red5AuthenticationHandler"/>
                 </bean>
                 <!-- 
                 <bean class="org.red5.server.plugin.PluginDescriptor">
                     <property name="pluginName" value="authPlugin"/>
-                    <property name="pluginType" value="org.red5.server.plugin.AuthPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.auth.AuthPlugin"/>
                     <property name="method" value="getFMSAuthenticationHandler"/>
-                    <property name="methodReturnType" value="org.red5.server.plugin.FMSAuthenticationHandler"/>
+                    <property name="methodReturnType" value="org.red5.server.plugin.auth.FMSAuthenticationHandler"/>
                 </bean>
                  -->            
                 <bean class="org.red5.server.plugin.PluginDescriptor">
-                    <property name="pluginName" value="dummyPlugin"/>
-                    <property name="pluginType" value="org.red5.server.plugin.DummyPlugin"/>
+                    <property name="pluginName" value="examplePlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.example.ExamplePlugin"/>
                 </bean>
             </list>
         </property>
