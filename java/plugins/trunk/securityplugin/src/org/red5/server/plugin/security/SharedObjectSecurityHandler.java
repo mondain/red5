@@ -31,54 +31,23 @@ public class SharedObjectSecurityHandler extends SecurityBase implements IShared
   private String[] allowedSharedObjectNames;
   
   private static Logger log = Red5LoggerFactory.getLogger(SharedObjectSecurityHandler.class, "plugins");
-	
-  public SharedObjectSecurityHandler()
+
+  @Override
+  public void init()
   {
+	  if (this.properties.containsKey("connectionAllowed")) connectionAllowed = (Boolean)this.properties.get("connectionAllowed");
+	  if (this.properties.containsKey("creationAllowed")) creationAllowed = (Boolean)this.properties.get("creationAllowed");
+	  if (this.properties.containsKey("deleteAllowed")) deleteAllowed = (Boolean)this.properties.get("deleteAllowed");
+	  if (this.properties.containsKey("sendAllowed")) sendAllowed = (Boolean)this.properties.get("sendAllowed");
+	  if (this.properties.containsKey("writeAllowed ")) writeAllowed  = (Boolean)this.properties.get("writeAllowed");
+	  if (this.properties.containsKey("enableSharedObjects ")) enableSharedObjects = (Boolean)this.properties.get("enableSharedObjects");
+	  if (this.properties.containsKey("sharedObjectNames")) sharedObjectNames = this.properties.get("sharedObjectNames").toString();
+	  
 	  allowedSharedObjectNames = this.readValidNames(sharedObjectNames);
 		
 	  if(this.NamesAuth){
 		  log.debug("Authentication of Shared Object Names is enabled");
 	  }
-  }
-  
-  public void setConnectionAllowed(Boolean value)
-  {
-	  connectionAllowed = value;
-  }
-  
-  public void setCreationAllowed(Boolean value)
-  {
-	  creationAllowed = value;
-  }
-  
-  public void setDeleteAllowed(Boolean value)
-  {
-	  deleteAllowed = value;
-  }
-  
-  public void setSendAllowed(Boolean value)
-  {
-	  sendAllowed = value;
-  }
-  
-  public void setWriteAllowed(Boolean value)
-  {
-	  writeAllowed = value;
-  }
-  
-  public void setEnableSharedObjects(Boolean value)
-  {
-	  enableSharedObjects = value;
-  }
-  
-  public void setSharedObjectNames(String names)
-  {
-	  sharedObjectNames = names;
-  }
-  
-  public void init()
-  {
-	  
   }
   
   private Boolean validate(String name, String[] patterns)
