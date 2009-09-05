@@ -24,12 +24,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.red5.webapps.admin.utils.Utils;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
 import org.red5.server.api.persistence.IPersistable;
 import org.red5.server.api.persistence.IPersistenceStore;
 import org.red5.server.api.statistics.IScopeStatistics;
+import org.red5.server.plugin.admin.utils.Utils;
 
 /**
  * 
@@ -38,15 +38,12 @@ import org.red5.server.api.statistics.IScopeStatistics;
  */
 public class ScopeStatistics {
 
-	private HashMap<Integer, Object> apps;
+	private HashMap<Integer, HashMap<String, String>> apps;
 
 	private int id;
 
-	public void ScopeStatistics() {
-	}
-
-	public HashMap getStats(IScope root) {
-		apps = new HashMap();
+	public HashMap<Integer, HashMap<String, String>> getStats(IScope root) {
+		apps = new HashMap<Integer, HashMap<String, String>>();
 		id = 0;
 		IScopeStatistics stats = root.getStatistics();
 		extractConnectionData(root);
@@ -60,7 +57,6 @@ public class ScopeStatistics {
 			addData("Type", name.getType());
 			addData("Path", name.getPath());
 			addData("Last modified", Utils.formatDate(name.getLastModified()));
-
 		}
 		addData("Scope Data", "--");
 		addData("Active sub scopes", stats.getActiveSubscopes());
@@ -74,7 +70,7 @@ public class ScopeStatistics {
 	}
 
 	protected void addData(String name, Object value) {
-		HashMap<String, Object> app = new HashMap();
+		HashMap<String, String> app = new HashMap<String, String>();
 		app.put("name", name);
 		app.put("value", value.toString());
 		apps.put(id, app);
@@ -82,8 +78,7 @@ public class ScopeStatistics {
 	}
 
 	protected void extractConnectionData(IScope root) {
-		Collection<Set<IConnection>> conns = root.getConnections();
-		
+		Collection<Set<IConnection>> conns = root.getConnections();		
 		for (Set<IConnection> set : conns) {
 			for (IConnection connection : set) {
 				addData("Scope statistics", "--");
@@ -102,4 +97,5 @@ public class ScopeStatistics {
 			}
 		}
 	}
+	
 }

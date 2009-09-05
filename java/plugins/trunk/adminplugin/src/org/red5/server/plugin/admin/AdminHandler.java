@@ -21,6 +21,7 @@ package org.red5.server.plugin.admin;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,16 +31,21 @@ import org.red5.server.adapter.MultiThreadedApplicationAdapter;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
+import org.red5.server.api.Red5;
 import org.red5.server.api.ScopeUtils;
 import org.red5.server.api.plugin.IRed5PluginHandler;
-import org.red5.webapps.admin.ScopeStatistics;
-import org.red5.webapps.admin.UserStatistics;
+import org.red5.server.api.service.ServiceUtils;
+import org.red5.server.plugin.admin.stats.ScopeStatistics;
+import org.red5.server.plugin.admin.stats.UserStatistics;
 import org.slf4j.Logger;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 public class AdminHandler extends ApplicationLifecycle implements IRed5PluginHandler {
 
 	private static Logger log = Red5LoggerFactory.getLogger(AdminHandler.class, "admin");
 
+	private static ResourceBundleMessageSource messageSource;
+	
 	private IScope scope;
 
 	private HashMap<Integer, String> scopes;
@@ -48,7 +54,8 @@ public class AdminHandler extends ApplicationLifecycle implements IRed5PluginHan
 
 	public AdminHandler() {
 		super();
-
+		//get localized messages
+		messageSource = (ResourceBundleMessageSource) getBean("adminMessageSource");
 	}
 
 	public boolean appStart(IScope app) {
@@ -275,4 +282,50 @@ public class AdminHandler extends ApplicationLifecycle implements IRed5PluginHan
 		
 	}
 
+	/**
+	 * Method for setting locale property on the connection.
+	 * 
+	 * @param localeId
+	 */
+	public void setLocale(String localeId) {
+		IConnection conn = Red5.getConnectionLocal();
+		if (conn != null) {
+			conn.setAttribute("locale", localeId);
+		}
+	}	
+	
+	/**
+	 * onError callback invoker.
+	 * 
+	 * @param code
+	 * @param args
+	 */
+	public static boolean sendError(String code, Object[] args) {
+		boolean sent = false;
+		IConnection conn = Red5.getConnectionLocal();
+		if (conn != null) {
+			Locale locale = Locale.ENGLISH;
+			if (conn.hasAttribute("locale")) {
+				// http://java.sun.com/j2se/1.5.0/docs/api/java/util/Locale.html
+				String[] parts = conn.getStringAttribute("locale").split("[-_]");
+				if (parts.length == 1) {
+					locale = new Locale(parts[0]);
+				} else {
+					locale = new Locale(parts[0], parts[1]);
+				}
+			}
+			String errorMessage = messageSource.getMessage(code, args, locale);
+			log.debug("Sending error to client: {}", errorMessage);
+			if (ServiceUtils.invokeOnConnection(conn, "onError", new Object[]{errorMessage})) {
+				//call succeeded
+				sent = true;
+			} else {
+				log.warn("Send error failed - client id: {} method: {}", conn.getClient().getId());
+			}
+		} else {
+			log.warn("Connection was not found for sending error");
+		}
+		return sent;
+	}		
+	
 }

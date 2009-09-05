@@ -24,11 +24,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.red5.webapps.admin.utils.Utils;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
 import org.red5.server.api.ScopeUtils;
+import org.red5.server.plugin.admin.utils.Utils;
 
 /**
  * 
@@ -36,15 +36,12 @@ import org.red5.server.api.ScopeUtils;
  * @author Martijn van Beek (martijn.vanbeek@gmail.com)
  */
 public class UserStatistics {
-	private HashMap<Integer, Object> apps;
+	private HashMap<Integer, HashMap<String, String>> apps;
 
 	private int id;
 
-	public void UserStatistics() {
-	}
-
-	public HashMap getStats(String userid, IScope scope) {
-		apps = new HashMap();
+	public HashMap<Integer, HashMap<String, String>> getStats(String userid, IScope scope) {
+		apps = new HashMap<Integer, HashMap<String, String>>();
 		id = 0;
 		IScope root = ScopeUtils.findRoot(scope);
 		Set<IClient> clients = root.getClients();
@@ -67,7 +64,7 @@ public class UserStatistics {
 	}
 
 	protected void addData(String name, Object value) {
-		HashMap<String, Object> app = new HashMap();
+		HashMap<String, String> app = new HashMap<String, String>();
 		app.put("name", name);
 		app.put("value", value.toString());
 		apps.put(id, app);

@@ -22,6 +22,8 @@
 	</bean>            
     -->
     
+    <bean id="authClientRegistry" class="org.red5.webapps.admin.client.AuthClientRegistry" depends-on="web.handler" lazy-init="true"/>
+    
     <bean id="userCache" class="org.springframework.security.providers.dao.cache.NullUserCache"/>
 
     <bean id="passwordEncoder" class="org.springframework.security.providers.encoding.Md5PasswordEncoder" />
@@ -70,11 +72,18 @@
         </property>
     </bean>
     
-    <bean id="userDatabase" class="org.red5.webapps.admin.UserDatabase" init-method="init" destroy-method="shutdown">
+    <bean id="userDatabase" class="org.red5.server.plugin.admin.dao.UserDatabase" init-method="init" destroy-method="shutdown">
         <property name="debug" value="true"/>
         <property name="database" value="Admin"/>
         <property name="userName" value="APP"/>
         <property name="password" value="APP"/>        
+    </bean>
+
+    <!-- Message localization -->
+    <bean id="adminMessageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <value>message</value>
+        </property>
     </bean>
 
 </beans>
