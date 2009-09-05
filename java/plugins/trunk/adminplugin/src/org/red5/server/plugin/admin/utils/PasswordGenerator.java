@@ -1,4 +1,4 @@
-package org.red5.webapps.admin.client;
+package org.red5.server.plugin.admin.utils;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -19,22 +19,37 @@ package org.red5.webapps.admin.client;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import org.red5.server.Client;
-import org.red5.server.ClientRegistry;
+import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
 /**
  * 
  * @author The Red5 Project (red5@osflash.org)
- * @author Martijn van Beek (martijn.vanbeek@gmail.com)
+ * @author Daniel Rossi
  */
-public class AuthClient extends Client {
+public class PasswordGenerator {
+	
+	private String password;
 
-	public AuthClient() {
-		super();
+	private String salt = "secret";
+
+	private Md5PasswordEncoder md5 = new Md5PasswordEncoder();
+
+	public static void main(String args[]) {
+		PasswordGenerator generate = new PasswordGenerator(args[0], args[1]);
+		generate.run();
 	}
 
-	public AuthClient(String id, ClientRegistry registry) {
-		super(id, registry);
+	public PasswordGenerator(String password, String salt) {
+		this.salt = salt;
+		this.password = password;
+	}
+
+	public String getPassword() {
+		return md5.encodePassword(this.password, this.salt).toString();
+	}
+
+	public void run() {
+		System.out.println(md5.encodePassword(this.password, this.salt).toString());
 	}
 
 }

@@ -1,0 +1,278 @@
+package org.red5.server.plugin.admin;
+
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ * 
+ * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software 
+ * Foundation; either version 2.1 of the License, or (at your option) any later 
+ * version. 
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along 
+ * with this library; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ */
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.red5.logging.Red5LoggerFactory;
+import org.red5.server.adapter.ApplicationLifecycle;
+import org.red5.server.adapter.MultiThreadedApplicationAdapter;
+import org.red5.server.api.IClient;
+import org.red5.server.api.IConnection;
+import org.red5.server.api.IScope;
+import org.red5.server.api.ScopeUtils;
+import org.red5.server.api.plugin.IRed5PluginHandler;
+import org.red5.webapps.admin.ScopeStatistics;
+import org.red5.webapps.admin.UserStatistics;
+import org.slf4j.Logger;
+
+public class AdminHandler extends ApplicationLifecycle implements IRed5PluginHandler {
+
+	private static Logger log = Red5LoggerFactory.getLogger(AdminHandler.class, "admin");
+
+	private IScope scope;
+
+	private HashMap<Integer, String> scopes;
+
+	private int scope_id = 0;
+
+	public AdminHandler() {
+		super();
+
+	}
+
+	public boolean appStart(IScope app) {
+		log.info("Admin application started");
+		return true;
+	}
+
+	public boolean appConnect(IConnection conn, Object[] params) {
+
+		this.scope = conn.getScope();
+
+		log.info("appConnect");
+
+		return true;
+	}
+
+	public void disconnect(IConnection conn, IScope scope) {
+		// Get the previously stored username
+		String rid = conn.getClient().getId();
+		// Unregister user
+		log.info("Client with id {} disconnected.", rid);
+
+	}
+
+	/**
+	 * Get all running applications
+	 * 
+	 * @return HashMap containing all applications
+	 */
+	public HashMap<Integer, Object> getApplications() {
+		IScope root = ScopeUtils.findRoot(scope);
+		Iterator<String> iter = root.getScopeNames();
+		HashMap<Integer, Object> apps = new HashMap<Integer, Object>();
+		int id = 0;
+		while (iter.hasNext()) {
+			String name = iter.next();
+			String name2 = name.substring(1, name.length());
+			int size = getConnections(name2).size();
+			HashMap<String, String> app = new HashMap<String, String>();
+			app.put("name", name2);
+			app.put("clients", size + "");
+			apps.put(id, app);
+			id++;
+		}
+		return apps;
+	}
+
+	/**
+	 * Get Application statistics.
+	 * 
+	 * @param scopeName
+	 * @return HashMap with the statistics
+	 */
+	public HashMap getStatistics(String scopeName) {
+		ScopeStatistics scopestats = new ScopeStatistics();
+		return scopestats.getStats(getScope(scopeName));
+	}
+
+	/**
+	 * Get Client statistics
+	 * 
+	 * @param userid
+	 * @return HashMap with the statistics
+	 */
+	public HashMap getUserStatistics(String userid) {
+		UserStatistics userstats = new UserStatistics();
+		return userstats.getStats(userid, scope);
+	}
+
+	/**
+	 * Get all the scopes
+	 * 
+	 * @param scopeName
+	 * @return HashMap containing all the scopes
+	 */
+	public HashMap<Integer, String> getScopes(String scopeName) {
+		IScope root = ScopeUtils.findRoot(scope);
+		IScope scopeObj = root.getScope(scopeName);
+		scopes = new HashMap<Integer, String>();
+		try {
+			getRooms(scopeObj, 0);
+		} catch (NullPointerException npe) {
+			log.debug(npe.toString());
+		}
+		return scopes;
+	}
+
+	/**
+	 * Get all the scopes
+	 * 
+	 * @param root
+	 *            the scope to from
+	 * @param depth
+	 *            scope depth
+	 */
+	public void getRooms(IScope root, int depth) {
+		Iterator<String> iter = root.getScopeNames();
+		String indent = "";
+		for (int i = 0; i < depth; i++) {
+			indent += " ";
+		}
+		while (iter.hasNext()) {
+			String name = iter.next();
+			String name2 = name.substring(1, name.length());
+			try {
+				IScope parent = root.getScope(name2);
+				// parent.
+				getRooms(parent, depth + 1);
+				scopes.put(scope_id, indent + name2);
+				scope_id++;
+				// log.info("Found scope: "+name2);
+			} catch (NullPointerException npe) {
+				log.debug(npe.toString());
+			}
+		}
+	}
+
+	/**
+	 * Get all the connections (clients)
+	 * 
+	 * @param scopeName
+	 * @return HashMap with all clients in the given scope
+	 */
+	public HashMap<Integer, String> getConnections(String scopeName) {
+		HashMap<Integer, String> connections = new HashMap<Integer, String>();
+		IScope root = getScope(scopeName);
+		if (root != null) {
+			Set<IClient> clients = root.getClients();
+			Iterator<IClient> client = clients.iterator();
+			int id = 0;
+			while (client.hasNext()) {
+				IClient c = client.next();
+				String user = c.getId();
+				connections.put(id, user);
+				id++;
+			}
+		}
+		return connections;
+	}
+
+	/**
+	 * Kill a client
+	 * 
+	 * @param userid
+	 */
+	public void killUser(String userid) {
+		IScope root = ScopeUtils.findRoot(scope);
+		Set<IClient> clients = root.getClients();
+		Iterator<IClient> client = clients.iterator();
+		while (client.hasNext()) {
+			IClient c = client.next();
+			if (c.getId().equals(userid)) {
+				c.disconnect();
+			}
+		}
+	}
+
+	/**
+	 * Get an scope by name
+	 * 
+	 * @param scopeName
+	 * @return IScope the requested scope
+	 */
+	private IScope getScope(String scopeName) {
+		IScope root = ScopeUtils.findRoot(scope);
+		return getScopes(root, scopeName);
+	}
+
+	/**
+	 * Search through all the scopes in the given scope to a scope with the
+	 * given name
+	 * 
+	 * @param root
+	 * @param scopeName
+	 * @return IScope the requested scope
+	 */
+	private IScope getScopes(IScope root, String scopeName) {
+		// log.info("Found scope "+root.getName());
+		if (root.getName().equals(scopeName)) {
+			return root;
+		} else {
+			Iterator<String> iter = root.getScopeNames();
+			while (iter.hasNext()) {
+				String name = iter.next();
+				String name2 = name.substring(1, name.length());
+				try {
+					IScope parent = root.getScope(name2);
+					IScope scope = getScopes(parent, scopeName);
+					if (scope != null) {
+						return scope;
+					}
+				} catch (NullPointerException npe) {
+					log.debug(npe.toString());
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get the root scope
+	 * 
+	 * @return IScope
+	 */
+	public IScope getScope() {
+		return scope;
+	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setApplication(MultiThreadedApplicationAdapter application) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setProperties(Map<String, Object> props) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

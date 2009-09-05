@@ -1,9 +1,9 @@
-package org.red5.server.plugin;
+package org.red5.webapps.admin;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  * 
- * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or modify it under the 
  * terms of the GNU Lesser General Public License as published by the Free Software 
@@ -19,67 +19,50 @@ package org.red5.server.plugin;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.adapter.ApplicationLifecycle;
+import org.red5.server.adapter.ApplicationAdapter;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
 import org.red5.server.api.ScopeUtils;
 
-import org.red5.webapps.admin.ScopeStatistics;
-import org.red5.webapps.admin.UserStatistics;
-
+import org.red5.logging.Red5LoggerFactory;
 import org.slf4j.Logger;
 
+/**
+ * Admin Panel for Red5 Server
+ * 
+ * @author The Red5 Project (red5@osflash.org)
+ * @author Martijn van Beek (martijn.vanbeek@gmail.com)
+ * @author Paul Gregoire (mondain@gmail.com)
+ */
+public class Application extends ApplicationAdapter {
 
-
-
-public class AdminHandler extends ApplicationLifecycle {
-
-	private static Logger log = Red5LoggerFactory.getLogger(AdminHandler.class, "plugins");
+	//provide the logger context for other parts of the app
+	private static Logger log = Red5LoggerFactory.getLogger(Application.class, "admin");
 	
 	private IScope scope;
 
 	private HashMap<Integer, String> scopes;
 
 	private int scope_id = 0;
-	
-	public AdminHandler()
-	{
-		super();
-	
-	}
-	
+
+	@Override
 	public boolean appStart(IScope app) {
 		log.info("Admin application started");
 		return true;
 	}
-	
-	
-	public boolean appConnect(IConnection conn, Object[] params) {
-		
-		this.scope = conn.getScope();
-		
-        log.info("appConnect");
 
-        
-    	return true;
+	/** {@inheritDoc} */
+	@Override
+	public boolean connect(IConnection conn, IScope scope, Object[] params) {
+		this.scope = scope;
+		return true;
 	}
-	
-	public void disconnect(IConnection conn, IScope scope) {
-		// Get the previously stored username
-		String rid = conn.getClient().getId();
-		// Unregister user
-		log.info("Client with id {} disconnected.", rid);
 
-	}
-	
 	/**
 	 * Get all running applications
 	 * 
@@ -255,6 +238,16 @@ public class AdminHandler extends ApplicationLifecycle {
 		return null;
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public void disconnect(IConnection conn, IScope scope) {
+		// Get the previously stored username
+		String rid = conn.getClient().getId();
+		// Unregister user
+		log.info("Client with id {} disconnected.", rid);
+		super.disconnect(conn, scope);
+	}
+
 	/**
 	 * Get the root scope
 	 * 
@@ -263,6 +256,4 @@ public class AdminHandler extends ApplicationLifecycle {
 	public IScope getScope() {
 		return scope;
 	}
-	
-	
 }
