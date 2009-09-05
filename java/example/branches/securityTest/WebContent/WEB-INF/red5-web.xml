@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
+
+	<bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	    <property name="location" value="/WEB-INF/red5-web.properties" />
+	</bean>
+
+	<bean id="web.context" class="org.red5.server.Context"
+		autowire="byType" />
+
+	<bean id="web.scope" class="org.red5.server.WebScope"
+		 init-method="register">
+		<property name="server" ref="red5.server" />
+		<property name="parent" ref="global.scope" />
+		<property name="context" ref="web.context" />
+		<property name="handler" ref="web.handler" />
+		<property name="contextPath" value="${webapp.contextPath}" />
+		<property name="virtualHosts" value="${webapp.virtualHosts}" />
+	</bean>
+
+
+<bean id="web.handler" class="org.red5.demos.securityTest.Application">
+	<property name="plugins">
+            <list>
+                <bean class="org.red5.server.plugin.PluginDescriptor">
+                    <property name="pluginName" value="securityPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.SecurityPlugin"/>
+                    <property name="method" value="getPlaybackSecurityHandler"/>
+                    <property name="methodReturnType" value="org.red5.server.plugin.security.PlaybackSecurityHandler"/>
+                	<property name="properties">
+                		 <map key-type="java.lang.String" value-type="java.lang.Object">
+                			<entry>
+                    			<key><value>htmlDomains</value></key>
+                    			<value type="java.lang.String">/WEB-INF/htmlDomains.txt</value>
+                			</entry>
+                			<entry>
+                    			<key><value>swfDomains</value></key>
+                    			<value type="java.lang.String">/WEB-INF/swfDomains.txt</value>
+                			</entry>
+            			</map>
+                	</property>
+                </bean>
+                <bean class="org.red5.server.plugin.PluginDescriptor">
+                    <property name="pluginName" value="securityPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.SecurityPlugin"/>
+                    <property name="method" value="getPublishSecurityHandler"/>
+                    <property name="methodReturnType" value="org.red5.server.plugin.security.PublishSecurityHandler"/>
+                	<property name="properties">
+                		 <map key-type="java.lang.String" value-type="java.lang.Object">
+                			<entry>
+                    			<key><value>publishNames</value></key>
+                    			<value type="java.lang.String">/WEB-INF/allowedPublishNames.txt</value>
+                			</entry>
+                			<entry>
+                    			<key><value>enabledPublish</value></key>
+                    			<value type="java.lang.Boolean">true</value>
+                			</entry>
+            			</map>
+                	</property>
+                </bean>
+                <bean class="org.red5.server.plugin.PluginDescriptor">
+                    <property name="pluginName" value="securityPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.SecurityPlugin"/>
+                    <property name="method" value="getSharedObjectSecurityHandler"/>
+                    <property name="methodReturnType" value="org.red5.server.plugin.security.SharedObjectSecurityHandler"/>
+                	<property name="properties">
+                		 <map key-type="java.lang.String" value-type="java.lang.Object">
+                			<entry>
+                    			<key><value>sharedObjectNames</value></key>
+                    			<value type="java.lang.String">/WEB-INF/allowedSharedObjectNames.txt</value>
+                			</entry>
+                			<entry>
+                    			<key><value>enableSharedObjects</value></key>
+                    			<value type="java.lang.Boolean">true</value>
+                			</entry>
+                			<entry>
+                    			<key><value>connectionAllowed</value></key>
+                    			<value type="java.lang.Boolean">true</value>
+                			</entry>
+                			<entry>
+                    			<key><value>creationAllowed</value></key>
+                    			<value type="java.lang.Boolean">true</value>
+                			</entry>
+                			<entry>
+                    			<key><value>deleteAllowed</value></key>
+                    			<value type="java.lang.Boolean">true</value>
+                			</entry>
+                			<entry>
+                    			<key><value>sendAllowed</value></key>
+                    			<value type="java.lang.Boolean">true</value>
+                			</entry>
+                			<entry>
+                    			<key><value>writeAllowed</value></key>
+                    			<value type="java.lang.Boolean">true</value>
+                			</entry>
+            			</map>
+                	</property>
+                </bean>
+            </list>
+        </property>
+ </bean>
+</beans>
