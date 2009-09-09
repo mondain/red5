@@ -26,8 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.red5.webapps.admin.Application;
-import org.red5.webapps.admin.controllers.service.UserDetails;
+import org.red5.server.plugin.admin.domain.UserDetails;
 import org.springframework.security.userdetails.User;
 
 import org.springframework.security.userdetails.UserDetailsService;

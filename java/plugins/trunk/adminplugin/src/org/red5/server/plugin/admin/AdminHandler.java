@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.context.ApplicationContext;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.ApplicationLifecycle;
 import org.red5.server.adapter.MultiThreadedApplicationAdapter;
@@ -51,11 +52,13 @@ public class AdminHandler extends ApplicationLifecycle implements IRed5PluginHan
 	private HashMap<Integer, String> scopes;
 
 	private int scope_id = 0;
+	
+	private ApplicationContext context;
 
 	public AdminHandler() {
 		super();
 		//get localized messages
-		messageSource = (ResourceBundleMessageSource) getBean("adminMessageSource");
+		
 	}
 
 	public boolean appStart(IScope app) {
@@ -273,13 +276,18 @@ public class AdminHandler extends ApplicationLifecycle implements IRed5PluginHan
 	@Override
 	public void setApplication(MultiThreadedApplicationAdapter application) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void setProperties(Map<String, Object> props) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void setContext(ApplicationContext ctx)
+	{
+		this.context = ctx;
+		messageSource = (ResourceBundleMessageSource) context.getBean("adminMessageSource");
 	}
 
 	/**

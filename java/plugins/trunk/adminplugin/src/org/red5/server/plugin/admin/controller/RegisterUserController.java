@@ -21,8 +21,8 @@ package org.red5.server.plugin.admin.controller;
 
 import javax.servlet.ServletException;
 
-import org.red5.webapps.admin.Application;
-import org.red5.webapps.admin.utils.PasswordGenerator;
+
+import org.red5.server.plugin.admin.utils.PasswordGenerator;
 
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
