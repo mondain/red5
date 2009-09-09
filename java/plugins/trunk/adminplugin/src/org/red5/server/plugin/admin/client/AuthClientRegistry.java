@@ -28,7 +28,7 @@ import org.red5.server.api.IScope;
 import org.red5.server.api.Red5;
 import org.red5.server.exception.ClientNotFoundException;
 import org.red5.server.exception.ClientRejectedException;
-import org.red5.webapps.admin.Application;
+
 
 import org.springframework.security.BadCredentialsException;
 import org.springframework.security.providers.ProviderManager;

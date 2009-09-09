@@ -22,7 +22,7 @@ package org.red5.server.plugin.admin;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.Context;
 import org.red5.server.plugin.Red5Plugin;
-import org.red5.webapps.admin.client.AuthClientRegistry;
+import org.red5.server.plugin.admin.client.AuthClientRegistry;
 import org.slf4j.Logger;
 
 /**
@@ -65,6 +65,7 @@ public class AdminPlugin extends Red5Plugin {
 		} catch (Exception e) {
 			log.error("AdminHandler could not be loaded", e);
 		}
+		ah.setContext(this.context);
 		return ah;
 	}
 
