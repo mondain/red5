@@ -24,6 +24,8 @@ import org.red5.server.Context;
 import org.red5.server.plugin.Red5Plugin;
 import org.red5.server.plugin.admin.client.AuthClientRegistry;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
  * Admin for Red5
@@ -35,9 +37,24 @@ public class AdminPlugin extends Red5Plugin {
 
 	private static Logger log = Red5LoggerFactory.getLogger(AdminPlugin.class, "admin");
 
+	private AdminHandler handler = null;
+	
+	private ApplicationContext adminContext;
+	
 	@Override
 	public void doStart() throws Exception {
 		super.doStart();
+		
+		//create a handler
+		handler = new AdminHandler();
+		
+		//create app context
+		adminContext = new FileSystemXmlApplicationContext(new String[]{"classpath:/admin-security.xml"}, false);	
+		((FileSystemXmlApplicationContext) adminContext).refresh();
+
+		//set the context
+		handler.setContext(adminContext);
+		
 	}
 
 	@Override
@@ -54,19 +71,9 @@ public class AdminPlugin extends Red5Plugin {
 	public void init() {
 		log.debug("Initializing");
 		super.init();
+
 		Context ctx = (Context) context.getBean("web.context");
 		ctx.setClientRegistry(new AuthClientRegistry());
-	}
-
-	public AdminHandler getHandler() {
-		AdminHandler ah = null;
-		try {
-			ah = (AdminHandler) Class.forName("org.red5.server.plugin.admin.AdminHandler").newInstance();
-		} catch (Exception e) {
-			log.error("AdminHandler could not be loaded", e);
-		}
-		ah.setContext(this.context);
-		return ah;
 	}
 
 }

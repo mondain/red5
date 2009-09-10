@@ -22,26 +22,23 @@ package org.red5.server.plugin.admin;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
-import org.springframework.context.ApplicationContext;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.ApplicationLifecycle;
-import org.red5.server.adapter.MultiThreadedApplicationAdapter;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
 import org.red5.server.api.Red5;
 import org.red5.server.api.ScopeUtils;
-import org.red5.server.api.plugin.IRed5PluginHandler;
 import org.red5.server.api.service.ServiceUtils;
 import org.red5.server.plugin.admin.stats.ScopeStatistics;
 import org.red5.server.plugin.admin.stats.UserStatistics;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
-public class AdminHandler extends ApplicationLifecycle implements IRed5PluginHandler {
+public class AdminHandler extends ApplicationLifecycle {
 
 	private static Logger log = Red5LoggerFactory.getLogger(AdminHandler.class, "admin");
 
@@ -112,7 +109,7 @@ public class AdminHandler extends ApplicationLifecycle implements IRed5PluginHan
 	 * @param scopeName
 	 * @return HashMap with the statistics
 	 */
-	public HashMap getStatistics(String scopeName) {
+	public HashMap<Integer, HashMap<String, String>> getStatistics(String scopeName) {
 		ScopeStatistics scopestats = new ScopeStatistics();
 		return scopestats.getStats(getScope(scopeName));
 	}
@@ -123,7 +120,7 @@ public class AdminHandler extends ApplicationLifecycle implements IRed5PluginHan
 	 * @param userid
 	 * @return HashMap with the statistics
 	 */
-	public HashMap getUserStatistics(String userid) {
+	public HashMap<Integer, HashMap<String, String>> getUserStatistics(String userid) {
 		UserStatistics userstats = new UserStatistics();
 		return userstats.getStats(userid, scope);
 	}
@@ -266,26 +263,8 @@ public class AdminHandler extends ApplicationLifecycle implements IRed5PluginHan
 	public IScope getScope() {
 		return scope;
 	}
-
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setApplication(MultiThreadedApplicationAdapter application) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void setProperties(Map<String, Object> props) {
-		// TODO Auto-generated method stub
-		
-	}
 	
-	public void setContext(ApplicationContext ctx)
-	{
+	public void setContext(ApplicationContext ctx) {
 		this.context = ctx;
 		messageSource = (ResourceBundleMessageSource) context.getBean("adminMessageSource");
 	}
