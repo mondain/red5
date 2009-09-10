@@ -49,12 +49,14 @@ public class AdminPlugin extends Red5Plugin {
 		handler = new AdminHandler();
 		
 		//create app context
-		adminContext = new FileSystemXmlApplicationContext(new String[]{"classpath:/admin-security.xml"}, false);	
-		((FileSystemXmlApplicationContext) adminContext).refresh();
+		adminContext = new FileSystemXmlApplicationContext(new String[]{"classpath:/admin-security.xml"}, true);	
 
 		//set the context
 		handler.setContext(adminContext);
 		
+		
+		Context ctx = (Context) context.getBean("web.context");
+		ctx.setClientRegistry(new AuthClientRegistry());
 	}
 
 	@Override
@@ -72,8 +74,7 @@ public class AdminPlugin extends Red5Plugin {
 		log.debug("Initializing");
 		super.init();
 
-		Context ctx = (Context) context.getBean("web.context");
-		ctx.setClientRegistry(new AuthClientRegistry());
+
 	}
 
 }
