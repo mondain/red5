@@ -108,7 +108,9 @@
 	</bean>
 -->
 
-	<bean class="org.springframework.scripting.support.ScriptFactoryPostProcessor"/>
+<!-- Uncomment this if you are using scripting
 
+	<bean class="org.springframework.scripting.support.ScriptFactoryPostProcessor"/>
+-->
 
 </beans>
