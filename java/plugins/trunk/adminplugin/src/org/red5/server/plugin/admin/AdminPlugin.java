@@ -21,6 +21,11 @@ package org.red5.server.plugin.admin;
 
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.Context;
+import org.red5.server.GlobalScope;
+import org.red5.server.MappingStrategy;
+import org.red5.server.Scope;
+import org.red5.server.ScopeResolver;
+import org.red5.server.api.IScope;
 import org.red5.server.plugin.Red5Plugin;
 import org.red5.server.plugin.admin.client.AuthClientRegistry;
 import org.slf4j.Logger;
@@ -40,6 +45,8 @@ public class AdminPlugin extends Red5Plugin {
 	private AdminHandler handler = null;
 	
 	private ApplicationContext adminContext;
+
+	private String hostName = "localhost";
 	
 	@Override
 	public void doStart() throws Exception {
@@ -49,19 +56,51 @@ public class AdminPlugin extends Red5Plugin {
 		handler = new AdminHandler();
 		
 		//create app context
-		adminContext = new FileSystemXmlApplicationContext(new String[]{"classpath:/admin-security.xml"}, true);	
+		adminContext = new FileSystemXmlApplicationContext(new String[]{"classpath:/admin-security.xml"}, true, context);	
 
 		//set the context
 		handler.setContext(adminContext);
+
+		//get a ref to the "default" global scope
+		GlobalScope global = (GlobalScope) server.getGlobal("default");
 		
+		//create a scope resolver
+		ScopeResolver scopeResolver = new ScopeResolver();
+		scopeResolver.setGlobalScope(global);
 		
-		Context ctx = (Context) context.getBean("web.context");
-		ctx.setClientRegistry(new AuthClientRegistry());
+		AuthClientRegistry registry = (AuthClientRegistry) adminContext.getBean("authClientRegistry");
+		
+		//create a context - this takes the place of the previous web context
+		Context ctx = new Context(adminContext, "admin");	
+		ctx.setClientRegistry(registry);
+		ctx.setMappingStrategy(new MappingStrategy());
+		ctx.setPersistanceStore(global.getStore());
+		ctx.setScopeResolver(scopeResolver);
+		
+		//create a scope for the admin
+		Scope scope = new Scope.Builder((IScope) global, "scope", "admin", false).build();
+		scope.setContext(ctx);
+		scope.setHandler(handler);
+		
+		//set the scope on the handler
+		handler.setScope(scope);
+		
+		server.addMapping(hostName, "admin", "default");
+		
+		if (global.addChildScope(scope)) {
+			log.info("Admin scope was added to global (default) scope");
+			
+		} else {
+			log.warn("Admin scope was not added to global (default) scope");
+		}
 	}
 
 	@Override
 	public void doStop() throws Exception {
 		super.doStop();
+		//clean up / unregister everything
+		server.removeMapping(hostName, "admin");
+		((Scope) handler.getScope()).uninit();
 	}
 
 	@Override
@@ -75,6 +114,14 @@ public class AdminPlugin extends Red5Plugin {
 		super.init();
 
 
+	}
+
+	public String getHostName() {
+		return hostName;
+	}
+
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
 	}
 
 }

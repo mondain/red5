@@ -22,7 +22,7 @@
 	</bean>            
     -->
     
-    <bean id="authClientRegistry" class="org.red5.webapps.admin.client.AuthClientRegistry" depends-on="web.handler" lazy-init="true"/>
+    <bean id="authClientRegistry" class="org.red5.server.plugin.admin.client.AuthClientRegistry"/>
     
     <bean id="userCache" class="org.springframework.security.providers.dao.cache.NullUserCache"/>
 

@@ -29,7 +29,6 @@ import org.red5.server.api.Red5;
 import org.red5.server.exception.ClientNotFoundException;
 import org.red5.server.exception.ClientRejectedException;
 
-
 import org.springframework.security.BadCredentialsException;
 import org.springframework.security.providers.ProviderManager;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -54,22 +53,22 @@ public class AuthClientRegistry extends ClientRegistry {
 		super();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IClient newClient(Object[] params) throws ClientNotFoundException,
-			ClientRejectedException {
-	
+	public IClient newClient(Object[] params) throws ClientNotFoundException, ClientRejectedException {
+
 		if (params == null || params.length == 0) {
 			log.warn("Client didn't pass a username.");
 			throw new ClientRejectedException();
 		}
 
 		String username, passwd;
-		if (params[0] instanceof HashMap) { 
+		if (params[0] instanceof HashMap) {
 			// Win FP sends HashMap
 			HashMap userWin = (HashMap) params[0];
 			username = (String) userWin.get(0);
 			passwd = (String) userWin.get(1);
-		} else if (params[0] instanceof ArrayList) { 
+		} else if (params[0] instanceof ArrayList) {
 			// Mac FP sends ArrayList
 			ArrayList userMac = (ArrayList) params[0];
 			username = (String) userMac.get(0);
@@ -80,26 +79,22 @@ public class AuthClientRegistry extends ClientRegistry {
 
 		UsernamePasswordAuthenticationToken t = new UsernamePasswordAuthenticationToken(username, passwd);
 
-		masterScope = Red5.getConnectionLocal().getScope();	
-		
-		
-		ProviderManager mgr = (ProviderManager) masterScope.getContext()
-				.getBean("authenticationManager");
+		masterScope = Red5.getConnectionLocal().getScope();
+
+		ProviderManager mgr = (ProviderManager) masterScope.getContext().getBean("authenticationManager");
 		try {
 			log.debug("Checking password: {}", passwd);
 			t = (UsernamePasswordAuthenticationToken) mgr.authenticate(t);
 		} catch (BadCredentialsException ex) {
-			log.debug("{}",ex);
+			log.debug("{}", ex);
 			throw new ClientRejectedException();
 		}
 
-		
 		if (t.isAuthenticated()) {
 			client = new AuthClient(nextId(), this);
 			addClient(client);
 			client.setAttribute("authInformation", t);
-			log.debug("Authenticated client - username: {}, id: {}",
-					new Object[] { username, client.getId() });
+			log.debug("Authenticated client - username: {}, id: {}", new Object[] { username, client.getId() });
 		}
 
 		return client;

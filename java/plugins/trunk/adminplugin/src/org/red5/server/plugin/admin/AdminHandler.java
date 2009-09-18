@@ -26,11 +26,15 @@ import java.util.Set;
 
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.ApplicationLifecycle;
+import org.red5.server.api.IBasicScope;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
+import org.red5.server.api.IScopeHandler;
 import org.red5.server.api.Red5;
 import org.red5.server.api.ScopeUtils;
+import org.red5.server.api.event.IEvent;
+import org.red5.server.api.service.IServiceCall;
 import org.red5.server.api.service.ServiceUtils;
 import org.red5.server.plugin.admin.stats.ScopeStatistics;
 import org.red5.server.plugin.admin.stats.UserStatistics;
@@ -38,7 +42,7 @@ import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
-public class AdminHandler extends ApplicationLifecycle {
+public class AdminHandler extends ApplicationLifecycle implements IScopeHandler {
 
 	private static Logger log = Red5LoggerFactory.getLogger(AdminHandler.class, "admin");
 
@@ -48,7 +52,7 @@ public class AdminHandler extends ApplicationLifecycle {
 
 	private HashMap<Integer, String> scopes;
 
-	private int scope_id = 0;
+	private int scopeId = 0;
 	
 	private ApplicationContext context;
 
@@ -64,20 +68,26 @@ public class AdminHandler extends ApplicationLifecycle {
 	}
 
 	public boolean appConnect(IConnection conn, Object[] params) {
-
-		this.scope = conn.getScope();
-
 		log.info("appConnect");
+		this.scope = conn.getScope();
+		return true;
+	}
+	
+	@Override
+	public boolean connect(IConnection conn, IScope scope, Object[] params) {
+		log.info("connect");
 
+		
 		return true;
 	}
 
 	public void disconnect(IConnection conn, IScope scope) {
+		log.info("disconnect");
 		// Get the previously stored username
 		String rid = conn.getClient().getId();
 		// Unregister user
 		log.info("Client with id {} disconnected.", rid);
-
+		
 	}
 
 	/**
@@ -164,8 +174,8 @@ public class AdminHandler extends ApplicationLifecycle {
 				IScope parent = root.getScope(name2);
 				// parent.
 				getRooms(parent, depth + 1);
-				scopes.put(scope_id, indent + name2);
-				scope_id++;
+				scopes.put(scopeId, indent + name2);
+				scopeId++;
 				// log.info("Found scope: "+name2);
 			} catch (NullPointerException npe) {
 				log.debug(npe.toString());
@@ -264,6 +274,10 @@ public class AdminHandler extends ApplicationLifecycle {
 		return scope;
 	}
 	
+	public void setScope(IScope scope) {
+		this.scope = scope;
+	}
+
 	public void setContext(ApplicationContext ctx) {
 		this.context = ctx;
 		messageSource = (ResourceBundleMessageSource) context.getBean("adminMessageSource");
@@ -313,6 +327,51 @@ public class AdminHandler extends ApplicationLifecycle {
 			log.warn("Connection was not found for sending error");
 		}
 		return sent;
+	}
+
+	@Override
+	public boolean addChildScope(IBasicScope scope) {
+		log.info("addChildScope");
+		return false;
+	}
+
+	@Override
+	public boolean join(IClient client, IScope scope) {
+		log.info("join");
+		return false;
+	}
+
+	@Override
+	public void leave(IClient client, IScope scope) {		
+		log.info("leave");
+	}
+
+	@Override
+	public void removeChildScope(IBasicScope scope) {
+		log.info("removeChildScope");
+	}
+
+	@Override
+	public boolean serviceCall(IConnection conn, IServiceCall call) {
+		log.info("serviceCall {}", call);
+		return false;
+	}
+
+	@Override
+	public boolean start(IScope scope) {
+		log.info("start");
+		return true;
+	}
+
+	@Override
+	public void stop(IScope scope) {
+		log.info("stop");
+	}
+
+	@Override
+	public boolean handleEvent(IEvent event) {
+		log.debug("Scope event: {}", event);
+		return false;
 	}		
 	
 }
