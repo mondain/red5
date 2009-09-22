@@ -56,7 +56,8 @@ public class AuthClientRegistry extends ClientRegistry {
 	@SuppressWarnings("unchecked")
 	@Override
 	public IClient newClient(Object[] params) throws ClientNotFoundException, ClientRejectedException {
-
+		log.debug("New client - params: {}, {}, {}", params);
+		
 		if (params == null || params.length == 0) {
 			log.warn("Client didn't pass a username.");
 			throw new ClientRejectedException();
