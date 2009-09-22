@@ -28,6 +28,7 @@ import org.red5.server.ScopeResolver;
 import org.red5.server.api.IScope;
 import org.red5.server.plugin.Red5Plugin;
 import org.red5.server.plugin.admin.client.AuthClientRegistry;
+import org.red5.server.service.ServiceInvoker;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -47,7 +48,7 @@ public class AdminPlugin extends Red5Plugin {
 	private ApplicationContext adminContext;
 
 	private String hostName = "localhost";
-	
+
 	@Override
 	public void doStart() throws Exception {
 		super.doStart();
@@ -76,6 +77,7 @@ public class AdminPlugin extends Red5Plugin {
 		ctx.setMappingStrategy(new MappingStrategy());
 		ctx.setPersistanceStore(global.getStore());
 		ctx.setScopeResolver(scopeResolver);
+		ctx.setServiceInvoker(new ServiceInvoker());
 		
 		//create a scope for the admin
 		Scope scope = new Scope.Builder((IScope) global, "scope", "admin", false).build();
@@ -100,7 +102,7 @@ public class AdminPlugin extends Red5Plugin {
 		super.doStop();
 		//clean up / unregister everything
 		server.removeMapping(hostName, "admin");
-		((Scope) handler.getScope()).uninit();
+		handler.stop(null);
 	}
 
 	@Override
@@ -112,8 +114,6 @@ public class AdminPlugin extends Red5Plugin {
 	public void init() {
 		log.debug("Initializing");
 		super.init();
-
-
 	}
 
 	public String getHostName() {

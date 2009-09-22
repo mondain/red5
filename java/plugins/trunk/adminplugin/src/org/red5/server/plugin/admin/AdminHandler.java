@@ -25,7 +25,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.adapter.ApplicationLifecycle;
+import org.red5.server.Scope;
 import org.red5.server.api.IBasicScope;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
-public class AdminHandler extends ApplicationLifecycle implements IScopeHandler {
+public class AdminHandler implements IScopeHandler {
 
 	private static Logger log = Red5LoggerFactory.getLogger(AdminHandler.class, "admin");
 
@@ -56,26 +56,26 @@ public class AdminHandler extends ApplicationLifecycle implements IScopeHandler 
 	
 	private ApplicationContext context;
 
-	public AdminHandler() {
-		super();
-		//get localized messages
-		
-	}
-
-	public boolean appStart(IScope app) {
-		log.info("Admin application started");
+	public boolean start(IScope scope) {
+		log.info("start: {}", scope);
 		return true;
 	}
 
-	public boolean appConnect(IConnection conn, Object[] params) {
-		log.info("appConnect");
-		this.scope = conn.getScope();
-		return true;
+	public void stop(IScope scope) {
+		log.info("stop: {}", scope);
+		if (scope == null) {
+			//un-initializing admin scope and children
+			((Scope) this.scope).uninit();
+		}
 	}
-	
-	@Override
+
+	public boolean handleEvent(IEvent event) {
+		log.debug("Scope event: {}", event);
+		return false;
+	}		
+			
 	public boolean connect(IConnection conn, IScope scope, Object[] params) {
-		log.info("connect");
+		log.info("connect - conn: {} params: {} scope: {}", new Object[]{conn, params, scope});
 
 		
 		return true;
@@ -88,6 +88,29 @@ public class AdminHandler extends ApplicationLifecycle implements IScopeHandler 
 		// Unregister user
 		log.info("Client with id {} disconnected.", rid);
 		
+	}
+
+	public boolean join(IClient client, IScope scope) {
+		log.info("join - client: {} scope: {}", new Object[]{client, scope});
+		return true;
+	}
+
+	public void leave(IClient client, IScope scope) {		
+		log.info("leave");
+	}
+
+	public boolean addChildScope(IBasicScope scope) {
+		log.info("addChildScope: {}", scope);
+		return false;
+	}
+
+	public void removeChildScope(IBasicScope scope) {
+		log.info("removeChildScope: {}", scope);
+	}
+
+	public boolean serviceCall(IConnection conn, IServiceCall call) {
+		log.info("serviceCall {}", call);
+		return true;
 	}
 
 	/**
@@ -172,7 +195,7 @@ public class AdminHandler extends ApplicationLifecycle implements IScopeHandler 
 			String name2 = name.substring(1, name.length());
 			try {
 				IScope parent = root.getScope(name2);
-				// parent.
+				// parent
 				getRooms(parent, depth + 1);
 				scopes.put(scopeId, indent + name2);
 				scopeId++;
@@ -329,49 +352,11 @@ public class AdminHandler extends ApplicationLifecycle implements IScopeHandler 
 		return sent;
 	}
 
-	@Override
-	public boolean addChildScope(IBasicScope scope) {
-		log.info("addChildScope");
-		return false;
-	}
-
-	@Override
-	public boolean join(IClient client, IScope scope) {
-		log.info("join");
-		return false;
-	}
-
-	@Override
-	public void leave(IClient client, IScope scope) {		
-		log.info("leave");
-	}
-
-	@Override
-	public void removeChildScope(IBasicScope scope) {
-		log.info("removeChildScope");
-	}
-
-	@Override
-	public boolean serviceCall(IConnection conn, IServiceCall call) {
-		log.info("serviceCall {}", call);
-		return false;
-	}
-
-	@Override
-	public boolean start(IScope scope) {
-		log.info("start");
-		return true;
-	}
-
-	@Override
-	public void stop(IScope scope) {
-		log.info("stop");
-	}
-
-	@Override
-	public boolean handleEvent(IEvent event) {
-		log.debug("Scope event: {}", event);
-		return false;
-	}		
+	/**
+	 * Locale echo test.
+	 */
+	public void echo() {
+		sendError("echo", null);
+	}	
 	
 }

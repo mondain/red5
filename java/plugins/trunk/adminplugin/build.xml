@@ -54,9 +54,12 @@
              deprecation="${build.deprecation}" debug="${debug.state}" compiler="modern"
              source="${java.target_version}" target="${java.target_version}" listfiles="false"/>
              
-		<copy file="${src.dir}/logback-${ant.project.name}.xml" todir="${dest.dir}" failonerror="false" />
-		<copy file="${src.dir}/*.properties" todir="${dest.dir}" failonerror="false" />                
-		<copy file="${src.dir}/*.xml" todir="${dest.dir}" failonerror="false" />            
+		<copy todir="${dest.dir}" failonerror="false">
+			<fileset dir="${src.dir}">
+     			<include name="**/*.xml"/>
+     			<include name="**/*.properties"/>
+    		</fileset>
+  		</copy>          
     </target>   
         
     <target name="jar">
