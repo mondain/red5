@@ -25,7 +25,27 @@
         <filter-name>LoggerContextFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+   	<servlet>
+		<servlet-name>addnsv</servlet-name>
+		<servlet-class>org.red5.demos.nsv.AddNsvServlet</servlet-class>
+	</servlet>
     
+	<servlet-mapping>
+		<servlet-name>addnsv</servlet-name>
+		<url-pattern>/addnsv.jspx</url-pattern>
+	</servlet-mapping>
+
+   	<servlet>
+		<servlet-name>proxynsv</servlet-name>
+		<servlet-class>org.red5.demos.nsv.ProxyNsvServlet</servlet-class>
+	</servlet>
+    
+	<servlet-mapping>
+		<servlet-name>proxynsv</servlet-name>
+		<url-pattern>/proxynsv.jspx</url-pattern>
+	</servlet-mapping>
+
    	<servlet>
 		<servlet-name>rtmpt</servlet-name>
 		<servlet-class>org.red5.server.net.rtmpt.RTMPTServlet</servlet-class>
