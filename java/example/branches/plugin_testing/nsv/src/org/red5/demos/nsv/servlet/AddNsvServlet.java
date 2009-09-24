@@ -1,7 +1,9 @@
 package org.red5.demos.nsv.servlet;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,9 +18,12 @@ import org.red5.server.plugin.icy.stream.NSVConsumer;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Servlet implementation class AddNsvServlet
+ *
+ * http://localhost/nsv/addnsv.jspx?scope=stream&name=test&password=test&port=8888
  */
 public class AddNsvServlet extends HttpServlet {
 
@@ -36,24 +41,55 @@ public class AddNsvServlet extends HttpServlet {
 		String outputName = request.getParameter("name");
 		String password = request.getParameter("password");
 		Integer port = Integer.valueOf(request.getParameter("port"));
-		log.debug("New nsv stream connector requested - scope: {} name: {} password: {} port: {}", new Object[]{outputScopeName, outputName, port, password});
+		log.debug("New nsv stream connector requested - scope: {} name: {} port: {} password: {}", new Object[]{outputScopeName, outputName, port, password});
+
+        // get the spring app context for our app		
+		ServletContext sc = getServletContext();
+		if (log.isDebugEnabled()) {
+    		Enumeration<String> enm = sc.getAttributeNames();
+    		while (enm.hasMoreElements()) {
+    			log.debug("Context attr: {}", enm.nextElement());
+    		}
+		}
+
+		// get the spring app context
+		ApplicationContext appCtx = (ApplicationContext) WebApplicationContextUtils.getWebApplicationContext(request.getSession().getServletContext());
+		if (appCtx == null) {
+			log.warn("Spring context was not found using session");	
+			appCtx = (WebApplicationContext) sc.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+		}
 		
-		// get the scope of our application
-		ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute(
-				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+		if (appCtx == null) {
+            log.warn("Spring context was not found");		    
+			response.sendError(500, "Spring configuration error");
+			return;
+		}
+
 		// get the red5 application
 		ApplicationAdapter app = (ApplicationAdapter) appCtx.getBean("web.handler");
-		IScope appScope = app.getScope();
 		
-		// get child scope
-		IScope outputScope = appScope.getScope(outputScopeName);
-		if (outputScope == null) {
-			if (appScope.createChildScope(outputScopeName)) {
-				// get it!
-				outputScope = appScope.getScope(outputScopeName);
-			} else {
-				log.warn("Scope could not be created");
-			}
+		// get the scope of our application
+		IScope appScope = app.getScope();
+		log.debug("Application scope name: {}", appScope.getName());
+
+		// the output scope
+		IScope outputScope = null;
+		
+		// see if app scope has been requested
+		if (appScope.getName().equals(outputScopeName)) {
+			outputScope = appScope;
+		} else {		
+    		// get child scope
+    		outputScope = appScope.getScope(outputScopeName);
+    		if (outputScope == null) {
+    			// create child scope
+    			if (appScope.createChildScope(outputScopeName)) {
+    				// get it!
+    				outputScope = appScope.getScope(outputScopeName);
+    			} else {
+    				log.warn("Child scope could not be created: {}", outputScopeName);
+    			}
+    		}
 		}
 		
 		if (outputScope != null) {
@@ -64,8 +100,9 @@ public class AddNsvServlet extends HttpServlet {
 				log.error("NSV plugin does not exist");
 				response.sendError(500, "NSV plugin is not available");
 			} else {			
-	    		// open up a connection point for an incomming stream
-	    		NSVConsumer consumer = NSVPlugin.openServerPort(outputScope, outputName, port.intValue(), password);
+				log.debug("NSV plugin found");
+	    		// open up a connection point for an incoming stream
+	    		NSVConsumer consumer = NSVPlugin.openServerPort(outputScope, outputName, port, password);
 	    		if (consumer != null) {
 	    			log.debug("Consumer: {}", consumer);
 	    		} else {

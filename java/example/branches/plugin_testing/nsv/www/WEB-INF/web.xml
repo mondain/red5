@@ -28,7 +28,7 @@
 
    	<servlet>
 		<servlet-name>addnsv</servlet-name>
-		<servlet-class>org.red5.demos.nsv.AddNsvServlet</servlet-class>
+		<servlet-class>org.red5.demos.nsv.servlet.AddNsvServlet</servlet-class>
 	</servlet>
     
 	<servlet-mapping>
@@ -38,7 +38,7 @@
 
    	<servlet>
 		<servlet-name>proxynsv</servlet-name>
-		<servlet-class>org.red5.demos.nsv.ProxyNsvServlet</servlet-class>
+		<servlet-class>org.red5.demos.nsv.servlet.ProxyNsvServlet</servlet-class>
 	</servlet>
     
 	<servlet-mapping>
