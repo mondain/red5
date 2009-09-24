@@ -20,7 +20,7 @@
 		<property name="virtualHosts" value="${webapp.virtualHosts}" />
 	</bean>
 
-	<bean id="web.handler" class="org.red5.demos.oflaDemo.Application">
+	<bean id="web.handler" class="org.red5.demos.nsv.Application">
 	   <!-- 
 	       Use the plugins property of an Application to plug additional features into your
 	       application, such as authentication. This may also be done programmatically in your
@@ -36,12 +36,14 @@
 	    -->
 	   <property name="plugins">
             <list>
+                <!-- 
                 <bean class="org.red5.server.plugin.PluginDescriptor">
                     <property name="pluginName" value="authPlugin"/>
                     <property name="pluginType" value="org.red5.server.plugin.auth.AuthPlugin"/>
                     <property name="method" value="getRed5AuthenticationHandler"/>
                     <property name="methodReturnType" value="org.red5.server.plugin.auth.Red5AuthenticationHandler"/>
                 </bean>
+                 -->
                 <!-- Using FMS-style authentication
                 <bean class="org.red5.server.plugin.PluginDescriptor">
                     <property name="pluginName" value="authPlugin"/>

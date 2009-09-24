@@ -21,6 +21,19 @@
 	</bean>
 
 	<bean id="web.handler" class="org.red5.demos.oflaDemo.Application">
+	   <!-- 
+	       Use the plugins property of an Application to plug additional features into your
+	       application, such as authentication. This may also be done programmatically in your
+	       class if you dislike xml.
+	        
+	           //Get plugin by name
+	           AuthPlugin authPlugin = (AuthPlugin) PluginRegistry.getPlugin("authPlugin");
+	           //Get the handler (application listener in this case) that you want
+	           Red5AuthenticationHandler authHandler = authPlugin.getRed5AuthenticationHandler();
+	           //Add the handler as a listener for your app (in appStart or where-ever)
+	           addListener(authHandler);
+	           
+	    -->
 	   <property name="plugins">
             <list>
                 <bean class="org.red5.server.plugin.PluginDescriptor">
@@ -29,7 +42,7 @@
                     <property name="method" value="getRed5AuthenticationHandler"/>
                     <property name="methodReturnType" value="org.red5.server.plugin.auth.Red5AuthenticationHandler"/>
                 </bean>
-                <!-- 
+                <!-- Using FMS-style authentication
                 <bean class="org.red5.server.plugin.PluginDescriptor">
                     <property name="pluginName" value="authPlugin"/>
                     <property name="pluginType" value="org.red5.server.plugin.auth.AuthPlugin"/>
@@ -37,10 +50,12 @@
                     <property name="methodReturnType" value="org.red5.server.plugin.auth.FMSAuthenticationHandler"/>
                 </bean>
                  -->            
+                <!-- Simple example plugin 
                 <bean class="org.red5.server.plugin.PluginDescriptor">
                     <property name="pluginName" value="examplePlugin"/>
                     <property name="pluginType" value="org.red5.server.plugin.example.ExamplePlugin"/>
                 </bean>
+                -->
             </list>
         </property>
 	</bean>
