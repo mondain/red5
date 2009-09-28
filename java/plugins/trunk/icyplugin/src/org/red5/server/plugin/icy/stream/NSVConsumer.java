@@ -19,8 +19,8 @@ package org.red5.server.plugin.icy.stream;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import org.red5.server.plugin.icy.ICYSocketHandler;
-import org.red5.server.plugin.icy.IICYMarshal;
+import org.red5.server.icy.ICYHandler;
+import org.red5.server.icy.IICYMarshal;
 
 /**
  * The NSVConsumer will consume or subscribe to data from a winamp shoutcast dsp, 
@@ -42,7 +42,7 @@ public class NSVConsumer {
 
 	private String password = "changeme";
 	
-	private ICYSocketHandler socketHandler;
+	private ICYHandler socketHandler;
 
 	private int mode = 1;
 
@@ -62,7 +62,7 @@ public class NSVConsumer {
 	
 	public void init() {
 		//create a handler
-		socketHandler = new ICYSocketHandler();
+		socketHandler = new ICYHandler();
 		//socketHandler.setDataTimeout(10000);
 		socketHandler.setHandler(handler);
 		socketHandler.setHost(host);

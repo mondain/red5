@@ -20,11 +20,10 @@ package org.red5.server.plugin.icy.marshal.transpose;
  */
 
 import org.apache.mina.core.buffer.IoBuffer;
-
+import org.red5.server.icy.IICYEventSink;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.event.VideoData;
 import org.red5.server.net.rtmp.message.Header;
-import org.red5.server.plugin.icy.IICYEventSink;
 
 /**
  * Provides video in pre-defined containers.

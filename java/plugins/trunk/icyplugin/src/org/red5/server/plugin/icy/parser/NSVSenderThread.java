@@ -19,7 +19,8 @@ package org.red5.server.plugin.icy.parser;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import org.red5.server.plugin.icy.IICYMarshal;
+import org.red5.server.icy.IICYMarshal;
+import org.red5.server.icy.message.NSVFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

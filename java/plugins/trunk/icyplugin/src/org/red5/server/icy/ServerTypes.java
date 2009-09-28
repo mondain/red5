@@ -1,4 +1,4 @@
-package org.red5.server.plugin.icy.parser;
+package org.red5.server.icy;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -30,6 +30,16 @@ package org.red5.server.plugin.icy.parser;
 public class ServerTypes {
 
 	/**
+	 * Acting like a shoutcast server for nsv tv encoder.
+	 */
+	public static int MODE_NSV_SERVER = 0;
+
+	/**
+	 * Acting like a shoutcast client for nsv tv.
+	 */
+	public static int MODE_NSV_CLIENT = 1;
+
+	/**
 	 * Acting like a shoutcast client.
 	 */
 	public static int MODE_SHOUT_CAST_CLIENT = 2;
@@ -38,15 +48,5 @@ public class ServerTypes {
 	 * Acting like a shoutcast server for the encoder.
 	 */
 	public static int MODE_SHOUT_CAST_SERVER = 3;
-
-	/**
-	 * Acting like a shoutcast client for nsv tv.
-	 */
-	public static int MODE_NSV_CLIENT = 1;
-
-	/**
-	 * Acting like a shoutcast server for nsv tv encoder.
-	 */
-	public static int MODE_NSV_SERVER = 0;
-
+	
 }

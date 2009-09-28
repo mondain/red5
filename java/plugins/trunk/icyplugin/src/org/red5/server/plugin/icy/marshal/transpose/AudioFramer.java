@@ -22,10 +22,10 @@ package org.red5.server.plugin.icy.marshal.transpose;
 import java.util.Arrays;
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.red5.server.icy.IICYEventSink;
 import org.red5.server.net.rtmp.event.AudioData;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.message.Header;
-import org.red5.server.plugin.icy.IICYEventSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
