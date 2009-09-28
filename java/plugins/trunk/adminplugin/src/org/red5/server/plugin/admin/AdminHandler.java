@@ -42,6 +42,13 @@ import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
+/**
+ * Primary "admin" class, it handles all the features and functions of a
+ * standard red5 application. This code is based on original code in the
+ * admin application.
+ * 
+ * @author Paul Gregoire
+ */
 public class AdminHandler implements IScopeHandler {
 
 	private static Logger log = Red5LoggerFactory.getLogger(AdminHandler.class, "admin");
