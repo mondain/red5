@@ -29,8 +29,11 @@ import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IContext;
 import org.red5.server.api.IScope;
 import org.red5.server.icy.IICYMarshal;
+import org.red5.server.icy.message.Frame;
+import org.red5.server.icy.nsv.NSVFrameQueue;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.event.Notify;
+import org.red5.server.plugin.icy.StreamManager;
 import org.red5.server.plugin.icy.marshal.transpose.AudioFramer;
 import org.red5.server.plugin.icy.marshal.transpose.VideoFramer;
 import org.red5.server.plugin.icy.stream.ICYStream;
@@ -72,6 +75,10 @@ public class ICYMarshal implements IICYMarshal {
 
 	private Map<String, Object> metaData;
 
+	private NSVFrameQueue queue;
+	
+	private NSVSenderThread	sender;
+	
 	public ICYMarshal(IScope outputScope, String outputName) {
 		log.debug("ICYMarshal created - name: {} scope: {}", outputName, outputScope.getName());
 		scope = outputScope;
@@ -158,7 +165,7 @@ public class ICYMarshal implements IICYMarshal {
 		}
 		fourCCVideo = videoType;
 		if (fourCCVideo.startsWith("VP6") || fourCCVideo.startsWith("H264")) {
-			
+			//
     	} else {
     		log.debug("Unsupported video type: {}", videoType);
     	}
@@ -199,6 +206,18 @@ public class ICYMarshal implements IICYMarshal {
 		stream.dispatchEvent(event);
 	}
 
+	public void onFrameData(Frame frame) {
+		if (queue == null) {
+			queue = new NSVFrameQueue();
+			sender = new NSVSenderThread();
+		}
+		queue.addFrame(frame);
+		if (sender != null && !sender.isRunning()) {
+    		//now that the sender has a config, submit it for execution
+    		StreamManager.submit(sender);
+		}			
+	}
+	
 	public void onDisconnected() {
 	}
 	
@@ -221,5 +240,38 @@ public class ICYMarshal implements IICYMarshal {
 
 		return new Notify(buf);
 	}
+
+	public int queueSize() {
+		if (queue == null) {
+			return 0;
+		} else {
+			return queue.count();
+		}
+	}
+	
+	final class NSVSenderThread implements Runnable {
+				
+		private boolean running;
+
+		@Override
+		public void run() {
+			running = true;
+			while (queue.hasFrames()) {
+				Frame frame = queue.getFrame();
+				onAudioData(frame.audioData);
+				if (fourCCVideo == null) {
+					continue;
+				}
+				onVideoData(frame.videoData);
+			}
+			log.debug("Sender thread exiting");
+			running = false;
+		}
+
+		public boolean isRunning() {
+			return running;
+		}
+		
+	}	
 
 }

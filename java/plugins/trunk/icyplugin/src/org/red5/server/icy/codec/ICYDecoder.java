@@ -30,13 +30,12 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.red5.server.icy.BitStream;
+import org.red5.server.icy.ICYStreamUtil;
 import org.red5.server.icy.message.AACFrame;
 import org.red5.server.icy.message.Frame;
 import org.red5.server.icy.message.MP3Frame;
 import org.red5.server.icy.message.NSVFrame;
-import org.red5.server.plugin.icy.StreamManager;
-import org.red5.server.plugin.icy.parser.NSVStream;
-import org.red5.server.plugin.icy.parser.NSVStreamConfig;
+import org.red5.server.icy.nsv.NSVStreamConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,7 +196,7 @@ public class ICYDecoder extends CumulativeProtocolDecoder {
         				log.trace("Sync: {}", new String(sync));
         				int nsvSync = (sync[0] | (sync[1] << 8) | (sync[2] << 16) | (sync[3] << 24));
         				//we need at least 20 bytes
-        				if (curBuffer.remaining() >= 20 && nsvSync == NSVStream.NSV_SYNC_DWORD) {
+        				if (curBuffer.remaining() >= 20 && nsvSync == ICYStreamUtil.NSV_SYNC_DWORD) {
         					int position = curBuffer.position();
         					//read all the configuration info for the stream
         					if (syncFrame(session, curBuffer)) {
@@ -238,9 +237,9 @@ public class ICYDecoder extends CumulativeProtocolDecoder {
 				curBuffer.get(sync);
 				log.trace("Sync: {}", new String(sync));
 				int nsvSync = (sync[0] | (sync[1] << 8) | (sync[2] << 16) | (sync[3] << 24));
-				log.trace("Sync: {} Dword: {}", nsvSync, NSVStream.NSV_SYNC_DWORD);
+				log.trace("Sync: {} Dword: {}", nsvSync, ICYStreamUtil.NSV_SYNC_DWORD);
 				//we need at least 20 bytes
-				if (curBuffer.remaining() >= 20 && nsvSync == NSVStream.NSV_SYNC_DWORD) {
+				if (curBuffer.remaining() >= 20 && nsvSync == ICYStreamUtil.NSV_SYNC_DWORD) {
 					int position = curBuffer.position();
 					//read all the configuration info for the stream
 					if (syncFrame(session, curBuffer)) {
@@ -584,10 +583,10 @@ public class ICYDecoder extends CumulativeProtocolDecoder {
     		int height = (twoBytes[0] & 0xff) | ((twoBytes[1] & 0xff) << 8);
     		int frameRateEncoded = ioBuffer.get();
     		//convert the fps
-    		double frameRate = NSVStream.framerateToDouble(frameRateEncoded);
+    		double frameRate = ICYStreamUtil.framerateToDouble(frameRateEncoded);
     		log.debug("Width: {} Height: {} Framerate: {}", new Object[]{width, height, frameRate});
     		//create a stream config
-    		config = StreamManager.createStreamConfig(videoType, audioType, width, height, frameRate);
+    		config = ICYStreamUtil.createStreamConfig(videoType, audioType, width, height, frameRate);
     		config.frameRateEncoded = frameRateEncoded;
     		//add stream config to the session
     		session.setAttribute("nsvconfig", config);
@@ -597,7 +596,7 @@ public class ICYDecoder extends CumulativeProtocolDecoder {
 		}
 		
 		//create a sync frame
-		NSVFrame frame = new NSVFrame(config, NSVStream.NSV_SYNC_DWORD);
+		NSVFrame frame = new NSVFrame(config, ICYStreamUtil.NSV_SYNC_DWORD);
 		ioBuffer.get(twoBytes);
 		//the a/v sync offset (number of milliseconds ahead of the video the audio is at this frame)
 		//(treat as signed)
@@ -629,7 +628,7 @@ public class ICYDecoder extends CumulativeProtocolDecoder {
 		//add stream config to the session
 		NSVStreamConfig config = (NSVStreamConfig) session.getAttribute("nsvconfig");
 		
-		NSVFrame frame = new NSVFrame(config, NSVStream.NSV_NONSYNC_WORD);
+		NSVFrame frame = new NSVFrame(config, ICYStreamUtil.NSV_NONSYNC_WORD);
 
 		//build the frames payload
 		result = framePayload(session, ioBuffer, frame);
@@ -666,7 +665,7 @@ public class ICYDecoder extends CumulativeProtocolDecoder {
 		int bytesNeeded = videoAndAuxLen + audioLen;
 		log.trace("Lengths - audio: {} video+aux: {} needed: {}", new Object[]{audioLen, videoAndAuxLen, bytesNeeded});
 		if (ioBuffer.remaining() >= bytesNeeded) {
-			if (videoAndAuxLen > NSVStream.NSV_MAX_VIDEO_LEN / 8 || audioLen > NSVStream.NSV_MAX_AUDIO_LEN / 8) {
+			if (videoAndAuxLen > ICYStreamUtil.NSV_MAX_VIDEO_LEN / 8 || audioLen > ICYStreamUtil.NSV_MAX_AUDIO_LEN / 8) {
 				log.debug("Video or audio length exceeds max allowed");
 			} else {
 				//all is well, proceed

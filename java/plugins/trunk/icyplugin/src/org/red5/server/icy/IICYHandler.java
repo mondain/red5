@@ -22,6 +22,7 @@ package org.red5.server.icy;
 import java.util.Map;
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.red5.server.icy.message.Frame;
 
 /**
  * Lifecycle.
@@ -43,6 +44,10 @@ public interface IICYHandler {
 
 	public void onMetaData(Map<String, Object> metaData);
 
+	public void onFrameData(Frame frame);
+	
 	public void reset(String content, String type);
+
+	public int queueSize();
 
 }

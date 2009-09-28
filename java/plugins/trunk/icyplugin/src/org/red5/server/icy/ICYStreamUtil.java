@@ -1,4 +1,8 @@
-package org.red5.server.plugin.icy.parser;
+package org.red5.server.icy;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.red5.server.icy.nsv.NSVStreamConfig;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -26,19 +30,19 @@ package org.red5.server.plugin.icy.parser;
  * @author Paul Gregoire (mondain@gmail.com)
  * @author Andy Shaules (bowljoman@hotmail.com)
  */
-public class NSVStream {
+public class ICYStreamUtil {
 
-	public static int NSV_MAX_AUDIO_LEN = 0x8000; // 32kb
+	public static final int NSV_MAX_AUDIO_LEN = 0x8000; // 32kb
 
-	public static long NSV_MAX_VIDEO_LEN = 0x80000;// 512kb
+	public static final long NSV_MAX_VIDEO_LEN = 0x80000;// 512kb
 
-	public static int NSV_MAX_AUX_LEN = 0x8000; // 32kb for each aux stream
+	public static final int NSV_MAX_AUX_LEN = 0x8000; // 32kb for each aux stream
 
-	public static long NSV_MAX_AUXSTREAMS = 15; // 15 aux streams maximum
+	public static final long NSV_MAX_AUXSTREAMS = 15; // 15 aux streams maximum
 
-	public static long NSV_SYNC_HEADERLEN_BITS = 192;
+	public static final long NSV_SYNC_HEADERLEN_BITS = 192;
 
-	public static long NSV_NONSYNC_HEADERLEN_BITS = 56;
+	public static final long NSV_NONSYNC_HEADERLEN_BITS = 56;
 
 	public static final int NSV_NONSYNC_WORD = 0xbeef;
 
@@ -46,6 +50,8 @@ public class NSVStream {
 
 	public static final int NSV_HDR_DWORD = makeType('N', 'S', 'V', 'f');
 
+	private static AtomicInteger streamId = new AtomicInteger(0);
+	
 	public static double framerateToDouble(int fr) {
 		double ret = 0;
 		if ((fr & 0x80) == 0) {
@@ -83,4 +89,25 @@ public class NSVStream {
 		return (a | (b << 8) | (c << 16) | (d << 24));
 	}
 
+	/**
+	 * Creates a stream config based on given properties.
+	 * 
+	 * @param vidtype
+	 * @param audtype
+	 * @param width
+	 * @param height
+	 * @param frameRate
+	 * @return
+	 */
+	public static NSVStreamConfig createStreamConfig(String videoType, String audioType, int width, int height, double frameRate) {
+		NSVStreamConfig newConfig = new NSVStreamConfig();
+		newConfig.streamId = streamId.incrementAndGet();
+		newConfig.videoFormat = videoType;
+		newConfig.audioFormat = audioType;
+		newConfig.videoWidth = width;
+		newConfig.videoHeight = height;
+		newConfig.frameRate = frameRate;
+		return newConfig;
+	}	
+	
 }
