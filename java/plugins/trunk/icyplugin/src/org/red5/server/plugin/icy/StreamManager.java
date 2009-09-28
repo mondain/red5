@@ -1,15 +1,12 @@
 package org.red5.server.plugin.icy;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.plugin.icy.parser.NSVStreamConfig;
 import org.red5.server.plugin.icy.stream.NSVConsumer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
@@ -26,15 +23,11 @@ public class StreamManager implements InitializingBean, DisposableBean {
 	
 	//executor thread pool size
 	private int poolSize = 1;
-
-	private static AtomicInteger streamId = new AtomicInteger(0);
 	
 	private static ExecutorService executor;
 	
 	private static final Set<NSVConsumer> consumers = new HashSet<NSVConsumer>();
 
-	public static ArrayList<NSVStreamConfig> streams = new ArrayList<NSVStreamConfig>();
-	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		executor = Executors.newFixedThreadPool(poolSize);
@@ -95,31 +88,6 @@ public class StreamManager implements InitializingBean, DisposableBean {
 		executor.execute(runnable);
 	}
 
-	/**
-	 * Creates a stream config based on given properties.
-	 * 
-	 * @param vidtype
-	 * @param audtype
-	 * @param width
-	 * @param height
-	 * @param frameRate
-	 * @return
-	 */
-	public static NSVStreamConfig createStreamConfig(String videoType, String audioType, int width, int height, double frameRate) {
-		log.debug("Create config - video: {} audio: {} width: {} height: {} fps: {}", new Object[]{videoType, audioType, width, height, frameRate});
-		NSVStreamConfig newConfig = new NSVStreamConfig();
-		newConfig.streamId = streamId.incrementAndGet();
-		newConfig.videoFormat = videoType;
-		newConfig.audioFormat = audioType;
-		newConfig.videoWidth = width;
-		newConfig.videoHeight = height;
-		newConfig.frameRate = frameRate;
-		//add it to the stream collection
-		streams.add(newConfig);
-		
-		return newConfig;
-	}
-	
 	public int getPoolSize() {
 		return poolSize;
 	}

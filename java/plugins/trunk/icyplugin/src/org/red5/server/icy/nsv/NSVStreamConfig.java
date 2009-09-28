@@ -1,4 +1,4 @@
-package org.red5.server.plugin.icy.parser;
+package org.red5.server.icy.nsv;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -19,51 +19,31 @@ package org.red5.server.plugin.icy.parser;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import org.red5.server.icy.IICYMarshal;
-import org.red5.server.icy.message.NSVFrame;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Pushes data out at specified intervals.
+ * Individual stream configuration generated from the parser when the shoutcast header is received.
+ * 
+ * TODO: make this OO
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  * @author Andy Shaules (bowljoman@hotmail.com)
  */
-public class NSVSenderThread implements Runnable {
-
-	private static Logger log = LoggerFactory.getLogger(NSVSenderThread.class);	
+public class NSVStreamConfig {
 	
-	public IICYMarshal reader;
+	public int streamId = -1;
 
-	public NSVStreamConfig config;
-	
-	private boolean running;
+	public String videoFormat = null;
 
-	public NSVSenderThread(IICYMarshal reader) {
-		this.reader = reader;
-	}
+	public String audioFormat = null;
 
-	@Override
-	public void run() {
-		running = true;
-		while (config.hasFrames()) {
-			NSVFrame frame = config.readFrame();
-			if (reader.equals(null)) {
-				continue;
-			}
-			reader.onAudioData(frame.audioData);
-			if (config.videoFormat == null) {
-				continue;
-			}
-			reader.onVideoData(frame.videoData);
-		}
-		log.debug("Sender thread exiting");
-		running = false;
-	}
+	public int videoWidth = 0;
 
-	public boolean isRunning() {
-		return running;
-	}
-	
+	public int videoHeight = 0;
+
+	public double frameRate = 0;
+
+	public int frameRateEncoded = 0x0;
+
+	public long startTime = 0;
+
 }

@@ -33,9 +33,7 @@ import org.red5.server.icy.codec.ICYDecoder.ReadState;
 import org.red5.server.icy.message.AACFrame;
 import org.red5.server.icy.message.MP3Frame;
 import org.red5.server.icy.message.NSVFrame;
-import org.red5.server.plugin.icy.StreamManager;
-import org.red5.server.plugin.icy.parser.NSVSenderThread;
-import org.red5.server.plugin.icy.parser.NSVStreamConfig;
+import org.red5.server.icy.nsv.NSVStreamConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,9 +77,7 @@ public class ICYHandler extends IoHandlerAdapter {
 	private IICYHandler handler;
 	
 	public NSVStreamConfig config;
-	
-	private NSVSenderThread sender;
-	
+		
 	private boolean connected;
 
 	//private long lastDataTs;
@@ -193,7 +189,6 @@ public class ICYHandler extends IoHandlerAdapter {
     	connected = false;
     	validated = false;
     	//lastDataTs = 0L;
-    	sender = null;
     }
 	
 	public void stop() {
@@ -328,9 +323,6 @@ public class ICYHandler extends IoHandlerAdapter {
 							handler.onAuxData(entry.getKey(), entry.getValue());
 						}
 					}
-					
-					sender = new NSVSenderThread((IICYMarshal) handler);		
-					sender.config = config;
 				
 				}
 			
@@ -346,7 +338,7 @@ public class ICYHandler extends IoHandlerAdapter {
 				//check for a frame
 				if (message instanceof NSVFrame) {
 					//got a frame, writing to config
-					config.writeFrame((NSVFrame) message);
+					handler.onFrameData((NSVFrame) message);
 				} else if (message instanceof AACFrame) {
 					//got a frame
 					handler.onAudioData(((AACFrame) message).getPayload());
@@ -362,15 +354,8 @@ public class ICYHandler extends IoHandlerAdapter {
 				
 		}
 		
-		if (config != null) {
-			log.trace("Buffered frames: {}", config.count());
-		}
-		
-		if (sender != null && !sender.isRunning()) {
-    		//now that the sender has a config, submit it for execution
-    		StreamManager.submit(sender);
-		}
-		
+		log.trace("Buffered frames: {}", handler.queueSize());
+	
 	}
 
 	@Override

@@ -156,7 +156,6 @@ public class ICYStream implements IBroadcastStream, IProvider, IPipeConnectionLi
 
 	@Override
 	public IStreamCodecInfo getCodecInfo() {
-
 		return mCodecInfo;
 	}
 
@@ -259,11 +258,11 @@ public class ICYStream implements IBroadcastStream, IProvider, IPipeConnectionLi
 					buffer.put(audioFramer.getAACSpecificConfig());
 					//buffer.put((byte) 0x06);
 					buffer.flip();
+					
 					RTMPMessage msg = new RTMPMessage();
 					AudioData data = new AudioData(buffer);
 					data.setHeader(new Header());
-					//data.getHeader().setTimerRelative(false);
-					msg.setBody(new AudioData(buffer));
+					msg.setBody(data);
 
 					try {
 						((PlayEngine) consumer).pushMessage(null, msg);
@@ -271,8 +270,9 @@ public class ICYStream implements IBroadcastStream, IProvider, IPipeConnectionLi
 
 					}
 				}
-				if (_metaDataEvent != null)
+				if (_metaDataEvent != null) {
 					dispatchEvent(_metaDataEvent);
+				}
 			}
 		}
 	}
@@ -291,7 +291,6 @@ public class ICYStream implements IBroadcastStream, IProvider, IPipeConnectionLi
 
 			if (rtmpEvent instanceof AudioData) {
 				audioTime += rtmpEvent.getTimestamp();
-
 				eventTime = audioTime;
 				sendConfig();
 			} else {

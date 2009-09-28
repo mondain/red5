@@ -1,4 +1,4 @@
-package org.red5.server.plugin.icy.parser;
+package org.red5.server.icy.nsv;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -25,37 +25,22 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
-import org.red5.server.icy.message.NSVFrame;
+import org.red5.server.icy.message.Frame;
 
 /**
- * Individual stream configuration generated from the parser when the shoutcast header is received.
+ * Simple concurrent queue for storing NSV frames.
  * 
- * TODO: Extract the frame "queue" to its own class
+ * TODO: ensure frames are in the correct order, check comparable
+ * TODO: look at using a fifo queue instead of list
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  * @author Andy Shaules (bowljoman@hotmail.com)
  */
-public class NSVStreamConfig {
-
-	public int streamId = -1;
-
-	public String videoFormat = null;
-
-	public String audioFormat = null;
-
-	public int videoWidth = 0;
-
-	public int videoHeight = 0;
-
-	public double frameRate = 0;
-
-	public int frameRateEncoded = 0x0;
+public class NSVFrameQueue {
 
 	public AtomicLong totalFrames = new AtomicLong(0);
-
-	public long startTime = 0;
-
-	public volatile ArrayList<NSVFrame> frames = new ArrayList<NSVFrame>();
+	
+	public volatile ArrayList<Frame> frames = new ArrayList<Frame>();
 
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -63,7 +48,7 @@ public class NSVStreamConfig {
 
 	private WriteLock writeLock = lock.writeLock();
 
-	public void writeFrame(NSVFrame frame) {
+	public void addFrame(Frame frame) {
 		long frameNumber = totalFrames.incrementAndGet();
 		frame.setFrameNumber(frameNumber);
 		try {
@@ -74,7 +59,7 @@ public class NSVStreamConfig {
 		}
 	}
 
-	public NSVFrame readFrame() {
+	public Frame getFrame() {
 		try {
 			writeLock.lock();
 			return frames.remove(0);
@@ -109,5 +94,5 @@ public class NSVStreamConfig {
 			writeLock.unlock();
 		}
 	}
-
+	
 }
