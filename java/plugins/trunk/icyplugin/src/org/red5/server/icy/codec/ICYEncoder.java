@@ -1,4 +1,4 @@
-package org.red5.server.plugin.icy.codec;
+package org.red5.server.icy.codec;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5

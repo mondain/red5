@@ -1,4 +1,4 @@
-package org.red5.server.plugin.icy.codec;
+package org.red5.server.icy.codec;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -29,12 +29,12 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import org.red5.server.icy.BitStream;
+import org.red5.server.icy.message.AACFrame;
+import org.red5.server.icy.message.Frame;
+import org.red5.server.icy.message.MP3Frame;
+import org.red5.server.icy.message.NSVFrame;
 import org.red5.server.plugin.icy.StreamManager;
-import org.red5.server.plugin.icy.parser.AACFrame;
-import org.red5.server.plugin.icy.parser.Frame;
-import org.red5.server.plugin.icy.parser.MP3Frame;
-import org.red5.server.plugin.icy.parser.NSVBitStream;
-import org.red5.server.plugin.icy.parser.NSVFrame;
 import org.red5.server.plugin.icy.parser.NSVStream;
 import org.red5.server.plugin.icy.parser.NSVStreamConfig;
 import org.slf4j.Logger;
@@ -648,7 +648,7 @@ public class ICYDecoder extends CumulativeProtocolDecoder {
 	private boolean framePayload(IoSession session, IoBuffer ioBuffer, NSVFrame frame) {
 		boolean result = false;
 		
-		NSVBitStream bs0 = new NSVBitStream();
+		BitStream bs0 = new BitStream();
 		bs0.putBits(8, ioBuffer.get());
 		bs0.putBits(8, ioBuffer.get());
 		bs0.putBits(8, ioBuffer.get());

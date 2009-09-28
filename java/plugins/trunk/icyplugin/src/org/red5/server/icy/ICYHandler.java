@@ -1,4 +1,4 @@
-package org.red5.server.plugin.icy;
+package org.red5.server.icy;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -27,12 +27,13 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.SocketAcceptor;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
-import org.red5.server.plugin.icy.codec.ICYDecoder;
-import org.red5.server.plugin.icy.codec.ICYEncoder;
-import org.red5.server.plugin.icy.codec.ICYDecoder.ReadState;
-import org.red5.server.plugin.icy.parser.AACFrame;
-import org.red5.server.plugin.icy.parser.MP3Frame;
-import org.red5.server.plugin.icy.parser.NSVFrame;
+import org.red5.server.icy.codec.ICYDecoder;
+import org.red5.server.icy.codec.ICYEncoder;
+import org.red5.server.icy.codec.ICYDecoder.ReadState;
+import org.red5.server.icy.message.AACFrame;
+import org.red5.server.icy.message.MP3Frame;
+import org.red5.server.icy.message.NSVFrame;
+import org.red5.server.plugin.icy.StreamManager;
 import org.red5.server.plugin.icy.parser.NSVSenderThread;
 import org.red5.server.plugin.icy.parser.NSVStreamConfig;
 import org.slf4j.Logger;
@@ -43,9 +44,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
-public class ICYSocketHandler extends IoHandlerAdapter {
+public class ICYHandler extends IoHandlerAdapter {
 
-	private static Logger log = LoggerFactory.getLogger(ICYSocketHandler.class);
+	private static Logger log = LoggerFactory.getLogger(ICYHandler.class);
 		
 	private static final String userAgent = "Mozilla/4.0 (compatible; Red5 Server/NSV plugin)";
 

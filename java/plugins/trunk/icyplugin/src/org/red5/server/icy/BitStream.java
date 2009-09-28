@@ -1,4 +1,4 @@
-package org.red5.server.plugin.icy.parser;
+package org.red5.server.icy;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -28,7 +28,7 @@ import java.io.*;
  * @author Paul Gregoire (mondain@gmail.com)
  * @author Andy Shaules (bowljoman@hotmail.com)
  */
-public class NSVBitStream {
+public class BitStream {
 
 	private int allocated = 1;
 
@@ -42,10 +42,10 @@ public class NSVBitStream {
 
 	private int eof = 0;
 
-	public NSVBitStream() {
+	public BitStream() {
 	}
 
-	public NSVBitStream(InputStream stream) {
+	public BitStream(InputStream stream) {
 		inputSource = stream;
 	}
 

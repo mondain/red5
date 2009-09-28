@@ -25,6 +25,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
+import org.red5.server.icy.message.NSVFrame;
+
 /**
  * Individual stream configuration generated from the parser when the shoutcast header is received.
  * 

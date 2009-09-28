@@ -1,4 +1,8 @@
-package org.red5.server.plugin.icy.parser;
+package org.red5.server.icy.message;
+
+import org.red5.server.icy.BitStream;
+import org.red5.server.plugin.icy.parser.NSVStream;
+import org.red5.server.plugin.icy.parser.NSVStreamConfig;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -53,7 +57,7 @@ public class NSVFrame extends Frame {
 		int[] ret = new int[1];
 		ret[0] = 0;
 		int length = 0;
-		NSVBitStream bs = new NSVBitStream();
+		BitStream bs = new BitStream();
 		switch ((frameType == NSVStream.NSV_SYNC_DWORD) ? 1 : 2) {
 			case 1:
 				length = 24 + (videoLength + audioLength);

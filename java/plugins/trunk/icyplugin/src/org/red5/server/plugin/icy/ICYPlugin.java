@@ -1,4 +1,4 @@
-package org.red5.server.plugin;
+package org.red5.server.plugin.icy;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -21,7 +21,7 @@ package org.red5.server.plugin;
 
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IScope;
-import org.red5.server.plugin.icy.StreamManager;
+import org.red5.server.plugin.Red5Plugin;
 import org.red5.server.plugin.icy.marshal.ICYMarshal;
 import org.red5.server.plugin.icy.stream.NSVConsumer;
 import org.slf4j.Logger;
@@ -34,9 +34,9 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * @author Wittawas Nakkasem (vittee@hotmail.com)
  * @author Andy Shaules (bowljoman@hotmail.com)
  */
-public class NSVPlugin extends Red5Plugin {
+public class ICYPlugin extends Red5Plugin {
 
-	private static Logger log = Red5LoggerFactory.getLogger(NSVPlugin.class, "plugins");
+	private static Logger log = Red5LoggerFactory.getLogger(ICYPlugin.class, "plugins");
 
 	private static FileSystemXmlApplicationContext nsvContext;
 	
