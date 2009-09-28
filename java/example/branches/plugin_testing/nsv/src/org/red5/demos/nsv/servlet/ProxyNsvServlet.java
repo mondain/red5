@@ -19,6 +19,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Servlet implementation class ProxyNsvServlet
+ *
+ * Test setup:
+ * Shoutcast DNAS - portbase: 8887, listen: 8888
+ * Source: AAC+ (HE), AAC Raw (LC) or MP3 
+ * name: test password: test
+ * port: 8887
+ *
+ * http://localhost/nsv/proxynsv.jspx?scope=stream&name=test&host=http://localhost:8887/test
  */
 public class ProxyNsvServlet extends HttpServlet {
 	
