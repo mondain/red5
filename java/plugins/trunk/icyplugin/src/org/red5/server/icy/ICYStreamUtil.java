@@ -73,12 +73,9 @@ public class ICYStreamUtil {
 				ret = 30.0 * 1000.0 / 1001.0 * sc;
 				break;
 			case 2:
-				ret = 30.0 * sc;
-				break;
-			case 3:
 				ret = 25.0 * sc;
 				break;
-			case 4:
+			case 3:
 				ret = 24.0 * 1000.0 / 1001.0 * sc;
 				break;
 		}
