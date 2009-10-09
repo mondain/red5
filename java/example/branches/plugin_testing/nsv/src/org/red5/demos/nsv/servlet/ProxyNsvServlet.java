@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.ApplicationAdapter;
 import org.red5.server.api.IScope;
-import org.red5.server.plugin.NSVPlugin;
 import org.red5.server.plugin.PluginRegistry;
+import org.red5.server.plugin.icy.ICYPlugin;
 import org.red5.server.plugin.icy.stream.NSVConsumer;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -65,17 +65,17 @@ public class ProxyNsvServlet extends HttpServlet {
 		if (outputScope != null) {
 			// get the nsv plugin, just to ensure it exists. we are using static methods
 			// below, so normally this call would not be required.
-			NSVPlugin plugin = (NSVPlugin) PluginRegistry.getPlugin("nsvPlugin");
+			ICYPlugin plugin = (ICYPlugin) PluginRegistry.getPlugin("icyPlugin");
 			if (plugin == null) {
-				log.error("NSV plugin does not exist");
-				response.sendError(500, "NSV plugin is not available");
+				log.error("ICY plugin does not exist");
+				response.sendError(500, "ICY plugin is not available");
 			} else {			
 	    		// open up a connection point for an incoming stream
-	    		NSVConsumer consumer = NSVPlugin.openExternalURI(outputScope, outputName, remoteHost);
+	    		NSVConsumer consumer = ICYPlugin.openExternalURI(outputScope, outputName, remoteHost);
 	    		if (consumer != null) {
 	    			log.debug("Consumer: {}", consumer);
 	    		} else {
-	    			log.warn("NSV consumer (external) creation failed");
+	    			log.warn("ICY consumer (external) creation failed");
 	    			response.sendError(500, "External connection setup failed");	    			
 	    		}
 			}			
