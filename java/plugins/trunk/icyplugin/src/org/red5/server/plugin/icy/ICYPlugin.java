@@ -106,7 +106,7 @@ public class ICYPlugin extends Red5Plugin {
 
 	@Override
 	public String getName() {
-		return "nsvPlugin";
+		return "icyPlugin";
 	}
 
 }
