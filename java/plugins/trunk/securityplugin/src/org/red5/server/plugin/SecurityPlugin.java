@@ -24,10 +24,8 @@ import org.red5.io.amf.AMF;
 import org.red5.io.amf.Output;
 import org.red5.io.object.Serializer;
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.Server;
 import org.red5.server.adapter.MultiThreadedApplicationAdapter;
 import org.red5.server.api.IConnection;
-import org.red5.server.api.plugin.IRed5Plugin;
 import org.red5.server.net.rtmp.BaseRTMPHandler;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
@@ -35,29 +33,24 @@ import org.red5.server.net.rtmp.event.Notify;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.net.rtmp.status.StatusObject;
+import org.red5.server.plugin.security.PlaybackSecurityHandler;
+import org.red5.server.plugin.security.PublishSecurityHandler;
+import org.red5.server.plugin.security.SharedObjectSecurityHandler;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
-
-import org.red5.server.plugin.security.*;
 
 /**
- * Provides FMS-style authentication features.
+ * Provides security token features.
  * 
  * @author Paul Gregoire
+ * @author Dan Rossi
  */
-public class SecurityPlugin extends Red5Plugin implements IRed5Plugin {
+public class SecurityPlugin extends Red5Plugin {
 
 	private static Logger log = Red5LoggerFactory.getLogger(SecurityPlugin.class, "plugins");
 	
 	private static Serializer serializer = new Serializer();
 	
 	private MultiThreadedApplicationAdapter application;
-	
-	@SuppressWarnings("unused")
-	private ApplicationContext context;
-	
-	@SuppressWarnings("unused")
-	private Server server;
 	
 	@Override
 	public void doStart() throws Exception {
@@ -70,24 +63,13 @@ public class SecurityPlugin extends Red5Plugin implements IRed5Plugin {
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext context) {
-		log.debug("Set application context: {}", context);
-		this.context = context;
-	}
-
-	@Override
-	public void setServer(Server server) {
-		log.debug("Set server: {}", server);
-		this.server = server;
-	}
-
-	@Override
 	public String getName() {
 		return "securityPlugin";
 	}
 	
 	@Override
 	public void setApplication(MultiThreadedApplicationAdapter app) {	
+		log.trace("Setting application adapter: {}", app);
 		this.application = app;
 	}
 	
@@ -97,40 +79,35 @@ public class SecurityPlugin extends Red5Plugin implements IRed5Plugin {
 		PlaybackSecurityHandler ph = null;
 		try {
 			ph = (PlaybackSecurityHandler) Class.forName("org.red5.server.plugin.security.PlaybackSecurityHandler").newInstance();
+			ph.setApplication(application);
 		} catch (Exception e) {
 			log.error("PlaybackSecurityHandler could not be loaded", e);
 		}
-		
-		ph.setApplication(this.application);
-		application.registerStreamPlaybackSecurity(ph);
 		return ph;		
 	}
 	
 	public PublishSecurityHandler getPublishSecurityHandler() {
-		PublishSecurityHandler sh = null;
+		PublishSecurityHandler ps = null;
 		try {
-			sh = (PublishSecurityHandler) Class.forName("org.red5.server.plugin.security.PublishSecurityHandler").newInstance();
+			ps = (PublishSecurityHandler) Class.forName("org.red5.server.plugin.security.PublishSecurityHandler").newInstance();
+			ps.setApplication(application);
 		} catch (Exception e) {
 			log.error("PublishSecurityHandler could not be loaded", e);
 		}
-		
-		sh.setApplication(this.application);
-		application.registerStreamPublishSecurity(sh);
-		return sh;		
+		return ps;		
 	}
 	
 	public SharedObjectSecurityHandler getSharedObjectSecurityHandler() {
 		SharedObjectSecurityHandler sh = null;
 		try {
 			sh = (SharedObjectSecurityHandler) Class.forName("org.red5.server.plugin.security.SharedObjectSecurityHandler").newInstance();
+			sh.setApplication(application);
 		} catch (Exception e) {
 			log.error("SharedObjectSecurityHandler could not be loaded", e);
 		}
-		
-		sh.setApplication(this.application);
-		application.registerSharedObjectSecurity(sh);
 		return sh;		
 	}
+	
 	//common methods
 	
 	/**

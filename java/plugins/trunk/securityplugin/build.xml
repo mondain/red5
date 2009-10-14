@@ -9,6 +9,14 @@
     </target>
     
     <target name="jar">
+    	
+        <copy todir="${classes.dir}" failonerror="true">
+            <fileset dir=".">
+                <include name="**/*.txt"/>
+                <include name="**/*.properties"/>
+            </fileset>
+        </copy>
+    	
         <tstamp prefix="build">
             <format property="TODAY" pattern="d-MMMM-yyyy" locale="en"/>
         </tstamp>
@@ -20,7 +28,7 @@
 				<attribute name="Built" value="${build.TODAY} by ${user.name}"/>
 				<attribute name="Build-OS" value="${os.name} ${os.version}"/>
 				<attribute name="Build-Java" value="Java ${java.version}"/>
-                <attribute name="Red5-Plugin-Main-Class" value="org.red5.server.plugin.AuthPlugin"/>
+                <attribute name="Red5-Plugin-Main-Class" value="org.red5.server.plugin.SecurityPlugin"/>
 			</manifest>
         </jar>
     </target>
