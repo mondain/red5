@@ -2,12 +2,11 @@ package org.red5.demos.oflaDemo;
 
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.ApplicationAdapter;
-import org.red5.server.api.IBandwidthConfigure;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
 import org.red5.server.api.stream.IServerStream;
 import org.red5.server.api.stream.IStreamCapableConnection;
-import org.red5.server.api.stream.support.SimpleConnectionBWConfig;
+
 import org.slf4j.Logger;
 
 public class Application extends ApplicationAdapter {
@@ -31,16 +30,18 @@ public class Application extends ApplicationAdapter {
 	public boolean appConnect(IConnection conn, Object[] params) {
 		log.info("oflaDemo appConnect");
 		// Trigger calling of "onBWDone", required for some FLV players
-		measureBandwidth(conn);
-		if (conn instanceof IStreamCapableConnection) {
-			IStreamCapableConnection streamConn = (IStreamCapableConnection) conn;
-			SimpleConnectionBWConfig bwConfig = new SimpleConnectionBWConfig();
-			bwConfig.getChannelBandwidth()[IBandwidthConfigure.OVERALL_CHANNEL] =
-				1024 * 1024;
-			bwConfig.getChannelInitialBurst()[IBandwidthConfigure.OVERALL_CHANNEL] =
-				128 * 1024;
-			streamConn.setBandwidthConfigure(bwConfig);
-		}
+		
+		// commenting out the bandwidth code as it is replaced by the mina filters
+		//measureBandwidth(conn);
+//		if (conn instanceof IStreamCapableConnection) {
+//			IStreamCapableConnection streamConn = (IStreamCapableConnection) conn;
+//			SimpleConnectionBWConfig bwConfig = new SimpleConnectionBWConfig();
+//			bwConfig.getChannelBandwidth()[IBandwidthConfigure.OVERALL_CHANNEL] =
+//				1024 * 1024;
+//			bwConfig.getChannelInitialBurst()[IBandwidthConfigure.OVERALL_CHANNEL] =
+//				128 * 1024;
+//			streamConn.setBandwidthConfigure(bwConfig);
+//		}
 		
 //		if (appScope == conn.getScope()) {
 //			serverStream = StreamUtils.createServerStream(appScope, "live0");
