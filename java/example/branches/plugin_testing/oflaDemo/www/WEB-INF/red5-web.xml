@@ -50,6 +50,81 @@
                     <property name="methodReturnType" value="org.red5.server.plugin.auth.FMSAuthenticationHandler"/>
                 </bean>
                  -->            
+                <!-- Security plug-ins -->
+                <bean class="org.red5.server.plugin.PluginDescriptor">
+                    <property name="pluginName" value="securityPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.SecurityPlugin"/>
+                    <property name="method" value="getPlaybackSecurityHandler"/>
+                    <property name="methodReturnType" value="org.red5.server.plugin.security.PlaybackSecurityHandler"/>
+                    <property name="properties">
+                        <map>
+                            <entry>
+                                <key><value>htmlDomains</value></key>
+                                <value>allowedHTMLdomains.txt</value>
+                            </entry>
+                            <entry>
+                                <key><value>swfDomains</value></key>
+                                <value>allowedSWFdomains.txt</value>
+                            </entry>
+                        </map>
+                    </property> 
+                </bean>
+                <bean class="org.red5.server.plugin.PluginDescriptor">
+                    <property name="pluginName" value="securityPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.SecurityPlugin"/>
+                    <property name="method" value="getPublishSecurityHandler"/>
+                    <property name="methodReturnType" value="org.red5.server.plugin.security.PublishSecurityHandler"/>
+                    <property name="properties">
+                        <map>
+                            <entry>
+                                <key><value>publishNames</value></key>
+                                <value>allowedPublishNames.txt</value>
+                            </entry>
+                            <entry>
+                                <key><value>enablePublish</value></key>
+                                <value>true</value>
+                            </entry>
+                        </map>
+                    </property>                     
+                </bean>
+                <bean class="org.red5.server.plugin.PluginDescriptor">
+                    <property name="pluginName" value="securityPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.SecurityPlugin"/>
+                    <property name="method" value="getSharedObjectSecurityHandler"/>
+                    <property name="methodReturnType" value="org.red5.server.plugin.security.SharedObjectSecurityHandler"/>
+                    <property name="properties">
+                        <map>
+                            <entry>
+                                <key><value>sharedObjectNames</value></key>
+                                <value>allowedSharedObjectNames.txt</value>
+                            </entry>
+                            <entry>
+                                <key><value>enableSharedObjects</value></key>
+                                <value>true</value>
+                            </entry>
+                            <entry>
+                                <key><value>connectionAllowed</value></key>
+                                <value>true</value>
+                            </entry>
+                            <entry>
+                                <key><value>creationAllowed</value></key>
+                                <value>true</value>
+                            </entry>
+                            <entry>
+                                <key><value>deleteAllowed</value></key>
+                                <value>true</value>
+                            </entry>
+                            <entry>
+                                <key><value>sendAllowed</value></key>
+                                <value>true</value>
+                            </entry>
+                            <entry>
+                                <key><value>writeAllowed</value></key>
+                                <value>true</value>
+                            </entry>
+                        </map>
+                    </property> 
+                </bean>                 
                 <!-- Simple example plugin 
                 <bean class="org.red5.server.plugin.PluginDescriptor">
                     <property name="pluginName" value="examplePlugin"/>
