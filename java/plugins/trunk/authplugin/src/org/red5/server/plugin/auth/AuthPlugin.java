@@ -24,7 +24,6 @@ import org.red5.io.amf.AMF;
 import org.red5.io.amf.Output;
 import org.red5.io.object.Serializer;
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.Server;
 import org.red5.server.api.IConnection;
 import org.red5.server.net.rtmp.BaseRTMPHandler;
 import org.red5.server.net.rtmp.RTMPConnection;
@@ -35,7 +34,6 @@ import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.net.rtmp.status.StatusObject;
 import org.red5.server.plugin.Red5Plugin;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Provides FMS-style authentication features.
@@ -54,16 +52,6 @@ public class AuthPlugin extends Red5Plugin {
 
 	public void doStop() throws Exception {
 		log.debug("Stop");
-	}
-
-	public void setApplicationContext(ApplicationContext context) {
-		log.debug("Set application context: {}", context);
-		super.setApplicationContext(context);
-	}
-
-	public void setServer(Server server) {
-		log.debug("Set server: {}", server);
-		super.setServer(server);
 	}
 
 	public String getName() {
