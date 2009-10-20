@@ -60,11 +60,11 @@
                         <map>
                             <entry>
                                 <key><value>htmlDomains</value></key>
-                                <value>allowedHTMLdomains.txt</value>
+                                <value>file:///path/to/allowedHTMLdomains.txt</value>
                             </entry>
                             <entry>
                                 <key><value>swfDomains</value></key>
-                                <value>allowedSWFdomains.txt</value>
+                                <value>file:///path/to/allowedSWFdomains.txt</value>
                             </entry>
                         </map>
                     </property> 
@@ -78,7 +78,7 @@
                         <map>
                             <entry>
                                 <key><value>publishNames</value></key>
-                                <value>allowedPublishNames.txt</value>
+                                <value>file:///path/to/allowedPublishNames.txt</value>
                             </entry>
                             <entry>
                                 <key><value>enablePublish</value></key>
@@ -96,7 +96,7 @@
                         <map>
                             <entry>
                                 <key><value>sharedObjectNames</value></key>
-                                <value>allowedSharedObjectNames.txt</value>
+                                <value>file:///path/to/allowedSharedObjectNames.txt</value>
                             </entry>
                             <entry>
                                 <key><value>enableSharedObjects</value></key>
