@@ -53,7 +53,7 @@
                 <!-- Security plug-ins -->
                 <bean class="org.red5.server.plugin.PluginDescriptor">
                     <property name="pluginName" value="securityPlugin"/>
-                    <property name="pluginType" value="org.red5.server.plugin.SecurityPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.security.SecurityPlugin"/>
                     <property name="method" value="getPlaybackSecurityHandler"/>
                     <property name="methodReturnType" value="org.red5.server.plugin.security.PlaybackSecurityHandler"/>
                     <property name="properties">
@@ -71,7 +71,7 @@
                 </bean>
                 <bean class="org.red5.server.plugin.PluginDescriptor">
                     <property name="pluginName" value="securityPlugin"/>
-                    <property name="pluginType" value="org.red5.server.plugin.SecurityPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.security.SecurityPlugin"/>
                     <property name="method" value="getPublishSecurityHandler"/>
                     <property name="methodReturnType" value="org.red5.server.plugin.security.PublishSecurityHandler"/>
                     <property name="properties">
@@ -89,7 +89,7 @@
                 </bean>
                 <bean class="org.red5.server.plugin.PluginDescriptor">
                     <property name="pluginName" value="securityPlugin"/>
-                    <property name="pluginType" value="org.red5.server.plugin.SecurityPlugin"/>
+                    <property name="pluginType" value="org.red5.server.plugin.security.SecurityPlugin"/>
                     <property name="method" value="getSharedObjectSecurityHandler"/>
                     <property name="methodReturnType" value="org.red5.server.plugin.security.SharedObjectSecurityHandler"/>
                     <property name="properties">
