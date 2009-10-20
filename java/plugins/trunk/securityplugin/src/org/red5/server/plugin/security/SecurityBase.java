@@ -22,6 +22,7 @@ package org.red5.server.plugin.security;
 import java.util.Map;
 
 import org.red5.server.adapter.MultiThreadedApplicationAdapter;
+import org.red5.server.adapter.ApplicationLifecycle;
 import org.red5.server.api.plugin.IRed5PluginHandler;
 
 /**
@@ -30,7 +31,7 @@ import org.red5.server.api.plugin.IRed5PluginHandler;
  * @author Paul Gregoire
  * @author Dan Rossi
  */
-public abstract class SecurityBase implements IRed5PluginHandler {
+public abstract class SecurityBase extends ApplicationLifecycle implements IRed5PluginHandler {
 
 	protected MultiThreadedApplicationAdapter application;
 
