@@ -117,7 +117,7 @@ public class PublishSecurityHandler extends SecurityBase implements IStreamPubli
 
 			in.close();
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("Problem: {}", e.getStackTrace());
 			NamesAuth = false;
 		}
 

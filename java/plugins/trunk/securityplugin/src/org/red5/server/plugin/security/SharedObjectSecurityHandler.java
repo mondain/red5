@@ -124,7 +124,7 @@ public class SharedObjectSecurityHandler extends SecurityBase implements IShared
 
 			in.close();
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("Problem: {}", e.getStackTrace());
 			NamesAuth = false;
 		}
 

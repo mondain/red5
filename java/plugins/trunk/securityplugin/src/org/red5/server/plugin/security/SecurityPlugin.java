@@ -1,4 +1,4 @@
-package org.red5.server.plugin;
+package org.red5.server.plugin.security;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -33,9 +33,7 @@ import org.red5.server.net.rtmp.event.Notify;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.net.rtmp.status.StatusObject;
-import org.red5.server.plugin.security.PlaybackSecurityHandler;
-import org.red5.server.plugin.security.PublishSecurityHandler;
-import org.red5.server.plugin.security.SharedObjectSecurityHandler;
+import org.red5.server.plugin.Red5Plugin;
 import org.slf4j.Logger;
 
 /**
@@ -52,22 +50,19 @@ public class SecurityPlugin extends Red5Plugin {
 	
 	private MultiThreadedApplicationAdapter application;
 	
-	@Override
+
 	public void doStart() throws Exception {
 		log.debug("Start");
 	}
-	
-	@Override
+
 	public void doStop() throws Exception {
 		log.debug("Stop");
 	}
 
-	@Override
 	public String getName() {
 		return "securityPlugin";
 	}
 	
-	@Override
 	public void setApplication(MultiThreadedApplicationAdapter app) {	
 		log.trace("Setting application adapter: {}", app);
 		this.application = app;
