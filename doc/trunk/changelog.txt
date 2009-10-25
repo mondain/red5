@@ -21,7 +21,9 @@ Bugfixes:
 - Changed VideoCodecFactory into a "true" factory class
 - Applied patch for h.264 live stream packet handling from Dave Feltenberger
 - Applied FP 10.0.32.18 patch from Ari-Pekka Viitanen
-
+- Fixed #652 Mistake in RTMPT Configuration lines in red5-core.xml
+- Fixed #635 Bug SocketPolicyHandler.java with loading global flashpolicy.xml file
+- Fixed #651 RTMPMinaTransport throws exception if isEnableMinaMonitor is true
 
 Red5 0.8.0 (2009-06-04)
 -----------------------

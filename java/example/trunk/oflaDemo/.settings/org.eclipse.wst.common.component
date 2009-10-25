@@ -3,6 +3,7 @@
     <wb-module deploy-name="oflaDemo">
         <wb-resource deploy-path="/" source-path="/www"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
         <property name="context-root" value="oflaDemo"/>
         <property name="java-output-path" value="build/classes"/>
     </wb-module>
