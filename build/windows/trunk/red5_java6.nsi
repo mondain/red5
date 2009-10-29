@@ -32,12 +32,16 @@ RequestExecutionLevel admin
 # Included files
 !include Sections.nsh
 !include MUI.nsh
+!include AdvReplaceInFile.nsh
+!include "defines.nsh"
 
 # Reserved Files
 ReserveFile "${NSISDIR}\Plugins\AdvSplash.dll"
 
 # Variables
 Var StartMenuGroup
+Var /GLOBAL HTTP_PORT 
+Var /GLOBAL IP_ADDRESS
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
@@ -120,6 +124,46 @@ Section -post SEC0001
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
 
+	#Dialogs::InputBox [dialog_title] [caption_inner_text] [caption_button1] [caption_button2] [apply_password] [output_var] 
+	Dialogs::InputBox "IP Address" "Enter an IP address for your server:" "Ok" "Cancel" 0 ${VAR_R2} 
+
+	${If} $R2 == ""
+	  StrCpy $IP_ADDRESS "0.0.0.0"
+    ${Else}
+	  StrCpy $IP_ADDRESS $R2
+	${EndIf}
+	
+	Dialogs::InputBox "HTTP Port" "Enter a port number to use for HTTP requests:" "Ok" "Cancel" 0 ${VAR_R3}
+	  
+	${If} $R3 == ""
+	  StrCpy $HTTP_PORT "5080"
+    ${Else}
+	  StrCpy $HTTP_PORT $R3
+	${EndIf}
+	  
+	# Replace http and rtmp address
+	Push "http.host=0.0.0.0"
+	Push "http.host=$IP_ADDRESS"
+	Push all
+	Push all
+	Push "$INSTDIR\conf\red5.properties"
+	Call AdvReplaceInFile
+	
+	Push "rtmp.host=0.0.0.0"
+	Push "rtmp.host=$IP_ADDRESS"
+	Push all
+	Push all
+	Push "$INSTDIR\conf\red5.properties"
+	Call AdvReplaceInFile
+
+	# Replace http port
+	Push "http.port=5080"
+	Push "http.port=$HTTP_PORT"
+	Push all
+	Push all
+	Push "$INSTDIR\conf\red5.properties"
+	Call AdvReplaceInFile
+	
     # Add the service
     ExecWait '"$INSTDIR\InstallRed5-NT.bat"'
     ; send them to osflash
