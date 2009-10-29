@@ -6,7 +6,7 @@
 
 Name Red5
 
-; Request application privileges for Windows Vista
+; Request application privileges for Windows Vista and Windows 7
 RequestExecutionLevel admin
 
 # Defines
