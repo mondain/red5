@@ -15,10 +15,6 @@ wrapper.java.mainclass=org.tanukisoftware.wrapper.WrapperSimpleApp
 wrapper.java.classpath.1=lib/wrapper.jar
 wrapper.java.classpath.2=conf
 wrapper.java.classpath.3=boot.jar
-wrapper.java.classpath.4=red5.jar
-wrapper.java.classpath.5=lib/ejb3-persistence-.jar
-wrapper.java.classpath.6=lib/annotations-api-.jar
-wrapper.java.classpath.7=lib/aopalliance-.jar
 
 # Java Library Path (location of Wrapper.DLL or libwrapper.so)
 wrapper.java.library.path.1=lib
@@ -32,6 +28,7 @@ wrapper.java.additional.5=-Dlogback.ContextSelector=org.red5.logging.LoggingCont
 wrapper.java.additional.6=-Dcatalina.useNaming=true
 wrapper.java.additional.7=-Dpython.home=lib
 wrapper.java.additional.8=-Djava.io.tempdir=temp
+wrapper.java.additional.9=-Xverify:none
 
 # Initial Java Heap Size (in MB)
 wrapper.java.initmemory=256
