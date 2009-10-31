@@ -1,13 +1,9 @@
 package org.red5.demos.oflaDemo;
 
-import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.ApplicationAdapter;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.IScope;
 import org.red5.server.api.stream.IServerStream;
-import org.red5.server.api.stream.IStreamCapableConnection;
-
-import org.slf4j.Logger;
 
 public class Application extends ApplicationAdapter {
 
