@@ -1,18 +1,5 @@
 <ivysettings>
     <settings defaultResolver="local"/>
-    <!--
-    <triggers>
-		<log file="ivy.log" append="true" message='resolving,,,"${module}"' event="pre-resolve" />
-		<log file="ivy.log" append="true" message='dependency,${duration},,"${module}","${revision}","${req-revision}"' event="post-resolve-dependency" filter="resolved=true"/>
- 		<log file="ivy.log" append="true" message='resolved,${resolve-duration},,"${module}"' event="post-resolve" />
-        <log file="ivy.log" append="true" message='downloaded,${download-duration},${download-size},"${module}"' event="post-resolve" />
-        <log file="ivy.log" append="true" message='artifact,${duration},${size},"${module}","${revision}","${origin}","${file}"' event="post-download-artifact" filter="status=successful"/>
-        <log file="ivy.log" append="true" message='retrieved,${duration},${size},"${module}",,${nbCopied}' event="post-retrieve" />
-    </triggers>
-    -->
-    <!-- 
-    JEE 5 jar home: http://mirrors.ibiblio.org/pub/mirrors/maven2/org/ow2/jonas/osgi/javaee-api/
-     -->
     <resolvers>
         <chain name="local">     
 			<filesystem name="default">

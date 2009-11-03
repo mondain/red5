@@ -9,7 +9,7 @@
     <dependencies>
         <dependency org="spring" name="spring-context" rev="2.5.6" conf="build->default"/>
         <dependency name="slf4j-api" rev="1.5.6" conf="build->default"/>
-        <dependency org="mina" name="mina-core" rev="2.0.0-M7-SNAPSHOT" conf="build->default"/>
+        <dependency org="mina" name="mina-core" rev="2.0.0-RC1" conf="build->default"/>
         <dependency name="bcprov" rev="jdk16-139" conf="build->default"/>
         <dependency org="commons" name="commons-codec" rev="1.4" conf="build->default"/>
     </dependencies>
