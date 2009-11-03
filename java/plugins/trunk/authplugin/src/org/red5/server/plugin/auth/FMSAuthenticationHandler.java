@@ -40,6 +40,7 @@ import org.slf4j.Logger;
  * 
  * @author Paul Gregoire
  * @author Dan Rossi
+ * @author Gavriloaie Eugen-Andrei
  */
 public class FMSAuthenticationHandler extends ApplicationLifecycle {
 
@@ -198,7 +199,8 @@ public class FMSAuthenticationHandler extends ApplicationLifecycle {
 		public String challenge;
 		
 		public String opaque;
-		
+
+		@SuppressWarnings("unused")
 		public long created = System.currentTimeMillis();
 		
 		{
