@@ -34,6 +34,8 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Provides the socket policy file.
@@ -42,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
-public class SocketPolicyHandler extends IoHandlerAdapter {
+public class SocketPolicyHandler extends IoHandlerAdapter implements InitializingBean, DisposableBean {
 
 	protected static Logger log = LoggerFactory.getLogger(SocketPolicyHandler.class);
 
@@ -56,7 +58,8 @@ public class SocketPolicyHandler extends IoHandlerAdapter {
 
 	private static IoBuffer policyData;
 
-	public void start() {
+	@Override
+	public void afterPropertiesSet() throws Exception {
 		log.debug("Starting socket policy file server");
 		try {
 			acceptor = new NioSocketAcceptor();
@@ -93,7 +96,8 @@ public class SocketPolicyHandler extends IoHandlerAdapter {
 		}
 	}
 
-	public void stop() {
+	@Override
+	public void destroy() throws Exception {
 		log.debug("Stopping socket policy file server");
 		acceptor.unbind();
 	}

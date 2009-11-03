@@ -57,6 +57,7 @@
 	        <copy todir="${dest.dir}" failonerror="false">
 	            <fileset dir="${src.dir}">
 	                <include name="**/*.xml"/>
+	                <include name="**/*.xsd"/>
 	                <include name="**/*.properties"/>
 	            </fileset>
 	        </copy>          

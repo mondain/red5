@@ -34,11 +34,15 @@ public class PolicyServerPlugin extends Red5Plugin {
 	private static Logger log = Red5LoggerFactory.getLogger(PolicyServerPlugin.class);
 
 	private static FileSystemXmlApplicationContext configContext;
-	
+
 	public void doStart() throws Exception {
 		log.debug("Start");
-		//create app context
-		configContext = new FileSystemXmlApplicationContext(new String[]{"classpath:/context.xml"}, true, context);		
+		// create app context
+		try {
+			configContext = new FileSystemXmlApplicationContext(new String[]{"${red5.root}/plugins/policycontext.xml"}, true);
+		} catch (Exception e) {
+			configContext = new FileSystemXmlApplicationContext(new String[]{"classpath:/policycontext.xml"}, true);	
+		}	
 	}
 
 	public void doStop() throws Exception {
@@ -49,6 +53,6 @@ public class PolicyServerPlugin extends Red5Plugin {
 	@Override
 	public String getName() {
 		return "policyServerPlugin";
-	}	
-	
+	}
+
 }
