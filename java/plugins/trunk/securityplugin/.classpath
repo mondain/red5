@@ -2,16 +2,7 @@
 <classpath>
 	<classpathentry excluding="**/.svn/*" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/red5_server_xuggle_timestamp_fixes"/>
-	<classpathentry kind="var" path="Red5/lib/slf4j-api-1.5.8.jar"/>
-	<classpathentry kind="var" path="Red5/lib/spring-context-2.5.6.jar"/>
-	<classpathentry kind="var" path="Red5/lib/mina-core-2.0.0-M7-SNAPSHOT.jar"/>
-	<classpathentry kind="var" path="Red5/lib/bcprov-jdk16-143.jar"/>
-	<classpathentry kind="var" path="Red5/lib/commons-codec-1.4.jar"/>
-	<classpathentry kind="var" path="Red5/lib/javaee-api-5.1.0-RC3.jar"/>
-	<classpathentry kind="var" path="Red5/lib/spring-beans-2.5.6.jar"/>
-	<classpathentry kind="var" path="Red5/lib/spring-context-support-2.5.6.jar"/>
-	<classpathentry kind="var" path="Red5/lib/spring-core-2.5.6.jar"/>
-	<classpathentry kind="var" path="Red5/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=ivy.xml&amp;confs=*&amp;ivySettingsPath=project%3A%2F%2F%2Fivysettings.xml&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
+	<classpathentry combineaccessrules="false" kind="src" path="/red5_server"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
