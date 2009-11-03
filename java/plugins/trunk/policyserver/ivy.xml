@@ -17,26 +17,9 @@
         <dependency name="jul-to-slf4j" rev="1.5.8" />
         <dependency name="logback-core" rev="0.9.16" />
         <dependency name="logback-classic" rev="0.9.16" />
-        <dependency name="tomcat-juli-slf4j" rev="1.5.0" />
-        <!-- General --> 
-        <dependency org="commons" name="commons-beanutils" rev="1.8.0" />
-        <dependency org="commons" name="commons-collections" rev="3.2.1" /> 
-        <dependency org="commons" name="commons-httpclient" rev="3.1" />
-        <dependency org="commons" name="commons-lang" rev="2.4" />
-        <!-- XML -->
-        <dependency name="xercesImpl" rev="2.9.1" />
-        <dependency name="xmlrpc" rev="2.0.1" />
         <!-- Mina --> 
         <dependency org="mina" name="mina-core" rev="2.0.0-RC1" />
         <dependency org="mina" name="mina-integration-beans" rev="2.0.0-RC1" />
         <dependency org="mina" name="mina-integration-jmx" rev="2.0.0-RC1" />   
-        <!-- Testing support -->
-        <!-- until Eclipse updates their junit version, we have to use this -->
-        <dependency name="junit" rev="4.5" conf="eclipse->*"/>
-        <dependency name="GroboUtils" rev="5-core" conf="eclipse->*"/>
-        <dependency org="spring" name="spring-test" rev="2.5.6" conf="eclipse->*"/>   
-        <dependency org="spring" name="spring-tx" rev="2.5.6" conf="eclipse->*"/>  
-        <dependency name="jython-engine" rev="" conf="eclipse->*"/> 
-        <dependency name="groovy-engine" rev="" conf="eclipse->*"/>
     </dependencies>
 </ivy-module>
