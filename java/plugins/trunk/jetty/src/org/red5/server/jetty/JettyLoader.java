@@ -19,13 +19,13 @@ package org.red5.server.jetty;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.deployer.WebAppDeployer;
-import org.mortbay.jetty.handler.ContextHandler;
-import org.mortbay.jetty.handler.ContextHandlerCollection;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerCollection;
+import org.eclipse.jetty.deploy.WebAppDeployer;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.red5.server.LoaderBase;
 import org.red5.server.LoaderMBean;
 import org.red5.server.api.IApplicationContext;
@@ -72,7 +72,7 @@ public class JettyLoader extends LoaderBase implements LoaderMBean {
 			if (handler instanceof ContextHandler && ((ContextHandler) handler).getContextPath().equals(path)) {
 				try {
 					((ContextHandler) handler).stop();
-					jetty.removeHandler(handler);
+					jetty.removeBean(handler);
 					break;
 				} catch (Exception e) {
 					log.error("Could not remove context: {}", path, e);
@@ -101,8 +101,7 @@ public class JettyLoader extends LoaderBase implements LoaderMBean {
 			System.setProperty("red5.webapp.root", webappFolder);
 			
 			log.info("Loading jetty context from: {}", jettyConfig);
-			ApplicationContext appCtx = new ClassPathXmlApplicationContext(
-					jettyConfig);
+			ApplicationContext appCtx = new ClassPathXmlApplicationContext(jettyConfig);
 			// Get server bean from BeanFactory
 			jetty = (Server) appCtx.getBean("Server");
 
@@ -119,10 +118,10 @@ public class JettyLoader extends LoaderBase implements LoaderMBean {
 			log.info("Starting jetty servlet engine");
 
 			String[] handlersArr = new String[] {
-					"org.mortbay.jetty.webapp.WebInfConfiguration",
-					"org.mortbay.jetty.webapp.WebXmlConfiguration",
-					"org.mortbay.jetty.webapp.JettyWebXmlConfiguration",
-					"org.mortbay.jetty.webapp.TagLibConfiguration",
+					"org.eclipse.jetty.webapp.WebInfConfiguration",
+					"org.eclipse.jetty.webapp.WebXmlConfiguration",
+					"org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
+					"org.eclipse.jetty.webapp.TagLibConfiguration",
 					"org.red5.server.jetty.Red5WebPropertiesConfiguration" };
 
 			// Handler collection

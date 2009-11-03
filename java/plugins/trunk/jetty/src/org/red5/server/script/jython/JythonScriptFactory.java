@@ -23,8 +23,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
-import org.mortbay.jetty.handler.ContextHandler;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.python.core.Py;
 import org.python.core.PyFunction;
 import org.python.core.PyJavaInstance;

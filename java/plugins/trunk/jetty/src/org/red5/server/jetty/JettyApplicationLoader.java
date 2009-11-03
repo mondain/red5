@@ -19,8 +19,8 @@ package org.red5.server.jetty;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.red5.server.api.IApplicationLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
