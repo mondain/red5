@@ -24,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,9 +46,11 @@ import org.springframework.beans.factory.InitializingBean;
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
-public class SocketPolicyHandler extends IoHandlerAdapter implements InitializingBean, DisposableBean {
+public class SocketPolicyHandler extends IoHandlerAdapter implements
+		InitializingBean, DisposableBean {
 
-	protected static Logger log = LoggerFactory.getLogger(SocketPolicyHandler.class);
+	protected static Logger log = LoggerFactory
+			.getLogger(SocketPolicyHandler.class);
 
 	private String host = "0.0.0.0";
 
@@ -71,22 +75,20 @@ public class SocketPolicyHandler extends IoHandlerAdapter implements Initializin
 
 			log.info("Socket policy file server listening on port {}", port);
 			//get the file
-			File file = new File(System.getProperty("red5.config_root"), policyFileName);
+			File file = new File(System.getProperty("red5.config_root"),
+					policyFileName);
 			if (file.exists()) {
 				//read the policy file
-				policyData = IoBuffer.allocate(Long.valueOf(file.length()).intValue());
-				policyData.setAutoExpand(true);
-				//temp space for reading file
-				byte[] buf = new byte[128];
 				//read it
 				FileInputStream fis = new FileInputStream(file);
-				while (fis.read(buf) != -1) {
-					policyData.put(buf);
-				}
-				policyData.flip();
+				FileChannel fc = fis.getChannel();
+				ByteBuffer fb = ByteBuffer.allocate(Long.valueOf(file.length())
+						.intValue());
+				fc.read(fb);
+				fb.flip();
+				policyData = IoBuffer.wrap(fb);
 				fis.close();
 				file = null;
-				buf = null;
 				log.info("Policy file read successfully");
 			} else {
 				log.error("Policy file was not found");
@@ -103,14 +105,16 @@ public class SocketPolicyHandler extends IoHandlerAdapter implements Initializin
 	}
 
 	@Override
-	public void messageReceived(IoSession session, Object message) throws Exception {
+	public void messageReceived(IoSession session, Object message)
+			throws Exception {
 		log.info("Incomming: {}", session.getRemoteAddress().toString());
 		session.write(policyData);
 		session.close(true);
 	}
 
 	@Override
-	public void exceptionCaught(IoSession session, Throwable ex) throws Exception {
+	public void exceptionCaught(IoSession session, Throwable ex)
+			throws Exception {
 		log.info("Exception: {}", session.getRemoteAddress().toString(), ex);
 	}
 
