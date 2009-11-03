@@ -47,7 +47,9 @@ public class PolicyServerPlugin extends Red5Plugin {
 
 	public void doStop() throws Exception {
 		log.debug("Stop");
-		configContext.close();
+		if (configContext != null) {
+			configContext.close();
+		}
 	}
 
 	@Override
