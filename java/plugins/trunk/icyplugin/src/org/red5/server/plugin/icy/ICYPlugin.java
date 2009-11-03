@@ -96,7 +96,11 @@ public class ICYPlugin extends Red5Plugin {
 	public void doStart() throws Exception {
 		log.debug("Start");
 		//create app context
-		nsvContext = new FileSystemXmlApplicationContext(new String[]{"classpath:/nsv.xml"}, true, context);		
+   		try {
+			nsvContext = new FileSystemXmlApplicationContext(new String[]{"${red5.root}/plugins/icy.xml"}, true);
+		} catch (Exception e) {
+	   		nsvContext = new FileSystemXmlApplicationContext(new String[]{"classpath:/icy.xml"}, true);	
+		}
 	}
 
 	public void doStop() throws Exception {
