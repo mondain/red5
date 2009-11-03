@@ -22,10 +22,10 @@ package org.red5.server.jetty;
 import java.util.EventListener;
 import java.util.Properties;
 
-import org.mortbay.jetty.handler.ContextHandler;
-import org.mortbay.jetty.webapp.Configuration;
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.mortbay.resource.Resource;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.webapp.Configuration;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.red5.server.Context;
 import org.red5.server.ContextLoader;
 import org.red5.server.LoaderBase;
@@ -47,79 +47,78 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 /**
  * Red web properties configuration
  */
-public class Red5WebPropertiesConfiguration implements Configuration,
-		EventListener {
+public class Red5WebPropertiesConfiguration implements Configuration, EventListener {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 951479449391784526L;
 
-    /**
-     * Logger
-     */
+	/**
+	 * Logger
+	 */
 	protected static Logger log = LoggerFactory.getLogger(Red5WebPropertiesConfiguration.class);
 
-    /**
-     * Web application context
-     */
-    protected WebAppContext _context;
+	/**
+	 * Web application context
+	 */
+	protected WebAppContext _context;
 
 	/** {@inheritDoc} */
-    public void setWebAppContext(WebAppContext context) {
+	public void setWebAppContext(WebAppContext context) {
 		_context = context;
 	}
 
 	/** {@inheritDoc} */
-    public WebAppContext getWebAppContext() {
+	public WebAppContext getWebAppContext() {
 		return _context;
 	}
 
 	/** {@inheritDoc} */
-    public void configureClassLoader() throws Exception {
-    	// Try to load classes from WEB-INF directory first before looking in the
-    	// system classpath. This fixes problems when using extended spring features
-    	// like mail and only having the additional .jar files in the WEB-INF/lib
-    	// directory. Please note that for example the spring-support.jar file must
-    	// be copied to the WEB-INF/lib directory, too as it's classloader is used
-    	// to load the additional classes.
-    	_context.setParentLoaderPriority(false);
+	public void configureClassLoader() throws Exception {
+		// Try to load classes from WEB-INF directory first before looking in the
+		// system classpath. This fixes problems when using extended spring features
+		// like mail and only having the additional .jar files in the WEB-INF/lib
+		// directory. Please note that for example the spring-support.jar file must
+		// be copied to the WEB-INF/lib directory, too as it's classloader is used
+		// to load the additional classes.
+		_context.setParentLoaderPriority(false);
 	}
 
 	/** {@inheritDoc} */
-    public void configureDefaults() throws Exception {
+	public void configureDefaults() throws Exception {
 	}
 
 	/** {@inheritDoc} */
-    public void configureWebApp() throws Exception {
+	public void configureWebApp() throws Exception {
+		// Get context
+		WebAppContext context = getWebAppContext();
+		this.configure(context);
+	}
+
+	@Override
+	public void configure(WebAppContext context) throws Exception {
 		log.debug("Configuring Jetty webapp");
-
-        // Get context
-        WebAppContext context = getWebAppContext();
-
-        // If app is already started...
-        if (context.isStarted()) {
+		// If app is already started...
+		if (context.isStarted()) {
 			log.debug("Cannot configure webapp after it is started");
 			return;
 		}
 
-        // Get WEB_INF directory
-        Resource webInf = context.getWebInf();
+		// Get WEB_INF directory
+		Resource webInf = context.getWebInf();
 		if (webInf != null && webInf.isDirectory()) {
-            // Get properties file with virtualHosts and context path
-            Resource config = webInf.addPath("red5-web.properties");
+			// Get properties file with virtualHosts and context path
+			Resource config = webInf.addPath("red5-web.properties");
 			if (config.exists()) {
 				log.debug("Configuring red5-web.properties");
-                // Load configuration properties
-                Properties props = new Properties();
+				// Load configuration properties
+				Properties props = new Properties();
 				props.load(config.getInputStream());
 
-                // Get context path and virtual hosts
-                String contextPath = props.getProperty("webapp.contextPath");
+				// Get context path and virtual hosts
+				String contextPath = props.getProperty("webapp.contextPath");
 				String virtualHosts = props.getProperty("webapp.virtualHosts");
 
-                // Get hostnames
-                String[] hostnames = virtualHosts.split(",");
+				// Get hostnames
+				String[] hostnames = virtualHosts.split(",");
 				for (int i = 0; i < hostnames.length; i++) {
 					hostnames[i] = hostnames[i].trim();
 					if (hostnames[i].equals("*")) {
@@ -130,10 +129,11 @@ public class Red5WebPropertiesConfiguration implements Configuration,
 					}
 				}
 
-                // Set virtual hosts and context path to context
-                context.setVirtualHosts(hostnames);
+				// Set virtual hosts and context path to context
+				context.setVirtualHosts(hostnames);
 				context.setContextPath(contextPath);
-		        LoaderBase.setRed5ApplicationContext(contextPath, new JettyApplicationContext(context));
+				LoaderBase.setRed5ApplicationContext(contextPath,
+						new JettyApplicationContext(context));
 			}
 		} else if (webInf == null) {
 			// No WEB-INF directory found, register as default application
@@ -187,15 +187,24 @@ public class Red5WebPropertiesConfiguration implements Configuration,
 			scope.setContextPath(context.getContextPath());
 			scope.setVirtualHosts("*");
 
-	        LoaderBase.setRed5ApplicationContext(context.getContextPath(), new JettyApplicationContext(context));
+			LoaderBase.setRed5ApplicationContext(context.getContextPath(),
+					new JettyApplicationContext(context));
 
 			// Register WebScope in server
 			scope.register();
-		}
+		}		
 	}
 
-	/** {@inheritDoc} */
-    public void deconfigureWebApp() throws Exception {
+	@Override
+	public void deconfigure(WebAppContext context) throws Exception {
+	}
+
+	@Override
+	public void postConfigure(WebAppContext context) throws Exception {
+	}
+
+	@Override
+	public void preConfigure(WebAppContext context) throws Exception {
 	}
 
 }

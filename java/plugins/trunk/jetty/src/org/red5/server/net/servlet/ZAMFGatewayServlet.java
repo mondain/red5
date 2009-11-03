@@ -34,8 +34,6 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.transport.vmpipe.VmPipeAddress;
 import org.apache.mina.transport.vmpipe.VmPipeConnector;
-import org.mortbay.util.ajax.Continuation;
-import org.mortbay.util.ajax.ContinuationSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,8 +82,6 @@ public class ZAMFGatewayServlet extends HttpServlet {
 			session.setAttribute("response", resp);
 			session.write(reqBuffer);
 
-			ContinuationSupport.getContinuation(req, handler).suspend(1000);
-
 		} catch (IOException e) {
 			log.error("", e);
 		}
@@ -110,11 +106,6 @@ public class ZAMFGatewayServlet extends HttpServlet {
 			log.info("<< message " + message);
 
 			if (message instanceof IoBuffer) {
-				final Continuation cont = ContinuationSupport.getContinuation(
-						req, this);
-				if (cont.isPending()) {
-					cont.resume();
-				}
 				try {
 					final ServletOutputStream out = resp.getOutputStream();
 					IoBuffer buf = (IoBuffer) message;

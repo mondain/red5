@@ -19,8 +19,11 @@
         <dependency org="tomcat" name="tomcat-coyote" rev="6.0.20-patched" />
         <dependency org="commons" name="commons-modeler" rev="2.0.1" />
         <!-- Jetty --> 
-        <dependency org="jetty" name="jetty" rev="7.0.0" />
+        <dependency org="jetty" name="jetty-deploy" rev="7.0.0" />
+        <dependency org="jetty" name="jetty-server" rev="7.0.0" />
         <dependency org="jetty" name="jetty-util" rev="7.0.0" />
+        <dependency org="jetty" name="jetty-servlet" rev="7.0.0" />
+        <dependency org="jetty" name="jetty-webapp" rev="7.0.0" />
         <!-- 
         <dependency org="jetty" name="jetty-xbean" rev="7.0.0" />
          -->
