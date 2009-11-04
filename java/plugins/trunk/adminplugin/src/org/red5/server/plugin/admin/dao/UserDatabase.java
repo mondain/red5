@@ -33,6 +33,9 @@ import org.slf4j.Logger;
 /**
  * Database setup for admin.
  * 
+ * http://db.apache.org/derby/docs/10.5/ref/
+ * jdbc:derby:;databaseName=newDB;create=true
+ * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Paul Gregoire (mondain@gmail.com)
  */
@@ -70,8 +73,10 @@ public class UserDatabase {
             // JDBC stuff
 			try {
 				if (ds == null) {
+					log.debug("Creating new db - name: {} user: {} password: {}", new Object[]{database, userName, password});
 					EmbeddedDataSource eds = new EmbeddedDataSource();
 					eds.setCreateDatabase("create");
+					eds.setDataSourceName(database);
 					eds.setDatabaseName(database);
 					eds.setPassword(password);
 					eds.setUser(userName);
@@ -80,6 +85,11 @@ public class UserDatabase {
 				}
 			} catch (Exception e) {
 				log.error("Context check for datasource", e);
+			}
+			
+			if (ds == null) {
+				log.error("No usable datasource is set");
+				return;
 			}
 			
 			//create the db and get a connection
