@@ -70,7 +70,7 @@ public class AdminHandler implements IScopeHandler {
 
 	public void stop(IScope scope) {
 		log.info("stop: {}", scope);
-		if (scope == null) {
+		if (scope != null) {
 			//un-initializing admin scope and children
 			((Scope) this.scope).uninit();
 		}
