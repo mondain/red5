@@ -8,7 +8,7 @@
 	</configurations>
     <dependencies>
         <!-- J2EE --> 
-        <dependency org="javax" name="javaee-api" rev="5.1.0-RC3" conf="default"/>
+        <dependency org="javax" name="javaee-api" rev="5.1.0" conf="default"/>
         <!-- Spring --> 
         <dependency org="spring" name="spring-beans" rev="2.5.6" conf="default"/>
         <dependency org="spring" name="spring-context" rev="2.5.6" conf="default"/>

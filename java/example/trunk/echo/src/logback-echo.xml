@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-	<contextName>oflaDemo</contextName>
+	<contextName>echo</contextName>
 	
 	<jmxConfigurator contextName="echo" />
 	
