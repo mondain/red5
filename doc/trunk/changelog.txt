@@ -24,6 +24,7 @@ Bugfixes:
 - Fixed #652 Mistake in RTMPT Configuration lines in red5-core.xml
 - Fixed #635 Bug SocketPolicyHandler.java with loading global flashpolicy.xml file
 - Fixed #651 RTMPMinaTransport throws exception if isEnableMinaMonitor is true
+- Fixed security policy for red5; Java Security Manager may now be used
 
 Red5 0.8.0 (2009-06-04)
 -----------------------
