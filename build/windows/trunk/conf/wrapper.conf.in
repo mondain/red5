@@ -27,8 +27,7 @@ wrapper.java.additional.4=-Djava.net.preferIPv4Stack=true
 wrapper.java.additional.5=-Dlogback.ContextSelector=org.red5.logging.LoggingContextSelector
 wrapper.java.additional.6=-Dcatalina.useNaming=true
 wrapper.java.additional.7=-Dpython.home=lib
-wrapper.java.additional.8=-Djava.io.tempdir=temp
-wrapper.java.additional.9=-Xverify:none
+wrapper.java.additional.8=-Xverify:none
 
 # Initial Java Heap Size (in MB)
 wrapper.java.initmemory=256
