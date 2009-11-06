@@ -26,6 +26,7 @@ Bugfixes:
 - Fixed #651 RTMPMinaTransport throws exception if isEnableMinaMonitor is true
 - Fixed security policy for red5; Java Security Manager may now be used
 - Fixed #653 Missing license headers
+- Fixed #654 ContextLoggingListener for Logback 0.9.17
 
 Red5 0.8.0 (2009-06-04)
 -----------------------
