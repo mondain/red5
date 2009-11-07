@@ -27,7 +27,7 @@ Bugfixes:
 - Fixed security policy for red5; Java Security Manager may now be used
 - Fixed #653 Missing license headers
 - Fixed #654 ContextLoggingListener for Logback 0.9.17
-- Fixed #631 Memory leak using IServiceCapableConnection.invoke (cannot reproduce, unit test in ServiceInvokerTest)
+- Fixed #631 Memory leak using IServiceCapableConnection.invoke
 - Fixed #638 Flash Lite 3.0 conneting with RED5 (invalid)
 
 Red5 0.8.0 (2009-06-04)
