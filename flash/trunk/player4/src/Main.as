@@ -358,8 +358,20 @@ package {
 						connectorLabel = 'Connect';    
 						break;
 					case "NetConnection.Connect.CertificateUntrustedSigner":
-					   log("SSL certificate is not trusted");
+					   log("Certificate is not trusted");
+                       var desc : String = evt.info.description;
+                       log("Description: " + desc);
 					   break;
+					case "NetConnection.Connect.CertificatePrincipalMismatch":
+                       log("Certificate problem");
+                       var desc : String = evt.info.description;
+                       log("Description: " + desc);
+                       break;
+                    case "NetConnection.Connect.SSLHandshakeFailed":
+                       log("SSL handshake failed");
+                       var desc : String = evt.info.description;
+                       log("Description: " + desc);
+                       break;
 				}           
 			}
 		}
