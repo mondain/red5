@@ -33,10 +33,10 @@
     
 	<target name="retrieve" description="Retrieves the libraries if needed">
 		<taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml"
-		 classpath="${basedir}/lib/ivy-trunk.jar"/>
+		 classpath="${basedir}/lib/ivy-2.1.0.jar"/>
 		<ivy:settings file="ivysettings.xml"/>
-		<ivy:resolve file="ivy.xml" conf="build" />
-		<ivy:retrieve conf="build" pattern="${basedir}/lib/[artifact](-[revision]).[ext]"/>
+		<ivy:resolve file="ivy.xml" conf="build,web" />
+		<ivy:retrieve conf="build,web" pattern="${basedir}/lib/[artifact](-[revision]).[ext]"/>
 	</target>      
     
     <target name="compile" depends="prepare, retrieve">
