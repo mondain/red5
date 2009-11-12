@@ -15,9 +15,11 @@
         <dependency org="javax" name="jsp-api" rev="2.1" conf="build->default"/>
         <dependency org="javax" name="servlet-api" rev="2.5" conf="build->default"/>
         <dependency org="tomcat" name="tomcat-dbcp" rev="6.0.18" conf="web->*"/> 
+        <dependency org="commons" name="commons-dbcp" rev="1.2.2" conf="web->*"/> 
+		<!--
         <dependency name="simple-jndi" rev="0.11.4.1" conf="web->*"/> 
         <dependency org="commons" name="standard" rev="1.1.2" conf="web->*"/> 
-        <dependency org="commons" name="commons-dbcp" rev="1.2.2" conf="web->*"/> 
+		-->
         <!-- Spring --> 
         <dependency org="spring" name="spring-beans" rev="2.5.6" conf="build->default"/>
         <dependency org="spring" name="spring-context" rev="2.5.6" conf="build->default"/>
