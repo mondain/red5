@@ -23,9 +23,9 @@ package {
 	import flash.net.*;
 	import flash.utils.ByteArray;
 
+    import mx.core.Application;
     import mx.containers.Canvas;
     import mx.controls.Label;
-	
 	import mx.utils.SHA256; 
 
 	/**
@@ -33,6 +33,8 @@ package {
 	 */
 	[Bindable] 
 	public class Main {
+
+        private var app : Application;
 
 		public var nc : NetConnection;
 		public var ns : NetStream;
@@ -62,6 +64,10 @@ package {
 		
 		//session id
 		public var sessionId : String = null;
+
+        public function setApplication(app:Application):void {
+        	this.app = app;
+        }
 
 		public function callMethod(name:String, params:String) : void {
 			log('Calling method');
@@ -215,6 +221,8 @@ package {
 				nc.objectEncoding = ObjectEncoding.AMF0;
 				//  set it's client/focus to this
 				nc.client = this;
+				//
+				nc.proxyType = "best";
         
 				// add listeners for netstatus and security issues
 				nc.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
@@ -349,6 +357,9 @@ package {
 					case "NetConnection.Connect.Closed":                    
 						connectorLabel = 'Connect';    
 						break;
+					case "NetConnection.Connect.CertificateUntrustedSigner":
+					   log("SSL certificate is not trusted");
+					   break;
 				}           
 			}
 		}
@@ -455,7 +466,11 @@ package {
         
         public function log(text : String) : void {
         	//TODO: dispatch a log event
-        	trace(text);
+        	if (app) {
+                app["log"](text);
+        	} else {
+        	   trace(text);
+        	}
         }
 	
 	}
