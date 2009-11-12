@@ -18,6 +18,8 @@
         public function init() : void {
             Security.allowDomain("*");
             
+            backingClass.setApplication(this);
+            
             var hostString : String = 'localhost';
             var pattern : RegExp = new RegExp("http://([^/]*)/");               
             if (pattern.test(Application.application.url) == true) {
@@ -55,11 +57,12 @@
         }
         
         public function hide(evt : Event) : void {
-            backingClass.seek(position.text);
+            
         }   
         
         public function seek() : void {
             log('Seek to: ' + position.text);
+            backingClass.seek(position.text);
         }
         
         public function setAuthMode() : void {
