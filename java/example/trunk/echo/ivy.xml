@@ -21,6 +21,6 @@
         <dependency name="logback-core" rev="0.9.16" conf="default"/>
         <dependency name="logback-classic" rev="0.9.16" conf="default"/>
         <!-- War version -->
-        <dependency org="red5" name="red-remoting" rev="0.8.0" />        
+        <dependency org="red5" name="red5-remoting" rev="0.8.0" />        
     </dependencies>
 </ivy-module>
