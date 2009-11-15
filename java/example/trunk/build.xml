@@ -26,7 +26,7 @@
     <antdemo demo="dump" target="war" />
     <antdemo demo="echo" target="war" />
     <antdemo demo="fitcDemo" target="war" />
-    <antdemo demo="loadtest" target="war" />
+    <!-- <antdemo demo="loadtest" target="war" /> -->
     <antdemo demo="messageRecorder" target="war" />
     <antdemo demo="midiDemo" target="war" />
     <antdemo demo="oflaDemo" target="war" />
