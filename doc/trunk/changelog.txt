@@ -34,6 +34,7 @@ Bugfixes:
 - Fixed #658 Broken servlet paths for RTMPT and RTMPS
 - Fixed #497 Flash Player cannot connect to RTMPS with error NetConnection.Connect.CertificateUntrustedSigner
 - Fixed #582 Native SSL support for RTMPS (no HTTP wrapping)
+- Fixed #479 red5.properties - rtmpt.host,rtmps.host,jmx.rmi.host,http.host - does not work
 
 Red5 0.8.0 (2009-06-04)
 -----------------------
