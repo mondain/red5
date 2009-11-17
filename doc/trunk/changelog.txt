@@ -32,6 +32,8 @@ Bugfixes:
 - Fixed #638 Flash Lite 3.0 conneting with RED5 (invalid)
 - Fixed #657 Timestamp corruption in recorded .flv, when stream also subscribed
 - Fixed #658 Broken servlet paths for RTMPT and RTMPS
+- Fixed #497 Flash Player cannot connect to RTMPS with error NetConnection.Connect.CertificateUntrustedSigner
+- Fixed #582 Native SSL support for RTMPS (no HTTP wrapping)
 
 Red5 0.8.0 (2009-06-04)
 -----------------------
