@@ -31,6 +31,7 @@ Bugfixes:
 - Fixed #631 Memory leak using IServiceCapableConnection.invoke
 - Fixed #638 Flash Lite 3.0 conneting with RED5 (invalid)
 - Fixed #657 Timestamp corruption in recorded .flv, when stream also subscribed
+- Fixed #658 Broken servlet paths for RTMPT and RTMPS
 
 Red5 0.8.0 (2009-06-04)
 -----------------------
