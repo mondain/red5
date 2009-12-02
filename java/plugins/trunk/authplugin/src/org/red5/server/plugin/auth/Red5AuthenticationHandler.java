@@ -156,10 +156,12 @@ public class Red5AuthenticationHandler extends ApplicationLifecycle {
         				challenge = sessionChallenges.get(sessionId);
         				//generate response hash to compare
         				String responseHash = calculateHMACSHA256(challenge, password);
-            			log.debug("Generated response: {}", responseHash);        	
+            			log.debug("Generated response: {}", responseHash); 
+            			log.debug("Generated response: {}", response); 
             			//decode both hashes before we compare otherwise we will have issues like
             			//4+5WioxdBLhx4qajIybxkBkynDsv7KxtNzqj4V/VbzU != 4+5WioxdBLhx4qajIybxkBkynDsv7KxtNzqj4V/VbzU=           			
-            			if (Arrays.areEqual(Base64.decodeBase64(responseHash), Base64.decodeBase64(response))) {
+            	
+            			if (Arrays.areEqual(Base64.decodeBase64(responseHash.getBytes()), Base64.decodeBase64(response.getBytes()))) {
             			//if (responseHash.equals(response)) {
             				//dont send success or this will override the rest of the listeners, just send true
             				result = true;
@@ -209,7 +211,9 @@ public class Red5AuthenticationHandler extends ApplicationLifecycle {
 		} catch (InvalidKeyException e) {
 			log.error("Invalid key", e);
 		}
-		String result = Base64.encodeBase64String(output);
+		//String result = Base64.encodeBase64String(output);
+		byte[] res = Base64.encodeBase64(output);
+		String result = new String(res);
 		//strip any cr/lf
 		return result.replaceAll("(\r\n|\r|\n|\n\r)", "");
 	}
