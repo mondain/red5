@@ -118,7 +118,8 @@ public class FMSAuthenticationHandler extends ApplicationLifecycle {
         					String hash1 = calculateMD5(str1);
         					log.trace("Hash 1: {}", hash1);
         					//3. construct second part using challenge from client
-        					String str2 = hash1 + session.challenge + queryString.get("challenge");
+        					//String str2 = hash1 + session.challenge + queryString.get("challenge");
+        					String str2 = hash1 + queryString.get("opaque") + queryString.get("challenge");
         					log.trace("Part 2: {}", str2);
         					//4. md5 and base64 encode
         					String hash2 = calculateMD5(str2);
@@ -129,7 +130,7 @@ public class FMSAuthenticationHandler extends ApplicationLifecycle {
                 				//return success
                 				result = true;
         					} else {
-        						log.info("Response did not match");
+        						log.info("Response {} did not match hash {}", response, hash2);
         					}
         				} else {
         					status = noSuchUser;
@@ -182,8 +183,16 @@ public class FMSAuthenticationHandler extends ApplicationLifecycle {
 			} catch (Exception e) {
 				log.error("State error", e);
 			}
+			
+	
 			//encode in b64 and strip any cr/lf
-			result = Base64.encodeBase64String(output).replaceAll("(\r\n|\r|\n|\n\r)", "");
+		
+			
+			byte[] res = Base64.encodeBase64(output);
+			
+			result = new String(res).replaceAll("(\r\n|\r|\n|\n\r)", "");
+			
+			//result = Base64.encodeBase64String(output).replaceAll("(\r\n|\r|\n|\n\r)", "");
 		} catch (SecurityException e) {
 			log.error("Security exception when getting MD5", e);
 		} catch (Exception e) {
