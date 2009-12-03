@@ -124,6 +124,9 @@ Section -post SEC0001
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
 
+	# set directory accesses
+	AccessControl::GrantOnFile "$INSTDIR" "(BU)" "FullAccess"
+	
 	#Dialogs::InputBox [dialog_title] [caption_inner_text] [caption_button1] [caption_button2] [apply_password] [output_var] 
 	Dialogs::InputBox "IP Address" "Enter an IP address for your server:" "Ok" "Cancel" 0 ${VAR_R2} 
 
