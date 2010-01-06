@@ -36,7 +36,7 @@
 					<h3>Download</h3>
                     <a href="/wiki/Releases"><b>Releases</b></a>
 					<br/>
-					<a href="http://red5.googlecode.com/svn/doc/trunk/changelog.txt">Changelog</a>
+					<a href="/wiki/Changelog">Changelog</a>
 					<br/>
                     <a href="/wiki/Red5Plugin">Red5Plugin</a>
 				</div>
@@ -47,7 +47,7 @@
 					<li><a href="/wiki/Examples">Examples</a></li>
 					<li><a href="/wiki/Install">Installation</a></li>
 					<li><a href="/wiki/Documentation">Documentation</a></li>
-					<li><a href="http://red5.googlecode.com/svn/doc/trunk/licenseInfo/Red5LicenseInfo.txt">License</a></li>
+					<li><a href="/wiki/License">License</a></li>
 				</ul>
 				
 				<h3>Community</h3>
@@ -61,9 +61,35 @@
 				<h3>Development</h3>
 				<ul>
                                         <li><a href="/wiki/Download#LatestDevelopmentSourceCode">SVN Access</a></li>
+					<li><a href="/timeline">Timeline</a></li>
+					<li><a href="/roadmap">Roadmap</a></li>
+					<li><a href="http://build.xuggle.com/view/Red5%20Dashboard/">Builds</a></li>
+					
+					
+					<!--
 					<li py:for="idx, item in  enumerate(chrome.nav.mainnav)"
-					  class="${classes(first_last(idx, chrome.nav.mainnav), active=item.active)}">${item.label}</li>
+					  class="${classes(first_last(idx, chrome.nav.mainnav), active=item.active)}">${item.label}</li>-->
 				</ul>
+				<h3>Tickets</h3>
+				<ul>
+				    <li><a href="/report">View Tickets</a></li>
+				    <li><a href="/newticket?component=App+Server&amp;owner=mondain">App Server</a></li>
+				    <li><a href="/newticket?component=Client+side&amp;owner=thijs">Client Side</a></li>
+				    <li><a href="/newticket?component=Codecs&amp;owner=mondain">Codecs</a></li>
+				    <li><a href="/newticket?component=Demo+Applications&amp;owner=mondain">Demo Applications</a></li>
+				    <li><a href="/newticket?component=Developer+Tools&amp;owner=mondain">Developer Tools</a></li>
+				    <li><a href="/newticket?component=Documentation+and+Tutorials&amp;owner=danielr">Documentation and Tutorials</a></li>
+				    <li><a href="/newticket?component=Installers&amp;owner=mondain">Installers</a></li>
+				    <li><a href="/newticket?component=Streaming+and+Networking&amp;owner=mondain">Streaming and Networking</a></li>	
+				    <li><a href="/newticket?component=Website&amp;owner=dominick">Website</a></li>				 	
+				</ul>	
+				
+				<p>
+				   <ul>	
+                                        <li py:for="idx, item in  enumerate(chrome.nav.mainnav)"
+                                          class="${classes(first_last(idx, chrome.nav.mainnav), active=item.active)}">${item.label}</li>
+				  </ul>
+				</p>
 			</div>
 		</div>
 	</div>
@@ -72,7 +98,7 @@
 		${select('*|text()')}
 		<div id="footer" xml:lang="en">
 			<p class="right"><a href='http://red5.googlecode.com/svn/doc/trunk/licenseInfo/Red5LicenseInfo.txt'>Copyright</a> &copy; 
-2005-2009 
+2005-2010 
 			<a href="http://red5.org/">The Red5 Project</a> - ${chrome.footer}</p>
 		</div>
 	</div>
