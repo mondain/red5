@@ -3,22 +3,22 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
     <info organisation="red5" module="oflaDemo" />
-	<configurations>
-	    <conf name="default"/>
-	</configurations>
+    <configurations>
+        <conf name="default"/>
+    </configurations>
     <dependencies>
         <!-- J2EE --> 
-        <dependency org="javax" name="javaee-api" rev="5.1.0" conf="default"/>
+        <dependency org="javax" name="javaee-api" rev="5.1.1"/>
         <!-- Spring --> 
-        <dependency org="spring" name="spring-beans" rev="2.5.6" conf="default"/>
-        <dependency org="spring" name="spring-context" rev="2.5.6" conf="default"/>
-        <dependency org="spring" name="spring-core" rev="2.5.6" conf="default"/>
+        <dependency org="spring" name="spring-beans" rev="3.0.0"/>
+        <dependency org="spring" name="spring-context" rev="3.0.0"/>
+        <dependency org="spring" name="spring-core" rev="3.0.0"/>
         <!-- Logging --> 
-        <dependency name="slf4j-api" rev="1.5.6" conf="default"/>
-        <dependency name="jcl-over-slf4j" rev="1.5.6" conf="default"/>
-        <dependency name="log4j-over-slf4j" rev="1.5.6" conf="default"/>
-        <dependency name="jul-to-slf4j" rev="1.5.6" conf="default"/>
-        <dependency name="logback-core" rev="0.9.14" conf="default"/>
-        <dependency name="logback-classic" rev="0.9.14" conf="default"/>
+        <dependency name="slf4j-api" rev="1.5.10" />
+        <dependency name="jcl-over-slf4j" rev="1.5.10" />
+        <dependency name="log4j-over-slf4j" rev="1.5.10" />
+        <dependency name="jul-to-slf4j" rev="1.5.10" />
+        <dependency name="logback-core" rev="0.9.18" />
+        <dependency name="logback-classic" rev="0.9.18" />
     </dependencies>
 </ivy-module>

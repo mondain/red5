@@ -92,7 +92,7 @@ public class EchoService implements IEchoService {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List echoList(List list) {
 		return list;
 	}
@@ -104,7 +104,7 @@ public class EchoService implements IEchoService {
 		return xml;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object[] echoMultiParam(Map team, List words, String str) {
 		Object[] result = new Object[3];
 		result[0] = team;
