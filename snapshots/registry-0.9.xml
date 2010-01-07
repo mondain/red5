@@ -4,7 +4,7 @@
 		<application name="oflaDemo">
 			<author>Red5 Team</author>
 			<desc>Demo originally created for the OFLA conference</desc>
-			<filename>oflaDemo-r3896-java6.war</filename>
+			<filename>oflaDemo-r3989-java6.war</filename>
 		</application>
 		<application name="oflaDemo">
 			<author>Red5 Team</author>
@@ -19,7 +19,7 @@
 		<application name="echo">
 			<author>Red5 Team</author>
 			<desc>Test tool for AMF0/AMF3 and RTMP/HTTP functionality</desc>
-			<filename>echo-r3451-java6.war</filename>
+			<filename>echo-r3989-java6.war</filename>
 		</application>
 		<application name="echo">
 			<author>Red5 Team</author>
