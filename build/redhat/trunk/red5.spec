@@ -1,6 +1,6 @@
 Summary: Red5 Server
 Name: red5
-Version: 0.7.0
+Version: 0.9.0
 Release: 1
 Source0: %{name}-%{version}.tar.gz
 License: LGPL
