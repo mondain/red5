@@ -10,9 +10,22 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>com.powerflasher.fdt.core.FlashBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>com.adobe.flexbuilder.project.flexnature</nature>
 		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
+		<nature>com.powerflasher.fdt.core.FlashNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>core</name>
+			<type>2</type>
+			<locationURI>AS2_CORE_DEFAULT</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
