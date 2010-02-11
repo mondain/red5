@@ -202,7 +202,7 @@ package {
 		}
 
 		public function onCuePoint(infoObject : Object) : void {
-			log('onCuePoint');
+			log('onCuePoint - name: ' + infoObject.name + ' type: ' + infoObject.type + ' time: ' + infoObject.time);
 		}
 
 		public function onPlayStatus(infoObject : Object) : void {
@@ -286,6 +286,7 @@ package {
 		public function onStatus(evt : NetStatusEvent) : void {
 			log("NetConnection.onStatus " + evt);
 			//traceObject(evt);
+			var desc:String;
 			if (evt.info !== '' || evt.info !== null) { 
 				log("Code: " + evt.info.code);
 				//log("Description: " + evt.info.description);
@@ -323,7 +324,7 @@ package {
 					case "NetConnection.Connect.Failed":
 						break;
 					case "NetConnection.Connect.Rejected":
-						var desc : String = evt.info.description;
+						desc = evt.info.description;
 						log("Description: " + desc);
 						if (desc) {
 							trace("Desc: " + desc.split('?')[1]);
@@ -359,17 +360,17 @@ package {
 						break;
 					case "NetConnection.Connect.CertificateUntrustedSigner":
 					   log("Certificate is not trusted");
-                       var desc : String = evt.info.description;
+                       desc = evt.info.description;
                        log("Description: " + desc);
 					   break;
 					case "NetConnection.Connect.CertificatePrincipalMismatch":
                        log("Certificate problem");
-                       var desc : String = evt.info.description;
+                       desc = evt.info.description;
                        log("Description: " + desc);
                        break;
                     case "NetConnection.Connect.SSLHandshakeFailed":
                        log("SSL handshake failed");
-                       var desc : String = evt.info.description;
+                       desc = evt.info.description;
                        log("Description: " + desc);
                        break;
 				}           

@@ -9,21 +9,23 @@
 	<mx:Script>
 	<![CDATA[
 	
+		import mx.core.FlexGlobals;
+		
         [Bindable]
-	    var backingClass:Main = new Main();
+	    private var backingClass:Main = new Main();
 	    
         [Bindable]
-	    var clientId:String;
+		private var clientId:String;
         
         public function init() : void {
             Security.allowDomain("*");
-            
+			            
             backingClass.setApplication(this);
             
             var hostString : String = 'localhost';
             var pattern : RegExp = new RegExp("http://([^/]*)/");               
-            if (pattern.test(Application.application.url) == true) {
-                var results : Array = pattern.exec(Application.application.url);
+            if (pattern.test(FlexGlobals.topLevelApplication.parameters.url) == true) {
+                var results : Array = pattern.exec(FlexGlobals.topLevelApplication.parameters.url);
                 hostString = results[1];
                 //need to strip the port to avoid confusion
                 if (hostString.indexOf(":") > 0) {
