@@ -67,6 +67,11 @@
             backingClass.seek(position.text);
         }
         
+		public function pause() : void {
+			log('Pause');
+			backingClass.pause();
+		}		
+		
         public function setAuthMode() : void {
         	backingClass.setAuthMode(authmode.selectedValue as String);
         }
@@ -109,7 +114,7 @@
     ]]>
     </mx:Script>
 	<mx:Panel x="10" y="10" width="659" height="626" layout="absolute">
-		<mx:Label id="playerDisplay" x="10" y="10" width="320" height="240" />
+		<mx:Label id="playerDisplay" x="10" y="10" width="320" height="240"/>
 		<mx:Button x="10" y="460" id="connector" label="{backingClass.connectorLabel}" click="connect()"/>
 		<mx:TextInput x="110" y="460" id="server" width="220" text="{backingClass.server}" change="updateTextInput(event)"/>
 		<mx:TextInput x="403" y="460" id="location" width="226" text="{backingClass.location}" change="updateTextInput(event)"/>
@@ -133,6 +138,9 @@
 		<mx:RadioButton x="465" y="554" label="None" groupName="authmode" selected="true"/>
 		<mx:RadioButton x="520" y="554" label="Red5" groupName="authmode"/>
 		<mx:RadioButton x="582" y="554" label="FMS" groupName="authmode"/>
+		<mx:Button x="243" y="524" label="Pause" click="pause()"/>
+		<mx:TextInput x="582" y="524" width="47" id="fps" text="0" textAlign="right"/>
+		<mx:Label x="551" y="528" text="FPS" fontWeight="bold"/>
 	</mx:Panel>
 	
 </mx:Application>
