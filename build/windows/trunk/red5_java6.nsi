@@ -11,7 +11,7 @@ RequestExecutionLevel admin
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.9.0
+!define VERSION 0.9.1
 !define COMPANY "Red5 Server"
 !define DESCRIPTION "Red5 is an Open Source Flash Server written in Java"
 !define URL http://red5.googlecode.com
