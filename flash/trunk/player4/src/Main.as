@@ -14,7 +14,7 @@ package {
 	import com.hurlant.crypto.hash.IHash;
 	import com.hurlant.util.Base64;
 	import com.hurlant.util.Hex;
-
+	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Loader;
@@ -22,11 +22,12 @@ package {
 	import flash.media.*;
 	import flash.net.*;
 	import flash.utils.ByteArray;
-
-    import mx.core.Application;
-    import mx.containers.Canvas;
-    import mx.controls.Label;
-	import mx.utils.SHA256; 
+	
+	import mx.containers.Canvas;
+	import mx.controls.Label;
+	import mx.core.Application;
+	import mx.events.VideoEvent;
+	import mx.utils.SHA256;
 
 	/**
 	 * @author Paul
@@ -58,6 +59,8 @@ package {
         public var user : String;
 
         public var passwd : String = "test";
+		
+		public var paused : Boolean = false;
 		
 		//challenge string
 		public var challenge : String = null;
@@ -311,6 +314,8 @@ package {
     						playerDisplay.addChild(playerVideo);
     						playerVideo.width = 320;
     						playerVideo.height = 240;
+							
+							playerVideo.addEventListener(Event.RENDER, updateFps);
                         }                    
 						//ns.play("test.flv");
 						//ns.play("newfeatures.flv");
@@ -424,7 +429,28 @@ package {
             }
     */      
 		}
+		
+		public function pause() : void {
+			if (ns) {
+				if (paused) {
+					log('Resume');
+					ns.resume();					
+					paused = false;
+				} else {
+					log('Pause');
+					ns.pause();					
+					paused = true;
+				}
+				//ns.togglePause()
+			}
+		}
         
+		public function updateFps(evt:Event) : void {
+			if (ns) {
+				app["fps"].text = ns.currentFPS;
+			}
+		}		
+		
         private function getNearestKeyframe(second : Number, keytimes : Array):uint {
             var index1:uint = 0;
             var index2:uint = 0;
