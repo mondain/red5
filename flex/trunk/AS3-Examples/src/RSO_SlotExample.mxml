@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute"
+	creationComplete="onCreationComplete(event)">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			
+			// network 
+			private var connection:NetConnection;
+			private var rso:SharedObject;
+			
+			// logic
+			private var dragging:Boolean = false;
+			
+			[Embed(source="../assets/images/red5-logo.png")] 
+			public var logo:Class;
+			private var ui:UIComponent;
+			
+			public function onCreationComplete(event:FlexEvent) : void {
+				// setup connection code
+				connection = new NetConnection();
+				connection.connect("rtmp://localhost/live");
+				connection.client = this;
+				
+				// create the remote SharedObject
+				rso = SharedObject.getRemote("coordinates", connection.uri);
+				rso.addEventListener(SyncEvent.SYNC, onSync);
+				rso.connect(connection);
+				
+				// instantiate the embedded asset
+				var myImg:Bitmap = new logo();
+				ui = new UIComponent()
+				ui.addChild(myImg);				
+				ui.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+				ui.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+				this.addChild(ui);
+			}
+			
+			private function onSync(event:SyncEvent) : void {
+				trace("event: " + event);
+				
+				for(var i:Object in event.changeList) {
+					var changeObj:Object = event.changeList[i];
+					
+					switch(changeObj.code) {
+						case "success":
+							break;
+						
+						case "change":
+							var coordinates:Object = this.rso.data[changeObj.name];
+							ui.move(coordinates.x, coordinates.y);
+							break;
+					}
+
+				}
+				
+			}
+			
+			private function onMouseDown(event:MouseEvent) : void {
+				dragging = true;
+				ui.startDrag();
+				ui.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			}
+			
+			private function onMouseUp(event:MouseEvent) : void {
+				dragging = false;
+				ui.stopDrag();
+				ui.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			}
+			
+			private function onMouseMove(event:MouseEvent) : void {
+				if(dragging) {
+					trace("[x:" + ui.x + ", y:" + ui.y + "]");
+					var obj:Object = {x:ui.x, y:ui.y};
+					rso.setProperty("coordinates", obj);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+</mx:Application>
