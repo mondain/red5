@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/halo" minWidth="1024" minHeight="768" creationComplete="application1_creationCompleteHandler(event)">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			
+			import spark.components.Button;
+			
+			private var connection:NetConnection;
+			private var video:Video;
+			private var stream:NetStream;
+			private var camera:Camera;
+			
+			private var displayVid:Video;
+			private var inStream:NetStream;
+
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				connection = new NetConnection();
+				connection.connect("rtmp://localhost/live");
+				connection.addEventListener(NetStatusEvent.NET_STATUS, onConnected);
+				
+			}
+			
+			private function onConnected(event:NetStatusEvent) : void {
+				video = new Video();
+				
+				// create camera
+				camera = Camera.getCamera();
+				
+				// create the netstream
+				stream = new NetStream(connection);
+				stream.attachCamera(camera);
+				stream.publish("stephanie");
+				
+				// wrap video
+				var ui:UIComponent = new UIComponent();
+				video.attachCamera(camera);
+				ui.addChild(video);
+				addElement(ui);
+								
+				// add the display video
+				displayVid = new Video();
+				var ui1:UIComponent = new UIComponent();
+				ui1.addChild(displayVid);
+				addElement(ui1);
+				ui1.move(400, 0);
+								
+				inStream = new NetStream(connection);
+				inStream.play("stephanie");
+				displayVid.attachNetStream(inStream);
+			}
+
+		]]>
+	</fx:Script>
+</s:Application>
