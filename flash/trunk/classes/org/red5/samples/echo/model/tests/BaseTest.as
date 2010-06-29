@@ -1,4 +1,4 @@
-﻿package org.red5.samples.echo.model.tests
+package org.red5.samples.echo.model.tests
 {
 	/**
 	 * RED5 Open Source Flash Server - http://www.osflash.org/red5
