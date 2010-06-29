@@ -1,4 +1,4 @@
-﻿import com.blitzagency.xray.logger.XrayLogger;
+import com.blitzagency.xray.logger.XrayLogger;
 import com.blitzagency.xray.logger.Log;
 
 class com.blitzagency.xray.logger.XrayLog
