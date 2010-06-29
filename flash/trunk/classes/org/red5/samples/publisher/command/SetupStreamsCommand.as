@@ -123,7 +123,10 @@ package org.red5.samples.publisher.command
 				
 				case "NetStream.Play.UnpublishNotify":
 					// Playback stopped.
-					playbackStopped();
+					if ( playbackFinished )
+					{
+						playbackStopped();
+					}
 					break;
 					
 				case "NetStream.Play.StreamNotFound":
