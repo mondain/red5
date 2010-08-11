@@ -20,14 +20,12 @@ package org.red5.server.winstone;
  */
 
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.LoaderBase;
 import org.red5.server.api.IApplicationLoader;
 import org.red5.server.winstone.WinstoneLoader.StoneLauncher;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import winstone.HostConfiguration;
-import winstone.Launcher;
 
 /**
  * Class that can load new applications in Winstone.
@@ -77,23 +75,24 @@ public class WinstoneApplicationLoader implements IApplicationLoader {
 			directory = directory.substring(5);
 		}
 		if (host.getWebAppByURI(contextPath) == null) {
-			WebAppConfiguration c = createContext(contextPath, directory);
-			LoaderBase.setRed5ApplicationContext(contextPath, new WinstoneApplicationContext(c));
-			host.addChild(c);
-			//add virtual hosts / aliases
-			String[] vhosts = virtualHosts.split(",");
-			for (String s : vhosts) {
-				if (!"*".equals(s)) {
-					//if theres a port, strip it
-					if (s.indexOf(':') == -1) {
-						host.addAlias(s);
-					} else {
-						host.addAlias(s.split(":")[0]);
-					}
-				} else {
-					log.warn("\"*\" based virtual hosts not supported");
-				}
-			}
+			log.warn("Not supported at this time");
+//			WebAppConfiguration c = createContext(contextPath, directory);
+//			LoaderBase.setRed5ApplicationContext(contextPath, new WinstoneApplicationContext(c));
+//			host.addChild(c);
+//			//add virtual hosts / aliases
+//			String[] vhosts = virtualHosts.split(",");
+//			for (String s : vhosts) {
+//				if (!"*".equals(s)) {
+//					//if theres a port, strip it
+//					if (s.indexOf(':') == -1) {
+//						host.addAlias(s);
+//					} else {
+//						host.addAlias(s.split(":")[0]);
+//					}
+//				} else {
+//					log.warn("\"*\" based virtual hosts not supported");
+//				}
+//			}
 		} else {
 			log.warn("Context path already exists with host");
 		}
