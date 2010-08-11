@@ -16,8 +16,8 @@
 	       
 	    <path id="project.classpath">
 	        <fileset dir="${red5.root}/lib"/>
+	        <pathelement location="${red5.root}/boot.jar"/>
 	        <pathelement location="${red5.root}/red5.jar"/>
-	        <pathelement location="${red5.root}/lib/red5.jar"/>
 	        <!-- project specific libs -->
 	        <fileset dir="lib"/>
 	    </path>    
