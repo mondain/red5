@@ -27,7 +27,8 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.red5.server.LoaderBase;
-import org.red5.server.LoaderMBean;
+import org.red5.server.jmx.mxbeans.ContextLoaderMXBean;
+import org.red5.server.jmx.mxbeans.LoaderMXBean;
 import org.red5.server.api.IApplicationContext;
 import org.red5.server.jmx.JMXAgent;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 /**
  * Class that loads Red5 applications using Jetty.
  */
-public class JettyLoader extends LoaderBase implements LoaderMBean {
+public class JettyLoader extends LoaderBase implements LoaderMXBean {
 
 	/**
 	 *  Logger
@@ -165,7 +166,7 @@ public class JettyLoader extends LoaderBase implements LoaderMBean {
 	}
 	
 	public void registerJMX() {
-		JMXAgent.registerMBean(this, this.getClass().getName(),	LoaderMBean.class);	
+		JMXAgent.registerMBean(this, this.getClass().getName(),	LoaderMXBean.class);	
 	}	
 	
 	/**
