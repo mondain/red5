@@ -19,14 +19,15 @@ package org.red5.server.winstone;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-import org.apache.catalina.Context;
-import org.apache.catalina.Host;
-import org.apache.catalina.startup.Embedded;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.LoaderBase;
 import org.red5.server.api.IApplicationLoader;
+import org.red5.server.winstone.WinstoneLoader.StoneLauncher;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
+
+import winstone.HostConfiguration;
+import winstone.Launcher;
 
 /**
  * Class that can load new applications in Winstone.
@@ -37,24 +38,23 @@ import org.springframework.context.ApplicationContext;
 public class WinstoneApplicationLoader implements IApplicationLoader {
 
 	// Initialize Logging
-	protected static Logger log = Red5LoggerFactory.getLogger(WinstoneApplicationLoader.class);	
-	
+	protected static Logger log = Red5LoggerFactory.getLogger(WinstoneApplicationLoader.class);
+
 	/** Store reference to embedded Winstone engine. */
-	private Embedded embedded;
-	
-	/** Store reference to host Winstone is running on. */
-	private Host host;
+	private StoneLauncher embedded;
+
+	private HostConfiguration host;
 	
 	/** Stores reference to the root ApplicationContext. */
 	private ApplicationContext rootCtx;
-	
+
 	/**
 	 * Wrap Winstone engine and host.
 	 * 
 	 * @param embedded
 	 * @param host
 	 */
-	protected WinstoneApplicationLoader(Embedded embedded, Host host, ApplicationContext rootCtx) {
+	protected WinstoneApplicationLoader(StoneLauncher embedded, HostConfiguration host, ApplicationContext rootCtx) {
 		this.embedded = embedded;
 		this.host = host;
 		this.rootCtx = rootCtx;
@@ -66,15 +66,18 @@ public class WinstoneApplicationLoader implements IApplicationLoader {
 		return rootCtx;
 	}
 
+	public HostConfiguration getHostConfiguration() {
+		return host;
+	}
+
 	/** {@inheritDoc} */
-	public void loadApplication(String contextPath, String virtualHosts, String directory)
-			throws Exception {
-		log.debug("Load application - context path: {} directory: {} virtual hosts: {}", new Object[]{contextPath, directory, virtualHosts});
+	public void loadApplication(String contextPath, String virtualHosts, String directory) throws Exception {
+		log.debug("Load application - context path: {} directory: {} virtual hosts: {}", new Object[] { contextPath, directory, virtualHosts });
 		if (directory.startsWith("file:")) {
 			directory = directory.substring(5);
 		}
-		if (host.findChild(contextPath) == null) {
-			Context c = embedded.createContext(contextPath, directory);
+		if (host.getWebAppByURI(contextPath) == null) {
+			WebAppConfiguration c = createContext(contextPath, directory);
 			LoaderBase.setRed5ApplicationContext(contextPath, new WinstoneApplicationContext(c));
 			host.addChild(c);
 			//add virtual hosts / aliases
@@ -83,7 +86,7 @@ public class WinstoneApplicationLoader implements IApplicationLoader {
 				if (!"*".equals(s)) {
 					//if theres a port, strip it
 					if (s.indexOf(':') == -1) {
-						host.addAlias(s);						
+						host.addAlias(s);
 					} else {
 						host.addAlias(s.split(":")[0]);
 					}
@@ -95,5 +98,5 @@ public class WinstoneApplicationLoader implements IApplicationLoader {
 			log.warn("Context path already exists with host");
 		}
 	}
-
+	
 }

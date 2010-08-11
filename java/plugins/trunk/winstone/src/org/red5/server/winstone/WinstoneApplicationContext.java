@@ -35,9 +35,6 @@ import winstone.WebAppConfiguration;
  */
 public class WinstoneApplicationContext implements IApplicationContext {
 
-    /**
-     * Logger
-     */
 	protected static Logger log = Red5LoggerFactory.getLogger(WinstoneApplicationContext.class);
 
 	/** Store a reference to the Winstone webapp */
