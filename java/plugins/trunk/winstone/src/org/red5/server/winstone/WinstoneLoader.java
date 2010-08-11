@@ -19,16 +19,10 @@ package org.red5.server.winstone;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-import Cluster;
-import HostGroup;
-import JNDIManager;
-import Listener;
-import ObjectPool;
-import WinstoneResourceBundle;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.BindException;
 import java.net.InetAddress;
@@ -40,21 +34,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
-import javax.management.JMX;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.servlet.ServletContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.ContextLoader;
 import org.red5.server.LoaderBase;
 import org.red5.server.api.IApplicationContext;
 import org.red5.server.jmx.JMXAgent;
-import org.red5.server.jmx.JMXFactory;
-import org.red5.server.jmx.mxbeans.ContextLoaderMXBean;
 import org.red5.server.jmx.mxbeans.LoaderMXBean;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
@@ -64,10 +51,6 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import winstone.HostConfiguration;
 import winstone.Launcher;
@@ -87,6 +70,8 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 
 	public static final String defaultParentContextKey = "default.context";
 
+	private static List<String> contextNames = new ArrayList<String>();
+	
 	static {
 		log.debug("Initializing Winstone");
 	}
@@ -120,17 +105,7 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 	 */
 	public WebAppConfiguration addContext(String path, String docBase) {
 		log.debug("Add context - path: {} docbase: {}", path, docBase);
-		WebAppConfiguration c = embedded.createContext(path, docBase);
-		if (c != null) {
-			log.trace("Context name: {} docbase: {} encoded: {}", new Object[] { c.getContextName(), c.getWebroot(), c.getContextPath() });
-			Object ldr = c.getLoader();
-			log.trace("Context loader: {}", c.getLoader());
-			host.addChild(c);
-			LoaderBase.setRed5ApplicationContext(path, new WinstoneApplicationContext(c));
-		} else {
-			log.trace("Context is null");
-		}
-		return c;
+		return null;
 	}
 
 	/**
@@ -173,11 +148,12 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 		log.info("Application root: {}", webappFolder);
 		// create one embedded (server) and use it everywhere
 		Map args = new HashMap();
-		args.put("webroot", webappFolder + "/root");
-		//args.put("webappsDir", webappFolder);
+		//args.put("webroot", webappFolder + "/root");
+		args.put("webappsDir", webappFolder);
 		// Start server
 		try {
 			log.info("Starting Winstone servlet engine");
+			Launcher.initLogger(args);	
 			// spawns threads, so your application doesn't block
 			embedded = new StoneLauncher(args);
 			log.trace("Classloader for embedded: {} TCL: {}", Launcher.class.getClassLoader(), originalClassLoader);
@@ -185,101 +161,85 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 			HostConfiguration host = embedded.getHostGroup().getHostByName(null);
 			// set the primary application loader
 			LoaderBase.setApplicationLoader(new WinstoneApplicationLoader(embedded, host, applicationContext));
-
-			for (Container cont : host.findChildren()) {
-				if (cont instanceof StandardContext) {
-					StandardContext ctx = (StandardContext) cont;
-
-					final ServletContext servletContext = ctx.getServletContext();
-					log.debug("Context initialized: {}", servletContext.getContextPath());
-					//set the hosts id
-					servletContext.setAttribute("red5.host.id", host.getHostname());
-					//
-					String prefix = servletContext.getRealPath("/");
-					log.debug("Path: {}", prefix);
-
-					try {
-						if (ctx.resourcesStart()) {
-							log.debug("Resources started");
-						}
-
-						log.debug("Context - available: {} privileged: {}, start time: {}, reloadable: {}",
-								new Object[] { ctx.getAvailable(), ctx.getPrivileged(), ctx.getStartTime(), ctx.getReloadable() });
-
-						Loader cldr = ctx.getLoader();
-						log.debug("Loader delegate: {} type: {}", cldr.getDelegate(), cldr.getClass().getName());
-						if (cldr instanceof WebappLoader) {
-							log.debug("WebappLoader class path: {}", ((WebappLoader) cldr).getClasspath());
-						}
-						final ClassLoader webClassLoader = cldr.getClassLoader();
-						log.debug("Webapp classloader: {}", webClassLoader);
-
-						// get the (spring) config file path
-						final String contextConfigLocation = servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONFIG_LOCATION_PARAM) == null ? defaultSpringConfigLocation
-								: servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONFIG_LOCATION_PARAM);
-						log.debug("Spring context config location: {}", contextConfigLocation);
-
-						// get the (spring) parent context key
-						final String parentContextKey = servletContext.getInitParameter(org.springframework.web.context.ContextLoader.LOCATOR_FACTORY_KEY_PARAM) == null ? defaultParentContextKey
-								: servletContext.getInitParameter(org.springframework.web.context.ContextLoader.LOCATOR_FACTORY_KEY_PARAM);
-						log.debug("Spring parent context key: {}", parentContextKey);
-
-						//set current threads classloader to the webapp classloader
-						Thread.currentThread().setContextClassLoader(webClassLoader);
-
-						//create a thread to speed-up application loading
-						Thread thread = new Thread("Launcher:" + servletContext.getContextPath()) {
-							public void run() {
-								//set thread context classloader to web classloader
-								Thread.currentThread().setContextClassLoader(webClassLoader);
-								//get the web app's parent context
-								ApplicationContext parentContext = null;
-								if (applicationContext.containsBean(parentContextKey)) {
-									parentContext = (ApplicationContext) applicationContext.getBean(parentContextKey);
-								} else {
-									log.warn("Parent context was not found: {}", parentContextKey);
-								}
-								// create a spring web application context
-								final String contextClass = servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONTEXT_CLASS_PARAM) == null ? XmlWebApplicationContext.class
-										.getName() : servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONTEXT_CLASS_PARAM);
-								//web app context (spring)
-								ConfigurableWebApplicationContext appctx = null;
-								try {
-									Class<?> clazz = Class.forName(contextClass, true, webClassLoader);
-									appctx = (ConfigurableWebApplicationContext) clazz.newInstance();
-								} catch (Throwable e) {
-									throw new RuntimeException("Failed to load webapplication context class.", e);
-								}
-								appctx.setConfigLocations(new String[] { contextConfigLocation });
-								appctx.setServletContext(servletContext);
-								//set parent context or use current app context
-								if (parentContext != null) {
-									appctx.setParent(parentContext);
-								} else {
-									appctx.setParent(applicationContext);
-								}
-								// set the root webapp ctx attr on the each servlet context so spring can find it later
-								servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appctx);
-								//refresh the factory
-								log.trace("Classloader prior to refresh: {}", appctx.getClassLoader());
-								appctx.refresh();
-								if (log.isDebugEnabled()) {
-									log.debug("Red5 app is active: {} running: {}", appctx.isActive(), appctx.isRunning());
-								}
+			// get root first
+			WebAppConfiguration root = host.getWebAppByURI("/");
+			// scan the sub directories to determine our context names
+			buildContextNameList(webappFolder);
+			// loop the other contexts
+			for (String contextName : contextNames) {
+				WebAppConfiguration ctx = host.getWebAppByURI(contextName);
+				// get access to the servlet context
+				final ServletContext servletContext = ctx.getContext(contextName);
+				log.debug("Context initialized: {}", servletContext.getContextPath());
+				//set the hosts id
+				servletContext.setAttribute("red5.host.id", host.getHostname());
+				// get the path
+				String prefix = servletContext.getRealPath("/");
+				log.debug("Path: {}", prefix);
+				try {
+					final ClassLoader cldr = ctx.getLoader();
+					log.debug("Loader type: {}", cldr.getClass().getName());
+					// get the (spring) config file path
+					final String contextConfigLocation = servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONFIG_LOCATION_PARAM) == null ? defaultSpringConfigLocation
+							: servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONFIG_LOCATION_PARAM);
+					log.debug("Spring context config location: {}", contextConfigLocation);
+					// get the (spring) parent context key
+					final String parentContextKey = servletContext.getInitParameter(org.springframework.web.context.ContextLoader.LOCATOR_FACTORY_KEY_PARAM) == null ? defaultParentContextKey
+							: servletContext.getInitParameter(org.springframework.web.context.ContextLoader.LOCATOR_FACTORY_KEY_PARAM);
+					log.debug("Spring parent context key: {}", parentContextKey);
+					//set current threads classloader to the webapp classloader
+					Thread.currentThread().setContextClassLoader(cldr);
+					//create a thread to speed-up application loading
+					Thread thread = new Thread("Launcher:" + servletContext.getContextPath()) {
+						public void run() {
+							//set thread context classloader to web classloader
+							Thread.currentThread().setContextClassLoader(cldr);
+							//get the web app's parent context
+							ApplicationContext parentContext = null;
+							if (applicationContext.containsBean(parentContextKey)) {
+								parentContext = (ApplicationContext) applicationContext.getBean(parentContextKey);
+							} else {
+								log.warn("Parent context was not found: {}", parentContextKey);
 							}
-						};
-						thread.setDaemon(true);
-						thread.start();
-
-					} catch (Throwable t) {
-						log.error("Error setting up context: {} due to: {}", servletContext.getContextPath(), t.getMessage());
-						t.printStackTrace();
-					} finally {
-						//reset the classloader
-						Thread.currentThread().setContextClassLoader(originalClassLoader);
-					}
+							// create a spring web application context
+							final String contextClass = servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONTEXT_CLASS_PARAM) == null ? XmlWebApplicationContext.class
+									.getName() : servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONTEXT_CLASS_PARAM);
+							//web app context (spring)
+							ConfigurableWebApplicationContext appctx = null;
+							try {
+								Class<?> clazz = Class.forName(contextClass, true, cldr);
+								appctx = (ConfigurableWebApplicationContext) clazz.newInstance();
+							} catch (Throwable e) {
+								throw new RuntimeException("Failed to load webapplication context class.", e);
+							}
+							appctx.setConfigLocations(new String[] { contextConfigLocation });
+							appctx.setServletContext(servletContext);
+							//set parent context or use current app context
+							if (parentContext != null) {
+								appctx.setParent(parentContext);
+							} else {
+								appctx.setParent(applicationContext);
+							}
+							// set the root webapp ctx attr on the each servlet context so spring can find it later
+							servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appctx);
+							//refresh the factory
+							log.trace("Classloader prior to refresh: {}", appctx.getClassLoader());
+							appctx.refresh();
+							if (log.isDebugEnabled()) {
+								log.debug("Red5 app is active: {} running: {}", appctx.isActive(), appctx.isRunning());
+							}
+						}
+					};
+					thread.setDaemon(true);
+					thread.start();
+				} catch (Throwable t) {
+					log.error("Error setting up context: {} due to: {}", servletContext.getContextPath(), t.getMessage());
+					t.printStackTrace();
+				} finally {
+					//reset the classloader
+					Thread.currentThread().setContextClassLoader(originalClassLoader);
 				}
-			}
+			}			
 		} catch (Exception e) {
 			if (e instanceof BindException || e.getMessage().indexOf("BindException") != -1) {
 				log.error("Error loading Winstone, unable to bind connector. You may not have permission to use the selected port", e);
@@ -290,6 +250,46 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 			registerJMX();
 		}
 
+	}
+	
+	/**
+	 * Starts a web application and its red5 (spring) component. This is
+	 * basically a stripped down version of init().
+	 * 
+	 * @return true on success
+	 */
+	public boolean startWebApplication(String applicationName) {
+		return false;
+	}	
+	
+	/**
+	 * Figure out the context names.
+	 * 
+	 * @param webappFolder
+	 */
+	private void buildContextNameList(String webappFolder) {
+		// Root applications directory
+		File appDirBase = new File(webappFolder);
+		// Subdirs of root apps dir
+		File[] dirs = appDirBase.listFiles(new DirectoryFilter());
+		// Search for additional context files
+		for (File dir : dirs) {
+			String dirName = '/' + dir.getName();
+			if (dirName.equalsIgnoreCase("/ROOT")) {
+				//skip root
+				continue;
+			}
+			String webappContextDir = FileUtil.formatPath(appDirBase.getAbsolutePath(), dirName);
+			File webXml = new File(webappContextDir, "WEB-INF/web.xml");
+			if (webXml.exists()) {
+				log.debug("Webapp context directory (full path): {}", webappContextDir);
+				contextNames.add(dirName);
+			}
+			webappContextDir = null;
+			webXml = null;
+		}
+		appDirBase = null;
+		dirs = null;
 	}
 
 	/**
@@ -381,6 +381,21 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 
 		@SuppressWarnings({ "unchecked", "rawtypes", "deprecation" })
 		public StoneLauncher(Map args) throws IOException {
+			// load properties file
+	        InputStream embeddedPropsStream = WinstoneLoader.class.getResourceAsStream("embedded.properties");
+	        if (embeddedPropsStream != null) {
+	            Properties props = new Properties();
+	            props.load(embeddedPropsStream);
+	            for (Iterator i = props.keySet().iterator(); i.hasNext(); ) {
+	                String key = (String) i.next();
+	                if (!args.containsKey(key.trim())) {
+	                    args.put(key.trim(), props.getProperty(key).trim());
+	                }
+	            }
+	            props.clear();	            
+	            embeddedPropsStream.close();
+	        }
+	        // use jndi?
 			boolean useJNDI = WebAppConfiguration.booleanArg(args, "useJNDI", false);
 			// Set jndi resource handler if not set (workaround for JamVM bug)
 			if (useJNDI)
@@ -496,11 +511,10 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 			}
 		}
 
-	    @SuppressWarnings("rawtypes")
 		public void shutdown() {
 	        // Release all listeners/pools/webapps
-	        for (Iterator i = this.listeners.iterator(); i.hasNext();) {
-	            ((winstone.Listener) i.next()).destroy();
+	        for (winstone.Listener listener : listeners) {
+	            listener.destroy();
 	        }
 	        objectPool.destroy();
 	        hostGroup.destroy();
@@ -518,6 +532,30 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 			return listeners;
 		}
 
+	}
+
+	/**
+	 * Filters directory content
+	 */
+	protected final static class DirectoryFilter implements FilenameFilter {
+		/**
+		 * Check whether file matches filter rules
+		 * 
+		 * @param dir Directory
+		 * @param name File name
+		 * @return true If file does match filter rules, false otherwise
+		 */
+		public boolean accept(File dir, String name) {
+			File f = new File(dir, name);
+			log.trace("Filtering: {} name: {}", dir.getName(), name);
+			log.trace("Constructed dir: {}", f.getAbsolutePath());
+			// filter out all non-directories that are hidden and/or not
+			// readable
+			boolean result = f.isDirectory() && f.canRead() && !f.isHidden();
+			// nullify
+			f = null;
+			return result;
+		}
 	}
 
 }
