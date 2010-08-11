@@ -16,8 +16,8 @@
 	       
 	    <path id="project.classpath">
 	        <fileset dir="${red5.root}/lib"/>
+	        <pathelement location="${red5.root}/boot.jar"/>
 	        <pathelement location="${red5.root}/red5.jar"/>
-	        <pathelement location="${red5.root}/lib/red5.jar"/>
 	        <!-- project specific libs -->
 	        <fileset dir="lib"/>
 	    </path>    
@@ -66,7 +66,7 @@
 	        <tstamp prefix="build">
 	            <format property="TODAY" pattern="d-MMMM-yyyy" locale="en"/>
 	        </tstamp>
-	        <jar destfile="${dist.dir}/${ant.project.name}.jar">
+	        <jar destfile="${dist.dir}/${ant.project.name}-${plugin.version}.jar">
 	            <fileset dir="${classes.dir}">
 	                <include name="**"/>
 	            </fileset>
