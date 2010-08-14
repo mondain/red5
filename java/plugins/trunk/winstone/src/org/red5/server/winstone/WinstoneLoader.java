@@ -160,9 +160,10 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 			// get the default host
 			HostConfiguration host = embedded.getHostGroup().getHostByName(null);
 			// set the primary application loader
-			LoaderBase.setApplicationLoader(new WinstoneApplicationLoader(embedded, host, applicationContext));
-			// get root first
+			LoaderBase.setApplicationLoader(new WinstoneApplicationLoader(host, applicationContext));
+			// get root first, we may want to start a spring config internally but for now skip it
 			WebAppConfiguration root = host.getWebAppByURI("/");
+			log.trace("Root: {}", root);
 			// scan the sub directories to determine our context names
 			buildContextNameList(webappFolder);
 			// loop the other contexts
@@ -371,7 +372,6 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 
 		private winstone.ObjectPool objectPool;
 
-		@SuppressWarnings("rawtypes")
 		private List<winstone.Listener> listeners = new ArrayList<winstone.Listener>();
 
 		@SuppressWarnings("rawtypes")
@@ -527,7 +527,6 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 			return hostGroup;
 		}
 
-		@SuppressWarnings("rawtypes")
 		List<winstone.Listener> getListeners() {
 			return listeners;
 		}
