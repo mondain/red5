@@ -132,16 +132,12 @@ public class Red5WebPropertiesConfiguration implements Configuration, EventListe
 				// Set virtual hosts and context path to context
 				context.setVirtualHosts(hostnames);
 				context.setContextPath(contextPath);
-				LoaderBase.setRed5ApplicationContext(contextPath,
-						new JettyApplicationContext(context));
+				LoaderBase.setRed5ApplicationContext(contextPath, new JettyApplicationContext(context));
 			}
 		} else if (webInf == null) {
 			// No WEB-INF directory found, register as default application
-			log.info("No WEB-INF directory found for "
-					+ context.getContextPath()
-					+ ", creating default application.");
-			BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator
-					.getInstance("red5.xml");
+			log.info("No WEB-INF directory found for " + context.getContextPath() + ", creating default application.");
+			BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator.getInstance("red5.xml");
 			BeanFactoryReference bfr = bfl.useBeanFactory("red5.common");
 
 			// Create WebScope dynamically
@@ -152,21 +148,16 @@ public class Red5WebPropertiesConfiguration implements Configuration, EventListe
 
 			// Get default Red5 context from context loader that is JettyLoader in this case
 			ApplicationContext appCtx = JettyLoader.getApplicationContext();
-			ContextLoader loader = (ContextLoader) appCtx
-					.getBean("context.loader");
+			ContextLoader loader = (ContextLoader) appCtx.getBean("context.loader");
 			appCtx = loader.getContext("default.context");
 
 			// Create context for the WebScope and initialize
 			Context scopeContext = new Context();
 			scopeContext.setContextPath("/");
-			scopeContext.setClientRegistry((IClientRegistry) appCtx
-					.getBean("global.clientRegistry"));
-			scopeContext.setMappingStrategy((IMappingStrategy) appCtx
-					.getBean("global.mappingStrategy"));
-			scopeContext.setServiceInvoker((IServiceInvoker) appCtx
-					.getBean("global.serviceInvoker"));
-			scopeContext.setScopeResolver((IScopeResolver) appCtx
-					.getBean("red5.scopeResolver"));
+			scopeContext.setClientRegistry((IClientRegistry) appCtx.getBean("global.clientRegistry"));
+			scopeContext.setMappingStrategy((IMappingStrategy) appCtx.getBean("global.mappingStrategy"));
+			scopeContext.setServiceInvoker((IServiceInvoker) appCtx.getBean("global.serviceInvoker"));
+			scopeContext.setScopeResolver((IScopeResolver) appCtx.getBean("red5.scopeResolver"));
 
 			// The context needs an ApplicationContext so resources can be
 			// resolved
@@ -187,12 +178,11 @@ public class Red5WebPropertiesConfiguration implements Configuration, EventListe
 			scope.setContextPath(context.getContextPath());
 			scope.setVirtualHosts("*");
 
-			LoaderBase.setRed5ApplicationContext(context.getContextPath(),
-					new JettyApplicationContext(context));
+			LoaderBase.setRed5ApplicationContext(context.getContextPath(), new JettyApplicationContext(context));
 
 			// Register WebScope in server
 			scope.register();
-		}		
+		}
 	}
 
 	@Override
