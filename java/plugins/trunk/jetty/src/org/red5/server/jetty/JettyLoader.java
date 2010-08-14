@@ -19,22 +19,23 @@ package org.red5.server.jetty;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+import java.io.File;
+
 import org.eclipse.jetty.deploy.WebAppDeployer;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.red5.server.LoaderBase;
-import org.red5.server.jmx.mxbeans.ContextLoaderMXBean;
-import org.red5.server.jmx.mxbeans.LoaderMXBean;
 import org.red5.server.api.IApplicationContext;
 import org.red5.server.jmx.JMXAgent;
+import org.red5.server.jmx.mxbeans.LoaderMXBean;
+import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Class that loads Red5 applications using Jetty.
@@ -49,18 +50,17 @@ public class JettyLoader extends LoaderBase implements LoaderMXBean {
 	/**
 	 *  Default web config filename
 	 */
-	protected String defaultWebConfig = "web-default.xml";
+	protected String defaultWebConfig = "plugins/jetty-web.xml";
 
 	/**
 	 *  IServer implementation
 	 */
 	protected Server jetty;
-	
-	/**
-	 *  Jetty config path
-	 */
-	protected String jettyConfig = "classpath:/jetty.xml";
 
+	protected Connector[] connectors;
+	protected ThreadPool threadPool;
+	protected HandlerCollection handlers;
+	
 	/**
 	 * Remove context from the current host.
 	 * 
@@ -77,59 +77,52 @@ public class JettyLoader extends LoaderBase implements LoaderMXBean {
 					break;
 				} catch (Exception e) {
 					log.error("Could not remove context: {}", path, e);
-				}				
+				}
 			}
 		}
 		IApplicationContext ctx = LoaderBase.removeRed5ApplicationContext(path);
 		if (ctx != null) {
-			ctx.stop();			
+			ctx.stop();
 		} else {
 			log.warn("Red5 application context could not be stopped, it was null for path: {}", path);
 		}
-	}		
-	
+	}
+
 	/**
 	 *
 	 */
 	@SuppressWarnings("all")
 	public void init() {
+		log.info("Loading Jetty context");
 		// So this class is left just starting jetty
 		try {
 			if (webappFolder == null) {
 				// Use default webapps directory
-				webappFolder = System.getProperty("red5.root") + "/webapps";
+				webappFolder = FileUtil.formatPath(System.getProperty("red5.root"), "/webapps");
 			}
 			System.setProperty("red5.webapp.root", webappFolder);
-			
-			log.info("Loading jetty context from: {}", jettyConfig);
-			ApplicationContext appCtx = new ClassPathXmlApplicationContext(jettyConfig);
-			// Get server bean from BeanFactory
-			jetty = (Server) appCtx.getBean("Server");
+			log.info("Application root: {}", webappFolder);
 
-			LoaderBase.setApplicationLoader(new JettyApplicationLoader(jetty, applicationContext));
-			
 			// root location for servlet container
 			String serverRoot = System.getProperty("red5.root");
 			log.debug("Server root: {}", serverRoot);
 
 			// set in the system for tomcat classes
 			System.setProperty("jetty.home", serverRoot);
-			System.setProperty("jetty.class.path", serverRoot + "/lib");
+			System.setProperty("jetty.class.path", String.format("%s/lib%s%s/plugins", serverRoot, File.separator, serverRoot));
 
+			String[] handlersArr = new String[] { "org.eclipse.jetty.webapp.WebInfConfiguration", "org.eclipse.jetty.webapp.WebXmlConfiguration",
+					"org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.webapp.TagLibConfiguration", "org.red5.server.jetty.Red5WebPropertiesConfiguration" };
+
+			// instance a new org.mortbay.jetty.Server
 			log.info("Starting jetty servlet engine");
-
-			String[] handlersArr = new String[] {
-					"org.eclipse.jetty.webapp.WebInfConfiguration",
-					"org.eclipse.jetty.webapp.WebXmlConfiguration",
-					"org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
-					"org.eclipse.jetty.webapp.TagLibConfiguration",
-					"org.red5.server.jetty.Red5WebPropertiesConfiguration" };
-
-			// Handler collection
-			HandlerCollection handlers = new HandlerCollection();
-			handlers.setHandlers(new Handler[] {
-					new ContextHandlerCollection(), new DefaultHandler() });
+			jetty = new Server();			
+			jetty.setConnectors(connectors);
 			jetty.setHandler(handlers);
+			jetty.setThreadPool(threadPool);
+			jetty.setStopAtShutdown(true);
+
+			LoaderBase.setApplicationLoader(new JettyApplicationLoader(jetty, applicationContext));
 
 			try {
 				// Add web applications from web app root with web config
@@ -164,16 +157,32 @@ public class JettyLoader extends LoaderBase implements LoaderMXBean {
 	public boolean startWebApplication(String applicationName) {
 		return false;
 	}
-	
+
 	public void registerJMX() {
-		JMXAgent.registerMBean(this, this.getClass().getName(),	LoaderMXBean.class);	
-	}	
-	
+		JMXAgent.registerMBean(this, this.getClass().getName(), LoaderMXBean.class);
+	}
+
+	public Connector[] getConnectors() {
+		return connectors;
+	}
+
+	public void setConnectors(Connector[] connectors) {
+		this.connectors = connectors;
+	}
+
+	public void setThreadPool(ThreadPool threadPool) {
+		this.threadPool = threadPool;
+	}
+
+	public void setHandlers(HandlerCollection handlers) {
+		this.handlers = handlers;
+	}
+
 	/**
 	 * Shut server down
 	 */
 	public void shutdown() {
-		log.info("Shutting down jetty context");
+		log.info("Shutting down Jetty context");
 		JMXAgent.shutdown();
 		try {
 			jetty.stop();
