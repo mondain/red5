@@ -21,7 +21,6 @@ package org.red5.server.winstone;
 
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IApplicationLoader;
-import org.red5.server.winstone.WinstoneLoader.StoneLauncher;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 
@@ -38,22 +37,18 @@ public class WinstoneApplicationLoader implements IApplicationLoader {
 	// Initialize Logging
 	protected static Logger log = Red5LoggerFactory.getLogger(WinstoneApplicationLoader.class);
 
-	/** Store reference to embedded Winstone engine. */
-	private StoneLauncher embedded;
-
 	private HostConfiguration host;
 	
 	/** Stores reference to the root ApplicationContext. */
 	private ApplicationContext rootCtx;
 
 	/**
-	 * Wrap Winstone engine and host.
+	 * Wraps Winstone host configuration and spring application context.
 	 * 
-	 * @param embedded
 	 * @param host
+	 * @param rootCtx
 	 */
-	protected WinstoneApplicationLoader(StoneLauncher embedded, HostConfiguration host, ApplicationContext rootCtx) {
-		this.embedded = embedded;
+	protected WinstoneApplicationLoader(HostConfiguration host, ApplicationContext rootCtx) {
 		this.host = host;
 		this.rootCtx = rootCtx;
 	}
