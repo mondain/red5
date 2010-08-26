@@ -1,3 +1,5 @@
+MPEG-TS Plug-in
+By: Paul Gregoire
 
 The segmenter service must be configured in your red5-web.xml where the mpeg-ts streaming will be used.
 
@@ -63,4 +65,4 @@ application web.xml as follows.
         <mime-type>video/MP2T</mime-type>
     </mime-mapping>	
 	
-	
+Special thanks to Infrared5 Inc. for donating the initial code.
