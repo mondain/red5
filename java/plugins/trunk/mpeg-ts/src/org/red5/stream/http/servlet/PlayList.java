@@ -1,5 +1,24 @@
 package org.red5.stream.http.servlet;
 
+/*
+ * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ * 
+ * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software 
+ * Foundation; either version 2.1 of the License, or (at your option) any later 
+ * version. 
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along 
+ * with this library; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ */
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -19,8 +38,6 @@ import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.infrared5.steamstream.Application;
-import com.infrared5.steamstream.ReStreamer;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.SimpleMediaFile;
 
@@ -38,12 +55,14 @@ import com.xuggle.xuggler.SimpleMediaFile;
  * @see
  * {@link http://tools.ietf.org/html/draft-pantos-http-live-streaming-03}
  * {@link http://developer.apple.com/iphone/library/documentation/NetworkingInternet/Conceptual/StreamingMediaGuide/HTTPStreamingArchitecture/HTTPStreamingArchitecture.html#//apple_ref/doc/uid/TP40008332-CH101-SW2}
+ * 
+ * @author Paul Gregoire
  */
 public class PlayList extends HttpServlet {
 	
 	private static final long serialVersionUID = 978137411L;
 
-	private static Logger log = Red5LoggerFactory.getLogger(PlayList.class, "httplivestreaming");
+	private static Logger log = Red5LoggerFactory.getLogger(PlayList.class);
 
 	// create streams upon http request
 	private boolean startStreamOnRequest = false;
@@ -146,8 +165,7 @@ public class PlayList extends HttpServlet {
 			-s 320x240 -f mpegts out.ts
 
 		 */
-		
-		
+				
 		//get the requested stream
 		
 		ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
@@ -254,24 +272,17 @@ public class PlayList extends HttpServlet {
     				requestedStreams.add(streamName);    				
     				// perform the actions required for starting up a stream
     				log.debug("A stream that is not yet available will be spawned");    				
-    				// XXX the Restreamer code is only for Intamac! remove prior to release to 
-    				// open source community   				
+    				// TODO create a SimpleMediaFile that represents our stream   				
     				SimpleMediaFile smf = new SimpleMediaFile();
     				smf.setHasAudio(false);
     				smf.setHasVideo(true);
     				smf.setVideoCodec(ICodec.ID.CODEC_ID_H264);
-    				// create a restreamer
-    				ReStreamer restreamer = (ReStreamer) appCtx.getBean("restreamer");
-    				restreamer.setStreamScope(Application.getAppScope());
-    				restreamer.setInputStreamName(streamName);
-    				restreamer.setOutputStreamInfo(smf);
-    				//add restreamers to a list for later cleanup!
-    				Application.addRestreamer(streamName, restreamer);
-    				//add the segmenter service as an observer
-    				restreamer.addObserver(service);
-    				//start the restreamer
-    				restreamer.start();
-    				// start a thread to remove the requested stream name from the list after 2 minutes
+    				// TODO if on-demand creation is wanted in your application, the Observed class
+    				// must be instanced here and the SegmenterService must be added as an Observer of the class
+    				
+    				// TODO create a thread to clean up if the stream is not created within x time
+    				/*
+    				// start a thread to remove the requested stream name from the list after 2 minutes   				
     				Application.executorService.execute(new Runnable() {
     					public void run() {
     						try {
@@ -282,8 +293,8 @@ public class PlayList extends HttpServlet {
     							requestedStreams.remove(requestedStreams.indexOf(streamName));
     						}	
     					}
-    				});    				
-    				// XXX end of intamac specific code
+    				});
+    				*/    				
 				}
 			} else {
 				writer.println("#EXT-X-ENDLIST\n");			

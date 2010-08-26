@@ -13,6 +13,8 @@
         <dependency org="spring" name="spring-context" rev="3.0.4" />
         <dependency org="spring" name="spring-core" rev="3.0.4" />
         <dependency org="spring" name="spring-web" rev="3.0.4" />
+        <!-- General -->
+        <dependency org="commons" name="commons-lang" rev="2.4" />
         <!-- Logging --> 
         <dependency name="slf4j-api" rev="1.6.1" />
         <dependency name="jcl-over-slf4j" rev="1.6.1" />
@@ -29,6 +31,10 @@
         <dependency org="mina" name="mina-integration-jmx" rev="2.0.0-RC2-SNAPSHOT" />   
         <dependency org="spring" name="spring-context-support" rev="3.0.4" />
 		<!-- Xuggle -->
-		<dependency org="xuggle" name="xuggle-xuggler" rev="[4.0,)" conf="*"/>   
+		<!-- 
+        <dependency org="xuggle" name="xuggle-xuggler" rev="[4,)" conf="*"/>   
+         -->
+        <dependency org="xuggle" name="xuggle-xuggler" rev="4.0" conf="*"/>   
+        <dependency org="xuggle" name="xuggle-utils" rev="1.21.1049.201008251256" conf="*"/>   
     </dependencies>
 </ivy-module>
