@@ -30,7 +30,7 @@ import org.red5.server.ClientRegistry;
 public class AuthClient extends Client {
 
 	public AuthClient() {
-		super();
+		super(null, null);		
 	}
 
 	public AuthClient(String id, ClientRegistry registry) {
