@@ -11,7 +11,7 @@ RequestExecutionLevel admin
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.9.1
+!define VERSION 1.0.0
 !define COMPANY "Red5 Server"
 !define DESCRIPTION "Red5 is an Open Source Flash Server written in Java"
 !define URL http://red5.googlecode.com
@@ -57,7 +57,7 @@ Var /GLOBAL IP_ADDRESS
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile setup-Red5-${VERSION}.exe
+OutFile setup-Red5-${VERSION}-RC1.exe
 InstallDir $PROGRAMFILES\Red5
 CRCCheck on
 XPStyle on
