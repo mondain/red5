@@ -1,0 +1,169 @@
+<?xml version='1.0' ?>
+<appendix xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="DataTypeMappings">
+	<title>Data Type Mappings</title>
+	<informaltable>
+		<tr>
+			<td>Flash/Flex </td>
+			<td>Java </td>
+		</tr>
+		<tr>
+			<td>Number </td>
+			<td>any of the Java numeric types </td>
+		</tr>
+		<tr>
+			<td>int/uint ^\* </td>
+			<td>any of the non-floating point Java numeric types </td>
+		</tr>
+		<tr>
+			<td>String </td>
+			<td>String </td>
+		</tr>
+		<tr>
+			<td>Boolean </td>
+			<td>Boolean/boolean </td>
+		</tr>
+		<tr>
+			<td>Array </td>
+			<td>List </td>
+		</tr>
+		<tr>
+			<td>Object </td>
+			<td>
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/io/utils/ObjectMap.html">org.red5.io.utils.ObjectMap</link> 
+			</td>
+		</tr>
+	</informaltable>
+	<para>|| Date || java.util.Date |
+		|| XML || org.w3c.dom.Document |</para>
+	<informaltable>
+		<tr>
+			<td>ByteArray * </td>
+			<td>
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/io/amf3/ByteArray.html">org.red5.io.amf3.ByteArray</link> 
+			</td>
+		</tr>
+		<tr>
+			<td>IExternalizable * </td>
+			<td>
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/io/amf3/IExternalizable.html">org.red5.io.amf3.IExternalizable</link> 
+			</td>
+		</tr>
+		<tr>
+			<td>ArrayCollection * </td>
+			<td>
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/compatibility/flex/messaging/io/ArrayCollection.html">org.red5.compatibility.flex.messaging.io.ArrayCollection</link> 
+			</td>
+		</tr>
+		<tr>
+			<td>ObjectProxy * </td>
+			<td>
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/compatibility/flex/messaging/io/ObjectProxy.html">org.red5.compatibility.flex.messaging.io.ObjectProxy</link> 
+			</td>
+		</tr>
+		<tr>
+			<td>Null </td>
+			<td>null </td>
+		</tr>
+		<tr>
+			<td>custom class ** </td>
+			<td>custom class </td>
+		</tr>
+	</informaltable>
+	<para>Please note that Red5 performs automatic parameter conversion, e.g. if you pass a number to a method that takes a String as parameter, it is automatically converted.</para>
+	<informaltable>
+		<tr>
+			<td>Java </td>
+			<td>Flash/Flex </td>
+		</tr>
+		<tr>
+			<td>any of the Java numeric types </td>
+			<td>Number </td>
+		</tr>
+		<tr>
+			<td>any of the non-floating point Java numeric types </td>
+			<td>int/uint * </td>
+		</tr>
+		<tr>
+			<td>String </td>
+			<td>String </td>
+		</tr>
+		<tr>
+			<td>boolean/Boolean </td>
+			<td>Boolean </td>
+		</tr>
+		<tr>
+			<td>List/Set </td>
+			<td>Array </td>
+		</tr>
+		<tr>
+			<td>Map </td>
+			<td>Array or Object, depends on the Map contents </td>
+		</tr>
+		<tr>
+			<td>any objects </td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/io/utils/ObjectMap.html">org.red5.io.utils.ObjectMap</link> 
+			</td>
+			<td>Object </td>
+		</tr>
+		<tr>
+			<td>java.util.Date </td>
+			<td>Date </td>
+		</tr>
+		<tr>
+			<td>org.w3c.dom.Document </td>
+			<td>XML </td>
+		</tr>
+		<tr>
+			<td>
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/io/amf3/ByteArray.html">org.red5.io.amf3.ByteArray</link> 
+			</td>
+			<td>ByteArray * </td>
+		</tr>
+		<tr>
+			<td>
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/io/amf3/IExternalizable.html">org.red5.io.amf3.IExternalizable</link> 
+			</td>
+			<td>IExternalizable * </td>
+		</tr>
+		<tr>
+			<td>
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/compatibility/flex/messaging/io/ArrayCollection.html">org.red5.compatibility.flex.messaging.io.ArrayCollection</link> 
+			</td>
+			<td>ArrayCollection * </td>
+		</tr>
+		<tr>
+			<td>
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/compatibility/flex/messaging/io/ObjectProxy.html">org.red5.compatibility.flex.messaging.io.ObjectProxy</link> 
+			</td>
+			<td>ObjectProxy * </td>
+		</tr>
+		<tr>
+			<td>null </td>
+			<td>Null </td>
+		</tr>
+		<tr>
+			<td>custom class </td>
+			<td>custom class ** </td>
+		</tr>
+	</informaltable>
+	<orderedlist>
+		<listitem>
+			<para>* = Only available in Flash Player 9 or newer (AMF3)</para>
+		</listitem>
+		<listitem>
+			<para>** = You can map the class to serialize to in Red5 by adding </para>
+		</listitem>
+	</orderedlist>
+	<blockquote>
+		<para>  {{{
+			     
+			<link xl:href="RemoteClass(alias=&quot;package.to.RemoteClass&quot;)">RemoteClass(alias="package.to.RemoteClass")</link>
+			  }}} 
+			  above your Flex class definition.
+		</para>
+	</blockquote>
+</appendix>
