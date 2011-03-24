@@ -159,7 +159,7 @@
 
 	</target>
 
-    <target name="doc-all" depends="doc-prepare" description="Generate all reference documentation">
+    <target name="doc-all" depends="doc-prepare, doc-wiki2docbook" description="Generate all reference documentation">
 		<sequential>
 			<antcall target="doc-clean" inheritAll="true" inheritRefs="true"/>
 			<antcall target="doc-pdf" inheritAll="true" inheritRefs="true"/>
@@ -178,8 +178,7 @@
                 <include name="*.jar"/>
             </fileset>
         </path>
-		<antcall target="doc-prepare" inheritAll="true" inheritRefs="true"/>
-		<antcall target="doc-wiki2docbook" inheritAll="true" inheritRefs="true"/>
+
 		<!-- Build fo file -->
 		<mkdir dir="${doc.ref.dir}/pdf"/>
 		<dbxslt basedir="${doc.ref.dir}/src" in="${doc.ref.dir}/src/index.xml"
@@ -202,9 +201,6 @@
                 <include name="*.jar"/>
             </fileset>
         </path>
-
-		<antcall target="doc-prepare" inheritAll="true" inheritRefs="true"/>
-		<antcall target="doc-wiki2docbook" inheritAll="true" inheritRefs="true"/>
 
 		<mkdir dir="${doc.ref.dir}/html"/>
 		<mkdir dir="${doc.ref.dir}/html/images"/>
