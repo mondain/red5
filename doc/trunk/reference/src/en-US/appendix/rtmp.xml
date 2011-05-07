@@ -1,0 +1,29 @@
+<?xml version='1.0' ?>
+<appendix xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="rtmp-specification">
+	<title>RTMP Specification</title>
+	<para> 
+		<link xl:href="http://osflash.org/documentation/rtmp">http://osflash.org/documentation/rtmp</link>
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				<link xl:href="http://wiki.gnashdev.org/RTMP">http://wiki.gnashdev.org/RTMP</link>
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<link xl:href="http://wiki.gnashdev.org/RTMP_Messages_Decoded">http://wiki.gnashdev.org/RTMP_Messages_Decoded</link>
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<link xl:href="http://osflash.org/_media/rtmp_spec.jpg">http://osflash.org/_media/rtmp_spec.jpg</link>
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<link xl:href="http://www.acmewebworks.com/Downloads/openCS/TheAMF.pdf">http://www.acmewebworks.com/Downloads/openCS/TheAMF.pdf</link>
+			</para>
+		</listitem>
+	</itemizedlist>
+</appendix>

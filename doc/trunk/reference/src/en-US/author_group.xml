@@ -1,0 +1,47 @@
+<?xml version='1.0' ?>
+<authorgroup xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="Author_Group">
+	<author>
+		<personname>
+			<firstname>Steven</firstname>
+			<surname>Gong</surname>
+		</personname>
+		<email>steven.gong@gmail.com</email>
+	</author>
+	<author>
+		<personname>
+			<firstname>Paul</firstname>
+			<surname>Gregoire</surname>
+		</personname>
+		<email>mondain@gmail.com</email>
+	</author>
+	<author>
+		<personname>
+			<firstname>Daniel</firstname>
+			<surname>Rossi</surname>
+		</personname>
+		<email>electroteque@gmail.com</email>
+	</author>
+	
+	<!--
+	Credit designers
+	<othercredit>
+	     <firstname></firstname>
+	     <surname></surname>
+	     <affiliation>
+	        <shortaffil>Graphic Design</shortaffil>
+	     </affiliation>
+ 	</othercredit>-->
+ 	
+ 	<!--
+ 	Credit translators
+        #######################################################################
+        # French
+        #######################################################################
+    
+   <othercredit class="translator" lang="fr-FR">
+       <personname>
+			<firstname></firstname>
+			<surname></surname>
+		</personname>
+   </othercredit>-->
+</authorgroup>
