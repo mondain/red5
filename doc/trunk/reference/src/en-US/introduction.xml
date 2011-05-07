@@ -26,4 +26,40 @@
 	<para>Lastly the documentation is under development at the moment.  If you have unanswered questions after using it, please check out our 
 		<link xl:href="http://groups.google.com/group/red5interest">mailing list</link>
 	</para>
+	
+	<section xml:id="whats-new">
+	    <title>0.8 Public Beta Release</title>
+	    <para>More stable version of 0.7 for production environment 
+	    testing. This public beta release will have many more features and 
+	    so the focus should be on testing and bug reports.</para>
+	    <itemizedlist>
+	      <listitem>
+	        <para>Hot Deployment</para>
+	      </listitem>
+	      <listitem>
+	        <para>Auto-unpacking of wars</para>
+	      </listitem>
+	      <listitem>
+	        <para>New Install application for example apps</para>
+	      </listitem>
+	    </itemizedlist>
+	    <para>** examples are downloaded and installed on demand</para>
+	    <itemizedlist>
+	      <listitem>
+	        <para>No installed examples by default</para>
+	      </listitem>
+	      <listitem>
+	        <para>New Download Repository</para>
+	      </listitem>
+	      <listitem>
+	        <para>Official Release Home (red5.org)</para>
+	      </listitem>
+	      <listitem>
+	        <para>New Welcome page with new styles</para>
+	      </listitem>
+	      <listitem>
+	        <para>Bug fixes</para>
+	      </listitem>
+	    </itemizedlist>
+  </section>
 </chapter>

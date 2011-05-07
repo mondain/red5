@@ -1,0 +1,192 @@
+<?xml version='1.0' ?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="management">
+	<title>Management</title>
+	<section>
+		<title>JMX Classes</title>
+		<para>Red5's implementation consists of the following classes and various other 
+			MBeans: </para>
+		<para>org.red5.server.jmx.JMXFactory - Provides access to the platform 
+			MBeanServer as well as registration, unregistration, and creation of 
+			new MBean instances. Creation and registration is performed using 
+			StandardMBean wrappers. </para>
+		<para>org.red5.server.jmx.JMXAgent - Provides the HTML adapter and registration 
+			of MBeans. </para>
+		<para>org.red5.server.jmx.JMXUtil - Helper methods for working with ObjectName 
+			or MBean instances. </para>
+	</section>
+	<section>
+		<title>Spring configuration</title>
+		<para>The Spring configuration for the JMX implementation allows you to configure the "domain" 
+			for MBean registration and listener port for the HTML adaptor. The default entries are 
+			shown below. </para>
+		<programlisting language="xml">
+<![CDATA[
+
+<!-- JMX server --> 
+<!-- JMX server --> 
+ <bean id="jmxFactory" class="org.red5.server.jmx.JMXFactory"> 
+  <property name="domain" value="org.red5.server"/> 
+ </bean> 
+ <bean id="jmxAgent" class="org.red5.server.jmx.JMXAgent" init-method="init"> 
+  <!-- The RMI adapter allows remote connections to the MBeanServer --> 
+  <property name="enableRmiAdapter" value="true"/> 
+  <property name="rmiAdapterPort" value="${jmx.rmi.port.registry}"/> 
+  <property name="rmiAdapterRemotePort" value="${jmx.rmi.port.remoteobjects}"/> 
+  <property name="rmiAdapterHost" value="${jmx.rmi.host}"/> 
+  <!-- SSL 
+   To use jmx with ssl you must also supply the location of the keystore and its password 
+   when starting the server with the following JVM options: 
+    -Djavax.net.ssl.keyStore=keystore 
+        -Djavax.net.ssl.keyStorePassword=password 
+  --> 
+  <property name="enableSsl" value="${jmx.rmi.ssl}"/> 
+  <!-- Starts a registry if it doesnt exist --> 
+  <property name="startRegistry" value="true"/> 
+  <!-- Authentication --> 
+  <property name="remoteAccessProperties" value="${red5.config_root}/access.properties"/> 
+  <property name="remotePasswordProperties" value="${red5.config_root}/password.properties"/> 
+  <property name="remoteSSLKeystore" value="${red5.config_root}/keystore.jmx"/> 
+  <property name="remoteSSLKeystorePass" value="${rtmps.keystorepass}"/> 
+  <!-- The HTML adapter allows connections to the MBeanServer via a web browser --> 
+  <property name="enableHtmlAdapter" value="${jmx.http}"/> 
+  <property name="htmlAdapterPort" value="${jmx.http.port}"/> 
+  <!-- Mina offers its own Mbeans so you may integrate them here --> 
+  <property name="enableMinaMonitor" value="true"/> 
+ </bean> 
+]]>
+</programlisting>
+		<para>The config settings for the jmxAgent bean is located in the red5.properties, these are: </para>
+		<para>red5.properties -</para>
+		<literallayout>
+ # JMX 
+jmx.rmi.port.registry=9999 
+jmx.rmi.port.remoteobjects= 
+jmx.rmi.host=0.0.0.0 
+jmx.rmi.ssl=false 
+jmx.http=false 
+jmx.http.port=8082 
+</literallayout>
+		<orderedlist>
+			<listitem>
+				<para>jmx.rmi.port.registry - The RMI registry port. The RMI adapter may only be used if an </para>
+			</listitem>
+		</orderedlist>
+		<para>RMI registry is running. The RMI registry is enabled by default. </para>
+		<orderedlist>
+			<listitem>
+				<para>jmx.rmi.port.remoteobjects - The RMI remote objects export port to specify for access </para>
+			</listitem>
+		</orderedlist>
+		<para>through firewalls. The default port is generated from the RMI stack. </para>
+		<orderedlist>
+			<listitem>
+				<para>jmx.rmi.host - For RMI remote access specify the host to bind to usually the public </para>
+			</listitem>
+		</orderedlist>
+		<para>address. </para>
+		<orderedlist>
+			<listitem>
+				<para>jmx.rmi.ssl - Enable RMI / JMX SSL. SSL is off by default. </para>
+			</listitem>
+			<listitem>
+				<para>jmx.http - Enable HTTP RMI adapter. The HTML adapter is disabled by default, but it </para>
+			</listitem>
+		</orderedlist>
+		<para>allows easy management of MBeans from a web browser. </para>
+	</section>
+	<section>
+		<title>RMI Authentication</title>
+		<para>RMI authentication is configured and enabled by default. This is to secure the RMI 
+			connection from anonymous clients. 
+			The bean properties remoteAccessProperties and remotePasswordProperties set the JMX 
+			access and password config files. 
+			The access.properties and password.properties config files define the JMX user rights and 
+			clear text password. 
+			access.properties contains a user and group rights config</para>
+		<para>access.properties - </para>
+		<literallayout>
+red5user readwrite 
+</literallayout>
+		<para>Where red5user is the JMX username and readwrite is the rights which is usually left as 
+			default. 
+			password.properties contains the JMX user and password </para>
+		<para>password.properties -</para>
+		<literallayout>
+red5user changeme 
+</literallayout>
+		<para>Where red5user is the JMX username and changeme is the JMX password. </para>
+		<tip>
+			<para>
+				It is advisable to change the default login, aswell as configure with SSL enabled 
+				as the login is cleartext. 
+			</para>
+		</tip>
+	</section>
+	<section>
+		<title>JMX / RMI / SSL</title>
+		<para>When RMI is enabled with SSL, the bean properties remoteSSLKeystore and 
+			remoteSSLKeystorePass are required to load the SSL keystore and the keystore password 
+			for the SSL request. 
+			The default keystore loaded is the conf/keystore.jmx file which can also share the keystore 
+			required for RTMPS connections. 
+			The java properties javax.net.ssl.keyStore and javax.net.ssl.keyStorePassword are 
+			transparently set. 
+			To generate the keystore / and truststore for client / server connections run from the source </para>
+		<literallayout>
+  ant truststore
+</literallayout>
+		<para>This will generate a keystore.jmx, red5server.cer and truststore.jmx certificate.</para>
+	</section>
+	<section>
+		<title>jConsole / JMX Client</title>
+		<para>JConsole is a utility that ships with the JRE (since 1.5), it allows you to manage local and 
+			remote JMX implementations. To enable introspection you must add the following VM 
+			parameter to your startup: </para>
+		<literallayout>
+-Dcom.sun.management.jmxremote 
+</literallayout>
+		<section>
+			<title>Local Management</title>
+			<para>After the parameter is set and the application initialized you can start jConsole at the 
+				command line by typing: </para>
+			<screen>
+$ jconsole
+</screen>
+			<para>A Swing application will appear and you must select the implementation (agent) you wish to 
+				manage, for local simply select "org.red5.server.Standalone". </para>
+		</section>
+		<section>
+			<title>Remote Management</title>
+			<para>For remote connections with jconsole / JMX clients the command is</para>
+			<screen>
+$ jconsole service:jmx:rmi://host:port/jndi/rmi://host:port/red5 
+</screen>
+		</section>
+		<section>
+			<title>SSL Remote Management</title>
+			<para>For remote ssl connections with jconsole / JMX clients the client is required to load the 
+				truststore certificate generated previouslly. </para>
+			<para>The command for setting the truststore properties </para>
+			<screen>
+$ jconsole -J-Djavax.net.ssl.trustStore=truststore.jmx \ 
+-J-Djavax.net.ssl.trustStorePassword=password \ 
+service:jmx:rmi://host:port/jndi/rmi://host:port/red5 
+</screen>
+		</section>
+	</section>
+	<section>
+		<title>Links</title>
+		<itemizedlist>
+			<listitem>
+				<para>
+					<link xl:href="http://www.onjava.com/pub/a/onjava/2004/09/29/tigerjmx.html?page=1">http://www.onjava.com/pub/a/onjava/2004/09/29/tigerjmx.html?page=1</link>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<link xl:href="http://java.sun.com/developer/JDCTechTips/2005/tt0315.html#2">http://java.sun.com/developer/JDCTechTips/2005/tt0315.html#2</link>
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>
