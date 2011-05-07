@@ -1,0 +1,238 @@
+<?xml version='1.0' ?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="logging-setup">
+	<title>Logging Setup</title>
+	<para>The logging system uses Simple Logging Facade for Java (
+		<link xl:href="http://www.slf4j.org/">SLF4J</link>). This framework supports many of the logging systems available for Java and also provides simple implementations. The logging used by our dependencies are mainly Log4j and Apache commons logging and SLF4J allows us to combine them into one system. SLF4J gives you the ability to select a logging implementation and provides proxies for you dependencies if their maintainers did not select the same framework.
+	</para>
+	<para>We prefer the 
+		<link xl:href="http://logback.qos.ch/">logback</link> log implementation, but you may use whatever you like. There are some hoops you will have to jump through to get 
+		<link xl:href="http://logging.apache.org/">Log4j</link> or 
+		<link xl:href="http://commons.apache.org/logging/">Commons logging</link> to work. Blog post about using other loggers 
+		<link xl:href="http://gregoire.org/2009/05/05/support-for-other-slf4j-loggers/">here</link>.
+	</para>
+	<para>After you chose an implementation framework, some of the SLF4J jars must 
+		<emphasis role="bold">NOT</emphasis> be in your applications classpath or they will cause conflicts. The default case it to use Logback, so the following jars must be included:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>slf4j-api - The core API</para>
+		</listitem>
+		<listitem>
+			<para>logback-core - Current Logback core library</para>
+		</listitem>
+		<listitem>
+			<para>logback-classic - Logback support library</para>
+		</listitem>
+		<listitem>
+			<para>log4j-over-slf4j - Log4j proxy/bridge</para>
+		</listitem>
+		<listitem>
+			<para>jcl-over-slf4j - Apache commons logging proxy/bridge</para>
+		</listitem>
+		<listitem>
+			<para>jul-to-slf4j - java.util.logging proxy/bridge</para>
+		</listitem>
+	</itemizedlist>
+	<para>The items denoted as "proxy/bridge" listen for the logging calls to those implementations and pass them through to SLF4J.</para>
+	<para>The following two strategies are to be consider 
+		<emphasis role="bold">untested</emphasis>.
+	</para>
+	<para>If you prefer to use Log4j instead, the following jars are required:</para>
+	<itemizedlist>
+		<listitem>
+			<para>slf4j-api - The core API</para>
+		</listitem>
+		<listitem>
+			<para>log4j - Current Log4j library (1.2+)</para>
+		</listitem>
+		<listitem>
+			<para>slf4j-log4j12 - Log4j adapter</para>
+		</listitem>
+		<listitem>
+			<para>jcl-over-slf4j - Apache commons logging proxy/bridge</para>
+		</listitem>
+		<listitem>
+			<para>jul-to-slf4j - java.util.logging proxy/bridge</para>
+		</listitem>
+	</itemizedlist>
+	<para>If you prefer to use Commons logging the following jars are required:</para>
+	<itemizedlist>
+		<listitem>
+			<para>slf4j-api - The core API</para>
+		</listitem>
+		<listitem>
+			<para>commons-logging - Apache commons logging library</para>
+		</listitem>
+		<listitem>
+			<para>slf4j-jcl - Commons logging adapter</para>
+		</listitem>
+		<listitem>
+			<para>log4j-over-slf4j - Log4j proxy/bridge</para>
+		</listitem>
+		<listitem>
+			<para>jul-to-slf4j - java.util.logging proxy/bridge</para>
+		</listitem>
+	</itemizedlist>
+	<para>If you want to use another implementation not shown here, simply check out the faq 
+		<link xl:href="http://www.slf4j.org/faq.html">SLF4J FAQ</link>
+	</para>
+	<para>Logback is the successor of Log4j and was created by the creator of Log4j and SLF4J. A conversion tool has been created for your log4j properties files 
+		<link xl:href="http://logback.qos.ch/translator/Welcome.do">configuration converter</link>
+		There is also an eclipse console plugin 
+		<link xl:href="http://logback.qos.ch/consolePlugin.html">eclipse console plugin</link>.
+	</para>
+	<section>
+		<title>Web applications</title>
+		<para>In your web applications remove the following entry from your web.xml</para>
+		<programlisting language="xml">
+<![CDATA[
+
+<context-param>
+  <param-name>log4jConfigLocation</param-name>
+  <param-value>/WEB-INF/log4j.properties</param-value>
+</context-param>
+]]>
+</programlisting>
+		<para>Add the following to the web.xml</para>
+		<programlisting language="xml">
+<![CDATA[
+
+<listener>
+    <listener-class>org.red5.logging.ContextLoggingListener</listener-class>
+</listener>
+
+<filter>
+    <filter-name>LoggerContextFilter</filter-name>
+    <filter-class>org.red5.logging.LoggerContextFilter</filter-class>
+</filter>
+
+<filter-mapping>
+    <filter-name>LoggerContextFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+]]>
+</programlisting>
+		<para>You should also:</para>
+		<itemizedlist>
+			<listitem>
+				<para>Remove any "log4j" listeners from the web.xml</para>
+			</listitem>
+			<listitem>
+				<para>Remove any log4j.properties or log4j.xml files</para>
+			</listitem>
+			<listitem>
+				<para>Create a logback-myApp.xml where myApp is the name for your webapp and place it on your webapp classpath (WEB-INF/classes or in your application jar within WEB-INF/lib)</para>
+			</listitem>
+			<listitem>
+				<para>Set your display-name in the web application to match the context name you will be using (Use the example oflaDemo as a guide).</para>
+			</listitem>
+			<listitem>
+				<para>Ensure that the contextName and jmxConfigurator have the correct context name, this is the name of your web application</para>
+			</listitem>
+		</itemizedlist>
+		<para>Sample webapp logback config file (logback-myApp.xml), not to be confused with the red5 log config file located in /conf</para>
+		<programlisting language="xml">
+<![CDATA[
+
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>	
+    <contextName>myApp</contextName>
+    <jmxConfigurator contextName="myApp" />    
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <File>example.log</File>
+        <Append>false</Append>
+        <BufferedIO>false</BufferedIO>
+        <ImmediateFlush>true</ImmediateFlush>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</Pattern>
+        </layout>
+    </appender>
+    <root>
+        <level value="DEBUG" />
+        <appender-ref ref="FILE" />
+    </root>
+    <logger name="com.example">
+        <level value="DEBUG" />
+    </logger>
+</configuration>
+]]>
+</programlisting>
+		<para>
+			<emphasis role="bold">Reminder</emphasis> replace everything that says "myApp" with your application name.
+		</para>
+	</section>
+	<section>
+		<title>Imports</title>
+		<para>When using logback and slf4j, your imports should consist only of the following for a non webapp class:</para>
+		<programlisting language="java">
+<![CDATA[
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+]]>
+</programlisting>
+		<para>It is suggested that you use Red5LoggerFactory in-place of LoggerFactory to ensure that your application gets the correct logger.</para>
+		<para>For loggers inside your webapp imports should be:</para>
+		<programlisting language="java">
+<![CDATA[
+
+import org.slf4j.Logger;
+import org.red5.logging.Red5LoggerFactory;
+]]>
+</programlisting>
+	</section>
+	<section xml:id="LoggingSetupLoggerInstantiation">
+		<title>Logger Instantiation</title>
+		<para>For non webapp classes:</para>
+		<para>To log to a "root" logger, change all your logger instantiation statements to:</para>
+		<programlisting language="java">
+<![CDATA[
+
+private static Logger log = Red5LoggerFactory.getLogger(MyClassName.class);
+]]>
+</programlisting>
+		<para>
+			<emphasis role="bold">Reminder</emphasis> replace "MyClassName" with the name of the class itself.
+		</para>
+		<para>To log to a "context" logger, change all your logger instantiation statements to:</para>
+		<programlisting language="java">
+<![CDATA[
+
+private static Logger log = Red5LoggerFactory.getLogger(MyClassName.class, "myApp");
+]]>
+</programlisting>
+		<para>
+			<emphasis role="bold">Reminder</emphasis> replace "myApp" with the name of the context; "myApp" would become "oflaDemo" for the oflaDemo application.
+		</para>
+		<para>Your old instantiations probably resemble this:</para>
+		<programlisting language="java">
+<![CDATA[
+
+private static Logger log = Logger.getLogger(MyClassName.class.getName());
+]]>
+</programlisting>
+		<para>Your applications logging configuration file must contain the name of your application context in its file name; For instance the "oflaDemo" uses the configuration logback-oflaDemo.xml. </para>
+		<para>Lastly, as an optimation change your log statements to:</para>
+		<programlisting language="java">
+<![CDATA[
+
+log.debug("Here is a log message for an object {}", myobject);
+]]>
+</programlisting>
+		<para>You no longer need to concatenate strings when logging, if you need more than one variable do the following:</para>
+		<programlisting language="java">
+<![CDATA[
+
+log.debug("Here is a log message with a couple vars {} or {} or {}", new Object[] {object1, myobject, object3});
+]]>
+</programlisting>
+		<para>= Further Information =</para>
+		<para>
+			<link xl:href="http://jazoon.com/en/conference/presentationdetails.html?type=sid&amp;detail=6080">Ceki Gülcü  presentation for Jazoon09</link>
+		</para>
+		<para>
+			<link xl:href="http://beta.parleys.com/share/parleysshare2.swf?pageId=357">SLF4J Presentation (video)</link>
+		</para>
+	</section>
+</chapter>

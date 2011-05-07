@@ -1,0 +1,392 @@
+<?xml version='1.0' ?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="demo-applications">
+	<title>Red5 Demo Applications</title>
+	<para>The Red5 demo applications are available for downloaded on demand using the installer application located at 
+		<link xl:href="http://localhost:5080/installer">http://localhost:5080/installer</link>.
+	</para>
+	<section>
+		<title>Getting Red5 Demo Applications Server-Side and Client-Side Source</title>
+		<orderedlist>
+			<listitem>
+				<para>With your favourite SVN client check out the source code from svn at this address 
+					<link xl:href="http://red5.googlecode.com/svn/java/example/trunk/">http://red5.googlecode.com/svn/java/example/trunk/</link> or 
+					<link xl:href="https://red5.googlecode.com/svn/java/example/trunk/">https://red5.googlecode.com/svn/java/example/trunk/</link> if you have a google code login.
+				</para>
+			</listitem>
+		</orderedlist>
+		<orderedlist>
+			<listitem>
+				<para>With your favourite SVN client check out the source code from svn at this address 
+					<link xl:href="http://red5.googlecode.com/svn/flash/trunk/">http://red5.googlecode.com/svn/flash/trunk/</link> or 
+					<link xl:href="https://red5.googlecode.com/svn/flash/trunk/">https://red5.googlecode.com/svn/flash/trunk/</link> if you have a google code login.
+				</para>
+			</listitem>
+		</orderedlist>
+		<section>
+			<title>List Of Available Demo Applications (Server Side)</title>
+			<itemizedlist>
+				<listitem>
+					<para>SOSample - A simple shared ball demo that makes use of Shared Objects.</para>
+				</listitem>
+				<listitem>
+					<para>admin - The Red5 administration panel.</para>
+				</listitem>
+				<listitem>
+					<para>echo - A test application that runs RTMP/AMF datatype tests.</para>
+				</listitem>
+				<listitem>
+					<para>oflaDemo - Simple video player as shown on the Online Open Source Flash conference.</para>
+				</listitem>
+				<listitem>
+					<para>bwcheck - Demo application that detects the client bandwidth.</para>
+				</listitem>
+				<listitem>
+					<para>fitcDemo - Video conference with chat.</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>List Of Available Demo Applications (Client Side)</title>
+			<itemizedlist>
+				<listitem>
+					<para>admin - The admin panel client application</para>
+				</listitem>
+				<listitem>
+					<para>bwcheck - Demo to interface with the bandwidth check application, tests both download and upload rates.</para>
+				</listitem>
+				<listitem>
+					<para>echo - Simple echo test AMF client</para>
+				</listitem>
+				<listitem>
+					<para>loadtest - Simple loading testing tool, requesting a file multiple times.</para>
+				</listitem>
+				<listitem>
+					<para>port-tester - Open port tester application.</para>
+				</listitem>
+				<listitem>
+					<para>publisher - Simple broadcaster application</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+	<section>
+		<title>Environment Build Setup</title>
+		<para>To build the demo applications and add WAR snapshots to the subversion repository, the ant environment requires a SvnAnt task library added to the ant common library directory:</para>
+		<orderedlist>
+			<listitem>
+				<para>Go here: 
+					<link xl:href="http://subclipse.tigris.org/svnant.html">http://subclipse.tigris.org/svnant.html</link>
+				</para>
+			</listitem>
+			<listitem>
+				<para>Download the latest SvnAnt</para>
+			</listitem>
+		</orderedlist>
+		<para> ex: 
+			<link xl:href="http://subclipse.tigris.org/files/documents/906/43359/svnant-1.2.0-RC1.zip">http://subclipse.tigris.org/files/documents/906/43359/svnant-1.2.0-RC1.zip</link>
+		</para>
+		<orderedlist>
+			<listitem>
+				<para>Unzip the archive and place the jar files in your Ant lib directory</para>
+			</listitem>
+		</orderedlist>
+		<screen>
+C:\dev\ant\lib
+</screen>
+		<para> 
+			4. Using your svn client or subclipse svn client in eclipse checkout or update the snapshots repository 
+			<link xl:href="https://red5.googlecode.com/svn/snapshots">https://red5.googlecode.com/svn/snapshots</link>. It will keep the registry.xml file up to date for modifying later.
+		</para>
+		<orderedlist>
+			<listitem>
+				<para>Add these variables to a build.properties file into user home directory </para>
+			</listitem>
+		</orderedlist>
+		<literallayout> 
+			 svn.url=http://red5.googlecode.com/svn/snapshots/
+			 svn.login=youruser
+			 svn.password=the google code password
+			 snapshot.path=/www/red5_snapshots/
+			 Where snapshot.path is the path to the checked out snapshots directory. 
+		</literallayout>
+	</section>
+	<section>
+		<title>Building The Demo Application</title>
+		<para>To build the application and upload the created WAR file to the snapshots repository run the following ant target.</para>
+		<screen>
+$ ant upload-snapshot
+</screen>
+	</section>
+	<section>
+		<title>Updating The Applications Registry</title>
+		<para>Once the updated WAR has been uploaded to the snapshots repository, the registry.xml file requires to be updated so the demo applications installer will collect the update. </para>
+		<orderedlist>
+			<listitem>
+				<para>Locate in the console output after uploading snapshot something like Destination: /www/red5_snapshots/admin-
+					<link xl:href="nullchangeset/3197">r3197</link>-java6.war the file of the new war will be admin-
+					<link xl:href="nullchangeset/3197">r3197</link>-java6.war.
+				</para>
+			</listitem>
+			<listitem>
+				<para>Edit the registry.xml in the snapshots checkout update the webapp entry with the new filename and commit the change</para>
+			</listitem>
+		</orderedlist>
+		<para>ie</para>
+		<programlisting language="xml">
+<![CDATA[
+
+<application name="admin">
+			<author>Martin M, Dan Rossi</author>
+			<desc>Administration console</desc>
+			<filename>admin-r3197-java6.war</filename>
+</application>
+]]>
+</programlisting>
+		<note>
+			<para> 
+				Subclipse version for committing changes also made by svnant in the snapshots repository, needs to be version 1.4 which is bound to subversion version 1.5 using this update site http://subclipse.tigris.org/update_1.4.x. 
+				Other svn clients also need to be bound to subversion 1.5 or you will get client too old errors.
+			</para>
+		</note>
+	</section>
+	<section>
+		<title>Demo Applications Documentation</title>
+		<para>Following is documentation for the demo applications:</para>
+		<section>
+			<title>Bandwidth Check Application</title>
+			<para> This section explains the bandwidth check application and how to use it. The bandwidth check application handles two service method calls to trigger a download or upload rate check and return information to the flash client to determine what video bitrate to use. </para>
+			<section>
+				<title>Source Code</title>
+				<itemizedlist>
+					<listitem>
+						<para>Server Side - 
+							<link xl:href="http://code.google.com/p/red5/source/browse/#svn/java/example/trunk/bwcheck">http://code.google.com/p/red5/source/browse/#svn/java/example/trunk/bwcheck</link>
+						</para>
+					</listitem>
+					<listitem>
+						<para>Client Side - 
+							<link xl:href="http://code.google.com/p/red5/source/browse/#svn/flash/trunk/bwcheck">http://code.google.com/p/red5/source/browse/#svn/flash/trunk/bwcheck</link>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+			<section>
+				<title>Bandwidth Check Service Methods</title>
+				<para>The service method is enabled in the bean with a name bwCheckService.service.</para>
+				<programlisting language="xml">
+	<![CDATA[
+	
+	<bean id="bwCheckService.service" class="org.red5.demos.bwcheck.BandwidthDetection" />
+	]]>
+	</programlisting>
+				<para>Inside the BandwidthDetection class there are two service methods:</para>
+				<itemizedlist>
+					<listitem>
+						<para>Trigger a server to client rate check</para>
+					</listitem>
+				</itemizedlist>
+				<programlisting language="java">
+	<![CDATA[
+	
+	 public void onServerClientBWCheck(Object[] params) {
+			IConnection conn = Red5.getConnectionLocal();
+			ServerClientDetection serverClient = new ServerClientDetection();
+			serverClient.checkBandwidth(conn);
+	 }
+	]]>
+	</programlisting>
+				<itemizedlist>
+					<listitem>
+						<para>Trigger a client to server rate check</para>
+					</listitem>
+				</itemizedlist>
+				<programlisting language="java">
+	<![CDATA[
+	
+	 public Map<String, Object> onClientBWCheck(Object[] params) {
+			ClientServerDetection clientServer = new ClientServerDetection();
+			return clientServer.onClientBWCheck(params);
+	 }
+	]]>
+	</programlisting>
+			</section>
+			<section>
+				<title>ServerClientDetection</title>
+				<para>The ServerClientDetection class detects server to client bandwidth. 3 set of payload data arrays are intialized, the first with 1200 keys, and the next two with 12000 keys ie</para>
+				<programlisting language="java">
+	<![CDATA[
+	
+	for (int i = 0; i < 12000; i++) {
+	  payload_1[i] = Math.random();
+	}
+	
+	  p_client.setAttribute("payload_1", payload_1);
+	]]>
+	</programlisting>
+				<para>The start microtime is recorded, along with an initial number of bytes sent to the client. </para>
+				<para>To initiate the handshake with the client method 
+					<emphasis role="bold">onBWCheck</emphasis> is called with parameters
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>count - the number of times a result has been received from the client</para>
+					</listitem>
+					<listitem>
+						<para>sent - the number of times the client method onBWCheck has been called</para>
+					</listitem>
+					<listitem>
+						<para>timePassed - The interval time in milliseconds since the beginning of the bandwidth checking has occured.</para>
+					</listitem>
+					<listitem>
+						<para>latency - </para>
+					</listitem>
+					<listitem>
+						<para>cumLatency - the value of the increased passes from server to client. </para>
+					</listitem>
+				</itemizedlist>
+				<programlisting language="java">
+	<![CDATA[
+	
+	private void callBWCheck(Object payload)
+		{
+			IConnection conn = Red5.getConnectionLocal();
+			
+	
+			Map<String, Object> statsValues = new HashMap<String, Object>();
+			statsValues.put("count", this.count);
+			statsValues.put("sent", this.sent);
+			statsValues.put("timePassed", this.timePassed);
+			statsValues.put("latency", this.latency);
+			statsValues.put("cumLatency", this.cumLatency);
+			statsValues.put("payload", payload);
+			
+			if (conn instanceof IServiceCapableConnection) {
+				((IServiceCapableConnection) conn).invoke("onBWCheck", new Object[]{statsValues}, this);
+			}
+		}
+	]]>
+	</programlisting>
+				<para>An initial payload is sent with a size of 1200 keys, of the second pass, if the pass count is less than 3 and the time interval passed is less than 1 second progressively increase the payload packet sent with a size of 12000 keys. </para>
+				<para>On the next pass if its between 3 and less than 6 times and less than 1 second, send the 3rd payload packet. </para>
+				<para>On the next pass if its greater than 6 times and less than 1 second, send the 4th payload packet.</para>
+				<para>Once the times passed reaches the amount of times sent, send the client the calculated rate, calculated by the following</para>
+				<programlisting language="java">
+	<![CDATA[
+	
+	this.deltaDown = (endStats.getWrittenBytes() - beginningValues.get("b_down")) * 8 / 1000; // bytes to kbits
+	            this.deltaTime = ((now - beginningValues.get("time")) - (latency * cumLatency)) / 1000; // total dl time - latency for each packet sent in secs
+	            
+	            if (Math.round(deltaTime) <= 0) {
+					this.deltaTime = (now - beginningValues.get("time") + latency) / 1000;
+				}
+				this.kbitDown = Math.round(deltaDown / deltaTime); // kbits / sec
+				
+	            if (kbitDown < 100) this.kbitDown = 100;
+	            
+	            log.info("onBWDone: kbitDown: {} deltaDown: {} deltaTime: {} latency: {} ", new Object[]{kbitDown, deltaDown, deltaTime, this.latency});
+	            
+	            this.callBWDone();                                 
+	]]>
+	</programlisting>
+				<para>This will call a client method 
+					<emphasis role="bold">onBWDone</emphasis>
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>kbitDown - the kbits down value</para>
+					</listitem>
+					<listitem>
+						<para>deltaDown - </para>
+					</listitem>
+					<listitem>
+						<para>deltaTime - </para>
+					</listitem>
+					<listitem>
+						<para>latency - The latency delay calculated between server and client</para>
+					</listitem>
+				</itemizedlist>
+				<programlisting language="java">
+	<![CDATA[
+	
+	private void callBWDone()
+		{
+			IConnection conn = Red5.getConnectionLocal();
+			
+			Map<String, Object> statsValues = new HashMap<String, Object>();
+			statsValues.put("kbitDown", this.kbitDown);
+			statsValues.put("deltaDown", this.deltaDown);
+			statsValues.put("deltaTime", this.deltaTime);
+			statsValues.put("latency", this.latency);
+			
+			if (conn instanceof IServiceCapableConnection) {
+				((IServiceCapableConnection) conn).invoke("onBWDone", new Object[]{statsValues});
+			}
+		}
+	]]>
+	</programlisting>
+				<section>
+					<title>Client Side Download Detection</title>
+					<para>Client side callback methods are setup to enable the detection.</para>
+					<literallayout>
+	public function onBWCheck(obj:Object):void
+			{
+					dispatchStatus(obj);
+			}
+				
+			public function onBWDone(obj:Object):void 
+			{ 
+				dispatchComplete(obj);
+			} 
+	
+	</literallayout>
+					<para>And then the information is obtainable on the Object argument</para>
+					<literallayout>
+	public function onServerClientComplete(event:BandwidthDetectEvent):void
+			{
+				txtLog.data += "\n\n kbit Down: " + event.info.kbitDown + " Delta Down: " + event.info.deltaDown + " Delta Time: " + event.info.deltaTime + " Latency: " + event.info.latency;
+				txtLog.data += "\n\n Server Client Bandwidth Detect Complete";
+				txtLog.data += "\n\n Detecting Client Server Bandwidth\n\n";
+				ClientServer();
+			}
+	</literallayout>
+				</section>
+			</section>
+			<section>
+				<title>ClientServerDetection</title>
+				<para>The ClientServerDetection class helps detect client to server bandwidth. The server side method 
+					<emphasis role="bold">onClientBWCheck</emphasis> is called with some information to help the client to determine the bandwidth.
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>cOutBytes - The bytes read from the client</para>
+					</listitem>
+					<listitem>
+						<para>cInBytes - The bytes sent to the client</para>
+					</listitem>
+					<listitem>
+						<para>time - </para>
+					</listitem>
+				</itemizedlist>
+				<programlisting language="java">
+	<![CDATA[
+	
+	public Map<String, Object> onClientBWCheck(Object[] params) {
+			final IStreamCapableConnection stats = this.getStats();
+	
+			Map<String, Object> statsValues = new HashMap<String, Object>();
+			Integer time = (Integer) (params.length > 0 ? params[0] : 0);
+			statsValues.put("cOutBytes", stats.getReadBytes());
+			statsValues.put("cInBytes", stats.getWrittenBytes());
+			statsValues.put("time", time);
+			
+			log.info("cOutBytes: {} cInBytes: {} time: {}", new Object[]{stats.getReadBytes(), stats.getWrittenBytes(), time});
+	
+			return statsValues;
+	
+		}
+	]]>
+	</programlisting>
+			</section>
+		</section>
+	</section>
+</chapter>
