@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info xml:id="red5-core-technologies" xmlns="http://docbook.org/ns/docbook" 
+	xmlns:xl="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+	<title>Red5 - Reference Documentation</title>
+	<subtitle>Red5 Open Source Flash Server</subtitle>
+	<releaseinfo>0.8</releaseinfo>
+	<edition>0.8</edition>
+	<pubsnumber>1</pubsnumber>
+	<productname>Red5 Open Source Flash Server</productname>
+	<pubdate><?dbtimestamp format="Y-m-d" ?></pubdate>
+	<issuenum>1</issuenum>
+	<mediaobject>
+    	<imageobject role="fo">
+    		<imagedata fileref="images/red5_logo_a.png" align="center" />
+    	</imageobject>
+    	<imageobject role="html">
+    		<imagedata fileref="images/red5_logo_a.png" depth="3cm" />
+     	</imageobject>
+   	</mediaobject>
+	<copyright>
+		<year><?dbtimestamp format="Y"?></year>
+		<holder>
+			<link xl:href="http://osflash.org/red5">Red5 Open Source Flash Server</link>
+		</holder>
+	</copyright>
+	<xi:include href="legal_notice.xml" />
+	<xi:include href="author_group.xml" />    
+</info>

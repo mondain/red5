@@ -31,45 +31,7 @@
 			</java>
 		</sequential>
 	</macrodef>
-	<macrodef name="wiki2docbook">
-		<attribute name="host" default=""/>
-		<attribute name="username" default=""/>
-		<attribute name="password" default=""/>
-		<attribute name="dir" default="${doc.ref.dir}"/>
-		<attribute name="parent-page" default=""/>
-		<attribute name="page" default=""/>
-		<attribute name="type" default="chapter"/>
-		<attribute name="basePath" default="Documentation/UsersReferenceManual"/>
-
-		<sequential>
-
-			<!--
-			<condition property="wiki.page" value="" else="-s @{page}">
-				<equals arg1="@{page}" arg2=""/>
-			</condition>
-
-			<condition property="wiki.parent-page" value="" else="-P @{parent-page}">
-				<equals arg1="@{parent-page}" arg2=""/>
-			</condition>
-
-			<echo>${wiki.parent-page}</echo>
-			<echo>@{page}</echo>
-			-->
-
-			<java classname="org.red5.trac.TracWiki2DocbookClient" fork="true" dir="@{dir}" classpathref="doc.lib.classpath">
-				<arg value="-h @{host}"/>
-				<arg value="-u @{username}"/>
-				<arg value="-p @{password}"/>
-				<arg value="-d @{dir}"/>
-				<arg value="-t @{type}"/>
-				<arg value="-b @{basePath}"/>
-				<arg value="@{page}"/>
-				<jvmarg value="-Xmx512m"/>
-			</java>
-
-
-		</sequential>
-	</macrodef>
+	
 	<!-- FOP Task because default cannot send memory args -->
 	<macrodef name="fop-pdf">
 		<attribute name="basedir" default="."/>
@@ -124,42 +86,11 @@
 
         </delete>
 	</target>
-	<target name="doc-wiki2docbook" description="Compile reference documentation in PDF format" unless="doc.wiki2docbook">
-			<!-- Build fo file -->
+	
+	
+	
 
-				<wiki2docbook
-					host="${trac.url}"
-					username="${trac.username}"
-					password="${trac.password}"
-					page="-P ${trac.page}"
-					basePath="Documentation/UsersReferenceManual"
-					dir="${doc.ref.dir}/src/"
-				/>
-
-				<wiki2docbook
-							host="${trac.url}"
-							username="${trac.username}"
-							password="${trac.password}"
-							page="-s Changelog"
-							dir="${doc.ref.dir}/src/"
-							type="appendix"
-						/>
-
-				<wiki2docbook
-							host="${trac.url}"
-							username="${trac.username}"
-							password="${trac.password}"
-							page="-P Codecs"
-							basePath="Codecs"
-							dir="${doc.ref.dir}/src/"
-							type="appendix"
-						/>
-
-		<property name="doc.wiki2docbook" value="true"/>
-
-	</target>
-
-    <target name="doc-all" depends="doc-prepare, doc-wiki2docbook" description="Generate all reference documentation">
+    <target name="doc-all" depends="doc-prepare" description="Generate all reference documentation">
 		<sequential>
 			<antcall target="doc-clean" inheritAll="true" inheritRefs="true"/>
 			<antcall target="doc-pdf" inheritAll="true" inheritRefs="true"/>
@@ -181,7 +112,7 @@
 
 		<!-- Build fo file -->
 		<mkdir dir="${doc.ref.dir}/pdf"/>
-		<dbxslt basedir="${doc.ref.dir}/src" in="${doc.ref.dir}/src/index.xml"
+		<dbxslt basedir="${doc.ref.dir}/src" in="${doc.ref.dir}/src/${locale}/book.xml"
 			 out="${doc.ref.dir}/src/docbook_fop.tmp" style="${doc.ref.dir}/styles/fopdf.xsl"/>
 		<!-- Build pdf -->
 		<fop-pdf basedir="${doc.ref.dir}/src" fofile="${doc.ref.dir}/src/docbook_fop.tmp"
@@ -205,7 +136,7 @@
 		<mkdir dir="${doc.ref.dir}/html"/>
 		<mkdir dir="${doc.ref.dir}/html/images"/>
 		<copy todir="${doc.ref.dir}/html/images">
-			<fileset dir="${doc.ref.dir}/src/images">
+			<fileset dir="${doc.ref.dir}/src/${locale}/images">
 				<include name="*.gif"/>
 				<include name="*.svg"/>
 				<include name="*.jpg"/>
@@ -218,7 +149,7 @@
 				<include name="*.js"/>
 			</fileset>
 		</copy>
-		<dbxslt basedir="${doc.ref.dir}/html/" in="${doc.ref.dir}/src/index.xml"
+		<dbxslt basedir="${doc.ref.dir}/html/" in="${doc.ref.dir}/src/${locale}/book.xml"
 			 style="${doc.ref.dir}/styles/html_chunk.xsl"/>
 	</target>
 	<!-- HTML Single Documentation -->
@@ -226,7 +157,7 @@
 		<mkdir dir="${doc.ref.dir}/html"/>
 		<mkdir dir="${doc.ref.dir}/html_single/images"/>
 		<copy todir="${doc.ref.dir}/html_single/images">
-			<fileset dir="${doc.ref.dir}/src/images">
+			<fileset dir="${doc.ref.dir}/src/${locale}/images">
 				<include name="*.gif"/>
 				<include name="*.svg"/>
 				<include name="*.jpg"/>
@@ -235,7 +166,7 @@
 		</copy>
 		<copy todir="${doc.ref.dir}/html_single/" file="${doc.ref.dir}/styles/html.css"
 			 failonerror="false"/>
-		<dbxslt basedir="${doc.ref.dir}/html_single/" in="${doc.ref.dir}/src/index.xml"
+		<dbxslt basedir="${doc.ref.dir}/html_single/" in="${doc.ref.dir}/src/${locale}/index.xml"
 			 out="${doc.ref.dir}/html_single/index.html" style="${doc.ref.dir}/styles/html.xsl"/>
 	</target>
 

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<part xml:id="getting-started" xmlns="http://docbook.org/ns/docbook"
+    xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+    <title>Getting Started</title>
+    <partintro xml:id="getting-started-intro">
+        <para>
+            Red5 intro here
+        </para>
+        <itemizedlist>
+            <listitem>
+                <para><xref linkend="frequently-asked-questions"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="configuration-files"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="migration-guide"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="libraries"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="building"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="releasing"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="system-requirements"/></para>
+            </listitem>
+        </itemizedlist>
+    </partintro>
+
+    <xi:include href="getting-started/frequently_asked_questions.xml" />
+
+    <xi:include href="getting-started/configuration_files.xml" />
+
+    <xi:include href="getting-started/migration_guide.xml" />
+
+    <xi:include href="getting-started/libraries.xml" />
+
+    <xi:include href="getting-started/building.xml" />
+
+    <xi:include href="getting-started/releasing.xml" />
+
+    <xi:include href="getting-started/system_requirements.xml" />
+
+</part>

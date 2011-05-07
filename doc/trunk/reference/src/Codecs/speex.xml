@@ -1,0 +1,109 @@
+<?xml version='1.0' ?>
+<appendix xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="speex">
+	<title>Speex Codec</title>
+	<para>
+		<link xl:href="http://www.speex.org/">Speex</link> is a new voice codec supported in Flash Player 10 and above. With the new release of flash player 10 this document explains a little about the new codec with this release. 
+	</para>
+	<section>
+		<title>Setting Up Flex SDk / Flex Builder</title>
+		<para>Flex SDK / Flex Builder needs to be setup to target flash player 10 playerglobal.swc which has the new features enabled.</para>
+		<para>Taken from the Adobe Open Source area 
+			<link xl:href="http://opensource.adobe.com/wiki/display/flexsdk/Targeting+Flash+Player+10+Beta">http://opensource.adobe.com/wiki/display/flexsdk/Targeting+Flash+Player+10+Beta</link>
+		</para>
+		<section>
+			<title>Get Flex 3 SDK</title>
+			<itemizedlist>
+				<listitem>
+					<para>Download Flex SDK 3.0.3 or above. In Flex 3 extract into the sdks directory. </para>
+				</listitem>
+				<listitem>
+					<para>Make sure that you have a Flash 10 playerglobal.swc at FLEX_SDK/frameworks/libs/player/10/playerglobal.swc.</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Config Flex Config To Target Flash Player 10</title>
+			<itemizedlist>
+				<listitem>
+					<para>Modify FLEX_SDK/frameworks/flex-config.xml. Edit &lt;target-player>, replacing 9.0.115 with 10.0.0:</para>
+				</listitem>
+			</itemizedlist>
+			<blockquote>
+				<para> {{{
+					   &lt;target-player>10.0.0&lt;/target-player>
+					 }}}</para>
+			</blockquote>
+			<itemizedlist>
+				<listitem>
+					<para>In &lt;external-library-path>, edit the path-element for playerglobal.swc, replacing 9 with 10:</para>
+				</listitem>
+			</itemizedlist>
+			<blockquote>
+				<para> {{{
+					   &lt;external-library-path>
+					     &lt;path-element>libs/player/10/playerglobal.swc&lt;/path-element> 
+					   &lt;/external-library-path>
+					 }}}</para>
+			</blockquote>
+			<itemizedlist>
+				<listitem>
+					<para>Do the same with &lt;library-path:</para>
+				</listitem>
+			</itemizedlist>
+			<blockquote>
+				<para> {{{
+					   &lt;library-path>
+					   &lt;path-element>libs&lt;/path-element>
+					   &lt;path-element>libs/player/10&lt;/path-element>
+					   &lt;path-element>locale/{locale}&lt;/path-element>
+					   &lt;/library-path>
+					 }}}</para>
+			</blockquote>
+			<itemizedlist>
+				<listitem>
+					<para>In flex builder, right click the project and choose properties, choose Flex Compiler, choose the "Configure Flex SDKs" link on the right, choose add then choose the location of the newly downloaded SDK and give it a name. </para>
+				</listitem>
+				<listitem>
+					<para>Back in the Flex Compiler config choose "Use a specific SDK and select in the list the Flex SDK configured previously. </para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+	<section>
+		<title>Code Example</title>
+		<para>Setup the Microphone class to use the new Speex Codec.</para>
+		<literallayout>
+_microphone = Microphone.getMicrophone();
+if (_microphone) {
+    //_microphone.setLoopBack(true);
+    _microphone.codec = SoundCodec.SPEEX;
+    _microphone.encodeQuality = 10;
+    _microphone.rate = 44;
+    _microphone.framesPerPacket = 2;
+    _microphone.gain = 50;
+    _microphone.setUseEchoSuppression(true);
+    ns.attachAudio(_microphone);
+} else {
+    throw new Error("Audio Not Connected");
+}
+</literallayout>
+	</section>
+	<section>
+		<title>FFMpeg and Speex</title>
+		<para>According to Art Clarke subversion revision 
+			<link xl:href="http://svn.mplayerhq.hu/ffmpeg/trunk/?pathrev=15028">r15028</link> of the FFMpeg source code has the capabilities of decoding the Speex codec from FLV files. 
+		</para>
+	</section>
+	<section xml:id="SpeexCodecLinks">
+		<title>Links</title>
+		<para>* 
+			<link xl:href="http://www.speex.org/">http://www.speex.org/</link>
+		</para>
+		<para>* 
+			<link xl:href="http://help.adobe.com/en_US/AS3LCR/Flash_10.0/flash/media/SoundCodec.html">http://help.adobe.com/en_US/AS3LCR/Flash_10.0/flash/media/SoundCodec.html</link>
+		</para>
+		<para>* 
+			<link xl:href="http://help.adobe.com/en_US/AS3LCR/Flash_10.0/flash/media/Microphone.html">http://help.adobe.com/en_US/AS3LCR/Flash_10.0/flash/media/Microphone.html</link>
+		</para>
+	</section>
+</appendix>
