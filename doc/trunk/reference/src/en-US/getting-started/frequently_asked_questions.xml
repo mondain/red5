@@ -18,32 +18,32 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="what-is-red5">What is Red5?</command>
+						<command xl:href="#what-is-red5">What is Red5?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="what-does-red5-stand-for">What does Red5 stand for?</command>
+						<command xl:href="#what-does-red5-stand-for">What does Red5 stand for?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="migration-guide-from">Is there a migration guide from FMS to Red5?</command>
+						<command xl:href="#migration-guide-from">Is there a migration guide from FMS to Red5?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="create-new-applications">applications? How do I create new applications?</command>
+						<command xl:href="#create-new-applications">applications? How do I create new applications?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="configuration-files">What are configuration files?</command>
+						<command xl:href="#configurationfiles">What are configuration files?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="mailing-list">Is there a mailing list?</command>
+						<command xl:href="#mailing-list">Is there a mailing list?</command>
 					</para>
 				</listitem>
 				<listitem>
@@ -51,17 +51,17 @@
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="what-ports">What Ports does Red5 use?</command>
+						<command xl:href="#what-ports">What Ports does Red5 use?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="helping-the-project">How can I help? I'm interested in helping the project. How can I help?</command>
+						<command xl:href="#helping-the-project">How can I help? I'm interested in helping the project. How can I help?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="the-team">Who is on the Red5 Team?</command>
+						<command xl:href="#the-team">Who is on the Red5 Team?</command>
 					</para>
 				</listitem>
 				<listitem>
@@ -74,17 +74,17 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="official-documentation">Where is the official documentation?</command>
+						<command xl:href="#official-documentation">Where is the official documentation?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="documentation-in-pdf">Can I get the documentation in PDF format?</command>
+						<command xl:href="#documentation-in-pdf">Can I get the documentation in PDF format?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="latest-javadocs">Where can I find the latest javadocs?</command>
+						<command xl:href="#latest-javadocs">Where can I find the latest javadocs?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -94,7 +94,7 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="disable-policy-checking">How to disable Socket policy checking for 443 (RTMPS and HTTPS)?</command>
+						<command xl:href="#disable-policy-checking">How to disable Socket policy checking for 443 (RTMPS and HTTPS)?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -104,29 +104,29 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="stream-custom-directories">How do I stream to/from custom directories?</command>
+						<command xl:href="#stream-custom-directories">How do I stream to/from custom directories?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="detect-end-recording">How to detect the end of recording?</command>
+						<command xl:href="#detect-end-recording">How to detect the end of recording?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="record-streams-from">How can I record RTMP streams from Red5?</command>
+						<command xl:href="#record-streams-from">How can I record RTMP streams from Red5?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="multicast-streaming">Does Red5 support multicast streaming?</command>
+						<command xl:href="#multicast-streaming">Does Red5 support multicast streaming?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="streamusing-udp">Can Red5 stream using UDP?</command>
+						<command xl:href="#streamusing-udp">Can Red5 stream using UDP?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -136,12 +136,12 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="supported-codecs">What Codecs does Red5 Support?</command>
+						<command xl:href="#supported-codecs">What Codecs does Red5 Support?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="what-is-rtmfp">What is RTMFP and when will it be available in Red5?</command>
+						<command xl:href="#what-is-rtmfp">What is RTMFP and when will it be available in Red5?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -151,14 +151,14 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="supported-databases">What databases are supported?</command>
+						<command xl:href="#supported-databases">What databases are supported?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="hibernate-with-red5">Can I use Hibernate with Red5?</command>
+						<command xl:href="#hibernate-with-red5">Can I use Hibernate with Red5?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -168,17 +168,17 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="scripting-languages">What scripting languages are available?</command>
+						<command xl:href="#scripting-languages">What scripting languages are available?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="actionscript1-support">Does Red5 support Actionscript 1?</command>
+						<command xl:href="#actionscript1-support">Does Red5 support Actionscript 1?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="actionscript3-support">Does Red5 support Actionscript 3?</command>
+						<command xl:href="#actionscript3-support">Does Red5 support Actionscript 3?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -188,17 +188,17 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="remote-sharedobjects">How do you setup a Remote SharedObject?</command>
+						<command xl:href="#remote-sharedobjects">How do you setup a Remote SharedObject?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="persistant-sharedobject">How can I make a Remote SharedObject persistant on the server?</command>
+						<command xl:href="#persistant-sharedobject">How can I make a Remote SharedObject persistant on the server?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="sharedobject-slots">What are remote SharedObject slots?</command>
+						<command xl:href="#sharedobject-slots">What are remote SharedObject slots?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -208,24 +208,24 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="licence-information">Licence Information</command>
+						<command xl:href="#licence-information">Licence Information</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="red5-legal">Is Red5 Legal?</command>
+						<command xl:href="#red5-legal">Is Red5 Legal?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="codec-licenses">Codec Licenses</command> (TODO)
+						<command xl:href="#codec-licenses">Codec Licenses</command> (TODO)
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="third-party-licenses">Third Party Licenses</command> (TODO)
+						<command xl:href="#third-party-licenses">Third Party Licenses</command> (TODO)
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -235,7 +235,7 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="war-documentation">Is there any documentation on the Red5 war version?</command>
+						<command xl:href="#war-documentation">Is there any documentation on the Red5 war version?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -245,64 +245,64 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="irc-channel">Is there an IRC channel?</command>
+						<command xl:href="#irc-channel">Is there an IRC channel?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="forums">Are there forums?</command>
+						<command xl:href="#forums">Are there forums?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="frameworks">Are there any frameworks that I can start with?</command>
+						<command xl:href="#frameworks">Are there any frameworks that I can start with?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="paperworld3d">What is Paperworld3D?</command>
+						<command xl:href="#paperworld3d">What is Paperworld3D?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="jedai">What is Jedai?</command>
+						<command xl:href="#jedai">What is Jedai?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="free-tools">Are there free tools</command> (TODO)
+						<command xl:href="#free-tools">Are there free tools</command> (TODO)
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="development-tools">Are there development tools?</command>
+						<command xl:href="#development-tools">Are there development tools?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="video-tutorials">there video tutorials Are there video tutorials</command> (TODO)
+						<command xl:href="#video-tutorials">there video tutorials Are there video tutorials</command> (TODO)
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="web-examples">Are there any examples on the web?</command>
+						<command xl:href="#web-examples">Are there any examples on the web?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="professional-support">Is there professional support?</command>
+						<command xl:href="#professional-support">Is there professional support?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="hosting-solutions">Are there hosting solutions?</command>
+						<command xl:href="#hosting-solutions">Are there hosting solutions?</command>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<command xl:href="groups">What Red5 groups can I join?</command>
+						<command xl:href="#groups">What Red5 groups can I join?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -312,7 +312,7 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<command xl:href="long-handshake">Why am I receiving "closing due to long handshake?</command>
+						<command xl:href="#long-handshake">Why am I receiving "closing due to long handshake?</command>
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -353,19 +353,19 @@
 			<section xml:id="migration-guide-from">
 				<title>Is there a migration guide from FMS to Red5?</title>	
 				<para>Yes: 
-					<link xl:href="migration-guide">Migration Guide</link>
+					<link linkend="migration-guide">Migration Guide</link>
 				</para>
 			</section>
 			<section xml:id="create-new-applications">
 				<title>How do I create new applications?</title>
 				<para>
-					<link xl:href="creating-new-applications">Creating New Applications</link>
+					<link linkend="new-applications">Creating New Applications</link>
 				</para>	
 			</section>
-			<section xml:id="configuration-files">
+			<section xml:id="configurationfiles">
 				<title>What are configuration files?</title>
 				<para>see: 
-					<link xl:href="configuration-files">Configuration Files In Red5</link>
+					<link linkend="configuration-files">Configuration Files In Red5</link>
 				</para>	
 			</section>
 			<section xml:id="mailing-list">
@@ -427,7 +427,7 @@
 			<section xml:id="stream-custom-directories">
 				<title>How do I stream to/from custom directories?</title>
 				<para>
-					<link xl:href="customize-stream-paths">Customize Stream Paths</link>
+					<link linkend="stream-paths">Customize Stream Paths</link>
 				</para>
 			</section>
 			<section xml:id="detect-end-recording">
@@ -564,7 +564,7 @@
 			<section>
 				<title>Is there any documentation on the Red5 war version?</title>
 				<para>read: 
-					<link xl:href="deploying-to-tomcat">Deploying To Tomcat</link>
+					<link linkend="tomcat-deployment">Deploying To Tomcat</link>
 				</para>
 			</section>
 		</section>
@@ -739,7 +739,7 @@
 				<itemizedlist>
 					<listitem>
 						<para>Infrared5 (
-							<link xl:href="www.infrared5.com">www.infrared5.com</link>)
+							<link xl:href="http://www.infrared5.com">www.infrared5.com</link>)
 						</para>
 					</listitem>
 					<listitem>
@@ -789,7 +789,7 @@
 			<section xml:id="development-tools">
 				<title>Are there development tools?</title>
 				<para>See 
-					<link xl:href="http://www.red5.org/projects/red5plugin">http://www.red5.org/projects/red5plugin</link>
+					<link xl:href="http://trac.red5.org/wiki/Red5Plugin">http://trac.red5.org/wiki/Red5Plugin</link>
 				</para>
 			</section>
 			<section xml:id="paperworld3d">

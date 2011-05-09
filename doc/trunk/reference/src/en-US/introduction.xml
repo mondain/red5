@@ -19,9 +19,7 @@
 			<para>Remoting (AMF)</para>
 		</listitem>
 	</itemizedlist>
-	<para>For the current release information go 
-		<link xl:href="Releases">Releases</link>. To find about our timescales and planned features checkout the roadmap and read our FAQ. If you want to know more about RED5, keep browsing this wiki or have a look at 
-		<link xl:href="Documentation/UsersReferenceManual">our user manual</link>.
+	<para>For the current release information goto the  <link xl:href="http://www.red5.org/red5-server/">Releases</link> page at red5.org.
 	</para>
 	<para>Lastly the documentation is under development at the moment.  If you have unanswered questions after using it, please check out our 
 		<link xl:href="http://groups.google.com/group/red5interest">mailing list</link>
