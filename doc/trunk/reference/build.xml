@@ -121,8 +121,7 @@
 	</target>
 	<!-- HTML Site Documentation -->
 	<target name="doc-html" description="Compile reference documentation in HTML format">
-		<delete dir="${doc.ref.dir}/html"/>
-		<delete dir="${doc.ref.dir}/html_single"/>
+		
 
 		<path id="doc.lib.classpath">
             <fileset dir="${doc.ref.lib}/docbook">
