@@ -14,28 +14,28 @@
         <dependency org="spring" name="spring-core" rev="3.0.3" />
         <dependency org="spring" name="spring-web" rev="3.0.3" />
         <!-- Tomcat --> 
-        <dependency org="tomcat" name="jasper" rev="6.0.26" />
+        <dependency org="tomcat" name="jasper" rev="6.0.32" />
         <!-- jasper-jdt is required for compiling jsp's -->
-        <dependency org="tomcat" name="jasper-jdt" rev="6.0.26" /> 
-        <dependency org="tomcat" name="jasper-el" rev="6.0.26" />
-        <dependency org="tomcat" name="catalina" rev="6.0.26" />
-        <dependency org="tomcat" name="tomcat-coyote" rev="6.0.26" />
+        <dependency org="tomcat" name="jasper-jdt" rev="6.0.29" /> 
+        <dependency org="tomcat" name="jasper-el" rev="6.0.32" />
+        <dependency org="tomcat" name="catalina" rev="6.0.32" />
+        <dependency org="tomcat" name="tomcat-coyote" rev="6.0.32" />
         <dependency org="commons" name="commons-modeler" rev="2.0.1" />
         <!-- Logging --> 
         <dependency name="slf4j-api" rev="1.6.1" />
         <dependency name="jcl-over-slf4j" rev="1.6.1" />
         <dependency name="log4j-over-slf4j" rev="1.6.1" />
         <dependency name="jul-to-slf4j" rev="1.6.1" />
-        <dependency name="logback-core" rev="0.9.24" />
-        <dependency name="logback-classic" rev="0.9.24" />
+        <dependency name="logback-core" rev="0.9.28" />
+        <dependency name="logback-classic" rev="0.9.28" />
         <dependency name="tomcat-juli-slf4j" rev="1.5.0" />
         <!-- XML -->
         <dependency name="xercesImpl" rev="2.9.1" />
         <dependency name="xmlrpc" rev="2.0.1" />
         <!-- Mina --> 
-        <dependency org="mina" name="mina-core" rev="2.0.0-RC2-SNAPSHOT" />
-        <dependency org="mina" name="mina-integration-beans" rev="2.0.0-RC2-SNAPSHOT" />
-        <dependency org="mina" name="mina-integration-jmx" rev="2.0.0-RC2-SNAPSHOT" />   
+        <dependency org="mina" name="mina-core" rev="2.0.3" />
+        <dependency org="mina" name="mina-integration-beans" rev="2.0.3" />
+        <dependency org="mina" name="mina-integration-jmx" rev="2.0.3" />   
         <dependency org="spring" name="spring-context-support" rev="3.0.3" />
     </dependencies>
 </ivy-module>
