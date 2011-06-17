@@ -72,6 +72,9 @@
           todir = "${app-dir}/Contents/Resources/Java"/>         
     <copy file = "${red5.dist.dir}/red5.jar"
           todir = "${app-dir}/Contents/Resources/Java"/>                   
+    <copy todir = "${app-dir}/Contents/Resources/Java/plugins/">
+      <fileset dir = "${red5.dist.dir}/plugins"/>
+    </copy> 
     <copy todir = "${app-dir}/Contents/Resources/Java/conf/">
       <fileset dir = "${red5.dist.dir}/conf"/>
     </copy>   
