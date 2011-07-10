@@ -611,27 +611,21 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 					}
 				}
 			}
-
 			// if everything is ok at this point then call the rtmpt and rtmps
 			// beans so they will init
-			if (applicationContext.containsBean("red5.core")) {
-				ApplicationContext core = (ApplicationContext) applicationContext.getBean("red5.core");
-				if (core.containsBean("rtmpt.server")) {
-					log.debug("Initializing RTMPT");
-					core.getBean("rtmpt.server");
-					log.debug("Finished initializing RTMPT");
-				} else {
-					log.info("Dedicated RTMPT server configuration was not specified");
-				}
-				if (core.containsBean("rtmps.server")) {
-					log.debug("Initializing RTMPS");
-					core.getBean("rtmps.server");
-					log.debug("Finished initializing RTMPS");
-				} else {
-					log.info("Dedicated RTMPS server configuration was not specified");
-				}
+			if (applicationContext.containsBean("rtmpt.server")) {
+				log.debug("Initializing RTMPT");
+				applicationContext.getBean("rtmpt.server");
+				log.debug("Finished initializing RTMPT");
 			} else {
-				log.info("Core context was not found");
+				log.info("Dedicated RTMPT server configuration was not specified");
+			}
+			if (applicationContext.containsBean("rtmps.server")) {
+				log.debug("Initializing RTMPS");
+				applicationContext.getBean("rtmps.server");
+				log.debug("Finished initializing RTMPS");
+			} else {
+				log.debug("Dedicated RTMPS server configuration was not specified");
 			}
 		} catch (Exception e) {
 			if (e instanceof BindException || e.getMessage().indexOf("BindException") != -1) {
