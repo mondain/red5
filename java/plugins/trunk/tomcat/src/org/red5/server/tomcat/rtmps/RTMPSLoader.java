@@ -20,6 +20,7 @@ package org.red5.server.tomcat.rtmps;
  */
  
 import java.io.File;
+import java.net.InetSocketAddress;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -28,6 +29,9 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.loader.WebappLoader;
+import org.apache.coyote.ProtocolHandler;
+import org.apache.coyote.http11.Http11NioProtocol;
+import org.apache.coyote.http11.Http11Protocol;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IServer;
 import org.red5.server.tomcat.rtmpt.RTMPTLoader;
@@ -125,6 +129,21 @@ public class RTMPSLoader extends RTMPTLoader {
 		// set connection properties
 		connector.setSecure(true);
         connector.setScheme("https");
+        
+		// set the bind address
+		if (address == null) {
+			//bind locally
+			address = InetSocketAddress.createUnresolved("127.0.0.1", connector.getPort()).getAddress();
+		}
+		// apply the bind address
+		ProtocolHandler handler = connector.getProtocolHandler();
+		if (handler instanceof Http11Protocol) {
+			((Http11Protocol) handler).setAddress(address);
+		} else if (handler instanceof Http11NioProtocol) {
+			((Http11NioProtocol) handler).setAddress(address);
+		} else {
+			log.warn("Unknown handler type: {}", handler.getClass().getName());
+		}	        
 
 		// set other connection / protocol handler properties
 		for (String key : connectionProperties.keySet()) {
