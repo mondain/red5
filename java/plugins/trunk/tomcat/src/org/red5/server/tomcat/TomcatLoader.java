@@ -3,7 +3,7 @@ package org.red5.server.tomcat;
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
  *
- * Copyright (c) 2006-2009 by respective authors (see below). All rights reserved.
+ * Copyright (c) 2006-2011 by respective authors (see below). All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -40,15 +40,18 @@ import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Loader;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.realm.MemoryRealm;
+import org.apache.catalina.realm.JAASRealm;
+import org.apache.catalina.realm.RealmBase;
 import org.apache.catalina.startup.Embedded;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.Http11NioProtocol;
@@ -61,6 +64,7 @@ import org.red5.server.jmx.JMXAgent;
 import org.red5.server.jmx.JMXFactory;
 import org.red5.server.jmx.mxbeans.ContextLoaderMXBean;
 import org.red5.server.jmx.mxbeans.LoaderMXBean;
+import org.red5.server.security.realm.NoRealm;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -304,7 +308,8 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		log.info("Server root: {}", serverRoot);
 		String confRoot = System.getProperty("red5.config_root");
 		log.info("Config root: {}", confRoot);
-
+		// set catalina's home property
+		System.setProperty("CATALINA_HOME", serverRoot);
 		// create one embedded (server) and use it everywhere
 		embedded = new Embedded();
 		embedded.createLoader(originalClassLoader);
@@ -408,34 +413,34 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		}
 		appDirBase = null;
 		dirs = null;
-
 		// Dump context list
 		if (log.isDebugEnabled()) {
 			for (Container cont : host.findChildren()) {
 				log.debug("Context child name: {}", cont.getName());
 			}
 		}
-
-		// Set a realm
-		if (realm == null) {
+		// set a realm on the "server" if specified
+		if (realm != null) {
+			embedded.setRealm(realm);
+		} else {
+			/*
 			realm = new MemoryRealm();
+			((MemoryRealm) realm).setPathname(confRoot + "/tomcat-users.xml");
+			*/
+			realm = new NoRealm();
+			embedded.setRealm(realm);
 		}
-		embedded.setRealm(realm);
-
 		// use Tomcat jndi or not
 		if (System.getProperty("catalina.useNaming") != null) {
 			embedded.setUseNaming(Boolean.valueOf(System.getProperty("catalina.useNaming")));
 		}
-
 		// add the valves to the host
 		for (Valve valve : valves) {
 			log.debug("Adding host valve: {}", valve);
 			((StandardHost) host).addValve(valve);
 		}
-
 		// baseHost = embedded.createHost(hostName, appRoot);
 		engine.addChild(host);
-
 		// add any additional hosts
 		if (hosts != null && !hosts.isEmpty()) {
 			// grab current contexts from base host
@@ -452,10 +457,8 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 				engine.addChild(h);
 			}
 		}
-
 		// Add new Engine to set of Engine for embedded server
 		embedded.addEngine(engine);
-
 		// set connection properties
 		for (String key : connectionProperties.keySet()) {
 			log.debug("Setting connection property: {} = {}", key, connectionProperties.get(key));
@@ -467,7 +470,6 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 				}
 			}
 		}
-
 		// set the bind address
 		if (address == null) {
 			//bind locally
@@ -482,7 +484,6 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		} else {
 			log.warn("Unknown handler type: {}", handler.getClass().getName());
 		}
-
 		// Start server
 		try {
 			// Add new Connector to set of Connectors for embedded server,
@@ -496,54 +497,48 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 					log.trace("Connector oName: {}", ctr.getObjectName());
 				}
 			}
-
 			log.info("Starting Tomcat servlet engine");
 			embedded.start();
-
+			// create references for later lookup
 			LoaderBase.setApplicationLoader(new TomcatApplicationLoader(embedded, host, applicationContext));
-
-			for (Container cont : host.findChildren()) {
+			for (final Container cont : host.findChildren()) {
 				if (cont instanceof StandardContext) {
-					StandardContext ctx = (StandardContext) cont;
-
+					if (log.isDebugEnabled()) {
+						ContainerBase cb = (ContainerBase) cont;
+						log.debug("Oname - domain: {} container suffix: {}", new Object[] { cb.getDomain(), cb.getContainerSuffix() });
+					}
+					final StandardContext ctx = (StandardContext) cont;
 					final ServletContext servletContext = ctx.getServletContext();
 					log.debug("Context initialized: {}", servletContext.getContextPath());
-
 					//set the hosts id
 					servletContext.setAttribute("red5.host.id", getHostId());
-
-					String prefix = servletContext.getRealPath("/");
+					final String prefix = servletContext.getRealPath("/");
 					log.debug("Path: {}", prefix);
-
 					try {
 						if (ctx.resourcesStart()) {
 							log.debug("Resources started");
 						}
-
 						log.debug("Context - available: {} privileged: {}, start time: {}, reloadable: {}",
 								new Object[] { ctx.getAvailable(), ctx.getPrivileged(), ctx.getStartTime(), ctx.getReloadable() });
-
 						Loader cldr = ctx.getLoader();
 						log.debug("Loader delegate: {} type: {}", cldr.getDelegate(), cldr.getClass().getName());
-						if (cldr instanceof WebappLoader) {
-							log.debug("WebappLoader class path: {}", ((WebappLoader) cldr).getClasspath());
+						if (log.isTraceEnabled()) {
+							if (cldr instanceof WebappLoader) {
+								log.trace("WebappLoader class path: {}", ((WebappLoader) cldr).getClasspath());
+							}
 						}
 						final ClassLoader webClassLoader = cldr.getClassLoader();
 						log.debug("Webapp classloader: {}", webClassLoader);
-
 						// get the (spring) config file path
 						final String contextConfigLocation = servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONFIG_LOCATION_PARAM) == null ? defaultSpringConfigLocation
 								: servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONFIG_LOCATION_PARAM);
 						log.debug("Spring context config location: {}", contextConfigLocation);
-
 						// get the (spring) parent context key
 						final String parentContextKey = servletContext.getInitParameter(org.springframework.web.context.ContextLoader.LOCATOR_FACTORY_KEY_PARAM) == null ? defaultParentContextKey
 								: servletContext.getInitParameter(org.springframework.web.context.ContextLoader.LOCATOR_FACTORY_KEY_PARAM);
 						log.debug("Spring parent context key: {}", parentContextKey);
-
 						//set current threads classloader to the webapp classloader
 						Thread.currentThread().setContextClassLoader(webClassLoader);
-
 						//create a thread to speed-up application loading
 						Thread thread = new Thread("Launcher:" + servletContext.getContextPath()) {
 							public void run() {
@@ -583,11 +578,25 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 								if (log.isDebugEnabled()) {
 									log.debug("Red5 app is active: {} running: {}", appctx.isActive(), appctx.isRunning());
 								}
+								// set a realm for the webapp if one is specified
+								if (appctx.containsBean("realm")) {
+									log.debug("Realm specified in context configuration");
+									Realm contextRealm = (Realm) appctx.getBean("realm");
+									if (contextRealm != null) {
+										log.debug("Realm class: {}", contextRealm.getClass().getName());
+										contextRealm.setContainer(cont);
+										ctx.setRealm(contextRealm);
+										if (contextRealm instanceof JAASRealm) {
+											log.debug("Realm is JAAS type");
+											System.setProperty("java.security.auth.login.config", prefix + "WEB-INF/jaas.config");
+										}
+										log.debug("Realm info: {} path: {}", contextRealm.getInfo(), ((RealmBase) contextRealm).getRealmPath());
+									}
+								}
 							}
 						};
 						thread.setDaemon(true);
 						thread.start();
-
 					} catch (Throwable t) {
 						log.error("Error setting up context: {} due to: {}", servletContext.getContextPath(), t.getMessage());
 						t.printStackTrace();
