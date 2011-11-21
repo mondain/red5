@@ -7,6 +7,8 @@
 	import flash.events.*;
 	import flash.media.*;
 	import flash.net.*;
+	import flash.utils.ByteArray;
+	import flash.utils.Timer;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
