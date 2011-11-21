@@ -15,9 +15,9 @@
 		<mx:Canvas label="Viewer Test" width="100%" height="100%">
 			<mx:HBox x="10" y="10" width="381">
 				<mx:Label text="Filename" fontWeight="bold"/>
-				<mx:TextInput id="playerStream" text="city_of_ember" width="158" cornerRadius="6"/>
+				<mx:TextInput id="playerStream" text="avatar-vp6" width="158"/>
 				<mx:Label text="Viewers" fontWeight="bold"/>
-				<mx:TextInput id="numRequest" text="0" width="38" cornerRadius="6" maxChars="4"/>
+				<mx:TextInput id="numRequest" text="0" width="38" maxChars="4"/>
 			</mx:HBox>
 			<mx:Label x="148" y="90" text="View" fontWeight="bold" color="#000000"/>
 			<mx:Label id="playerDisplay" x="191" y="40"/>
@@ -50,7 +50,7 @@
 			<mx:CheckBox label="AMF3" fontWeight="bold" id="useAMF3" x="10" y="40" color="#000000"/>
 			<mx:HBox x="10" y="10" width="381">
 				<mx:Label text="Request delay" fontWeight="bold"/>
-				<mx:TextInput id="requestDelay" text="1" width="30" cornerRadius="6" toolTip="For a minimal delay input .1"/>
+				<mx:TextInput id="requestDelay" text="1" width="30" toolTip="For a minimal delay input .1"/>
 			</mx:HBox>
 		</mx:Canvas>
 	</mx:Accordion>
@@ -60,6 +60,6 @@
 	<mx:Canvas width="10" height="10" cornerRadius="20" id="indicatorOn" backgroundColor="#00FF00" x="402" y="10" visible="false"/>
 	<mx:Canvas width="10" height="10" cornerRadius="20" id="indicatorOff" backgroundColor="#FF0000" x="402" y="10"/>
 	<mx:Button id="connector" label="Connect" click="doPlayerView()" toolTip="{this.label}" width="99" x="271" y="37"/>
-	<mx:TextInput id="givenPath" text="rtmp://{hostString}/loadtest" width="253" cornerRadius="6" x="10" y="37"/>
+	<mx:TextInput id="givenPath" text="rtmp://{hostString}/loadtest" width="253" x="10" y="37"/>
 	
 </mx:Application>

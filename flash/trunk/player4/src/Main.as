@@ -22,6 +22,7 @@ package {
 	import flash.media.*;
 	import flash.net.*;
 	import flash.utils.ByteArray;
+	import flash.utils.Timer;
 	
 	import mx.containers.Canvas;
 	import mx.controls.Label;
@@ -285,7 +286,7 @@ package {
 			var data : ByteArray = Hex.toArray(Hex.fromString(input));
 			return Base64.encodeByteArray(hmac.compute(kdata, data));
 		}
-
+				
 		public function onStatus(evt : NetStatusEvent) : void {
 			log("NetConnection.onStatus " + evt);
 			//traceObject(evt);
@@ -331,29 +332,27 @@ package {
 					case "NetConnection.Connect.Rejected":
 						desc = evt.info.description;
 						log("Description: " + desc);
-						if (desc) {
-							trace("Desc: " + desc.split('?')[1]);
+						if (desc !== '') {
+							log("Desc: " + desc.split('?')[1]);
 							try {
 								var parameters : Object = {};
 								var params : Array = desc.split('?')[1].split('&');
 								var length : uint = params.length;
-             
 								for (var i : uint = 0,index : int = -1;i < length; i++) {
 									var kvPair : String = params[i];
 									if ((index = kvPair.indexOf("=")) > 0) {
 										var key : String = kvPair.substring(0, index);
 										var value : String = kvPair.substring(index + 1);
-										trace("Key: " + key + " Value: " + value);
+										log("Key: " + key + " Value: " + value);
 										parameters[key] = value;
 									}
-								}
-                            
-								if (parameters["reason"] == 'needauth') {                
+								}                            
+								if (parameters["reason"] == 'needauth') {  
+									log("Sending auth");
 									challenge = parameters["challenge"];
 									sessionId = parameters["sessionid"];
-                                
-									//callLater(sendCredentials);
-									sendCredentials();
+                                	// send the credentials
+									app.callLater(sendCredentials);
 								}
 							} catch(e : Error) {
 								log("Error: " + e.message);
@@ -382,7 +381,8 @@ package {
 			}
 		}
 
-		private function sendCredentials() : void {
+		public function sendCredentials() : void {
+			log("Sending credentials");
 			nc.connect(server + "?authmod=red5&user=" + user + "&sessionid=" + sessionId + "&response=" + computeHMACSHA256(challenge, passwd));
 		}
 

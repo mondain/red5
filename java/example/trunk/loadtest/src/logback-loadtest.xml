@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
+	<contextName>loadtest</contextName>
+	
+	<jmxConfigurator contextName="loadtest" />
+
 	<appender name="LOADTEST" class="ch.qos.logback.core.FileAppender">
 		<File>log/loadtest.log</File>
 		<Append>false</Append>
@@ -13,10 +18,12 @@
 		</layout>
 	</appender>
 	<root>
-		<level value="DEBUG" />
 		<appender-ref ref="LOADTEST" />
 	</root>	
+	<logger name="org.red5">
+		<level value="TRACE" />
+	</logger>		
 	<logger name="org.red5.demos.loadtest">
-		<level value="DEBUG" />
+		<level value="TRACE" />
 	</logger>		
 </configuration>

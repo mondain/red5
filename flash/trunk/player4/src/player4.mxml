@@ -80,6 +80,10 @@
         	backingClass[event.target.id] = event.target.text;
         	//trace("Location: " + backingClass.location);
         }
+		
+		public function clearMessages() : void {
+			messages.data = "";
+		}
         
         public function log(text : String) : void {
             var tmp : String;
@@ -141,6 +145,7 @@
 		<mx:Button x="243" y="524" label="Pause" click="pause()"/>
 		<mx:TextInput x="582" y="524" width="47" id="fps" text="0" textAlign="right"/>
 		<mx:Label x="551" y="528" text="FPS" fontWeight="bold"/>
+		<mx:Button x="478" y="524" label="Clear" click="clearMessages()"/>
 	</mx:Panel>
 	
 </mx:Application>
