@@ -5,7 +5,7 @@
 	
 	<jmxConfigurator contextName="loadtest" />
 
-	<appender name="LOADTEST" class="ch.qos.logback.core.FileAppender">
+	<appender name="loadtest" class="ch.qos.logback.core.FileAppender">
 		<File>log/loadtest.log</File>
 		<Append>false</Append>
 		<Encoding>UTF-8</Encoding>
@@ -18,7 +18,7 @@
 		</layout>
 	</appender>
 	<root>
-		<appender-ref ref="LOADTEST" />
+		<appender-ref ref="loadtest" />
 	</root>	
 	<logger name="org.red5">
 		<level value="TRACE" />
