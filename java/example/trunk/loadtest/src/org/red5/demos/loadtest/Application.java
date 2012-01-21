@@ -1,10 +1,14 @@
 package org.red5.demos.loadtest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.red5.io.amf3.ByteArray;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.ApplicationAdapter;
@@ -16,10 +20,16 @@ import org.red5.server.api.so.ISharedObjectBase;
 import org.red5.server.api.so.ISharedObjectListener;
 import org.red5.server.api.stream.IServerStream;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
-public class Application extends ApplicationAdapter {
+public class Application extends ApplicationAdapter implements ApplicationContextAware {
 
 	protected Logger log = Red5LoggerFactory.getLogger(Application.class, "loadtest");
+
+	private static ApplicationContext applicationContext;
+
+	private Timer timer = new Timer();
 
 	private IScope appScope;
 
@@ -43,6 +53,9 @@ public class Application extends ApplicationAdapter {
 
 		// add a handler
 		so.registerServiceHandler(new LoadTestSharedObjectHandler());
+
+		// start a job to update an SO on interval
+		timer.scheduleAtFixedRate(new SOUpdateJob(), 1000, 15000);
 
 		return true;
 	}
@@ -75,7 +88,7 @@ public class Application extends ApplicationAdapter {
 		ByteArray ba = new ByteArray();
 		for (int i = 0; i < numberOfEntries; i++) {
 			ba.writeByte((byte) rnd.nextInt(128));
-		}		
+		}
 		return ba;
 	}
 
@@ -89,10 +102,10 @@ public class Application extends ApplicationAdapter {
 		log.debug("echoByteArray: {}", ba);
 		for (int i = 0; i < ba.length(); i++) {
 			log.debug("Byte: {}", ba.readByte());
-		}		
+		}
 		return ba;
-	}	
-	
+	}
+
 	/**
 	 * Accepts a vector of objects and echo's it back to the client.
 	 * 
@@ -103,10 +116,10 @@ public class Application extends ApplicationAdapter {
 		log.debug("echoVector: {}", vector);
 		for (Object obj : vector) {
 			log.debug("Element: {}", obj);
-		}		
+		}
 		return vector;
 	}
-	
+
 	public void updateSO() {
 		// get scope
 
@@ -119,6 +132,14 @@ public class Application extends ApplicationAdapter {
 		// so.setAttribute("count", "changed value");
 		// so.setAttribute("ts", System.currentTimeMillis());
 		// so.endUpdate();
+	}
+
+	/**
+	 * @param applicationContext
+	 */
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		Application.applicationContext = applicationContext;
+		log.trace("setApplicationContext {}", Application.applicationContext);
 	}
 
 	class LoadTestSharedObjectListener implements ISharedObjectListener {
@@ -143,6 +164,7 @@ public class Application extends ApplicationAdapter {
 			log.debug("onSharedObjectDisconnect {}", so);
 		}
 
+		@SuppressWarnings("rawtypes")
 		@Override
 		public void onSharedObjectSend(ISharedObjectBase so, String method, List params) {
 			// The handler <method> of the shared object <so> was called
@@ -183,4 +205,36 @@ public class Application extends ApplicationAdapter {
 
 	}
 
+	private final class SOUpdateJob extends TimerTask {
+
+		public void run() {
+			log.debug("Updating SO");
+			try {
+				List<String> list = new ArrayList<String>();
+				// fill with some random strings
+				for (int i = 0; i < 9; i++) {
+					list.add(RandomStringUtils.randomAlphanumeric(8));
+				}
+				log.debug("Random strings: {}", list);
+				// get or create the SO
+				IScope webScope = (IScope) applicationContext.getBean("web.scope");
+				log.debug("SO scope: {}", webScope);
+				ISharedObject strListSO = getSharedObject(webScope, "strList");
+				if (strListSO == null) {
+					log.debug("Creating SO for list data");
+					createSharedObject(webScope, "strList", true);
+					log.debug("Creating list: {}", strListSO);
+					strListSO = getSharedObject(webScope, "strList");
+				}
+				log.debug("String list SO: {}", strListSO);
+				// update the SO
+				strListSO.beginUpdate();
+				strListSO.setAttribute("object", list);
+				strListSO.endUpdate();
+			} catch (Exception e) {
+				log.warn("Exception pushing hub list", e);
+			}
+		}
+
+	}
 }
