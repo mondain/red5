@@ -1,0 +1,362 @@
+<?xml version="1.0" ?>
+<project name="Red5" basedir="." default="dist" xmlns:ivy="antlib:org.apache.ivy.ant">
+	<!-- This build file requires Apache Ant >= 1.7 -->
+	<condition property="ant-at-least-7">
+		<antversion atleast="1.7.0"/>
+	</condition>
+	<!-- project properties -->
+	<property environment="env"/>
+	<property name="java.home" value="${env.JDK_HOME}"/>
+	<property name="src.dir" value="src"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="log.dir" value="log"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="plugins.dir" value="plugins"/>
+	<property name="classes.dir" value="bin"/>
+	<property name="config.dir" value="src/conf"/>
+	<property name="javadoc.dir" value="doc/api"/>
+	<property name="debug.state" value="true"/>
+	<!-- Documentation properties -->
+	<property name="doc.ref.dir" value="doc/reference"/>
+	<property name="doc.ref.lib" value="${doc.ref.dir}/lib"/>
+	<property name="javadoc.style" value="${doc.ref.dir}/styles/javadoc.css"/>
+	<!-- base project properties -->
+	<property file="build.properties"/>
+	<!-- user overides for project properties -->
+	<property file="${user.home}/build.properties"/>
+	<!-- Hudson auto-builds and release properties -->
+	<!-- Hudson will set BUILD_TAG when running -->
+	<condition property="archive.version" value="${red5.version}-build-${env.BUILD_TAG}">
+		<isset property="env.BUILD_TAG"/>
+	</condition>
+	<!-- And if we're not in Hudson, just use the red5.version property -->
+	<condition property="archive.version" value="${red5.version}">
+		<not>
+			<isset property="archive.version"/>
+		</not>
+	</condition>
+	<property name="red5.zip" value="${red5.filename}-${archive.version}.zip"/>
+	<property name="red5.archive" value="${red5.filename}-${archive.version}.tar.gz"/>
+	<tstamp prefix="build">
+		<format property="TODAY" pattern="d-MMMM-yyyy" locale="en"/>
+	</tstamp>
+	<!--
+	    Ivy tasks and lib directory 
+	        http://ant.apache.org/ivy
+	        http://testearly.com/2007/06/24/ivy-in-42-steps
+	-->
+	<taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml" classpath="${lib.dir}/${ivy.version}.jar"/>
+	<!-- Latest ivy 9/2008 seems to want absolute path -->
+	<property name="ivy.lib.dir" value="${basedir}/lib"/>
+	<path id="project.classpath">
+		<fileset dir="${lib.dir}"/>
+	</path>
+	<path id="script.classpath">
+		<fileset dir="${lib.dir}"/>
+		<pathelement location="${classes.dir}"/>
+	</path>
+	<path id="full.classpath">
+		<fileset dir="${lib.dir}"/>
+		<fileset dir="./">
+			<filename name="${red5.filename}.jar"/>
+			<filename name="boot.jar"/>
+		</fileset>
+	</path>
+	<path id="runtime.classpath">
+		<fileset dir="${lib.dir}">
+			<exclude name="Grobo*.jar"/>
+			<exclude name="grobo*.jar"/>
+			<exclude name="junit*.jar"/>
+			<exclude name="ivy*.jar"/>
+		</fileset>
+	</path>
+	<!-- Build Targets -->
+	<target name="-java6.check">
+		<condition property="java6.installed" value="true">
+			<and>
+				<or> 
+                	<equals arg1="${java.target_version}" arg2="1.6"/>
+					<equals arg1="${java.target_version}" arg2="1.7"/>
+                </or>
+				<available property="java6.installed" classname="javax.script.Bindings"/>
+			</and>
+		</condition>
+		<condition property="java6.using" value="1.6" else="${java.target_version}">
+			<isset property="java6.installed"/>
+		</condition>
+		<echo message="Using Java ${java6.using} specification: ${java.specification.version}"/>
+		<fail message="Unsupported Java version - detected: ${java.version} selected: ${java.target_version}. Only Java compiler version 1.6 or later are supported."> 
+            <condition> 
+            	<not>
+                    <or> 
+                    	<equals arg1="${java.target_version}" arg2="1.6"/>
+                        <equals arg1="${java.target_version}" arg2="1.7"/>
+                    </or>
+            	</not>
+            </condition> 
+        </fail> 
+	</target>
+	<!-- Check for the main libraries -->
+	<target name="-library.check">
+		<echo message="Java: java.home is ${java.home} and the target version is ${java.target_version}"/>
+		<echo message="Ant: ant.home is ${ant.home} and the target version is ${ant.version}"/>
+		<!-- May want to add repository availability checking
+        	<condition property="repository.offline.googlecode" value="true">
+            		<isreachable host="red5.googlecode.com" timeout="30" />
+        	</condition>
+        	<echo message='Repository access: googlecode=${repository.offline.googlecode}'/>
+		-->
+		<condition property="library.installed" value="true">
+			<and>
+				<available property="spring.installed" classpathref="project.classpath" classname="org.springframework.core.SpringVersion"/>
+				<available property="logging.installed" classpathref="project.classpath" classname="org.slf4j.Logger"/>
+				<available property="mina.installed" classpathref="project.classpath" classname="org.apache.mina.filter.codec.ProtocolEncoder"/>
+				<isset property="ivy.conf.name"/>
+			</and>
+		</condition>
+	</target>
+	<target name="prepare" description="Setup the directories for building">
+		<mkdir dir="${classes.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${log.dir}"/>
+		<mkdir dir="${dist.dir}/${log.dir}"/>
+	</target>
+	<target name="clean" description="Clean the directories for building">
+		<delete file="${red5.filename}.jar"/>
+		<delete file="boot.jar"/>
+		<delete file="ivy.log"/>
+		<delete dir="${classes.dir}"/>
+		<delete dir="${dist.dir}"/>
+		<delete dir="${cluster.dir}"/>
+		<delete dir="${javadoc.dir}"/>
+		<delete dir="${testdoc.dir}"/>
+		<delete>
+			<fileset dir="${basedir}">
+				<include name="*.tar.gz"/>
+				<include name="*.zip"/>
+			</fileset>
+		</delete>
+	</target>
+	<target name="retrieve" unless="library.installed" description="Retrieves the libraries if needed">
+		<!-- Ivy configuration - http://ant.apache.org/ivy/history/trunk/ant.html -->
+		<ivy:settings file="ivysettings.xml"/>
+		<condition property="ivy.conf.name" value="java6">
+			<not>
+				<isset property="ivy.conf.name"/>
+			</not>
+		</condition>
+		<echo message="Ivy conf name: ${ivy.conf.name}"/>
+		<ivy:resolve file="ivy.xml" conf="${ivy.conf.name}" checkIfChanged="false" transitive="false" />
+		<ivy:retrieve conf="${ivy.conf.name}"/>
+	</target>
+	<target name="ivyclear" description="Clears out the Ivy cache">
+		<delete dir="${user.home}/.ivy2/cache/red5"/>
+		<delete includeemptydirs="true">
+			<fileset dir="${lib.dir}" excludes="**/ivy*.jar"/>
+		</delete>
+		<ivy:cleancache/>
+	</target>
+	<target name="compile" depends="-library.check, -java6.check, prepare" description="Compiles the server">
+		<!-- token replacement filers -->
+		<property name="filter.file" value="${config.dir}/build_standalone.properties"/>
+		<condition property="java.target_version" value="1.6">
+			<not>
+				<isset property="java.target_version"/>
+			</not>
+		</condition>
+		<echo message="javac version: ${java.target_version}"/>
+		<condition property="eclipse.using" value="Using" else="Not using">
+			<isset property="eclipse.running"/>
+		</condition>
+		<echo message="${eclipse.using} the Eclipse IDE"/>
+		<condition property="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter">
+			<isset property="eclipse.running"/>
+		</condition>
+		<condition property="compiler" value="${build.compiler}${java.target_version}">
+			<equals arg1="${build.compiler}" arg2="javac"/>
+		</condition>
+		<property name="compiler" value="${build.compiler}"/>
+		<echo message="Compiler adapter name: ${compiler}"/>
+		<!-- destination for compiled classes -->
+		<property name="dest.dir" value="${classes.dir}"/>
+		<!-- standard excludes for compile -->
+		<property name="std_excludes" value="**/*.jsp,org/red5/server/script/**"/>
+		<antcall target="compile-core" inheritAll="true" inheritRefs="true"/>
+	</target>
+	<!-- Core -->
+	<target name="compile-core" if="java6.installed" description="Build server core">
+		<antcall target="retrieve" inheritAll="true" inheritRefs="true">
+			<param name="ivy.conf.name" value="java6"/>
+		</antcall>
+		<javac sourcepath="" srcdir="${src.dir}" destdir="${dest.dir}" classpathref="project.classpath"
+			 optimize="${build.optimize}" verbose="${build.verbose}" fork="${build.fork}" nowarn="${build.nowarn}"
+			 deprecation="${build.deprecation}" debug="${debug.state}" compiler="${compiler}"
+			 source="${java.target_version}" target="${java.target_version}" memoryMaximumSize="${memory.maximum}"
+			 excludes="${std_excludes}" listfiles="false" includeantruntime="false"/>
+		<!-- touch this source file so that the revision number will be updated upon svn commit -->
+		<touch file="${src.dir}/org/red5/server/api/Red5.java"/>
+	</target>
+
+	<target name="javadoc" depends="-java6.check" description="Generate JavaDoc">
+		<condition property="available.envpath" value="Path: ${env.Path}" else="Not using env.Path">
+			<isset property="env.Path"/>
+		</condition>
+		<echo message="${available.envpath}"/>
+		<!-- Determine the location of Sun's API docs -->
+		<condition property="javadoc.loc" value="javase/6">
+			<equals arg1="${java6.installed}" arg2="true"/>
+		</condition>
+		<delete>
+			<fileset dir="${lib.dir}" includes="**/*sources*.jar"/>
+		</delete>
+		<javadoc useexternalfile="true" failonerror="false" verbose="false" classpathref="full.classpath"
+			 destdir="${javadoc.dir}" author="true" version="true" use="true" splitindex="true"
+			 windowtitle="${documentation.title}" stylesheetfile="${javadoc.style}">
+			<fileset dir="${src.dir}" defaultexcludes="yes">
+				<include name="org/red5/**"/>
+				<exclude name="**/*.xml"/>
+				<exclude name="**/*.xsd"/>
+			</fileset>
+			<doctitle><![CDATA[<h1>${documentation.title}</h1>]]></doctitle>
+			<bottom><![CDATA[<i>Copyright &#169; ${red5.age} <a href="${red5.url}" target="_blank">${red5.name}</a></i>]]></bottom>
+			<tag name="todo" scope="all" description="To do:"/>
+			<group title="Public API" packages="org.red5.server.api:org.red5.server.api.*"/>
+			<group title="Network Protocols" packages="org.red5.server.net:org.red5.server.net.*"/>
+			<group title="Streaming" packages="org.red5.server.stream:org.red5.server.stream.*"/>
+			<group title="IO Packages" packages="org.red5.io:org.red5.io.*"/>
+			<group title="Scripting" packages="org.red5.server.script:org.red5.server.script.*"/>
+			<link href="http://download.oracle.com/${javadoc.loc}/docs/api"/>
+			<link href="http://jetty.codehaus.org/jetty/jetty-6/apidocs"/>
+			<link href="http://mina.apache.org/report/trunk/apidocs"/>
+			<link href="http://static.springsource.org/spring/docs/2.5.x/api"/>
+			<!-- <link href="http://www.quartz-scheduler.org/docs/api"/> -->
+			<link href="http://www.slf4j.org/api"/>
+			<link href="http://logging.apache.org/log4j/1.2/apidocs"/>
+			<link href="http://groovy.codehaus.org/api"/>
+			<link href="http://tomcat.apache.org/tomcat-6.0-doc/api"/>
+			<link href="http://ehcache.org/apidocs"/>
+		</javadoc>
+		<echo message="Javadoc API stub: ${javadoc.loc}"/>
+		<echo message="Javadoc CSS: ${doc.ref.dir} ${javadoc.style}"/>
+	</target>
+	<!-- Determine classpath for jar file -->
+	<target name="jar-determine-classpath" depends="compile" unless="jar.classpath">
+		<manifestclasspath property="jar.classpath" jarfile="${red5.filename}.jar">
+			<classpath refid="runtime.classpath"/>
+		</manifestclasspath>
+	</target>
+	<target name="jar" description="Make Archive" depends="jar-determine-classpath">
+		<jar destfile="${red5.filename}.jar">
+			<fileset dir="${classes.dir}">
+				<exclude name="**/org/red5/server/Bootstrap.class"/>
+				<exclude name="**/org/red5/server/Shutdown.class"/>
+				<exclude name="**/ShutdownMXBean.class"/>
+				<exclude name="**/org/red5/classloading/**"/>
+				<include name="**/org/**"/>
+				<include name="**/META-INF**"/>
+			</fileset>
+			<manifest>
+				<attribute name="Red5-Version" value="${red5.version}"/>
+				<attribute name="Built-By" value="${red5.fullname}"/>
+				<attribute name="Built-On" value="${build.TODAY}"/>
+			</manifest>
+			<metainf dir="${src.dir}/META-INF">
+				<include name="**"/>
+			</metainf>
+		</jar>
+		<!-- Bootstrap, Shutdown, and classloaders -->
+		<jar destfile="boot.jar">
+			<fileset dir="${classes.dir}">
+				<include name="**/org/red5/server/Bootstrap.class"/>
+				<include name="**/org/red5/server/Shutdown.class"/>
+				<include name="**/ShutdownMXBean.class"/>
+				<include name="**/org/red5/classloading/**"/>
+				<include name="**/META-INF**"/>
+			</fileset>
+			<manifest>
+				<attribute name="Red5-Version" value="${red5.version}"/>
+				<attribute name="Built-By" value="${red5.fullname}"/>
+				<attribute name="Built-On" value="${build.TODAY}"/>
+				<attribute name="Main-Class" value="org.red5.server.Bootstrap"/>
+			</manifest>
+			<metainf dir="${src.dir}/META-INF">
+				<include name="**"/>
+			</metainf>
+		</jar>
+	</target>
+	<target name="dist" description="Create binary distribution" depends="jar">
+		<copy todir="${dist.dir}/lib">
+			<fileset dir="${lib.dir}">
+				<exclude name="ivy*.jar"/>
+				<exclude name="junit*.jar"/>
+				<exclude name="grobo*.jar"/>
+				<exclude name="*-sources*.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/conf">
+			<fileset dir="${config.dir}">
+				<!-- exclude war config files -->
+				<exclude name="**/war/**"/>
+				<exclude name="**/jboss/**"/>
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/plugins">
+			<fileset dir="${plugins.dir}"/>
+		</copy>		
+		<copy todir="${dist.dir}">
+			<fileset dir="./">
+				<include name="${red5.filename}.jar"/>
+				<include name="boot.jar"/>
+				<include name="red5.bat"/>
+				<include name="red5-shutdown.bat"/>
+				<include name="red5.sh"/>
+				<include name="red5-shutdown.sh"/>
+				<include name="license.txt"/>
+			</fileset>
+		</copy>
+		<chmod file="${dist.dir}/red5.sh" perm="755"/>
+		<chmod file="${dist.dir}/red5-shutdown.sh" perm="755"/>
+		<chmod file="${dist.dir}/red5-debug.sh" perm="755"/>
+		<chmod file="${dist.dir}/red5-highperf.sh" perm="755"/>
+	</target>
+	<target name="server" depends="dist" description="Compile and start the server">
+		<echo message="Using ${dist.dir} for Red5 root"/>
+		<mkdir dir="${dist.dir}/${log.dir}"/>
+		<java classname="org.red5.server.Bootstrap" fork="true">
+			<classpath>
+				<pathelement location="${dist.dir}/conf"/>
+				<pathelement location="${dist.dir}/boot.jar"/>
+			</classpath>
+			<!-- Unusable until policy is fixed
+			<jvmarg value="-Djava.security.manager"/>
+			<jvmarg value="-Djava.security.policy=${dist.dir}/conf/red5.policy"/>
+			-->
+			<jvmarg value="-Dred5.root=${dist.dir}"/>
+		</java>
+	</target>
+	<target name="shutdown">
+		<java classname="org.red5.server.Shutdown" fork="true">
+			<classpath>
+				<pathelement location="${dist.dir}/conf"/>
+				<pathelement location="${dist.dir}/boot.jar"/>
+			</classpath>
+			<!-- Unusable until policy is fixed
+			<jvmarg value="-Djava.security.manager"/>
+			<jvmarg value="-Djava.security.policy=${dist.dir}/conf/red5.policy"/>
+			-->
+			<!-- enable the following 2 lines if your using JMX with SSL and auth -->
+			<!--
+			<jvmarg value="-Djavax.net.ssl.trustStore=${dist.dir}/conf/truststore.jmx"/>
+			<jvmarg value="-Djavax.net.ssl.trustStorePassword=trustword"/>
+			-->
+			<jvmarg value="-Dred5.root=${dist.dir}"/>
+			<arg value="9999"/>
+			<arg value="red5user"/>
+			<arg value="changeme"/>
+		</java>
+	</target>
+	<target name="all" depends="clean, prepare, compile, jar, javadoc" description="Run all server tasks"/>
+	<target name="usage">
+		<echo message="Type ant -p for available targets"/>
+	</target>
+</project>

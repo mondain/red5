@@ -46,11 +46,9 @@ import org.springframework.beans.factory.InitializingBean;
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
-public class SocketPolicyHandler extends IoHandlerAdapter implements
-		InitializingBean, DisposableBean {
+public class SocketPolicyHandler extends IoHandlerAdapter implements InitializingBean, DisposableBean {
 
-	protected static Logger log = LoggerFactory
-			.getLogger(SocketPolicyHandler.class);
+	protected static Logger log = LoggerFactory.getLogger(SocketPolicyHandler.class);
 
 	private String host = "0.0.0.0";
 
@@ -75,15 +73,13 @@ public class SocketPolicyHandler extends IoHandlerAdapter implements
 
 			log.info("Socket policy file server listening on port {}", port);
 			//get the file
-			File file = new File(System.getProperty("red5.config_root"),
-					policyFileName);
+			File file = new File(System.getProperty("red5.config_root"), policyFileName);
 			if (file.exists()) {
 				//read the policy file
 				//read it
 				FileInputStream fis = new FileInputStream(file);
 				FileChannel fc = fis.getChannel();
-				ByteBuffer fb = ByteBuffer.allocate(Long.valueOf(file.length())
-						.intValue());
+				ByteBuffer fb = ByteBuffer.allocate(Long.valueOf(file.length()).intValue());
 				fc.read(fb);
 				fb.flip();
 				policyData = IoBuffer.wrap(fb);
@@ -105,16 +101,14 @@ public class SocketPolicyHandler extends IoHandlerAdapter implements
 	}
 
 	@Override
-	public void messageReceived(IoSession session, Object message)
-			throws Exception {
+	public void messageReceived(IoSession session, Object message) throws Exception {
 		log.info("Incomming: {}", session.getRemoteAddress().toString());
 		session.write(policyData);
 		session.close(true);
 	}
 
 	@Override
-	public void exceptionCaught(IoSession session, Throwable ex)
-			throws Exception {
+	public void exceptionCaught(IoSession session, Throwable ex) throws Exception {
 		log.info("Exception: {}", session.getRemoteAddress().toString(), ex);
 	}
 
