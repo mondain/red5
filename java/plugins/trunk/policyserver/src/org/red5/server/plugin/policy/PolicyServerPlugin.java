@@ -39,10 +39,10 @@ public class PolicyServerPlugin extends Red5Plugin {
 		log.debug("Start");
 		// create app context
 		try {
-			configContext = new FileSystemXmlApplicationContext(new String[]{"${red5.root}/plugins/policycontext.xml"}, true);
+			configContext = new FileSystemXmlApplicationContext(new String[] { "${red5.root}/plugins/policycontext.xml" }, true);
 		} catch (Exception e) {
-			configContext = new FileSystemXmlApplicationContext(new String[]{"classpath:/policycontext.xml"}, true);	
-		}	
+			configContext = new FileSystemXmlApplicationContext(new String[] { "classpath:/policycontext.xml" }, true);
+		}
 	}
 
 	public void doStop() throws Exception {
