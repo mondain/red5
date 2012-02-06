@@ -21,19 +21,15 @@ esac
 echo "Running on " $OS
 
 # JAVA options
-# You can set JAVA_OPTS to add additional options if you want
 # Set up logging options
 LOGGING_OPTS="-Dlogback.ContextSelector=org.red5.logging.LoggingContextSelector -Dcatalina.useNaming=true"
 # Set up security options
 SECURITY_OPTS="-Djava.security.debug=failure"
-export JAVA_OPTS="$LOGGING_OPTS $SECURITY_OPTS $JAVA_OPTS"
+export JAVA_OPTS="$LOGGING_OPTS $SECURITY_OPTS -Dred5.root=${RED5_HOME}"
 
 if [ -z "$RED5_MAINCLASS" ]; then
   export RED5_MAINCLASS=org.red5.server.Bootstrap
 fi
-
-# Jython options
-JYTHON="-Dpython.home=lib"
 
 for JAVA in "${JAVA_HOME}/bin/java" "${JAVA_HOME}/Home/bin/java" "/usr/bin/java" "/usr/local/bin/java"
 do
@@ -49,8 +45,8 @@ then
   exit
 fi
 
-export RED5_CLASSPATH="${RED5_HOME}/boot.jar${P}${RED5_HOME}/conf${P}${CLASSPATH}"
+export RED5_CLASSPATH="${RED5_HOME}/boot.jar${P}${RED5_HOME}/conf${P}."
 
 # start Red5
 echo "Starting Red5"
-exec "$JAVA" "$JYTHON" -Dred5.root="${RED5_HOME}" $JAVA_OPTS -cp "${RED5_CLASSPATH}" "$RED5_MAINCLASS" $RED5_OPTS
+exec "$JAVA" $JAVA_OPTS -cp "${RED5_CLASSPATH}" "$RED5_MAINCLASS" $RED5_OPTS
