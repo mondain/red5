@@ -83,8 +83,4 @@ public interface TomcatVHostLoaderMXBean {
 
 	public void shutdown();
 
-	public void registerJMX();
-
-	public void unregisterJMX();
-
 }

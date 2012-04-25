@@ -13,12 +13,6 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.apache.ivyde.eclipse.ivynature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>tomcat-java</name>
-			<type>2</type>
-			<location>E:/dev/servers/tomcat-6.0.32/src/java</location>
-		</link>
-	</linkedResources>
 </projectDescription>
