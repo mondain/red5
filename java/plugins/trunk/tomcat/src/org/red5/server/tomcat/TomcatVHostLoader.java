@@ -20,6 +20,7 @@ package org.red5.server.tomcat;
  */
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.Map;
 
 import javax.management.JMX;
@@ -37,14 +38,13 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.red5.server.ContextLoader;
 import org.red5.server.LoaderBase;
-import org.red5.server.jmx.JMXAgent;
-import org.red5.server.jmx.JMXFactory;
 import org.red5.server.jmx.mxbeans.ContextLoaderMXBean;
 import org.red5.server.jmx.mxbeans.TomcatVHostLoaderMXBean;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
@@ -53,6 +53,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
+@ManagedResource(objectName = "org.red5.server:type=TomcatVHostLoader", description = "TomcatVHostLoader")
 public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoaderMXBean {
 
 	// Initialize Logging
@@ -188,18 +189,23 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
             					ContextLoader contextLoader = (ContextLoader) applicationContext.getBean("context.loader");
             					appctx.setParent(contextLoader.getContext(defaultApplicationContextId));					
             				} else {
-            					log.debug("Context loader was not found, trying JMX");
-            					MBeanServer mbs = JMXFactory.getMBeanServer();
-            					//get the ContextLoader from jmx
-            					ObjectName oName = JMXFactory.createObjectName("type", "ContextLoader");
-            					ContextLoaderMXBean proxy = null;
-            					if (mbs.isRegistered(oName)) {
-            						proxy = (ContextLoaderMXBean) JMX.newMXBeanProxy(mbs, oName, ContextLoaderMXBean.class, true);
-            						log.debug("Context loader was found");
-            						appctx.setParent(proxy.getContext(defaultApplicationContextId));	
-            					} else {
-            						log.warn("Context loader was not found");
-            					}						
+    							log.debug("Context loader was not found, trying JMX");
+    							MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+    							// get the ContextLoader from jmx
+    							ContextLoaderMXBean proxy = null;
+    							ObjectName oName = null;
+    							try {
+    								oName = new ObjectName("org.red5.server:name=contextLoader,type=ContextLoader");
+    								if (mbs.isRegistered(oName)) {
+    									proxy = JMX.newMXBeanProxy(mbs, oName, ContextLoaderMXBean.class, true);
+    									log.debug("Context loader was found");
+    									proxy.setParentContext(defaultApplicationContextId, appctx.getId());
+    								} else {
+    									log.warn("Context loader was not found");
+    								}
+    							} catch (Exception e) {
+    								log.warn("Exception looking up ContextLoader", e);
+    							}            					
             				}
             			}
             			if (log.isDebugEnabled()) {
@@ -318,17 +324,22 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 					appctx.setParent(contextLoader.getContext(defaultApplicationContextId));					
 				} else {
 					log.debug("Context loader was not found, trying JMX");
-					MBeanServer mbs = JMXFactory.getMBeanServer();
-					//get the ContextLoader from jmx
-					ObjectName oName = JMXFactory.createObjectName("type", "ContextLoader");
+					MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+					// get the ContextLoader from jmx
 					ContextLoaderMXBean proxy = null;
-					if (mbs.isRegistered(oName)) {
-						proxy = (ContextLoaderMXBean) JMX.newMXBeanProxy(mbs, oName, ContextLoaderMXBean.class, true);
-						log.debug("Context loader was found");
-						appctx.setParent(proxy.getContext(defaultApplicationContextId));	
-					} else {
-						log.warn("Context loader was not found");
-					}						
+					ObjectName oName = null;
+					try {
+						oName = new ObjectName("org.red5.server:name=contextLoader,type=ContextLoader");
+						if (mbs.isRegistered(oName)) {
+							proxy = JMX.newMXBeanProxy(mbs, oName, ContextLoaderMXBean.class, true);
+							log.debug("Context loader was found");
+							proxy.setParentContext(defaultApplicationContextId, appctx.getId());
+						} else {
+							log.warn("Context loader was not found");
+						}
+					} catch (Exception e) {
+						log.warn("Exception looking up ContextLoader", e);
+					}            					
 				}
 			}
 			if (log.isDebugEnabled()) {
@@ -529,14 +540,31 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 	public void setDefaultApplicationContextId(String defaultApplicationContextId) {
 		this.defaultApplicationContextId = defaultApplicationContextId;
 	}
-
-	public void registerJMX() {
-		oName = JMXFactory.createObjectName("type", "TomcatVHostLoader", "name", name, "domain", domain);
-		JMXAgent.registerMBean(this, this.getClass().getName(),	TomcatVHostLoaderMXBean.class, oName);
-	}
 	
-	public void unregisterJMX() {	
-		JMXAgent.unregisterMBean(oName);
-	}	
+	protected void registerJMX() {
+		// register with jmx
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		try {
+			oName = new ObjectName(String.format("org.red5.server:type=TomcatVHostLoader,name=%s,domain=%s", name, domain));
+			// check for existing registration before registering
+			if (!mbs.isRegistered(oName)) {
+				mbs.registerMBean(this, oName);
+			} else {
+				log.debug("ContextLoader is already registered in JMX");
+			}
+		} catch (Exception e) {
+			log.warn("Error on jmx registration", e);
+		}
+	}
+
+	protected void unregisterJMX() {
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		try {
+			mbs.unregisterMBean(oName);
+		} catch (Exception e) {
+			log.warn("Exception unregistering", e);
+		}
+	}
+
 	
 }

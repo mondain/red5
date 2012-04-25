@@ -21,6 +21,7 @@ package org.red5.server.tomcat;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.lang.management.ManagementFactory;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -40,7 +41,6 @@ import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Loader;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
@@ -60,8 +60,6 @@ import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.ContextLoader;
 import org.red5.server.LoaderBase;
 import org.red5.server.api.IApplicationContext;
-import org.red5.server.jmx.JMXAgent;
-import org.red5.server.jmx.JMXFactory;
 import org.red5.server.jmx.mxbeans.ContextLoaderMXBean;
 import org.red5.server.jmx.mxbeans.LoaderMXBean;
 import org.red5.server.security.realm.NoRealm;
@@ -70,6 +68,7 @@ import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -83,6 +82,7 @@ import org.w3c.dom.NodeList;
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
+@ManagedResource(objectName = "org.red5.server:type=TomcatLoader", description = "TomcatLoader")
 public class TomcatLoader extends LoaderBase implements ApplicationContextAware, LoaderMXBean {
 
 	/*
@@ -722,24 +722,31 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 
 					if (applicationContext.containsBean(defaultParentContextKey)) {
 						parentAppCtx = (ApplicationContext) applicationContext.getBean(defaultParentContextKey);
+						appctx.setParent(parentAppCtx);
 					} else {
 						log.warn("{} bean was not found in context: {}", defaultParentContextKey, applicationContext.getDisplayName());
 						// lookup context loader and attempt to get what we need from it
 						if (applicationContext.containsBean("context.loader")) {
 							ContextLoader contextLoader = (ContextLoader) applicationContext.getBean("context.loader");
 							parentAppCtx = contextLoader.getContext(defaultParentContextKey);
+							appctx.setParent(parentAppCtx);
 						} else {
 							log.debug("Context loader was not found, trying JMX");
-							MBeanServer mbs = JMXFactory.getMBeanServer();
+							MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 							// get the ContextLoader from jmx
-							ObjectName oName = JMXFactory.createObjectName("type", "ContextLoader");
 							ContextLoaderMXBean proxy = null;
-							if (mbs.isRegistered(oName)) {
-								proxy = (ContextLoaderMXBean) JMX.newMXBeanProxy(mbs, oName, ContextLoaderMXBean.class, true);
-								log.debug("Context loader was found");
-								parentAppCtx = proxy.getContext(defaultParentContextKey);
-							} else {
-								log.warn("Context loader was not found");
+							ObjectName oName = null;
+							try {
+								oName = new ObjectName("org.red5.server:name=contextLoader,type=ContextLoader");
+								if (mbs.isRegistered(oName)) {
+									proxy = JMX.newMXBeanProxy(mbs, oName, ContextLoaderMXBean.class, true);
+									log.debug("Context loader was found");
+									proxy.setParentContext(defaultParentContextKey, appctx.getId());
+								} else {
+									log.warn("Context loader was not found");
+								}
+							} catch (Exception e) {
+								log.warn("Exception looking up ContextLoader", e);
 							}
 						}
 					}
@@ -748,9 +755,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 							log.debug("Parent application context: {}", appctx.getParent().getDisplayName());
 						}
 					}
-
-					appctx.setParent(parentAppCtx);
-
+					// add the servlet context
 					appctx.setServletContext(servletContext);
 					// set the root webapp ctx attr on the each
 					// servlet context so spring can find it later
@@ -760,7 +765,6 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 			};
 			thread.setDaemon(true);
 			thread.start();
-
 			result = true;
 		} catch (Throwable t) {
 			log.error("Error setting up context: {} due to: {}", servletContext.getContextPath(), t.getMessage());
@@ -905,8 +909,30 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		return hostId;
 	}
 
-	public void registerJMX() {
-		JMXAgent.registerMBean(this, this.getClass().getName(), LoaderMXBean.class);
+	protected void registerJMX() {
+		// register with jmx
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		try {
+			ObjectName oName = new ObjectName("org.red5.server:type=TomcatLoader");
+			// check for existing registration before registering
+			if (!mbs.isRegistered(oName)) {
+				mbs.registerMBean(this, oName);
+			} else {
+				log.debug("ContextLoader is already registered in JMX");
+			}
+		} catch (Exception e) {
+			log.warn("Error on jmx registration", e);
+		}
+	}
+
+	protected void unregisterJMX() {
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		try {
+			ObjectName oName = new ObjectName("org.red5.server:type=TomcatLoader");
+			mbs.unregisterMBean(oName);
+		} catch (Exception e) {
+			log.warn("Exception unregistering", e);
+		}
 	}
 
 	/**
@@ -936,8 +962,6 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		} else {
 			log.error("Error getting Spring bean factory for shutdown");
 		}
-		//shutdown jmx
-		JMXAgent.shutdown();
 		try {
 			//stop tomcat
 			embedded.stop();

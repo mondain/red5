@@ -35,8 +35,8 @@
 	        <taskdef uri="antlib:org.apache.ivy.ant" resource="org/apache/ivy/ant/antlib.xml"
 	         classpath="${basedir}/lib/ivy-2.1.0.jar"/>
 	        <ivy:settings file="ivysettings.xml"/>
-	        <ivy:resolve file="ivy.xml" conf="build" />
-	        <ivy:retrieve conf="build" pattern="${basedir}/lib/[artifact](-[revision]).[ext]"/>
+	        <ivy:resolve file="ivy.xml" conf="default" />
+	        <ivy:retrieve conf="default" pattern="${basedir}/lib/[artifact](-[revision]).[ext]"/>
 	    </target>      
 	    
 	    <target name="compile" depends="prepare, retrieve">
