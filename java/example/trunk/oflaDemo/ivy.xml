@@ -8,17 +8,18 @@
     </configurations>
     <dependencies>
         <!-- J2EE --> 
-        <dependency org="javax" name="javaee-api" rev="5.1.1"/>
-        <!-- Spring --> 
-        <dependency org="spring" name="spring-beans" rev="3.0.0"/>
-        <dependency org="spring" name="spring-context" rev="3.0.0"/>
-        <dependency org="spring" name="spring-core" rev="3.0.0"/>
-        <!-- Logging --> 
-        <dependency name="slf4j-api" rev="1.5.10" />
-        <dependency name="jcl-over-slf4j" rev="1.5.10" />
-        <dependency name="log4j-over-slf4j" rev="1.5.10" />
-        <dependency name="jul-to-slf4j" rev="1.5.10" />
-        <dependency name="logback-core" rev="0.9.18" />
-        <dependency name="logback-classic" rev="0.9.18" />
+        <dependency org="javax" name="javaee-api" rev="5.1.2" />
+        <!-- Spring -->
+        <dependency org="org.springframework" name="spring-beans" rev="3.1.1.RELEASE" />
+        <dependency org="org.springframework" name="spring-context" rev="3.1.1.RELEASE" />
+        <dependency org="org.springframework" name="spring-core" rev="3.1.1.RELEASE" />
+        <!-- Logging -->
+        <dependency org="org.slf4j" name="com.springsource.slf4j.api" rev="1.6.1" transitive="false" />
+        <dependency org="org.slf4j" name="com.springsource.slf4j.bridge" rev="1.6.1" transitive="false" />
+        <dependency name="jul-to-slf4j" rev="1.6.1" />
+        <dependency name="log4j-over-slf4j" rev="1.6.1" />
+        <dependency name="jcl-over-slf4j" rev="1.6.1" />
+        <dependency name="logback-classic" rev="0.9.28" />
+        <dependency name="logback-core" rev="0.9.28" />
     </dependencies>
 </ivy-module>
