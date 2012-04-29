@@ -9,8 +9,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.api.IScope;
 import org.red5.server.api.Red5;
+import org.red5.server.api.scope.IScope;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
 
@@ -39,21 +39,14 @@ public class DemoService {
 		IScope scope = Red5.getConnectionLocal().getScope();
 		Map<String, Map<String, Object>> filesMap = new HashMap<String, Map<String, Object>>();
 		try {
-			log.debug("getting the FLV files");
+			log.debug("Getting the media files");
 			addToMap(filesMap, scope.getResources("streams/*.flv"));
-
 			addToMap(filesMap, scope.getResources("streams/*.f4v"));
-
 			addToMap(filesMap, scope.getResources("streams/*.mp3"));
-			
 			addToMap(filesMap, scope.getResources("streams/*.mp4"));
-
 			addToMap(filesMap, scope.getResources("streams/*.m4a"));
-
 			addToMap(filesMap, scope.getResources("streams/*.3g2"));			
-
 			addToMap(filesMap, scope.getResources("streams/*.3gp"));			
-			
 		} catch (IOException e) {
 			log.error("", e);
 		}
