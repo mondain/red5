@@ -37,7 +37,7 @@ public final class UrlQueryStringMap<K, V> extends HashMap<K, V> {
 		String[] kvs = tmp.split("&");
 		//take each key/value block and break into its key value parts
 		for (String kv : kvs) {
-			String[] split = kv.split("=");
+			String[] split = kv.split("=", 2);
 			map.put(split[0], split[1]);
 		}
 		return map;
