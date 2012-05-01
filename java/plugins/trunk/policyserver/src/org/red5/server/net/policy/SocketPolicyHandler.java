@@ -19,13 +19,9 @@ package org.red5.server.net.policy;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -54,7 +50,7 @@ public class SocketPolicyHandler extends IoHandlerAdapter implements Initializin
 
 	private int port = 843;
 
-	private String policyFileName = "flashpolicy.xml";
+	private String policyFilePath = "flashpolicy.xml";
 
 	private static IoAcceptor acceptor;
 
@@ -64,32 +60,29 @@ public class SocketPolicyHandler extends IoHandlerAdapter implements Initializin
 	public void afterPropertiesSet() throws Exception {
 		log.debug("Starting socket policy file server");
 		try {
-			acceptor = new NioSocketAcceptor();
-			acceptor.setHandler(this);
-
-			Set<SocketAddress> addresses = new HashSet<SocketAddress>();
-			addresses.add(new InetSocketAddress(host, port));
-			acceptor.bind(addresses);
-
-			log.info("Socket policy file server listening on port {}", port);
-			//get the file
-			File file = new File(System.getProperty("red5.config_root"), policyFileName);
-			if (file.exists()) {
+			// get the file
+			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(policyFilePath);
+			if (is != null) {
 				//read the policy file
-				//read it
-				FileInputStream fis = new FileInputStream(file);
-				FileChannel fc = fis.getChannel();
-				ByteBuffer fb = ByteBuffer.allocate(Long.valueOf(file.length()).intValue());
-				fc.read(fb);
-				fb.flip();
-				policyData = IoBuffer.wrap(fb);
-				fis.close();
-				file = null;
+				policyData = IoBuffer.allocate(1024);
+				byte[] b = new byte[4];
+				while (is.read(b) != -1) {
+					policyData.put(b);
+				}
+				policyData.flip();
+				is.close();
 				log.info("Policy file read successfully");
+				// create accept socket
+				acceptor = new NioSocketAcceptor();
+				acceptor.setHandler(this);
+				Set<SocketAddress> addresses = new HashSet<SocketAddress>();
+				addresses.add(new InetSocketAddress(host, port));
+				acceptor.bind(addresses);
+				log.info("Socket policy file server listening on port {}", port);
 			} else {
 				log.error("Policy file was not found");
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error("Exception initializing socket policy server", e);
 		}
 	}
@@ -97,7 +90,9 @@ public class SocketPolicyHandler extends IoHandlerAdapter implements Initializin
 	@Override
 	public void destroy() throws Exception {
 		log.debug("Stopping socket policy file server");
-		acceptor.unbind();
+		if (acceptor != null) {
+			acceptor.unbind();
+		}
 	}
 
 	@Override
@@ -126,6 +121,20 @@ public class SocketPolicyHandler extends IoHandlerAdapter implements Initializin
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	/**
+	 * @return the policyFilePath
+	 */
+	public String getPolicyFilePath() {
+		return policyFilePath;
+	}
+
+	/**
+	 * @param policyFilePath the policyFilePath to set
+	 */
+	public void setPolicyFilePath(String policyFilePath) {
+		this.policyFilePath = policyFilePath;
 	}
 
 }
