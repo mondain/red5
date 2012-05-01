@@ -6,7 +6,6 @@
 			   minWidth="320" minHeight="240">
 	<fx:Script>		
 		{			
-			[Bindable]
 			public var hostString:String = 'localhost';
 			
 			private function init():void {
@@ -24,8 +23,7 @@
 																	
 		}
 	</fx:Script>
-	<mx:VideoDisplay id="playerDisplay" x="0" y="0" width="320" height="240" 
-					 autoBandWidthDetection="false"
+	<s:VideoDisplay id="playerDisplay" x="0" y="0" width="320" height="240"
 					 opaqueBackground="#000000"
 					 source="rtmp://{hostString}/vod/red5.flv"/>
 </s:Application>
