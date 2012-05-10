@@ -59,7 +59,7 @@ public class DSRemotingClient extends RemotingClient {
 
 	/** The datasource id (assigned by the server). DsId */
 	private String dataSourceId = "nil";
-	
+
 	/** The request sequence number */
 	private int sequenceCounter = 1;
 
@@ -107,14 +107,14 @@ public class DSRemotingClient extends RemotingClient {
 		Collection<RemotingHeader> hdr = headers.values();
 		result.putShort((short) hdr.size());
 		for (RemotingHeader header : hdr) {
-			Output.putString(result, header.name);
-			result.put(header.required ? (byte) 0x01 : (byte) 0x00);
+			Output.putString(result, header.getName());
+			result.put(header.getMustUnderstand() ? (byte) 0x01 : (byte) 0x00);
 
 			IoBuffer tmp = IoBuffer.allocate(1024);
 			tmp.setAutoExpand(true);
 			Output tmpOut = new Output(tmp);
 			Serializer tmpSer = new Serializer();
-			tmpSer.serialize(tmpOut, header.data);
+			tmpSer.serialize(tmpOut, header.getValue());
 			tmp.flip();
 			// Size of header data
 			result.putInt(tmp.limit());
@@ -201,9 +201,8 @@ public class DSRemotingClient extends RemotingClient {
 				if (value instanceof Map<?, ?>) {
 					@SuppressWarnings("unchecked")
 					Map<String, Object> valueMap = (Map<String, Object>) value;
-					RemotingHeader header = new RemotingHeader((String) valueMap.get("name"), (Boolean) valueMap
-							.get("mustUnderstand"), valueMap.get("data"));
-					headers.put(header.name, header);
+					RemotingHeader header = new RemotingHeader((String) valueMap.get("name"), (Boolean) valueMap.get("mustUnderstand"), valueMap.get("data"));
+					headers.put(header.getName(), header);
 				} else {
 					log.error("Expected Map but received {}", value);
 				}
@@ -223,11 +222,11 @@ public class DSRemotingClient extends RemotingClient {
 	private Object decodeResult(IoBuffer data) {
 		log.debug("decodeResult - data limit: {}", (data != null ? data.limit() : 0));
 		processHeaders(data);
-		
+
 		Deserializer deserializer = new Deserializer();
 		Input input = new Input(data);
 		String target = null;
-		
+
 		byte b = data.get();
 		//look for SOH
 		if (b == 0) {
@@ -236,13 +235,13 @@ public class DSRemotingClient extends RemotingClient {
 		} else if (b == 1) {
 			log.debug("SOH: {}", b); //1			
 		}
-		
+
 		int targetUriLength = data.getShort();
 		log.debug("targetUri length: {}", targetUriLength);
-		target = input.readString(targetUriLength);			
+		target = input.readString(targetUriLength);
 
 		log.debug("NUL: {}", data.get()); //0
-				
+
 		//should be junk bytes ff, ff, ff, ff
 		int count = data.getInt();
 		if (count == -1) {
@@ -252,7 +251,7 @@ public class DSRemotingClient extends RemotingClient {
 			data.position(data.position() - 4);
 			count = data.getShort();
 		}
-		
+
 		if (count != 1) {
 			throw new RuntimeException("Expected exactly one result but got " + count);
 		}
@@ -318,9 +317,9 @@ public class DSRemotingClient extends RemotingClient {
 						// Make sure we can retrieve paged results
 						((RecordSet) result).setRemotingClient(this);
 					}
-					return result;			
-				}			
-			}			
+					return result;
+				}
+			}
 		} catch (Exception ex) {
 			log.error("Error while invoking remoting method.", ex);
 			post.abort();
@@ -367,9 +366,9 @@ public class DSRemotingClient extends RemotingClient {
 			headerMap.put(Message.MESSAGING_VERSION, 1);
 			msg.setHeaders(headerMap);
 			msg.setOperation(Constants.CLIENT_PING_OPERATION);
-			msg.setBody(new Object[]{});
-			
-			Object response = client.invokeMethod("null", new Object[]{msg});
+			msg.setBody(new Object[] {});
+
+			Object response = client.invokeMethod("null", new Object[] { msg });
 			log.debug("Response: {}\n{}", response.getClass().getName(), response);
 			if (response instanceof AcknowledgeMessage || response instanceof AcknowledgeMessageExt) {
 				log.info("Got first ACK");
@@ -394,14 +393,14 @@ public class DSRemotingClient extends RemotingClient {
 			headerMap.put(Message.ENDPOINT_HEADER, "my-polling-amf");
 			msg.setHeaders(headerMap);
 			msg.setOperation(Constants.SUBSCRIBE_OPERATION);
-			msg.setBody(new Object[]{});
-			
-			response = client.invokeMethod("null", new Object[]{msg});
+			msg.setBody(new Object[] {});
+
+			response = client.invokeMethod("null", new Object[] { msg });
 
 			if (response instanceof AcknowledgeMessage || response instanceof AcknowledgeMessageExt) {
 				log.info("Got second ACK {}", ((AcknowledgeMessage) response));
-			}			
-			
+			}
+
 			//poll every 5 seconds for 60
 			int loop = 12;
 			do {
@@ -417,9 +416,9 @@ public class DSRemotingClient extends RemotingClient {
 				headerMap.put(Message.FLEX_CLIENT_ID_HEADER, client.getDataSourceId());
 				msg.setHeaders(headerMap);
 				msg.setOperation(Constants.POLL_OPERATION);
-				msg.setBody(new Object[]{});
-				
-				response = client.invokeMethod("null", new Object[]{msg});
+				msg.setBody(new Object[] {});
+
+				response = client.invokeMethod("null", new Object[] { msg });
 				if (response instanceof AcknowledgeMessage) {
 					AcknowledgeMessage ack = (AcknowledgeMessage) response;
 					log.info("Got ACK response {}", ack);
@@ -428,9 +427,9 @@ public class DSRemotingClient extends RemotingClient {
 					log.info("Got COM response {}", com);
 					ArrayList list = (ArrayList) com.getBody();
 					log.info("Child message body: {}", ((AsyncMessageExt) list.get(0)).getBody());
-				}				
+				}
 			} while (--loop > 0);
-						
+
 		} catch (Exception e) {
 			log.warn("Exception {}", e);
 		}

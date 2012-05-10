@@ -44,7 +44,6 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.ssl.SslFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.red5.client.net.rtmp.RTMPClient;
-import org.red5.client.net.rtmp.RTMPClient.RTMPClientIoHandler;
 import org.red5.client.net.rtmp.RTMPClientConnManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

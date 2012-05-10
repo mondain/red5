@@ -218,16 +218,6 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter implements ApplicationCo
 		this.handler = handler;
 	}
 
-	/**
-	 * Setter for mode.
-	 *
-	 * @param mode <code>true</code> if handler should work in server mode,
-	 *            <code>false</code> otherwise
-	 */
-	public void setMode(boolean mode) {
-		this.mode = mode;
-	}
-
 	public void setRtmpConnManager(IRTMPConnManager rtmpConnManager) {
 		this.rtmpConnManager = rtmpConnManager;
 	}

@@ -31,7 +31,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -67,33 +66,33 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 	private static Logger log = LoggerFactory.getLogger(RTMPSMinaIoHandler.class);
 
 	// Create a trust manager that does not validate certificate chains
-	private static final TrustManager[] trustAllCerts = new TrustManager[]{
-	    new X509TrustManager() {
-	        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-	            return null;
-	        }
-	        public void checkClientTrusted( java.security.cert.X509Certificate[] certs, String authType ) {
-	        }
-	        public void checkServerTrusted( java.security.cert.X509Certificate[] certs, String authType ) {
-	        }
-	    }
-	};
-	
+	private static final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+			return null;
+		}
+
+		public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+		}
+
+		public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+		}
+	} };
+
 	/**
 	 * Password for accessing the keystore.
 	 */
 	private char[] password;
-	
+
 	/**
 	 * Stores the keystore file bytes.
 	 */
 	private byte[] keystore;
-	
+
 	/**
 	 * The keystore type, valid options are JKS and PKCS12
 	 */
-	private String keyStoreType = "JKS"; 
-	
+	private String keyStoreType = "JKS";
+
 	/** {@inheritDoc} */
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
@@ -101,31 +100,18 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 		if (password == null || keystore == null) {
 			throw new NotActiveException("Keystore or password are null");
 		}
-		
+
 		// START OF NATIVE SSL STUFF
 		SSLContext context = null;
 		SslFilter sslFilter = null;
-		
+
 		RTMP rtmp = (RTMP) session.getAttribute(ProtocolState.SESSION_KEY);
-		//try server mode most often
-		if (rtmp.getMode() != RTMP.MODE_CLIENT) {			
-    		context = SSLContext.getInstance("TLS"); //TLS, TLSv1, TLSv1.1
-    		// The reference implementation only supports X.509 keys
-    		KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-    		//initialize the key manager
-    		kmf.init(getKeyStore(), password);
-    		// initialize the ssl context
-    		context.init(kmf.getKeyManagers(), null, null);
-		    //create the ssl filter using server mode
-		    sslFilter = new SslFilter(context);
-		} else {
-			//install the all-trusting trust manager
-		    context = SSLContext.getInstance("SSL");
-		    context.init(null, trustAllCerts, new SecureRandom());
-		    //create the ssl filter using client mode
-		    sslFilter = new SslFilter(context);
-		    sslFilter.setUseClientMode(true);
-		}
+		//install the all-trusting trust manager
+		context = SSLContext.getInstance("SSL");
+		context.init(null, trustAllCerts, new SecureRandom());
+		//create the ssl filter using client mode
+		sslFilter = new SslFilter(context);
+		sslFilter.setUseClientMode(true);
 		if (sslFilter != null) {
 			session.getFilterChain().addFirst("sslFilter", sslFilter);
 		}
@@ -134,7 +120,7 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 		super.sessionOpened(session);
 
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
@@ -164,10 +150,10 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 		// waiting for a garbage collector. Of course using a string
 		// literal here completely defeats that purpose.
 		ks.load(new ByteArrayInputStream(keystore), password);
-		
+
 		return ks;
 	}
-	
+
 	/**
 	 * Password used to access the keystore file.
 	 * 
@@ -176,7 +162,7 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 	public void setKeyStorePassword(String password) {
 		this.password = password.toCharArray();
 	}
-	
+
 	/**
 	 * Set keystore data from a file.
 	 * 
@@ -184,15 +170,15 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 	 */
 	public void setKeystoreFile(String path) {
 		FileInputStream fis = null;
-		try {			
+		try {
 			File file = new File(path);
 			if (file.exists()) {
-    			fis = new FileInputStream(file);
-    			FileChannel fc = fis.getChannel();
-    			ByteBuffer fb = ByteBuffer.allocate(Long.valueOf(file.length()).intValue());
-    			fc.read(fb);
-    			fb.flip();
-    			keystore = IoBuffer.wrap(fb).array();
+				fis = new FileInputStream(file);
+				FileChannel fc = fis.getChannel();
+				ByteBuffer fb = ByteBuffer.allocate(Long.valueOf(file.length()).intValue());
+				fc.read(fb);
+				fb.flip();
+				keystore = IoBuffer.wrap(fb).array();
 			} else {
 				log.warn("Keystore file does not exist: {}", path);
 			}
@@ -227,5 +213,5 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 	public void setKeyStoreType(String keyStoreType) {
 		this.keyStoreType = keyStoreType;
 	}
-	
+
 }
