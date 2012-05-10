@@ -79,25 +79,6 @@
             </condition> 
         </fail> 
 	</target>
-	<!-- Check for the main libraries -->
-	<target name="-library.check">
-		<echo message="Java: java.home is ${java.home} and the target version is ${java.target_version}"/>
-		<echo message="Ant: ant.home is ${ant.home} and the target version is ${ant.version}"/>
-		<!-- May want to add repository availability checking
-        	<condition property="repository.offline.googlecode" value="true">
-            		<isreachable host="red5.googlecode.com" timeout="30" />
-        	</condition>
-        	<echo message='Repository access: googlecode=${repository.offline.googlecode}'/>
-		-->
-		<condition property="library.installed" value="true">
-			<and>
-				<available property="spring.installed" classpathref="project.classpath" classname="org.springframework.core.SpringVersion"/>
-				<available property="logging.installed" classpathref="project.classpath" classname="org.slf4j.Logger"/>
-				<available property="mina.installed" classpathref="project.classpath" classname="org.apache.mina.filter.codec.ProtocolEncoder"/>
-				<isset property="ivy.conf.name"/>
-			</and>
-		</condition>
-	</target>
 	<target name="prepare" description="Setup the directories for building">
 		<mkdir dir="${classes.dir}"/>
 		<mkdir dir="${dist.dir}"/>
@@ -112,7 +93,7 @@
 		<delete dir="${javadoc.dir}"/>
 		<delete dir="${testdoc.dir}"/>
 	</target>
-	<target name="retrieve" unless="library.installed" description="Retrieves the libraries if needed">
+	<target name="retrieve" description="Retrieves the libraries if needed">
 		<!-- Ivy configuration - http://ant.apache.org/ivy/history/trunk/ant.html -->
 		<ivy:settings file="ivysettings.xml"/>
 		<condition property="ivy.conf.name" value="java6">
@@ -131,7 +112,7 @@
 		</delete>
 		<ivy:cleancache/>
 	</target>
-	<target name="compile" depends="-library.check, -java6.check, prepare, retrieve" description="Compiles the client">
+	<target name="compile" depends="-java6.check, prepare, retrieve" description="Compiles the client">
 		<condition property="java.target_version" value="1.6">
 			<not>
 				<isset property="java.target_version"/>
@@ -204,9 +185,6 @@
 				<attribute name="Built-By" value="${red5.fullname}"/>
 				<attribute name="Built-On" value="${build.TODAY}"/>
 			</manifest>
-			<metainf dir="${src.dir}/META-INF">
-				<include name="**"/>
-			</metainf>
 		</jar>
 	</target>
 	<target name="dist" description="Create binary distribution" depends="jar">
