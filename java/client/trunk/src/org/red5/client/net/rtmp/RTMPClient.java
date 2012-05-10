@@ -29,7 +29,6 @@ import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.red5.server.net.protocol.ProtocolState;
-import org.red5.server.net.rtmp.InboundHandshake;
 import org.red5.server.net.rtmp.OutboundHandshake;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
@@ -68,7 +67,6 @@ public class RTMPClient extends BaseRTMPClientHandler {
 	/** Constructs a new RTMPClient. */
 	public RTMPClient() {
 		ioHandler = new RTMPClientIoHandler();
-		ioHandler.setMode(RTMP.MODE_CLIENT);
 		ioHandler.setHandler(this);
 		ioHandler.setRtmpConnManager(RTMPClientConnManager.getInstance());
 	}
@@ -127,7 +125,7 @@ public class RTMPClient extends BaseRTMPClientHandler {
 		public void sessionCreated(IoSession session) throws Exception {
 			log.debug("Session created");
 			// moved protocol state from connection object to RTMP object
-			RTMP rtmp = new RTMP(mode);
+			RTMP rtmp = new RTMP();
 			session.setAttribute(ProtocolState.SESSION_KEY, rtmp);
 			//add rtmpe filter
 			session.getFilterChain().addFirst("rtmpeFilter", new RTMPEIoFilter());

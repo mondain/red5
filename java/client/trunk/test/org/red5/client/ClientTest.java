@@ -2,13 +2,13 @@ package org.red5.client;
 
 import java.util.Map;
 
+import org.red5.client.net.rtmp.ClientExceptionHandler;
+import org.red5.client.net.rtmp.RTMPClient;
 import org.red5.server.api.event.IEvent;
 import org.red5.server.api.event.IEventDispatcher;
 import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IPendingServiceCallback;
 import org.red5.server.net.rtmp.Channel;
-import org.red5.server.net.rtmp.ClientExceptionHandler;
-import org.red5.server.net.rtmp.RTMPClient;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.event.Notify;
