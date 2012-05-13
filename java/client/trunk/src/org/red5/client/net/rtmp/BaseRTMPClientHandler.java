@@ -540,7 +540,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	/** {@inheritDoc} */
 	@Override
 	public void connectionOpened(RTMPConnection conn, RTMP state) {
-		log.debug("connectionOpened");
+		log.trace("connectionOpened - conn: {} state: {}", conn, state);
 		// Send "connect" call to the server
 		Channel channel = conn.getChannel((byte) 3);
 		PendingCall pendingCall = new PendingCall("connect");
@@ -750,6 +750,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	}
 
 	private class CreateStreamCallBack implements IPendingServiceCallback {
+		
 		private IPendingServiceCallback wrapped;
 
 		public CreateStreamCallBack(IPendingServiceCallback wrapped) {

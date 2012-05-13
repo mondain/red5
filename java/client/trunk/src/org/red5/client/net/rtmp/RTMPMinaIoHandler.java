@@ -28,18 +28,19 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
+import org.red5.io.utils.BufferUtils;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.Red5;
 import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.IRTMPConnManager;
 import org.red5.server.net.rtmp.IRTMPHandler;
-import org.red5.server.net.rtmp.OutboundHandshake;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.RTMPHandshake;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.codec.RTMPMinaProtocolDecoder;
 import org.red5.server.net.rtmp.codec.RTMPMinaProtocolEncoder;
+import org.red5.server.net.rtmp.codec.RTMPProtocolDecoder;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmpe.RTMPEIoFilter;
 import org.slf4j.Logger;
@@ -92,9 +93,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		//add the handshake
 		session.setAttribute(RTMPConnection.RTMP_HANDSHAKE, outgoingHandshake);
 		// set a reference to the connection on the client
-		if (handler instanceof BaseRTMPClientHandler) {
-			((BaseRTMPClientHandler) handler).setConnection((RTMPConnection) conn);
-		}
+		((BaseRTMPClientHandler) handler).setConnection((RTMPConnection) conn);
 	}
 
 	/** {@inheritDoc} */
@@ -105,7 +104,8 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		log.debug("Handshake - client phase 1");
 		//get the handshake from the session
 		RTMPHandshake handshake = (RTMPHandshake) session.getAttribute(RTMPConnection.RTMP_HANDSHAKE);
-		session.write(handshake.doHandshake(null));
+		IoBuffer clientRequest1 = handshake.doHandshake(null);
+		session.write(clientRequest1);
 	}
 
 	/** {@inheritDoc} */
@@ -151,16 +151,14 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 			if (out != null) {
 				log.debug("Output: {}", out);
 				session.write(out);
-				//if we are connected and doing encryption, add the ciphers
-				if (rtmp.getState() == RTMP.STATE_CONNECTED) {
-					// remove handshake from session now that we are connected
-					// if we are using encryption then put the ciphers in the session
-					if (handshake.getHandshakeType() == RTMPConnection.RTMP_ENCRYPTED) {
-						log.debug("Adding ciphers to the session");
-						session.setAttribute(RTMPConnection.RTMPE_CIPHER_IN, handshake.getCipherIn());
-						session.setAttribute(RTMPConnection.RTMPE_CIPHER_OUT, handshake.getCipherOut());
-					}
+				// if we are using encryption then put the ciphers in the session
+				if (handshake.getHandshakeType() == RTMPConnection.RTMP_ENCRYPTED) {
+					log.debug("Adding ciphers to the session");
+					session.setAttribute(RTMPConnection.RTMPE_CIPHER_IN, handshake.getCipherIn());
+					session.setAttribute(RTMPConnection.RTMPE_CIPHER_OUT, handshake.getCipherOut());
 				}
+				// update the state to connected
+				rtmp.setState(RTMP.STATE_CONNECTED);
 			}
 		} else {
 			log.warn("Handshake was not found for this connection: {}", conn);
@@ -226,33 +224,81 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	protected RTMPMinaConnection createRTMPMinaConnection() {
 		return (RTMPMinaConnection) rtmpConnManager.createConnection(RTMPMinaConnection.class);
 	}
-	
+
 	public class RTMPMinaCodecFactory implements ProtocolCodecFactory {
 
 		private RTMPMinaProtocolDecoder decoder = new RTMPMinaProtocolDecoder();
-		
+
 		private RTMPMinaProtocolEncoder encoder = new RTMPMinaProtocolEncoder();
-		
+
 		{
-			decoder = new RTMPMinaProtocolDecoder();			
+			// RTMP Decoding
+			decoder = new RTMPMinaProtocolDecoder();
+			decoder.setDecoder(new RTMPClientProtocolDecoder());
 			decoder.setDeserializer(new Deserializer());
+			// RTMP Encoding
 			encoder = new RTMPMinaProtocolEncoder();
 			encoder.setSerializer(new Serializer());
 			// two other config options are available
 			//encoder.setBaseTolerance(baseTolerance);
 			//encoder.setDropLiveFuture(dropLiveFuture);
 		}
-		
+
 		/** {@inheritDoc} */
-	    public ProtocolDecoder getDecoder(IoSession session) {
+		public ProtocolDecoder getDecoder(IoSession session) {
 			return decoder;
 		}
 
 		/** {@inheritDoc} */
-	    public ProtocolEncoder getEncoder(IoSession session) {
+		public ProtocolEncoder getEncoder(IoSession session) {
 			return encoder;
 		}
-	    
+
 	}
-	
+
+	/**
+	 * Class to specifically handle the client side of the handshake routine.
+	 */
+	public class RTMPClientProtocolDecoder extends RTMPProtocolDecoder {
+
+		private static final int HANDSHAKE_SERVER_SIZE = (HANDSHAKE_SIZE * 2);
+
+		/**
+		 * Decodes server handshake message.
+		 * 
+		 * @param rtmp RTMP protocol state
+		 * @param in IoBuffer
+		 * @return IoBuffer
+		 */
+		public IoBuffer decodeHandshake(RTMP rtmp, IoBuffer in) {
+			log.debug("decodeServerHandshake - rtmp: {} buffer: {}", rtmp.states[rtmp.getState()], in);
+			log.trace("RTMP: {}", rtmp);
+			final int remaining = in.remaining();
+			if (rtmp.getState() == RTMP.STATE_CONNECT) {
+				if (remaining < HANDSHAKE_SERVER_SIZE + 1) {
+					log.debug("Handshake init too small, buffering. remaining: {}", remaining);
+					rtmp.bufferDecoding(HANDSHAKE_SERVER_SIZE + 1);
+				} else {
+					final IoBuffer hs = IoBuffer.allocate(HANDSHAKE_SERVER_SIZE);
+					in.get(); // skip the header byte
+					BufferUtils.put(hs, in, HANDSHAKE_SERVER_SIZE);
+					hs.flip();
+					rtmp.setState(RTMP.STATE_HANDSHAKE);
+					return hs;
+				}
+			} else if (rtmp.getState() == RTMP.STATE_HANDSHAKE) {
+				log.debug("Handshake reply");
+				if (remaining < HANDSHAKE_SERVER_SIZE) {
+					log.debug("Handshake reply too small, buffering. remaining: {}", remaining);
+					rtmp.bufferDecoding(HANDSHAKE_SERVER_SIZE);
+				} else {
+					in.skip(HANDSHAKE_SERVER_SIZE);
+					rtmp.setState(RTMP.STATE_CONNECTED);
+					rtmp.continueDecoding();
+				}
+			}
+			return null;
+		}
+	}
+
 }

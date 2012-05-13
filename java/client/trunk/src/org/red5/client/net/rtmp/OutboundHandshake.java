@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.red5.server.net.rtmp;
+package org.red5.client.net.rtmp;
 
 import java.security.KeyPair;
 import java.util.Arrays;
@@ -26,6 +26,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.mina.core.buffer.IoBuffer;
+import org.red5.server.net.rtmp.RTMPConnection;
+import org.red5.server.net.rtmp.RTMPHandshake;
 import org.red5.server.net.rtmp.message.Constants;
 
 /**
@@ -43,8 +45,6 @@ public class OutboundHandshake extends RTMPHandshake {
 
 	private byte[] incomingDigest;
 
-	private IoBuffer data;
-
 	public OutboundHandshake() {
 		super();
 	}
@@ -61,17 +61,16 @@ public class OutboundHandshake extends RTMPHandshake {
 		if (input == null) {
 			out = generateClientRequest1();
 		} else {
-			//the first byte will be the handshake type 3 or 6 for now
-			if (log.isDebugEnabled()) {
-				input.mark();
-				byte handshakeType = input.get();
-				log.debug("Handshake type: {}", (handshakeType & 0x0ff));
-				input.reset();
-			}
-			if (decodeServerResponse(input)) {
-				out = generateClientRequest2();
+			log.trace("Server handshake - remaining: {} limit: {}", input.remaining(), input.limit());
+			// ensure that we have enough handshake data
+			if (input.remaining() < (HANDSHAKE_SIZE_SERVER - 1)) {
+				log.trace("Handshake was too small, buffering...");
 			} else {
-				log.warn("Decoding server response failed");
+				if (decodeServerResponse(input)) {
+					out = generateClientRequest2();
+				} else {
+					log.warn("Decoding server response failed");
+				}
 			}
 		}
 		return out;
@@ -110,7 +109,7 @@ public class OutboundHandshake extends RTMPHandshake {
 		IoBuffer request = IoBuffer.allocate(Constants.HANDSHAKE_SIZE + 1);
 		// set the handshake type byte
 		request.put(handshakeType);
-		log.info("Creating client handshake part 1 with keys/hashes");
+		log.debug("Creating client handshake part 1 with keys/hashes");
 		IoBuffer buf = IoBuffer.allocate(Constants.HANDSHAKE_SIZE);
 		buf.put(handshakeBytes);
 		buf.flip();
@@ -143,16 +142,12 @@ public class OutboundHandshake extends RTMPHandshake {
 
 	public boolean decodeServerResponse(IoBuffer in) {
 		log.debug("decodeServerResponse: {}", in);
-		if (in.remaining() < HANDSHAKE_SIZE_SERVER) {
-			log.trace("Handshake was too small");
-			return false;
-		}
-		byte[] bytes = new byte[HANDSHAKE_SIZE_SERVER];
+		// minus one for the first byte which is not included (handshake type byte)
+		byte[] bytes = new byte[HANDSHAKE_SIZE_SERVER - 1];
 		in.get(bytes);
-		data = IoBuffer.wrap(bytes);
 
 		IoBuffer buf = IoBuffer.allocate(Constants.HANDSHAKE_SIZE);
-		buf.put(bytes, 1, Constants.HANDSHAKE_SIZE);
+		buf.put(bytes, 0, Constants.HANDSHAKE_SIZE);
 		buf.flip();
 		log.debug("Server response part 1: {}", buf);
 
@@ -235,7 +230,7 @@ public class OutboundHandshake extends RTMPHandshake {
 		}
 
 		IoBuffer partTwo = IoBuffer.allocate(Constants.HANDSHAKE_SIZE);
-		partTwo.put(bytes, 1 + Constants.HANDSHAKE_SIZE, Constants.HANDSHAKE_SIZE);
+		partTwo.put(bytes, Constants.HANDSHAKE_SIZE, Constants.HANDSHAKE_SIZE);
 		partTwo.flip();
 		log.debug("Server response part 2: {}", partTwo);
 		if (handshakeType == RTMPConnection.RTMP_ENCRYPTED) {
@@ -283,20 +278,17 @@ public class OutboundHandshake extends RTMPHandshake {
 
 	public IoBuffer generateClientRequest2() {
 		log.debug("generateClientRequest2");
+		byte[] randomBytes = new byte[Constants.HANDSHAKE_SIZE];
+		random.nextBytes(randomBytes);
+		IoBuffer buf = IoBuffer.wrap(randomBytes);
+		byte[] digest = calculateHMAC_SHA256(incomingDigest, RTMPHandshake.GENUINE_FP_KEY);
+		byte[] message = new byte[Constants.HANDSHAKE_SIZE - RTMPHandshake.DIGEST_LENGTH];
+		buf.rewind();
+		buf.get(message);
+		byte[] signature = calculateHMAC_SHA256(message, digest);
+		buf.put(signature);
+		buf.rewind();
 		if (handshakeType == RTMPConnection.RTMP_ENCRYPTED) {
-			log.info("Creating client handshake part 2 for encryption");
-			byte[] randomBytes = new byte[Constants.HANDSHAKE_SIZE];
-			random.nextBytes(randomBytes);
-			IoBuffer buf = IoBuffer.wrap(randomBytes);
-			byte[] digest = calculateHMAC_SHA256(incomingDigest, RTMPHandshake.GENUINE_FP_KEY);
-			byte[] message = new byte[Constants.HANDSHAKE_SIZE - RTMPHandshake.DIGEST_LENGTH];
-			buf.rewind();
-			buf.get(message);
-			byte[] signature = calculateHMAC_SHA256(message, digest);
-			buf.put(signature);
-			buf.rewind();
-			// replace the incoming data with our generated response
-			data = buf;
 			// update 'encoder / decoder state' for the RC4 keys
 			// both parties *pretend* as if handshake part 2 (1536 bytes) was encrypted
 			// effectively this hides / discards the first few bytes of encrypted session
@@ -306,12 +298,8 @@ public class OutboundHandshake extends RTMPHandshake {
 			byte[] dummyBytes = new byte[Constants.HANDSHAKE_SIZE];
 			cipherIn.update(dummyBytes);
 			cipherOut.update(dummyBytes);
-		} else {
-			byte[] bytes = new byte[Constants.HANDSHAKE_SIZE];
-			data.get(bytes); // copy first half of server response
-			data = IoBuffer.wrap(bytes);
 		}
-		return data;
+		return buf;
 	}
 
 	private int addBytes(byte[] bytes) {
