@@ -45,6 +45,7 @@ import org.apache.mina.filter.ssl.SslFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.red5.client.net.rtmp.RTMPClient;
 import org.red5.client.net.rtmp.RTMPClientConnManager;
+import org.red5.client.net.rtmp.RTMPMinaIoHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,7 +180,7 @@ public class RTMPSClient extends RTMPClient {
 		this.keyStoreType = keyStoreType;
 	}
 
-	private class RTMPSClientIoHandler extends RTMPClientIoHandler {
+	private class RTMPSClientIoHandler extends RTMPMinaIoHandler {
 
 		// Create a trust manager that does not validate certificate chains
 		private final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
@@ -233,6 +234,7 @@ public class RTMPSClient extends RTMPClient {
 		 * @throws NoSuchAlgorithmException 
 		 * @throws KeyStoreException 
 		 */
+		@SuppressWarnings("unused")
 		private KeyStore getKeyStore() throws NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException {
 			// Sun's default kind of key store
 			KeyStore ks = KeyStore.getInstance(keyStoreType);
