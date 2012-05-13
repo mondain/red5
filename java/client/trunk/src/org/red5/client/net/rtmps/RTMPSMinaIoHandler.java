@@ -38,9 +38,7 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.ssl.SslFilter;
-import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.RTMPMinaIoHandler;
-import org.red5.server.net.rtmp.codec.RTMP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,16 +94,12 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 	/** {@inheritDoc} */
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
-
 		if (password == null || keystore == null) {
 			throw new NotActiveException("Keystore or password are null");
 		}
-
 		// START OF NATIVE SSL STUFF
 		SSLContext context = null;
 		SslFilter sslFilter = null;
-
-		RTMP rtmp = (RTMP) session.getAttribute(ProtocolState.SESSION_KEY);
 		//install the all-trusting trust manager
 		context = SSLContext.getInstance("SSL");
 		context.init(null, trustAllCerts, new SecureRandom());
@@ -116,9 +110,7 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 			session.getFilterChain().addFirst("sslFilter", sslFilter);
 		}
 		// END OF NATIVE SSL STUFF
-
 		super.sessionOpened(session);
-
 	}
 
 	/** {@inheritDoc} */
@@ -140,6 +132,7 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 	 * @throws NoSuchAlgorithmException 
 	 * @throws KeyStoreException 
 	 */
+	@SuppressWarnings("unused")
 	private KeyStore getKeyStore() throws NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException {
 		// Sun's default kind of key store
 		KeyStore ks = KeyStore.getInstance(keyStoreType);

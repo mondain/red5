@@ -19,9 +19,9 @@
 package org.red5.server.stream;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 import org.red5.client.net.rtmp.INetStreamEventHandler;
 import org.red5.client.net.rtmp.RTMPClient;
@@ -48,28 +48,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Steven Gong (steven.gong@gmail.com)
  * @author Andy Shaules (bowljoman@hotmail.com)
+ * @author Paul Gregoire (mondain@gmail.com)
  */
 public class StreamingProxy implements IPushableConsumer, IPipeConnectionListener, INetStreamEventHandler, IPendingServiceCallback {
 
 	private static Logger log = LoggerFactory.getLogger(StreamingProxy.class);
 
-	private List<IMessage> frameBuffer = new ArrayList<IMessage>();
-
-	public static final String LIVE = "live";
-
-	public static final String RECORD = "record";
-
-	public static final String APPEND = "append";
-
-	private static final int STOPPED = 0;
-
-	private static final int CONNECTING = 1;
-
-	private static final int STREAM_CREATING = 2;
-
-	private static final int PUBLISHING = 3;
-
-	private static final int PUBLISHED = 4;
+	private LinkedList<IMessage> frameBuffer = new LinkedList<IMessage>();
 
 	private String host;
 
@@ -79,7 +64,7 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 
 	private RTMPClient rtmpClient;
 
-	private int state;
+	private StreamState state;
 
 	private String publishName;
 
@@ -87,13 +72,15 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 
 	private String publishMode;
 
+	private final Semaphore lock = new Semaphore(1, true);
+	
 	public void init() {
 		rtmpClient = new RTMPClient();
-		state = STOPPED;
+		setState(StreamState.STOPPED);
 	}
 
-	public synchronized void start(String publishName, String publishMode, Object[] params) {
-		state = CONNECTING;
+	public void start(String publishName, String publishMode, Object[] params) {
+		setState(StreamState.CONNECTING);
 		this.publishName = publishName;
 		this.publishMode = publishMode;
 
@@ -101,19 +88,20 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 		rtmpClient.connect(host, port, defParams, this, params);
 	}
 
-	public synchronized void stop() {
-		if (state >= STREAM_CREATING) {
+	public void stop() {
+		if (state != StreamState.STOPPED) {
 			rtmpClient.disconnect();
 		}
-		state = STOPPED;
+		setState(StreamState.STOPPED);
+		frameBuffer.clear();
 	}
 
 	public void onPipeConnectionEvent(PipeConnectionEvent event) {
 		// nothing to do
 	}
 
-	public synchronized void pushMessage(IPipe pipe, IMessage message) throws IOException {
-		if (state >= PUBLISHED && message instanceof RTMPMessage) {
+	public void pushMessage(IPipe pipe, IMessage message) throws IOException {
+		if (state == StreamState.PUBLISHED && message instanceof RTMPMessage) {
 			RTMPMessage rtmpMsg = (RTMPMessage) message;
 			rtmpClient.publishStreamData(streamId, rtmpMsg);
 		} else {
@@ -136,27 +124,31 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 		this.app = app;
 	}
 
-	public synchronized void onStreamEvent(Notify notify) {
+	public void onStreamEvent(Notify notify) {
 		log.debug("onStreamEvent: {}", notify);
 		ObjectMap<?, ?> map = (ObjectMap<?, ?>) notify.getCall().getArguments()[0];
 		String code = (String) map.get("code");
 		log.debug("<:{}", code);
 		if (StatusCodes.NS_PUBLISH_START.equals(code)) {
-			state = PUBLISHED;
+			setState(StreamState.PUBLISHED);
 			rtmpClient.invoke("FCPublish", new Object[] { publishName }, this);
-			while (frameBuffer.size() > 0) {
-				rtmpClient.publishStreamData(streamId, frameBuffer.remove(0));
+			IMessage message = null;
+			while (!frameBuffer.isEmpty()) {
+				message = frameBuffer.removeFirst();
+				rtmpClient.publishStreamData(streamId, message);
 			}
+		} else if (StatusCodes.NS_UNPUBLISHED_SUCCESS.equals(code)) {
+			setState(StreamState.UNPUBLISHED);
 		}
 	}
 
-	public synchronized void resultReceived(IPendingServiceCall call) {
+	public void resultReceived(IPendingServiceCall call) {
 		log.debug("resultReceived:> {}", call.getServiceMethodName());
 		if ("connect".equals(call.getServiceMethodName())) {
-			state = STREAM_CREATING;
+			setState(StreamState.STREAM_CREATING);
 			rtmpClient.createStream(this);
 		} else if ("createStream".equals(call.getServiceMethodName())) {
-			state = PUBLISHING;
+			setState(StreamState.PUBLISHING);
 			Object result = call.getResult();
 			if (result instanceof Integer) {
 				Integer streamIdInt = (Integer) result;
@@ -165,8 +157,24 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 				rtmpClient.publish(streamIdInt.intValue(), publishName, publishMode, this);
 			} else {
 				rtmpClient.disconnect();
-				state = STOPPED;
+				setState(StreamState.STOPPED);
 			}
 		}
 	}
+	
+	protected void setState(StreamState state) {
+		try {
+			lock.acquire();
+			this.state = state;
+		} catch (InterruptedException e) {
+			log.warn("Exception setting state", e);
+		} finally {
+			lock.release();
+		}
+	}
+
+	protected StreamState getState() {
+		return state;
+	}
+	
 }

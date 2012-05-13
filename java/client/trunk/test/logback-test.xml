@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%p] [%thread] %logger - %msg%n</pattern>
+        </encoder>      
+    </appender>
+	<root>
+		<appender-ref ref="CONSOLE" />
+	</root>
+	<logger name="org.red5">
+		<level value="DEBUG" />
+	</logger>
+    <logger name="org.red5.server.net.rtmp.RTMPHandshake">
+        <level value="TRACE" />
+    </logger>
+    <logger name="org.red5.server.net.rtmp.InboundHandshake">
+        <level value="TRACE" />
+    </logger>
+    <logger name="org.red5.server.net.rtmp.OutboundHandshake">
+        <level value="TRACE" />
+    </logger>	
+</configuration>

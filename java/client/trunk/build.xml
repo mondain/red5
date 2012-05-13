@@ -175,7 +175,7 @@
 		<echo message="Javadoc CSS: ${doc.ref.dir} ${javadoc.style}"/>
 	</target>
 	<target name="jar" description="Make Archive" depends="compile">
-		<jar destfile="${red5.filename}.jar">
+		<jar destfile="${dist.dir}/${red5.filename}.jar">
 			<fileset dir="${classes.dir}">
 				<include name="**/org/**"/>
 				<include name="**/META-INF**"/>
@@ -194,12 +194,6 @@
 				<exclude name="junit*.jar"/>
 				<exclude name="grobo*.jar"/>
 				<exclude name="*-sources*.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="${dist.dir}">
-			<fileset dir="./">
-				<include name="${red5.filename}.jar"/>
-				<include name="license.txt"/>
 			</fileset>
 		</copy>
 	</target>

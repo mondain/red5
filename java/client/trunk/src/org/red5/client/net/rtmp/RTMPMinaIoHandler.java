@@ -23,7 +23,11 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.codec.ProtocolDecoder;
+import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.logging.LoggingFilter;
+import org.red5.io.object.Deserializer;
+import org.red5.io.object.Serializer;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.Red5;
 import org.red5.server.net.protocol.ProtocolState;
@@ -34,18 +38,17 @@ import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.RTMPHandshake;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
 import org.red5.server.net.rtmp.codec.RTMP;
+import org.red5.server.net.rtmp.codec.RTMPMinaProtocolDecoder;
+import org.red5.server.net.rtmp.codec.RTMPMinaProtocolEncoder;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmpe.RTMPEIoFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 /**
  * Handles all RTMP protocol events fired by the MINA framework.
  */
-public class RTMPMinaIoHandler extends IoHandlerAdapter implements ApplicationContextAware {
+public class RTMPMinaIoHandler extends IoHandlerAdapter {
 
 	private static Logger log = LoggerFactory.getLogger(RTMPMinaIoHandler.class);
 
@@ -53,11 +56,6 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter implements ApplicationCo
 	 * RTMP events handler
 	 */
 	protected IRTMPHandler handler;
-
-	/**
-	 * Application context
-	 */
-	protected ApplicationContext appCtx;
 
 	protected IRTMPConnManager rtmpConnManager;
 
@@ -71,8 +69,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter implements ApplicationCo
 		//add rtmpe filter
 		session.getFilterChain().addFirst("rtmpeFilter", new RTMPEIoFilter());
 		//add protocol filter next
-		ProtocolCodecFactory codecFactory = (ProtocolCodecFactory) appCtx.getBean("rtmpCodecFactory");
-		session.getFilterChain().addLast("protocolFilter", new ProtocolCodecFilter(codecFactory));
+		session.getFilterChain().addLast("protocolFilter", new ProtocolCodecFilter(new RTMPMinaCodecFactory()));
 		if (log.isTraceEnabled()) {
 			session.getFilterChain().addLast("logger", new LoggingFilter());
 		}
@@ -84,6 +81,8 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter implements ApplicationCo
 		session.setAttribute(RTMPConnection.RTMP_CONNECTION_KEY, conn);
 		// create an outbound handshake
 		OutboundHandshake outgoingHandshake = new OutboundHandshake();
+		//set the handshake type
+		outgoingHandshake.setHandshakeType(RTMPConnection.RTMP_NON_ENCRYPTED);
 		//if handler is rtmpe client set encryption on the protocol state
 		//if (handler instanceof RTMPEClient) {
 		//rtmp.setEncrypted(true);
@@ -103,8 +102,6 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter implements ApplicationCo
 	public void sessionOpened(IoSession session) throws Exception {
 		log.debug("Session opened");
 		super.sessionOpened(session);
-		// get protocol state
-		RTMP rtmp = (RTMP) session.getAttribute(ProtocolState.SESSION_KEY);
 		log.debug("Handshake - client phase 1");
 		//get the handshake from the session
 		RTMPHandshake handshake = (RTMPHandshake) session.getAttribute(RTMPConnection.RTMP_HANDSHAKE);
@@ -226,13 +223,36 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter implements ApplicationCo
 		return rtmpConnManager;
 	}
 
-	/** {@inheritDoc} */
-	public void setApplicationContext(ApplicationContext appCtx) throws BeansException {
-		log.debug("Setting application context: {} {}", appCtx.getDisplayName(), appCtx);
-		this.appCtx = appCtx;
-	}
-
 	protected RTMPMinaConnection createRTMPMinaConnection() {
 		return (RTMPMinaConnection) rtmpConnManager.createConnection(RTMPMinaConnection.class);
 	}
+	
+	public class RTMPMinaCodecFactory implements ProtocolCodecFactory {
+
+		private RTMPMinaProtocolDecoder decoder = new RTMPMinaProtocolDecoder();
+		
+		private RTMPMinaProtocolEncoder encoder = new RTMPMinaProtocolEncoder();
+		
+		{
+			decoder = new RTMPMinaProtocolDecoder();			
+			decoder.setDeserializer(new Deserializer());
+			encoder = new RTMPMinaProtocolEncoder();
+			encoder.setSerializer(new Serializer());
+			// two other config options are available
+			//encoder.setBaseTolerance(baseTolerance);
+			//encoder.setDropLiveFuture(dropLiveFuture);
+		}
+		
+		/** {@inheritDoc} */
+	    public ProtocolDecoder getDecoder(IoSession session) {
+			return decoder;
+		}
+
+		/** {@inheritDoc} */
+	    public ProtocolEncoder getEncoder(IoSession session) {
+			return encoder;
+		}
+	    
+	}
+	
 }
