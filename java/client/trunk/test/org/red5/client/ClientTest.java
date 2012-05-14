@@ -54,14 +54,12 @@ public class ClientTest extends RTMPClient {
 	}
 
 	private IEventDispatcher streamEventDispatcher = new IEventDispatcher() {
-		@Override
 		public void dispatchEvent(IEvent event) {
-			System.out.println("AudioListenerClientStream.dispachEvent()" + event.toString());
+			System.out.println("ClientStream.dispachEvent()" + event.toString());
 		}
 	};
 
 	private IPendingServiceCallback connectCallback = new IPendingServiceCallback() {
-		@Override
 		public void resultReceived(IPendingServiceCall call) {
 			System.out.println("connectCallback");
 			createStream(createStreamCallback);
@@ -69,7 +67,6 @@ public class ClientTest extends RTMPClient {
 	};
 
 	private IPendingServiceCallback createStreamCallback = new IPendingServiceCallback() {
-		@Override
 		public void resultReceived(IPendingServiceCall call) {
 			int streamId = (Integer) call.getResult();
 			conn.ping(new Ping(Ping.CLIENT_BUFFER, streamId, 5000));

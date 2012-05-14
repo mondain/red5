@@ -19,8 +19,8 @@
 package org.red5.server.stream;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 
 import org.red5.client.net.rtmp.INetStreamEventHandler;
@@ -54,7 +54,7 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 
 	private static Logger log = LoggerFactory.getLogger(StreamingProxy.class);
 
-	private LinkedList<IMessage> frameBuffer = new LinkedList<IMessage>();
+	private ConcurrentLinkedQueue<IMessage> frameBuffer = new ConcurrentLinkedQueue<IMessage>();
 
 	private String host;
 
@@ -83,8 +83,9 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 		setState(StreamState.CONNECTING);
 		this.publishName = publishName;
 		this.publishMode = publishMode;
-
+		// construct the default params
 		Map<String, Object> defParams = rtmpClient.makeDefaultConnectionParams(host, port, app);
+		// connect the client
 		rtmpClient.connect(host, port, defParams, this, params);
 	}
 
@@ -101,10 +102,11 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 	}
 
 	public void pushMessage(IPipe pipe, IMessage message) throws IOException {
-		if (state == StreamState.PUBLISHED && message instanceof RTMPMessage) {
+		if (isPublished() && message instanceof RTMPMessage) {
 			RTMPMessage rtmpMsg = (RTMPMessage) message;
 			rtmpClient.publishStreamData(streamId, rtmpMsg);
 		} else {
+			log.trace("Adding message to buffer. Current size: {}", frameBuffer.size());
 			frameBuffer.add(message);
 		}
 	}
@@ -133,8 +135,7 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 			setState(StreamState.PUBLISHED);
 			rtmpClient.invoke("FCPublish", new Object[] { publishName }, this);
 			IMessage message = null;
-			while (!frameBuffer.isEmpty()) {
-				message = frameBuffer.removeFirst();
+			while ((message = frameBuffer.poll()) != null) {
 				rtmpClient.publishStreamData(streamId, message);
 			}
 		} else if (StatusCodes.NS_UNPUBLISHED_SUCCESS.equals(code)) {
@@ -175,6 +176,10 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 
 	protected StreamState getState() {
 		return state;
+	}
+
+	public boolean isPublished() {
+		return getState().equals(StreamState.PUBLISHED);
 	}
 	
 }

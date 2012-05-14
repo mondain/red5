@@ -355,10 +355,19 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	}
 
 	/**
+	 * Called when negotiating bandwidth.
+	 * 
+	 * @param params
+	 */
+	public void onBWCheck(Object params) {
+		log.debug("onBWCheck: {}", params);		
+	}
+	
+	/**
 	 * Called when bandwidth has been configured.
 	 */
-	public void onBWDone() {
-		log.debug("onBWDone");
+	public void onBWDone(Object params) {
+		log.debug("onBWDone: {}", params);		
 	}
 
 	/**
@@ -536,6 +545,17 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 			log.info("Connection was null ?");
 		}
 	}
+	
+	/**
+	 * Sends a ping.
+	 * 
+	 * @param pingType the type of ping
+	 * @param streamId streams id
+	 * @param param ping parameter
+	 */
+	public void ping(short pingType, int streamId, int param) {
+		conn.ping(new Ping(pingType, streamId, param));
+	}	
 
 	/** {@inheritDoc} */
 	@Override
@@ -573,11 +593,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 			log.trace("onInvoke: {}, invokeId: {}", invoke, invoke.getInvokeId());
 			final IServiceCall call = invoke.getCall();
 			final String methodName = call.getServiceMethodName();
-			if ("onBWCheck".equals(methodName) || "onBWDone".equals(methodName)) {
-				log.debug("Service name: {}", methodName);
-			} else {
-				log.debug("Service name: {} args[0]: {}", methodName, (call.getArguments().length != 0 ? call.getArguments()[0] : ""));
-			}
+			log.debug("Service name: {} args[0]: {}", methodName, (call.getArguments().length != 0 ? call.getArguments()[0] : ""));
 			if ("_result".equals(methodName) || "_error".equals(methodName)) {
 				final IPendingServiceCall pendingCall = conn.getPendingCall(invoke.getInvokeId());
 				log.debug("Received result for pending call {}", pendingCall);
@@ -643,8 +659,10 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 					reply.setCall(call);
 					reply.setInvokeId(invoke.getInvokeId());
 					if (log.isDebugEnabled()) {
-						if ("onBWCheck".equals(methodName) || "onBWDone".equals(methodName)) {
-							log.debug("Got BW call, sending empty call reply");
+						if ("onBWCheck".equals(methodName)) {
+							onBWCheck(call.getArguments()[0]);
+						} else if ("onBWDone".equals(methodName)) {
+							onBWDone(call.getArguments()[0]);							
 						} else {
 							log.debug("Sending empty call reply: {}", reply);
 						}
@@ -723,6 +741,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	}
 
 	private static class NetStream extends AbstractClientStream implements IEventDispatcher {
+		
 		private IEventDispatcher dispatcher;
 
 		public NetStream(IEventDispatcher dispatcher) {
