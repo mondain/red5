@@ -23,12 +23,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolCodecFactory;
-import org.apache.mina.filter.codec.ProtocolDecoder;
-import org.apache.mina.filter.codec.ProtocolEncoder;
-import org.red5.io.object.Deserializer;
-import org.red5.io.object.Serializer;
 import org.red5.io.utils.ObjectMap;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.event.IEvent;
@@ -45,8 +39,6 @@ import org.red5.server.net.rtmp.Channel;
 import org.red5.server.net.rtmp.DeferredResult;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.codec.RTMP;
-import org.red5.server.net.rtmp.codec.RTMPMinaProtocolDecoder;
-import org.red5.server.net.rtmp.codec.RTMPMinaProtocolEncoder;
 import org.red5.server.net.rtmp.event.ChunkSize;
 import org.red5.server.net.rtmp.event.Invoke;
 import org.red5.server.net.rtmp.event.Notify;
@@ -122,8 +114,6 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	private ClientExceptionHandler exceptionHandler;
 
 	private IEventDispatcher streamEventDispatcher;
-
-	protected RTMPClientCodecFactory codecFactory = new RTMPClientCodecFactory();
 	
 	protected volatile RTMPConnection conn;
 
@@ -596,7 +586,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 			log.debug("Service name: {} args[0]: {}", methodName, (call.getArguments().length != 0 ? call.getArguments()[0] : ""));
 			if ("_result".equals(methodName) || "_error".equals(methodName)) {
 				final IPendingServiceCall pendingCall = conn.getPendingCall(invoke.getInvokeId());
-				log.debug("Received result for pending call {}", pendingCall);
+				log.debug("Received result for pending call - {}", pendingCall);
 				if (pendingCall != null) {
 					if ("connect".equals(methodName)) {
 						Integer encoding = (Integer) connectionParams.get("objectEncoding");
@@ -673,24 +663,6 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		} else {
 			log.debug("Ignoring stream data notify with header: {}", source);
 		}
-	}
-
-	/**
-	 * Setter for codec factory
-	 * 
-	 * @param factory Codec factory to use
-	 */
-	public void setCodecFactory(RTMPClientCodecFactory factory) {
-		codecFactory = factory;
-	}
-
-	/**
-	 * Getter for codec factory
-	 * 
-	 * @return Codec factory
-	 */
-	public ProtocolCodecFactory getCodecFactory() {
-		return codecFactory;
 	}
 
 	public void handleException(Throwable throwable) {
@@ -806,29 +778,6 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		public volatile OutputStream outputStream;
 
 		public volatile ConnectionConsumer connConsumer;
-	}
-	
-	private class RTMPClientCodecFactory implements ProtocolCodecFactory {
-
-		protected RTMPMinaProtocolDecoder decoder;
-		
-		protected RTMPMinaProtocolEncoder encoder;
-		
-		public RTMPClientCodecFactory() {
-			decoder = new RTMPMinaProtocolDecoder();
-			decoder.setDeserializer(new Deserializer());
-			encoder = new RTMPMinaProtocolEncoder();
-			encoder.setSerializer(new Serializer());
-		}
-
-		public ProtocolDecoder getDecoder(IoSession session) throws Exception {
-			return decoder;
-		}
-
-		public ProtocolEncoder getEncoder(IoSession session) throws Exception {
-			return encoder;
-		}
-
 	}
 	
 }
