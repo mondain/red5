@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.red5.client.net.rtmp.ClientExceptionHandler;
 import org.red5.client.net.rtmp.RTMPClient;
+import org.red5.io.utils.ObjectMap;
 import org.red5.server.api.event.IEvent;
 import org.red5.server.api.event.IEventDispatcher;
 import org.red5.server.api.service.IPendingServiceCall;
@@ -69,7 +70,8 @@ public class StreamRelay {
 			client.setStreamEventDispatcher(new StreamEventDispatcher());
 			client.setConnectionClosedHandler(new Runnable() {
 				public void run() {
-					System.out.println("Source connection has been closed");
+					System.out.println("Source connection has been closed, proxy will be stopped");
+					proxy.stop();
 				}
 			});
 			client.setExceptionHandler(new ClientExceptionHandler() {
@@ -102,9 +104,29 @@ public class StreamRelay {
 			client.connect(sourceHost, sourcePort, defParams, new IPendingServiceCallback() {
 				public void resultReceived(IPendingServiceCall call) {
 					System.out.println("connectCallback");
-					client.createStream(createStreamCallback);
+					ObjectMap<?, ?> map = (ObjectMap<?, ?>) call.getResult();
+					String code = (String) map.get("code");
+					if ("NetConnection.Connect.Rejected".equals(code)) {
+						System.out.printf("Rejected: %s\n", map.get("description"));
+						client.disconnect();
+						proxy.stop();
+					} else if ("NetConnection.Connect.Success".equals(code)) {
+						client.createStream(createStreamCallback);
+					} else {
+						System.out.printf("Unhandled response code: %s\n", code);
+					}
 				}
 			});
+			
+			do {
+				try {
+					Thread.sleep(100L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} while (!proxy.isRunning());
+			
+			System.out.println("Stream relay exit");
 		}
 
 	}

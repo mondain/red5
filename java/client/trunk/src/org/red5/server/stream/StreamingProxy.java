@@ -181,5 +181,9 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 	public boolean isPublished() {
 		return getState().equals(StreamState.PUBLISHED);
 	}
+
+	public boolean isRunning() {
+		return !getState().equals(StreamState.STOPPED);
+	}
 	
 }

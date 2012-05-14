@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.red5.client.net.rtmp.ClientExceptionHandler;
 import org.red5.client.net.rtmp.RTMPClient;
+import org.red5.io.utils.ObjectMap;
 import org.red5.server.api.event.IEvent;
 import org.red5.server.api.event.IEventDispatcher;
 import org.red5.server.api.service.IPendingServiceCall;
@@ -62,7 +63,20 @@ public class ClientTest extends RTMPClient {
 	private IPendingServiceCallback connectCallback = new IPendingServiceCallback() {
 		public void resultReceived(IPendingServiceCall call) {
 			System.out.println("connectCallback");
-			createStream(createStreamCallback);
+			ObjectMap<?, ?> map = (ObjectMap<?, ?>) call.getResult();
+			String code = (String) map.get("code");
+			if ("NetConnection.Connect.Rejected".equals(code)) {
+				System.out.printf("Rejected: %s\n", map.get("description"));
+				disconnect();
+				synchronized (ClientTest.class) {
+					finished = true;
+					ClientTest.class.notifyAll();
+				}
+			} else if ("NetConnection.Connect.Success".equals(code)) {
+				createStream(createStreamCallback);
+			} else {
+				System.out.printf("Unhandled response code: %s\n", code);
+			}			
 		}
 	};
 
