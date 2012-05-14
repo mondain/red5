@@ -11,6 +11,16 @@
 	<logger name="org.red5">
 		<level value="DEBUG" />
 	</logger>
+    <logger name="org.red5.io">
+        <level value="INFO" />
+    </logger>
+    <logger name="org.red5.server.net.rtmp.codec.RTMPProtocolDecoder">
+        <level value="INFO" />
+    </logger>
+    <logger name="org.red5.server.net.rtmp.codec.RTMPProtocolEncoder">
+        <level value="DEBUG" />
+    </logger>
+<!-- 
     <logger name="org.red5.server.net.rtmp.RTMPHandshake">
         <level value="TRACE" />
     </logger>
@@ -19,5 +29,9 @@
     </logger>
     <logger name="org.red5.server.net.rtmp.OutboundHandshake">
         <level value="TRACE" />
-    </logger>	
+    </logger>
+ -->
+     <logger name="net.sf.ehcache">
+        <level value="INFO" />
+    </logger>
 </configuration>

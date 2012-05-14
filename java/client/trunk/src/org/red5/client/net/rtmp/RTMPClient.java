@@ -54,6 +54,8 @@ public class RTMPClient extends BaseRTMPClientHandler {
 
 	// 
 	protected ConnectFuture future;
+	
+	private String protocol = "rtmp";
 
 	/** Constructs a new RTMPClient. */
 	public RTMPClient() {
@@ -65,7 +67,7 @@ public class RTMPClient extends BaseRTMPClientHandler {
 	public Map<String, Object> makeDefaultConnectionParams(String server, int port, String application) {
 		Map<String, Object> params = super.makeDefaultConnectionParams(server, port, application);
 		if (!params.containsKey("tcUrl")) {
-			params.put("tcUrl", String.format("rtmp://%s:%s/%s", server, port, application));
+			params.put("tcUrl", String.format("%s://%s:%s/%s", protocol, server, port, application));
 		}
 		return params;
 	}
@@ -108,6 +110,20 @@ public class RTMPClient extends BaseRTMPClientHandler {
 			}
 		}
 		super.disconnect();
+	}
+
+	/**
+	 * Sets the RTMP protocol, the default is "rtmp". If "rtmps" or "rtmpt" are required, the appropriate
+	 * client type should be selected.
+	 * 
+	 * @param protocol the protocol to set
+	 * @throws Exception 
+	 */
+	public void setProtocol(String protocol) throws Exception {
+		this.protocol = protocol;
+		if ("rtmps".equals(protocol) || "rtmpt".equals(protocol) || "rtmpte".equals(protocol) || "rtmfp".equals(protocol)) {
+			throw new Exception("Unsupported protocol specified, please use the correct client for the intended protocol.");
+		}
 	}
 
 }

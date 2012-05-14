@@ -47,4 +47,5 @@ public interface IRTMPClient {
 	public IClientSharedObject getSharedObject(String name, boolean persistent);
 
 	public Map<String, Object> makeDefaultConnectionParams(String server, int port, String application);
+	
 }

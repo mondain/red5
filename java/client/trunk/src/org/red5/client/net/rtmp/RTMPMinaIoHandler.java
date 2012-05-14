@@ -27,10 +27,14 @@ import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.red5.io.object.Deserializer;
+import org.red5.io.object.Output;
 import org.red5.io.object.Serializer;
 import org.red5.io.utils.BufferUtils;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.Red5;
+import org.red5.server.api.IConnection.Encoding;
+import org.red5.server.api.service.IPendingServiceCall;
+import org.red5.server.api.service.IServiceCall;
 import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.IRTMPConnManager;
 import org.red5.server.net.rtmp.IRTMPHandler;
@@ -41,8 +45,14 @@ import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.codec.RTMPMinaProtocolDecoder;
 import org.red5.server.net.rtmp.codec.RTMPMinaProtocolEncoder;
 import org.red5.server.net.rtmp.codec.RTMPProtocolDecoder;
+import org.red5.server.net.rtmp.codec.RTMPProtocolEncoder;
+import org.red5.server.net.rtmp.event.Invoke;
+import org.red5.server.net.rtmp.event.Notify;
 import org.red5.server.net.rtmp.message.Constants;
+import org.red5.server.net.rtmp.status.StatusCodes;
+import org.red5.server.net.rtmp.status.StatusObject;
 import org.red5.server.net.rtmpe.RTMPEIoFilter;
+import org.red5.server.service.Call;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,10 +183,10 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		if (message instanceof IoBuffer) {
 			rawBufferRecieved((IoBuffer) message, session);
 		} else {
-			log.debug("Setting connection local");
+			log.trace("Setting connection local");
 			Red5.setConnectionLocal((IConnection) session.getAttribute(RTMPConnection.RTMP_CONNECTION_KEY));
 			handler.messageReceived(message, session);
-			log.debug("Removing connection local");
+			log.trace("Removing connection local");
 			Red5.setConnectionLocal(null);
 		}
 	}
@@ -238,6 +248,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 			decoder.setDeserializer(new Deserializer());
 			// RTMP Encoding
 			encoder = new RTMPMinaProtocolEncoder();
+			encoder.setEncoder(new RTMPClientProtocolEncoder());
 			encoder.setSerializer(new Serializer());
 			// two other config options are available
 			//encoder.setBaseTolerance(baseTolerance);
@@ -301,4 +312,75 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		}
 	}
 
+	/**
+	 * Class to specifically handle client side situations.
+	 */
+	public class RTMPClientProtocolEncoder extends RTMPProtocolEncoder {
+
+		/**
+		 * Encode notification event and fill given byte buffer.
+		 *
+		 * @param out               Byte buffer to fill
+		 * @param invoke            Notification event
+		 */
+		@Override
+		protected void encodeNotifyOrInvoke(IoBuffer out, Notify invoke, RTMP rtmp) {
+			log.debug("encodeNotifyOrInvoke - rtmp: {} invoke: {}", rtmp.states[rtmp.getState()], invoke);
+			log.trace("RTMP: {}", rtmp);
+			Output output = new org.red5.io.amf.Output(out);
+			final IServiceCall call = invoke.getCall();
+			final boolean isPending = (call.getStatus() == Call.STATUS_PENDING);
+			log.debug("Call: {} pending: {}", call, isPending);
+			if (!isPending) {
+				log.debug("Call has been executed, send result");
+				serializer.serialize(output, call.isSuccess() ? "_result" : "_error");
+			} else {
+				log.debug("This is a pending call, send request");
+				// for request we need to use AMF3 for client mode if the connection is AMF3
+				if (rtmp.getEncoding() == Encoding.AMF3) {
+					output = new org.red5.io.amf3.Output(out);
+				}
+				final String action = (call.getServiceName() == null) ? call.getServiceMethodName() : call.getServiceName() + '.' + call.getServiceMethodName();
+				serializer.serialize(output, action);
+			}
+			if (invoke instanceof Invoke) {
+				serializer.serialize(output, Integer.valueOf(invoke.getInvokeId()));
+				serializer.serialize(output, invoke.getConnectionParams());
+			}
+			if (call.getServiceName() == null && "connect".equals(call.getServiceMethodName())) {
+				// response to initial connect, always use AMF0
+				output = new org.red5.io.amf.Output(out);
+			} else {
+				if (rtmp.getEncoding() == Encoding.AMF3) {
+					output = new org.red5.io.amf3.Output(out);
+				} else {
+					output = new org.red5.io.amf.Output(out);
+				}
+			}
+			if (!isPending && (invoke instanceof Invoke)) {
+				IPendingServiceCall pendingCall = (IPendingServiceCall) call;
+				if (!call.isSuccess()) {
+					log.debug("Call was not successful");
+					StatusObject status = generateErrorResult(StatusCodes.NC_CALL_FAILED, call.getException());
+					pendingCall.setResult(status);
+				}
+				Object res = pendingCall.getResult();
+				log.debug("Writing result: {}", res);
+				serializer.serialize(output, res);
+			} else {
+				log.debug("Writing params");
+				final Object[] args = call.getArguments();
+				if (args != null) {
+					for (Object element : args) {
+						serializer.serialize(output, element);
+					}
+				}
+			}
+			if (invoke.getData() != null) {
+				out.setAutoExpand(true);
+				out.put(invoke.getData());
+			}
+		}		
+	}
+	
 }
