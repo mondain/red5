@@ -170,7 +170,7 @@ public class RTMPTLoader extends TomcatLoader {
 			log.info("Starting RTMPT engine");
 			connector.start();
 		} catch (Exception e) {
-			log.error("Error loading tomcat", e);
+			log.error("Error initializing RTMPT server instance", e);
 		} finally {
 			registerJMX();		
 		}

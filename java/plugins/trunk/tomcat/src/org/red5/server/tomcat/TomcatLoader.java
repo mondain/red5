@@ -45,6 +45,7 @@ import org.apache.catalina.Loader;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
@@ -459,9 +460,14 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		}
 		// Add new Engine to set of Engine for embedded server
 		embedded.addEngine(engine);
+		// whether or not ssl is enabled
+		boolean useSSL = false;
 		// set connection properties
 		for (String key : connectionProperties.keySet()) {
 			log.debug("Setting connection property: {} = {}", key, connectionProperties.get(key));
+			if ("SSLEnabled".equals(key)) {
+				useSSL = Boolean.valueOf(connectionProperties.get(key));
+			}
 			if (connectors == null || connectors.isEmpty()) {
 				connector.setProperty(key, connectionProperties.get(key));
 			} else {
@@ -469,6 +475,16 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 					ctr.setProperty(key, connectionProperties.get(key));
 				}
 			}
+		}
+		// determine if https support is requested
+		if (useSSL) {
+    		// turn off native apr support
+    		AprLifecycleListener listener = new AprLifecycleListener();
+    		listener.setSSLEngine("off");
+    		connector.addLifecycleListener(listener);
+    		// set connection properties
+    		connector.setSecure(true);
+            connector.setScheme("https");		
 		}
 		// set the bind address
 		if (address == null) {
