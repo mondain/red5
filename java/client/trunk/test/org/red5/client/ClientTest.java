@@ -28,7 +28,8 @@ public class ClientTest extends RTMPClient {
 
 	//private String filename = "prometheus.flv";
 	//private String filename = "NAPNAP.flv";
-	private String filename = "cameraFeed";
+	//private String filename = "cameraFeed";
+	private String filename = "stream";
 
 	private static boolean finished = false;
 
@@ -98,9 +99,9 @@ public class ClientTest extends RTMPClient {
 		System.out.println("onInvoke, notify = " + notify.toString());
 		System.out.println("onInvoke, rtmp = " + rtmp.toString());
 
-		Object obj = notify.getCall().getArguments()[0];
+		Object obj = notify.getCall().getArguments().length > 0 ? notify.getCall().getArguments()[0] : null;
 		if (obj instanceof Map) {
-			Map<String, String> map = (Map<String, String>) notify.getCall().getArguments()[0];
+			Map<String, String> map = (Map<String, String>) obj;
 			String code = map.get("code");
 			if (StatusCodes.NS_PLAY_STOP.equals(code)) {
 

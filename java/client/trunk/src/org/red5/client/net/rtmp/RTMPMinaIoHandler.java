@@ -31,13 +31,12 @@ import org.red5.io.object.Output;
 import org.red5.io.object.Serializer;
 import org.red5.io.utils.BufferUtils;
 import org.red5.server.api.IConnection;
-import org.red5.server.api.Red5;
 import org.red5.server.api.IConnection.Encoding;
+import org.red5.server.api.Red5;
 import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IServiceCall;
 import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.IRTMPConnManager;
-import org.red5.server.net.rtmp.IRTMPHandler;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.RTMPHandshake;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
@@ -66,7 +65,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	/**
 	 * RTMP events handler
 	 */
-	protected IRTMPHandler handler;
+	protected BaseRTMPClientHandler handler;
 
 	protected IRTMPConnManager rtmpConnManager;
 
@@ -92,18 +91,22 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		session.setAttribute(RTMPConnection.RTMP_CONNECTION_KEY, conn);
 		// create an outbound handshake
 		OutboundHandshake outgoingHandshake = new OutboundHandshake();
-		//set the handshake type
+		// set the handshake type
 		outgoingHandshake.setHandshakeType(RTMPConnection.RTMP_NON_ENCRYPTED);
+		// setup swf verification
+		if (handler.isSwfVerification()) {
+			outgoingHandshake.initSwfVerification((String) handler.getConnectionParams().get("swfUrl"));
+		}
 		//if handler is rtmpe client set encryption on the protocol state
 		//if (handler instanceof RTMPEClient) {
 		//rtmp.setEncrypted(true);
 		//set the handshake type to encrypted as well
 		//outgoingHandshake.setHandshakeType(RTMPConnection.RTMP_ENCRYPTED);
 		//}
+		// set a reference to the connection on the client
+		handler.setConnection((RTMPConnection) conn);
 		//add the handshake
 		session.setAttribute(RTMPConnection.RTMP_HANDSHAKE, outgoingHandshake);
-		// set a reference to the connection on the client
-		((BaseRTMPClientHandler) handler).setConnection((RTMPConnection) conn);
 	}
 
 	/** {@inheritDoc} */
@@ -219,7 +222,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	 *
 	 * @param handler RTMP events handler
 	 */
-	public void setHandler(IRTMPHandler handler) {
+	public void setHandler(BaseRTMPClientHandler handler) {
 		this.handler = handler;
 	}
 

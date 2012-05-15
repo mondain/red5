@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.red5.client.net.rtmp.ClientExceptionHandler;
+import org.red5.client.net.rtmp.INetStreamEventHandler;
 import org.red5.client.net.rtmp.RTMPClient;
 import org.red5.io.utils.ObjectMap;
 import org.red5.server.api.event.IEvent;
@@ -29,7 +30,9 @@ import org.red5.server.api.event.IEventDispatcher;
 import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IPendingServiceCallback;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
+import org.red5.server.net.rtmp.event.Notify;
 import org.red5.server.net.rtmp.event.Ping;
+import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.stream.StreamingProxy;
 import org.red5.server.stream.message.RTMPMessage;
 
@@ -54,23 +57,48 @@ public class StreamRelay {
 	 */
 	public static void main(String... args) {
 		// handle the args
-		if (args == null || args.length < 6) {
+		if (args == null || args.length < 7) {
 			System.out
 					.println("Not enough args supplied. Usage: <source uri> <source app> <source stream name> <destination uri> <destination app> <destination stream name> <publish mode>");
 		} else {
 			// parse the args
-			String sourceHost = "localhost", destHost = "localhost";
-			String sourceApp = "live", destApp = "live";
+			String sourceHost = args[0], destHost = args[3];
+			String sourceApp = args[1], destApp = args[4];
 			int sourcePort = 1935, destPort = 1935;
-			String sourceStreamName = "stream", destStreamName = "stream_clone";
-			String publishMode = "live"; //live, record, or append
-
-			sourceApp = args[1];
-			sourceStreamName = args[2];
+			String sourceStreamName = args[2], destStreamName = args[5];
+			String publishMode = args[6]; //live, record, or append
+			// look to see if port was included in host string
+			int colonIdx = sourceHost.indexOf(':');
+			if (colonIdx > 0) {
+				sourcePort = Integer.valueOf(sourceHost.substring(colonIdx + 1));
+				sourceHost = sourceHost.substring(0, colonIdx);
+				System.out.printf("Source host: %s port: %d\n", sourceHost, sourcePort);
+			}
+			colonIdx = destHost.indexOf(':');
+			if (colonIdx > 0) {
+				destPort = Integer.valueOf(destHost.substring(colonIdx + 1));
+				destHost = destHost.substring(0, colonIdx);
+				System.out.printf("Destination host: %s port: %d\n", destHost, destPort);
+			}
 
 			// create the consumer
 			client = new RTMPClient();
 			client.setStreamEventDispatcher(new StreamEventDispatcher());
+			client.setStreamEventHandler(new INetStreamEventHandler() {
+				public void onStreamEvent(Notify notify) {
+					System.out.printf("onStreamEvent: %s\n", notify);
+					ObjectMap<?, ?> map = (ObjectMap<?, ?>) notify.getCall().getArguments()[0];
+					String code = (String) map.get("code");
+					System.out.printf("<:%s\n", code);
+					if (StatusCodes.NS_PLAY_STREAMNOTFOUND.equals(code)) {
+						System.out.println("Requested stream was not found");
+						client.disconnect();
+					} else if (StatusCodes.NS_UNPUBLISHED_SUCCESS.equals(code) || StatusCodes.NS_PLAY_COMPLETE.equals(code)) {
+						System.out.println("Source has stopped publishing or play is complete");
+						client.disconnect();
+					}
+				}
+			});
 			client.setConnectionClosedHandler(new Runnable() {
 				public void run() {
 					System.out.println("Source connection has been closed, proxy will be stopped");
@@ -81,6 +109,7 @@ public class StreamRelay {
 				@Override
 				public void handleException(Throwable throwable) {
 					throwable.printStackTrace();
+					System.exit(1);
 				}
 			});
 
@@ -90,6 +119,19 @@ public class StreamRelay {
 			proxy.setPort(destPort);
 			proxy.setApp(destApp);
 			proxy.init();
+			proxy.setConnectionClosedHandler(new Runnable() {
+				public void run() {
+					System.out.println("Publish connection has been closed, source will be disconnected");
+					client.disconnect();
+				}
+			});
+			proxy.setExceptionHandler(new ClientExceptionHandler() {
+				@Override
+				public void handleException(Throwable throwable) {
+					throwable.printStackTrace();
+					System.exit(2);
+				}
+			});
 			proxy.start(destStreamName, publishMode, null);
 			// wait for the publish state
 			do {
@@ -104,6 +146,12 @@ public class StreamRelay {
 			// connect the consumer
 			final CreateStreamCallback createStreamCallback = new CreateStreamCallback(sourceStreamName);
 			Map<String, Object> defParams = client.makeDefaultConnectionParams(sourceHost, sourcePort, sourceApp);
+			// add pageurl and swfurl
+			defParams.put("pageUrl", "player.html");
+			defParams.put("swfUrl", "player.swf");
+			// indicate for the handshake to generate swf verification data
+			client.setSwfVerification(true);
+			// connect the client
 			client.connect(sourceHost, sourcePort, defParams, new IPendingServiceCallback() {
 				public void resultReceived(IPendingServiceCall call) {
 					System.out.println("connectCallback");

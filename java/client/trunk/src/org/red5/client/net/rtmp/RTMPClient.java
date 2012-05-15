@@ -55,6 +55,7 @@ public class RTMPClient extends BaseRTMPClientHandler {
 	// 
 	protected ConnectFuture future;
 	
+	// RTMP protocol to use. Only "rtmp" and "rtmpe" are supported in this base class.
 	private String protocol = "rtmp";
 
 	/** Constructs a new RTMPClient. */
@@ -84,8 +85,7 @@ public class RTMPClient extends BaseRTMPClientHandler {
 					future.getSession();
 				} catch (Throwable e) {
 					socketConnector.dispose(false);
-					//if there isn't an ClientExceptionHandler set, a 
-					//RuntimeException may be thrown in handleException
+					// if there isn't an ClientExceptionHandler set, a RuntimeException may be thrown in handleException
 					handleException(e);
 				}
 			}

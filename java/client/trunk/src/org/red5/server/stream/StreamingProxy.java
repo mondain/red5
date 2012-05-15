@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 
+import org.red5.client.net.rtmp.ClientExceptionHandler;
 import org.red5.client.net.rtmp.INetStreamEventHandler;
 import org.red5.client.net.rtmp.RTMPClient;
 import org.red5.io.utils.ObjectMap;
@@ -177,7 +178,17 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 	protected StreamState getState() {
 		return state;
 	}
+	
+	public void setConnectionClosedHandler(Runnable connectionClosedHandler) {
+		log.debug("setConnectionClosedHandler: {}", connectionClosedHandler);
+		rtmpClient.setConnectionClosedHandler(connectionClosedHandler);
+	}
 
+	public void setExceptionHandler(ClientExceptionHandler exceptionHandler) {
+		log.debug("setExceptionHandler: {}", exceptionHandler);
+		rtmpClient.setExceptionHandler(exceptionHandler);
+	}
+	
 	public boolean isPublished() {
 		return getState().equals(StreamState.PUBLISHED);
 	}
