@@ -113,19 +113,27 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	 */
 	private ClientExceptionHandler exceptionHandler;
 
+	/**
+	 * Stream event dispatcher
+	 */
 	private IEventDispatcher streamEventDispatcher;
 	
+	/**
+	 * Stream event handler
+	 */
+	private INetStreamEventHandler streamEventHandler;
+
+	/**
+	 * Associated RTMP connection
+	 */
 	protected volatile RTMPConnection conn;
+	
+	/**
+	 * Whether or not to use swf verification
+	 */
+	private boolean swfVerification;
 
 	protected BaseRTMPClientHandler() {
-	}
-
-	public void setConnectionClosedHandler(Runnable connectionClosedHandler) {
-		this.connectionClosedHandler = connectionClosedHandler;
-	}
-
-	public void setExceptionHandler(ClientExceptionHandler exceptionHandler) {
-		this.exceptionHandler = exceptionHandler;
 	}
 
 	/**
@@ -175,7 +183,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		params.put("app", application);
 		params.put("objectEncoding", Integer.valueOf(0));
 		params.put("fpad", Boolean.FALSE);
-		params.put("flashVer", "WIN 9,0,124,2");
+		params.put("flashVer", "WIN 11,2,202,235");
 		params.put("audioCodecs", Integer.valueOf(1639));
 		params.put("videoFunction", Integer.valueOf(1));
 		params.put("pageUrl", null);
@@ -242,6 +250,26 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		this.serviceProvider = serviceProvider;
 	}
 
+	/**
+	 * Sets a handler for connection close.
+	 * 
+	 * @param connectionClosedHandler
+	 */
+	public void setConnectionClosedHandler(Runnable connectionClosedHandler) {
+		log.debug("setConnectionClosedHandler: {}", connectionClosedHandler);
+		this.connectionClosedHandler = connectionClosedHandler;
+	}
+
+	/**
+	 * Sets a handler for exceptions.
+	 * 
+	 * @param exceptionHandler
+	 */
+	public void setExceptionHandler(ClientExceptionHandler exceptionHandler) {
+		log.debug("setExceptionHandler: {}", exceptionHandler);
+		this.exceptionHandler = exceptionHandler;
+	}
+	
 	/**
 	 * Connect to client shared object.
 	 * 
@@ -622,6 +650,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 						log.warn("Stream data was null for client id: {}", clientId);
 					}
 					if (streamData != null && streamData.handler != null) {
+						log.debug("Got stream data and handler");
 						streamData.handler.onStreamEvent(invoke);
 					}
 				}
@@ -650,9 +679,9 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 					reply.setInvokeId(invoke.getInvokeId());
 					if (log.isDebugEnabled()) {
 						if ("onBWCheck".equals(methodName)) {
-							onBWCheck(call.getArguments()[0]);
+							onBWCheck(call.getArguments().length > 0 ? call.getArguments()[0] : null);
 						} else if ("onBWDone".equals(methodName)) {
-							onBWDone(call.getArguments()[0]);							
+							onBWDone(call.getArguments().length > 0 ? call.getArguments()[0] : null);							
 						} else {
 							log.debug("Sending empty call reply: {}", reply);
 						}
@@ -665,7 +694,13 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		}
 	}
 
+	/**
+	 * Handle any exceptions that occur.
+	 * 
+	 * @param throwable
+	 */
 	public void handleException(Throwable throwable) {
+		log.debug("Handle exception: {} with: {}", throwable.getMessage(), exceptionHandler);
 		if (exceptionHandler != null) {
 			exceptionHandler.handleException(throwable);
 		} else {
@@ -703,15 +738,46 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	}
 
 	/**
-	 * Setter for stream event dispatcher (useful for saving playing stream to
-	 * file)
+	 * Enables or disables SWF verification.
+	 * 
+	 * @param enabled
+	 */
+	public void setSwfVerification(boolean enabled) {
+		swfVerification = enabled;
+	}
+
+	/**
+	 * @return the swfVerification
+	 */
+	public boolean isSwfVerification() {
+		return swfVerification;
+	}
+	
+	/**
+	 * @return the connectionParams
+	 */
+	public Map<String, Object> getConnectionParams() {
+		return connectionParams;
+	}
+
+	/**
+	 * Setter for stream event dispatcher (useful for saving playing stream to file)
 	 * 
 	 * @param streamEventDispatcher event dispatcher
 	 */
 	public void setStreamEventDispatcher(IEventDispatcher streamEventDispatcher) {
 		this.streamEventDispatcher = streamEventDispatcher;
 	}
-
+	
+	/**
+	 * Setter for the stream event handler.
+	 * 
+	 * @param streamEventHandler event handler
+	 */
+	public void setStreamEventHandler(INetStreamEventHandler streamEventHandler) {
+		this.streamEventHandler = streamEventHandler;
+	}
+		
 	private static class NetStream extends AbstractClientStream implements IEventDispatcher {
 		
 		private IEventDispatcher dispatcher;
@@ -752,7 +818,6 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		public void resultReceived(IPendingServiceCall call) {
 			Integer streamIdInt = (Integer) call.getResult();
 			log.debug("Stream id: {}", streamIdInt);
-			//RTMPConnection conn = RTMPClientConnManager.getInstance().getConnection(clientId);
 			log.debug("Connection: {}", conn);
 			log.debug("CreateStreamCallBack resultReceived - stream id: {}", streamIdInt);
 			if (conn != null && streamIdInt != null) {
@@ -772,12 +837,20 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		}
 	}
 
-	private static class NetStreamPrivateData {
+	private final class NetStreamPrivateData {
+		
 		public volatile INetStreamEventHandler handler;
 
 		public volatile OutputStream outputStream;
 
 		public volatile ConnectionConsumer connConsumer;
+		
+		{
+			if (streamEventHandler != null) {
+				handler = streamEventHandler;
+			}
+		}
+		
 	}
 	
 }
