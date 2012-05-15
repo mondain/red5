@@ -65,6 +65,9 @@ public class StreamRelay {
 			String sourceStreamName = "stream", destStreamName = "stream_clone";
 			String publishMode = "live"; //live, record, or append
 
+			sourceApp = args[1];
+			sourceStreamName = args[2];
+
 			// create the consumer
 			client = new RTMPClient();
 			client.setStreamEventDispatcher(new StreamEventDispatcher());
@@ -117,7 +120,7 @@ public class StreamRelay {
 					}
 				}
 			});
-			
+
 			do {
 				try {
 					Thread.sleep(100L);
@@ -125,7 +128,7 @@ public class StreamRelay {
 					e.printStackTrace();
 				}
 			} while (!proxy.isRunning());
-			
+
 			System.out.println("Stream relay exit");
 		}
 
@@ -163,10 +166,14 @@ public class StreamRelay {
 			System.out.println("resultReceived: " + call);
 			int streamId = (Integer) call.getResult();
 			System.out.println("stream id: " + streamId);
-			client.ping(Ping.CLIENT_BUFFER, streamId, 5000);
-			client.play(streamId, streamName, 0, -2);
+			client.ping(Ping.CLIENT_BUFFER, streamId, 2000);
+			if (streamName.endsWith(".flv") || streamName.endsWith(".f4v") || streamName.endsWith(".mp4")) {
+				client.play(streamId, streamName, 0, -1);
+			} else {
+				client.play(streamId, streamName, -1, -1);
+			}
 		}
-		
+
 	}
 
 }

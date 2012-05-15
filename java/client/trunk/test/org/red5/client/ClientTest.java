@@ -23,10 +23,12 @@ public class ClientTest extends RTMPClient {
 
 	private int port = 1935;
 
-	private String application = "oflaDemo";
+	//private String application = "oflaDemo";
+	private String application = "live";
 
-	private String filename = "prometheus.flv";
+	//private String filename = "prometheus.flv";
 	//private String filename = "NAPNAP.flv";
+	private String filename = "cameraFeed";
 
 	private static boolean finished = false;
 
