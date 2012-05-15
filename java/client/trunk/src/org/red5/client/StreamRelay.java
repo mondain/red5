@@ -132,7 +132,7 @@ public class StreamRelay {
 					System.exit(2);
 				}
 			});
-			proxy.start(destStreamName, publishMode, null);
+			proxy.start(destStreamName, publishMode, new Object[]{});
 			// wait for the publish state
 			do {
 				try {

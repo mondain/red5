@@ -8,6 +8,7 @@ import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.messaging.IMessage;
 
 public interface IRTMPClient {
+	
 	public void setConnectionClosedHandler(Runnable connectionClosedHandler);
 
 	public void setExceptionHandler(ClientExceptionHandler exceptionHandler);

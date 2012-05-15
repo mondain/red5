@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * RTMP client object. Initial client mode code by Christian Eckerle.
+ * RTMP client implementation supporting "rtmp" and "rtmpe" protocols.
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Christian Eckerle (ce@publishing-etc.de)
@@ -55,9 +55,6 @@ public class RTMPClient extends BaseRTMPClientHandler {
 	// 
 	protected ConnectFuture future;
 	
-	// RTMP protocol to use. Only "rtmp" and "rtmpe" are supported in this base class.
-	private String protocol = "rtmp";
-
 	/** Constructs a new RTMPClient. */
 	public RTMPClient() {
 		ioHandler = new RTMPMinaIoHandler();
@@ -119,6 +116,7 @@ public class RTMPClient extends BaseRTMPClientHandler {
 	 * @param protocol the protocol to set
 	 * @throws Exception 
 	 */
+	@Override
 	public void setProtocol(String protocol) throws Exception {
 		this.protocol = protocol;
 		if ("rtmps".equals(protocol) || "rtmpt".equals(protocol) || "rtmpte".equals(protocol) || "rtmfp".equals(protocol)) {

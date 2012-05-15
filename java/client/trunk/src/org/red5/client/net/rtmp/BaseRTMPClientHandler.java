@@ -66,7 +66,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	/**
 	 * Connection scheme / protocol
 	 */
-	protected String scheme = "rtmp";
+	protected String protocol = "rtmp";
 
 	/**
 	 * Connection parameters
@@ -231,7 +231,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	public void connect(String server, int port, Map<String, Object> connectionParams, IPendingServiceCallback connectCallback, Object[] connectCallArguments) {
 		log.debug("connect server: {} port {} connect - params: {} callback: {} args: {}",
 				new Object[] { server, port, connectionParams, connectCallback, Arrays.toString(connectCallArguments) });
-		log.info("{}://{}:{}/{}", new Object[] { scheme, server, port, connectionParams.get("app") });
+		log.info("{}://{}:{}/{}", new Object[] { protocol, server, port, connectionParams.get("app") });
 		this.connectionParams = connectionParams;
 		this.connectArguments = connectCallArguments;
 		if (!connectionParams.containsKey("objectEncoding")) {
@@ -299,7 +299,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		RTMP state = conn.getState();
 		state.setReadChunkSize(chunkSize.getSize());
 		state.setWriteChunkSize(chunkSize.getSize());
-		log.info("ChunkSize is not implemented yet: {}", chunkSize);
+		log.info("ChunkSize is not fully implemented: {}", chunkSize);
 	}
 
 	/** {@inheritDoc} */
@@ -717,6 +717,16 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	 */
 	protected int getChannelForStreamId(int streamId) {
 		return (streamId - 1) * 5 + 4;
+	}
+	
+	/**
+	 * Sets the protocol.
+	 * 
+	 * @param protocol the data protocol to use.
+	 * @throws Exception
+	 */
+	public void setProtocol(String protocol) throws Exception {
+		this.protocol = protocol;
 	}
 
 	/**
