@@ -1,134 +1,55 @@
-body {
-   text-align: justify;
-   font-family: Verdana, Arial, helvetica, sans-serif;
-}
+/* Javadoc style sheet */
 
-a {
-    font-family: Verdana, Arial, helvetica, sans-serif;
-    font-size: 12px;
-	color: #000000;
-}
+/* Define colors, fonts and other style attributes here to override the defaults */
 
-a:active {
-    color: #999999;
-}
+/* Page background color */
+body { background-color: #FFFFFF; color:#333; font-size: 100%; }
 
-a:visited {
-    color: #000000;
-}
+body { font-size: 0.875em; line-height: 1.286em; font-family:   "Helvetica", "Arial", sans-serif; }
 
-p {
-	font-family: Verdana, Arial, sans-serif;
-}
+code { color: #777; line-height: 1.286em; font-family: "Consolas", "Lucida Console", "Droid Sans Mono", "Andale Mono", "Monaco", "Lucida Sans Typewriter"; }
 
-dt {
-	font-family: Verdana, Arial, sans-serif;
-	font-size: 12px;
-}
+a { text-decoration: none; color: #16569A; /* also try #2E85ED, #0033FF, #6C93C6, #1D7BBE, #1D8DD2 */ }
+a:hover { color: #EEEEEE; background-color: #16569A; }
+a:visited { color: #CC3300; }
+a:visited:hover { color: #fff; background-color: #CC3300; }
 
-dd {
-	font-family: Verdana, Arial, sans-serif;
-	font-size: 12px;
-}
+table[border="1"] { border: 1px solid #ddd; }
+table[border="1"] td, table[border="1"] th { border: 1px solid #ddd; }
+table[cellpadding="3"] td { padding: 0.5em; }
 
-p, dl, dt, dd, blockquote {
-    color: #000000;
-    padding-top: 0;
-}
-
-
-p, blockquote {
-    font-size: 90%;
-}
-
-td {
-    font-size: 12px;
-}
-
-td, th, span {
-    color: #000000;
-}
-
-code {
-	color: #e01c2f;
-}
-
-h1, h2, h3, h4, h6 {
-    color: #000000;
-    font-weight: 500;
-    margin-top: 0;
-    font-family: Verdana, Arial, helvetica, sans-serif;
-    margin-bottom: 0;
-}
-
-td {
-    font-family: Verdana, Arial, helvetica, sans-serif;
-}
-
+font[size="-1"] { font-size: 0.85em; line-height: 1.5em; }
+font[size="-2"] { font-size: 0.8em; }
+font[size="+2"] { font-size: 1.4em; line-height: 1.3em; padding: 0.4em 0; }
 
 /* Headings */
-h1 { font-size: 20px; }
-
-/* Top Class Heading */
-h2 { font-size: 18px; color: #e01c2f; }
-h3 { font-size: 14px; }
-h4 { font-size: 12px; }
-
-tt {
-    font-size: 110%;
-    font-family: "Courier New", Courier, monospace;
-    color: #000000;
-}
-
-pre {
-    font-size: 14px;
-    padding: 5px;
-    border-style: solid;
-    border-width: 1px;
-	border-color: #000000;
-	background-color: #CCCCCC;
-	font-family: Verdana, Arial, helvetica, sans-serif;
-}
-
-hr {
-    width: 100%;
-    height: 1px;
-    background-color: #CCCCCC;
-    border-width: 0;
-    padding: 0;
-}
-
-FRAMESET[^cols="20%,80%"] {
-	cols:"40%,100%";	
-}
-
-/* Top Table Heading */
-tr.TableHeadingColor th font b {
-	font-size: 16px;	
-	color: #e01c2f;
-}
-
-tr.TableHeadingColor th font {
-	font-size: 16px;	
-}
+h1 { font-size: 1.5em; line-height: 1.286em;}
 
 /* Table colors */
-.TableHeadingColor     { background: #999999 }
-
-/* Subheading Background */
-.TableSubHeadingColor  { background: #f3f5e9 } 
-.TableRowColor         { background: #FFFFFF } 
+.TableHeadingColor     { background: #ccc; color:#444; } /* Dark mauve */
+.TableSubHeadingColor  { background: #ddd; color:#444; } /* Light mauve */
+.TableRowColor         { background: #FFFFFF; color:#666; font-size: 0.95em; } /* White */
+.TableRowColor code    { color:#000; } /* White */
 
 /* Font used in left-hand frame lists */
-.FrameTitleFont   { font-size: 14px; font-family: Verdana, Arial, helvetica, sans-serif; }
-.FrameHeadingFont { font-size: 14px; font-family: Verdana, Arial, helvetica, sans-serif; }
-.FrameItemFont    { font-size: 12px; font-family: Verdana, Arial, helvetica, sans-serif; }
+.FrameTitleFont   { font-size: 100%; }
+.FrameHeadingFont { font-size:  90%; }
+.FrameItemFont { font-size:  0.9em; line-height: 1.3em; 
+}
+/* Java Interfaces */
+.FrameItemFont a i {
+  font-style: normal; color: #666;
+}
+.FrameItemFont a:hover i {
+  font-style: normal; color: #fff; background-color: #666;
+}
 
 /* Navigation bar fonts and colors */
-.NavBarCell1    { background-color:#999999;} /* Light mauve */
-.NavBarCell1Rev { background-color:#CCCCCC;} /* Dark Blue */
-.NavBarFont1    { font-family: Verdana, Arial, helvetica, sans-serif; color:#000000; font-size: 12px;}
-.NavBarFont1Rev { font-family: Verdana, Arial, helvetica, sans-serif; color:#FFFFFF; font-size: 12px;}
+.NavBarCell1    { background-color:#E0E6DF; } /* Light mauve */
+.NavBarCell1Rev { background-color:#16569A; color:#FFFFFF} /* Dark Blue */
+.NavBarFont1    { }
+.NavBarFont1Rev { color:#FFFFFF; }
 
-.NavBarCell2    { font-family: Verdana, Arial, helvetica, sans-serif; background-color:#FFFFFF;}
-.NavBarCell3    { font-family: Verdana, Arial, helvetica, sans-serif; background-color:#FFFFFF; font-size: 14px;}
+.NavBarCell2    { background-color:#FFFFFF; color:#000000}
+.NavBarCell3    { background-color:#FFFFFF; color:#000000}
+
