@@ -24,9 +24,9 @@ import java.io.DataInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.api.IScope;
+import org.red5.server.api.scope.IScope;
 import org.red5.server.api.stream.IStreamPublishSecurity;
 import org.slf4j.Logger;
 
