@@ -519,12 +519,22 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	public void play(int streamId, String name, int start, int length) {
 		log.debug("play stream {}, name: {}, start {}, length {}", new Object[] { streamId, name, start, length });
 		if (conn != null) {
+			// get the channel
+			int channel = getChannelForStreamId(streamId);
+			// send our requested buffer size
+			ping(Ping.CLIENT_BUFFER, streamId, 2000);
+			// send our request for a/v
+			PendingCall receiveAudioCall = new PendingCall("receiveAudio");
+			conn.invoke(receiveAudioCall, channel);
+			PendingCall receiveVideoCall = new PendingCall("receiveVideo");
+			conn.invoke(receiveVideoCall, channel);
+			// call play
 			Object[] params = new Object[3];
 			params[0] = name;
 			params[1] = start;
 			params[2] = length;
 			PendingCall pendingCall = new PendingCall("play", params);
-			conn.invoke(pendingCall, getChannelForStreamId(streamId));
+			conn.invoke(pendingCall, channel);
 		} else {
 			log.info("Connection was null ?");
 		}

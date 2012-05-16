@@ -57,7 +57,7 @@ Var /GLOBAL IP_ADDRESS
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile setup-Red5-${VERSION}-RC1.exe
+OutFile setup-Red5-${VERSION}-RC2.exe
 InstallDir $PROGRAMFILES\Red5
 CRCCheck on
 XPStyle on
