@@ -231,7 +231,7 @@ public class StreamRelay {
 			if (sourceStreamName.endsWith(".flv") || sourceStreamName.endsWith(".f4v") || sourceStreamName.endsWith(".mp4")) {
 				client.play(streamId, sourceStreamName, 0, -1);
 			} else {
-				client.play(streamId, sourceStreamName, -1, -1);
+				client.play(streamId, sourceStreamName, -1, 0);
 			}
 			client.ping(Ping.CLIENT_BUFFER, streamId, 2000);
 		}
