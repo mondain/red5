@@ -102,7 +102,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	/**
 	 * Net stream handling
 	 */
-	private volatile ConcurrentMap<Object, NetStreamPrivateData> streamDataMap = new ConcurrentHashMap<Object, NetStreamPrivateData>();
+	private volatile ConcurrentMap<Integer, NetStreamPrivateData> streamDataMap = new ConcurrentHashMap<Integer, NetStreamPrivateData>();
 
 	/**
 	 * Task to start on connection close
@@ -664,23 +664,26 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 			boolean onStatus = "onStatus".equals(methodName);
 			log.debug("onStatus {}", onStatus);
 			if (onStatus) {
-				// XXX better to serialize ObjectMap to Status object
-				ObjectMap<?, ?> objMap = (ObjectMap<?, ?>) call.getArguments()[0];
-				// should keep this as an Object to stay compatible with FMS3 etc
-				Object clientId = objMap.get("clientid");
-				log.debug("Client id at onStatus: {}", clientId);
-				clientId = source.getStreamId();
-				log.debug("Client id set using stream id: {}", clientId);
-				if (clientId != null) {
-					// try lookup by client id first
-					NetStreamPrivateData streamData = streamDataMap.get(clientId);
-					// if null try to supply the first one in the map
+				Integer streamId = source.getStreamId();
+				if (log.isDebugEnabled()) {
+					log.debug("Stream id from header: {}", streamId);
+					// XXX create better to serialize ObjectMap to Status object
+					ObjectMap<?, ?> objMap = (ObjectMap<?, ?>) call.getArguments()[0];
+					// should keep this as an Object to stay compatible with FMS3 etc
+					log.debug("Client id from status: {}", objMap.get("clientid"));
+				}
+				if (streamId != null) {
+					// try lookup by stream id
+					NetStreamPrivateData streamData = streamDataMap.get(streamId);
+					// if null return the first one in the map
 					if (streamData == null) {
-						log.debug("Stream data map: {}", streamDataMap);
-						streamData = streamDataMap.get(1);
+						log.debug("Stream data was not found by id. Map contents: {}", streamDataMap);
+						if (!streamDataMap.isEmpty()) {
+							streamData = streamDataMap.values().iterator().next();
+						}
 					}
 					if (streamData == null) {
-						log.warn("Stream data was null for client id: {}", clientId);
+						log.warn("Stream data was null for id: {}", streamId);
 					}
 					if (streamData != null && streamData.handler != null) {
 						log.debug("Got stream data and handler");
