@@ -33,7 +33,6 @@ import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IPendingServiceCallback;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.event.Notify;
-import org.red5.server.net.rtmp.event.Ping;
 import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.stream.StreamingProxy;
 import org.red5.server.stream.message.RTMPMessage;
@@ -228,12 +227,12 @@ public class StreamRelay {
 			System.out.println("resultReceived: " + call);
 			int streamId = (Integer) call.getResult();
 			System.out.println("stream id: " + streamId);
+			// send our buffer size request
 			if (sourceStreamName.endsWith(".flv") || sourceStreamName.endsWith(".f4v") || sourceStreamName.endsWith(".mp4")) {
 				client.play(streamId, sourceStreamName, 0, -1);
 			} else {
 				client.play(streamId, sourceStreamName, -1, 0);
 			}
-			client.ping(Ping.CLIENT_BUFFER, streamId, 2000);
 		}
 
 	}
