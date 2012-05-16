@@ -13,14 +13,17 @@
 	</logger>
     <logger name="org.red5.io">
         <level value="INFO" />
-    </logger>
+    </logger>   
+<!-- 
+    <logger name="org.red5.io">
+        <level value="INFO" />
+    </logger>   
     <logger name="org.red5.server.net.rtmp.codec.RTMPProtocolDecoder">
         <level value="INFO" />
     </logger>
     <logger name="org.red5.server.net.rtmp.codec.RTMPProtocolEncoder">
         <level value="DEBUG" />
     </logger>
-<!-- 
     <logger name="org.red5.server.net.rtmp.RTMPHandshake">
         <level value="TRACE" />
     </logger>

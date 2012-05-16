@@ -44,6 +44,7 @@ import org.red5.server.net.rtmp.event.Invoke;
 import org.red5.server.net.rtmp.event.Notify;
 import org.red5.server.net.rtmp.event.Ping;
 import org.red5.server.net.rtmp.message.Header;
+import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.service.Call;
 import org.red5.server.service.MethodNotFoundException;
 import org.red5.server.service.PendingCall;
@@ -117,7 +118,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	 * Stream event dispatcher
 	 */
 	private IEventDispatcher streamEventDispatcher;
-	
+
 	/**
 	 * Stream event handler
 	 */
@@ -127,7 +128,17 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	 * Associated RTMP connection
 	 */
 	protected volatile RTMPConnection conn;
-	
+
+	/**
+	 * Whether or not the bandwidth done has been invoked
+	 */
+	protected boolean bandwidthCheckDone;
+
+	/**
+	 * Whether or not the client is subscribed
+	 */
+	protected boolean subscribed;
+
 	/**
 	 * Whether or not to use swf verification
 	 */
@@ -269,7 +280,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		log.debug("setExceptionHandler: {}", exceptionHandler);
 		this.exceptionHandler = exceptionHandler;
 	}
-	
+
 	/**
 	 * Connect to client shared object.
 	 * 
@@ -378,14 +389,15 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	 * @param params
 	 */
 	public void onBWCheck(Object params) {
-		log.debug("onBWCheck: {}", params);		
+		log.debug("onBWCheck: {}", params);
 	}
-	
+
 	/**
 	 * Called when bandwidth has been configured.
 	 */
 	public void onBWDone(Object params) {
-		log.debug("onBWDone: {}", params);		
+		log.debug("onBWDone: {}", params);
+		bandwidthCheckDone = true;
 	}
 
 	/**
@@ -445,13 +457,27 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		invoke("createStream", null, wrapper);
 	}
 
+	public void releaseStream(IPendingServiceCallback callback, Object[] params) {
+		log.debug("releaseStream - callback: {}", callback);
+		IPendingServiceCallback wrapper = new ReleaseStreamCallBack(callback);
+		invoke("releaseStream", params, wrapper);
+	}
+
+	public void deleteStream(IPendingServiceCallback callback) {
+		log.debug("deleteStream - callback: {}", callback);
+		IPendingServiceCallback wrapper = new DeleteStreamCallBack(callback);
+		invoke("deleteStream", null, wrapper);
+	}
+
+	public void subscribe(IPendingServiceCallback callback, Object[] params) {
+		log.debug("subscribe - callback: {}", callback);
+		IPendingServiceCallback wrapper = new SubscribeStreamCallBack(callback);
+		invoke("FCSubscribe", params, wrapper);
+	}
+
 	public void publish(int streamId, String name, String mode, INetStreamEventHandler handler) {
 		log.debug("publish - stream id: {}, name: {}, mode: {}", new Object[] { streamId, name, mode });
-		Object[] params = new Object[2];
-		params[0] = name;
-		params[1] = mode;
-		PendingCall pendingCall = new PendingCall("publish", params);
-		conn.invoke(pendingCall, getChannelForStreamId(streamId));
+		// setup the netstream handler
 		if (handler != null) {
 			NetStreamPrivateData streamData = streamDataMap.get(streamId);
 			if (streamData != null) {
@@ -461,6 +487,13 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 				log.debug("Stream data not found for stream id: {}", streamId);
 			}
 		}
+		// setup publish parameters
+		final Object[] params = new Object[2];
+		params[0] = name;
+		params[1] = mode;
+		// call publish
+		PendingCall pendingCall = new PendingCall("publish", params);
+		conn.invoke(pendingCall, getChannelForStreamId(streamId));
 	}
 
 	public void unpublish(int streamId) {
@@ -563,7 +596,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 			log.info("Connection was null ?");
 		}
 	}
-	
+
 	/**
 	 * Sends a ping.
 	 * 
@@ -573,7 +606,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	 */
 	public void ping(short pingType, int streamId, int param) {
 		conn.ping(new Ping(pingType, streamId, param));
-	}	
+	}
 
 	/** {@inheritDoc} */
 	@Override
@@ -681,14 +714,14 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 						if ("onBWCheck".equals(methodName)) {
 							onBWCheck(call.getArguments().length > 0 ? call.getArguments()[0] : null);
 						} else if ("onBWDone".equals(methodName)) {
-							onBWDone(call.getArguments().length > 0 ? call.getArguments()[0] : null);							
+							onBWDone(call.getArguments().length > 0 ? call.getArguments()[0] : null);
 						} else {
 							log.debug("Sending empty call reply: {}", reply);
 						}
 					}
 					channel.write(reply);
 				}
-			}			
+			}
 		} else {
 			log.debug("Ignoring stream data notify with header: {}", source);
 		}
@@ -718,7 +751,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	protected int getChannelForStreamId(int streamId) {
 		return (streamId - 1) * 5 + 4;
 	}
-	
+
 	/**
 	 * Sets the protocol.
 	 * 
@@ -757,12 +790,32 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	}
 
 	/**
+	 * Returns true if swf verification is enabled
+	 * 
 	 * @return the swfVerification
 	 */
 	public boolean isSwfVerification() {
 		return swfVerification;
 	}
-	
+
+	/**
+	 * Returns true if bandwidth done has been invoked
+	 * 
+	 * @return the bandwidthCheckDone
+	 */
+	public boolean isBandwidthCheckDone() {
+		return bandwidthCheckDone;
+	}
+
+	/**
+	 * Returns true if this client is subscribed
+	 * 
+	 * @return subscribed
+	 */
+	public boolean isSubscribed() {
+		return subscribed;
+	}
+
 	/**
 	 * @return the connectionParams
 	 */
@@ -778,7 +831,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	public void setStreamEventDispatcher(IEventDispatcher streamEventDispatcher) {
 		this.streamEventDispatcher = streamEventDispatcher;
 	}
-	
+
 	/**
 	 * Setter for the stream event handler.
 	 * 
@@ -787,9 +840,9 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	public void setStreamEventHandler(INetStreamEventHandler streamEventHandler) {
 		this.streamEventHandler = streamEventHandler;
 	}
-		
+
 	private static class NetStream extends AbstractClientStream implements IEventDispatcher {
-		
+
 		private IEventDispatcher dispatcher;
 
 		public NetStream(IEventDispatcher dispatcher) {
@@ -817,7 +870,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	}
 
 	private class CreateStreamCallBack implements IPendingServiceCallback {
-		
+
 		private IPendingServiceCallback wrapped;
 
 		public CreateStreamCallBack(IPendingServiceCallback wrapped) {
@@ -847,20 +900,85 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		}
 	}
 
+	private class ReleaseStreamCallBack implements IPendingServiceCallback {
+
+		private IPendingServiceCallback wrapped;
+
+		public ReleaseStreamCallBack(IPendingServiceCallback wrapped) {
+			log.debug("ReleaseStreamCallBack {}", wrapped.getClass().getName());
+			this.wrapped = wrapped;
+		}
+
+		public void resultReceived(IPendingServiceCall call) {
+			wrapped.resultReceived(call);
+		}
+	}
+
+	private class DeleteStreamCallBack implements IPendingServiceCallback {
+
+		private IPendingServiceCallback wrapped;
+
+		public DeleteStreamCallBack(IPendingServiceCallback wrapped) {
+			log.debug("DeleteStreamCallBack {}", wrapped.getClass().getName());
+			this.wrapped = wrapped;
+		}
+
+		public void resultReceived(IPendingServiceCall call) {
+			Integer streamIdInt = (Integer) call.getResult();
+			log.debug("Stream id: {}", streamIdInt);
+			log.debug("Connection: {}", conn);
+			log.debug("DeleteStreamCallBack resultReceived - stream id: {}", streamIdInt);
+			if (conn != null && streamIdInt != null) {
+				log.debug("Deleting net stream");
+				conn.removeClientStream(streamIdInt);
+				// send a delete notify?
+				//NetStreamPrivateData streamData = streamDataMap.get(streamIdInt);
+				//streamData.handler.onStreamEvent(notify)
+				streamDataMap.remove(streamIdInt);
+			}
+			wrapped.resultReceived(call);
+		}
+	}
+
+	private class SubscribeStreamCallBack implements IPendingServiceCallback {
+
+		private IPendingServiceCallback wrapped;
+
+		public SubscribeStreamCallBack(IPendingServiceCallback wrapped) {
+			log.debug("SubscribeStreamCallBack {}", wrapped.getClass().getName());
+			this.wrapped = wrapped;
+		}
+
+		public void resultReceived(IPendingServiceCall call) {
+			log.debug("resultReceived", call);
+			if (call.getResult() instanceof ObjectMap<?, ?>) {
+				ObjectMap<?, ?> map = (ObjectMap<?, ?>) call.getResult();
+				if (map.containsKey("code")) {
+					String code = (String) map.get("code");
+					log.debug("Code: {}", code);
+					if (StatusCodes.NS_PLAY_START.equals(code)) {
+						subscribed = true;
+					}
+				}
+			}
+			wrapped.resultReceived(call);
+		}
+	}
+
 	private final class NetStreamPrivateData {
-		
+
 		public volatile INetStreamEventHandler handler;
 
 		public volatile OutputStream outputStream;
 
 		public volatile ConnectionConsumer connConsumer;
-		
+
 		{
 			if (streamEventHandler != null) {
 				handler = streamEventHandler;
 			}
 		}
-		
+
 	}
-	
+
 }
