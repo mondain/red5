@@ -23,11 +23,11 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.InputStreamReader;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IConnection;
-import org.red5.server.api.IScope;
 import org.red5.server.api.Red5;
+import org.red5.server.api.scope.IScope;
 import org.red5.server.api.stream.IStreamPlaybackSecurity;
 import org.slf4j.Logger;
 
