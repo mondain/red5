@@ -20,6 +20,8 @@ package org.red5.server.stream;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 
@@ -74,10 +76,15 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 	private String publishMode;
 
 	private final Semaphore lock = new Semaphore(1, true);
+
+	// task timer
+	private static Timer timer;
 	
 	public void init() {
 		rtmpClient = new RTMPClient();
 		setState(StreamState.STOPPED);
+		// create a timer
+		timer = new Timer();
 	}
 
 	public void start(String publishName, String publishMode, Object[] params) {
@@ -86,11 +93,18 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 		this.publishMode = publishMode;
 		// construct the default params
 		Map<String, Object> defParams = rtmpClient.makeDefaultConnectionParams(host, port, app);
+		defParams.put("swfUrl", "app:/Red5-StreamProxy.swf");
+		//defParams.put("pageUrl", String.format("http://%s:%d/%s", host, port, app));
+		defParams.put("pageUrl", "");
+		rtmpClient.setSwfVerification(true);
+		// set this as the netstream handler
+		rtmpClient.setStreamEventHandler(this);
 		// connect the client
 		rtmpClient.connect(host, port, defParams, this, params);
 	}
 
 	public void stop() {
+		timer.cancel();
 		if (state != StreamState.STOPPED) {
 			rtmpClient.disconnect();
 		}
@@ -98,8 +112,13 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 		frameBuffer.clear();
 	}
 
+	private void createStream() {
+		setState(StreamState.STREAM_CREATING);		
+		rtmpClient.createStream(this);
+	}
+	
 	public void onPipeConnectionEvent(PipeConnectionEvent event) {
-		// nothing to do
+		log.debug("onPipeConnectionEvent: {}", event);
 	}
 
 	public void pushMessage(IPipe pipe, IMessage message) throws IOException {
@@ -113,6 +132,15 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 	}
 
 	public void onOOBControlMessage(IMessageComponent source, IPipe pipe, OOBControlMessage oobCtrlMsg) {
+		log.debug("onOOBControlMessage: {}", oobCtrlMsg);
+	}
+	
+	/**
+	 * Called when bandwidth has been configured.
+	 */
+	public void onBWDone() {
+		log.debug("onBWDone");
+		rtmpClient.onBWDone(null);
 	}
 
 	public void setHost(String host) {
@@ -133,8 +161,7 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 		String code = (String) map.get("code");
 		log.debug("<:{}", code);
 		if (StatusCodes.NS_PUBLISH_START.equals(code)) {
-			setState(StreamState.PUBLISHED);
-			rtmpClient.invoke("FCPublish", new Object[] { publishName }, this);
+			setState(StreamState.PUBLISHED);	
 			IMessage message = null;
 			while ((message = frameBuffer.poll()) != null) {
 				rtmpClient.publishStreamData(streamId, message);
@@ -145,22 +172,26 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 	}
 
 	public void resultReceived(IPendingServiceCall call) {
-		log.debug("resultReceived:> {}", call.getServiceMethodName());
-		if ("connect".equals(call.getServiceMethodName())) {
-			setState(StreamState.STREAM_CREATING);
-			rtmpClient.createStream(this);
-		} else if ("createStream".equals(call.getServiceMethodName())) {
+		String method = call.getServiceMethodName();
+		log.debug("resultReceived:> {}", method);
+		if ("connect".equals(method)) {
+			//rtmpClient.releaseStream(this, new Object[] { publishName });
+			timer.schedule(new BandwidthStatusTask(), 2000L);
+		} else if ("releaseStream".equals(method)) {
+			//rtmpClient.invoke("FCPublish", new Object[] { publishName }, this);
+		} else if ("createStream".equals(method)) {
 			setState(StreamState.PUBLISHING);
 			Object result = call.getResult();
 			if (result instanceof Integer) {
-				Integer streamIdInt = (Integer) result;
-				streamId = streamIdInt.intValue();
+				streamId = ((Integer) result).intValue();
 				log.debug("Publishing: {}", state);
-				rtmpClient.publish(streamIdInt.intValue(), publishName, publishMode, this);
+				rtmpClient.publish(streamId, publishName, publishMode, this);
 			} else {
 				rtmpClient.disconnect();
 				setState(StreamState.STOPPED);
 			}
+		} else if ("FCPublish".equals(method)) {
+			
 		}
 	}
 	
@@ -196,5 +227,23 @@ public class StreamingProxy implements IPushableConsumer, IPipeConnectionListene
 	public boolean isRunning() {
 		return !getState().equals(StreamState.STOPPED);
 	}
+	
+
+	/**
+	 * Continues to check for onBWDone
+	 */
+	private final class BandwidthStatusTask extends TimerTask {
+
+		@Override
+		public void run() {
+			// check for onBWDone
+			log.debug("Bandwidth check done: {}", rtmpClient.isBandwidthCheckDone());
+			// cancel this task
+			this.cancel();
+			// initate the stream creation
+			createStream();
+		}
+
+	}	
 	
 }

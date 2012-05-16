@@ -44,8 +44,6 @@
 		timeToIdleSeconds="1200"
 		overflowToDisk="false"/>
 	
-	<!-- org.red5.io.amf.Output.serializeCache
-			 -->
 	<cache name="org.red5.io.amf.Output.serializeCache"
 		maxElementsInMemory="200"
 		eternal="false"

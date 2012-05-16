@@ -20,6 +20,8 @@ package org.red5.client;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.red5.client.net.rtmp.ClientExceptionHandler;
 import org.red5.client.net.rtmp.INetStreamEventHandler;
@@ -49,6 +51,12 @@ public class StreamRelay {
 	// our publisher
 	private static StreamingProxy proxy;
 
+	// task timer
+	private static Timer timer;
+
+	// the source being relayed
+	private static String sourceStreamName;
+
 	/**
 	 * Creates a stream client to consume a stream from an end point and a proxy to relay the stream
 	 * to another end point.
@@ -65,7 +73,8 @@ public class StreamRelay {
 			String sourceHost = args[0], destHost = args[3];
 			String sourceApp = args[1], destApp = args[4];
 			int sourcePort = 1935, destPort = 1935;
-			String sourceStreamName = args[2], destStreamName = args[5];
+			sourceStreamName = args[2];
+			String destStreamName = args[5];
 			String publishMode = args[6]; //live, record, or append
 			// look to see if port was included in host string
 			int colonIdx = sourceHost.indexOf(':');
@@ -80,39 +89,8 @@ public class StreamRelay {
 				destHost = destHost.substring(0, colonIdx);
 				System.out.printf("Destination host: %s port: %d\n", destHost, destPort);
 			}
-
-			// create the consumer
-			client = new RTMPClient();
-			client.setStreamEventDispatcher(new StreamEventDispatcher());
-			client.setStreamEventHandler(new INetStreamEventHandler() {
-				public void onStreamEvent(Notify notify) {
-					System.out.printf("onStreamEvent: %s\n", notify);
-					ObjectMap<?, ?> map = (ObjectMap<?, ?>) notify.getCall().getArguments()[0];
-					String code = (String) map.get("code");
-					System.out.printf("<:%s\n", code);
-					if (StatusCodes.NS_PLAY_STREAMNOTFOUND.equals(code)) {
-						System.out.println("Requested stream was not found");
-						client.disconnect();
-					} else if (StatusCodes.NS_UNPUBLISHED_SUCCESS.equals(code) || StatusCodes.NS_PLAY_COMPLETE.equals(code)) {
-						System.out.println("Source has stopped publishing or play is complete");
-						client.disconnect();
-					}
-				}
-			});
-			client.setConnectionClosedHandler(new Runnable() {
-				public void run() {
-					System.out.println("Source connection has been closed, proxy will be stopped");
-					proxy.stop();
-				}
-			});
-			client.setExceptionHandler(new ClientExceptionHandler() {
-				@Override
-				public void handleException(Throwable throwable) {
-					throwable.printStackTrace();
-					System.exit(1);
-				}
-			});
-
+			// create a timer
+			timer = new Timer();
 			// create our publisher
 			proxy = new StreamingProxy();
 			proxy.setHost(destHost);
@@ -132,7 +110,7 @@ public class StreamRelay {
 					System.exit(2);
 				}
 			});
-			proxy.start(destStreamName, publishMode, new Object[]{});
+			proxy.start(destStreamName, publishMode, new Object[] {});
 			// wait for the publish state
 			do {
 				try {
@@ -143,12 +121,42 @@ public class StreamRelay {
 			} while (!proxy.isPublished());
 			System.out.println("Publishing...");
 
+			// create the consumer
+			client = new RTMPClient();
+			client.setStreamEventDispatcher(new StreamEventDispatcher());
+			client.setStreamEventHandler(new INetStreamEventHandler() {
+				public void onStreamEvent(Notify notify) {
+					System.out.printf("onStreamEvent: %s\n", notify);
+					ObjectMap<?, ?> map = (ObjectMap<?, ?>) notify.getCall().getArguments()[0];
+					String code = (String) map.get("code");
+					System.out.printf("<:%s\n", code);
+					if (StatusCodes.NS_PLAY_STREAMNOTFOUND.equals(code)) {
+						System.out.println("Requested stream was not found");
+						client.disconnect();
+					} else if (StatusCodes.NS_PLAY_UNPUBLISHNOTIFY.equals(code) || StatusCodes.NS_PLAY_COMPLETE.equals(code)) {
+						System.out.println("Source has stopped publishing or play is complete");
+						client.disconnect();
+					}
+				}
+			});
+			client.setConnectionClosedHandler(new Runnable() {
+				public void run() {
+					System.out.println("Source connection has been closed, proxy will be stopped");
+					proxy.stop();
+				}
+			});
+			client.setExceptionHandler(new ClientExceptionHandler() {
+				@Override
+				public void handleException(Throwable throwable) {
+					throwable.printStackTrace();
+					System.exit(1);
+				}
+			});			
 			// connect the consumer
-			final CreateStreamCallback createStreamCallback = new CreateStreamCallback(sourceStreamName);
 			Map<String, Object> defParams = client.makeDefaultConnectionParams(sourceHost, sourcePort, sourceApp);
 			// add pageurl and swfurl
-			defParams.put("pageUrl", "player.html");
-			defParams.put("swfUrl", "player.swf");
+			defParams.put("pageUrl", "");
+			defParams.put("swfUrl", "app:/Red5-StreamRelay.swf");
 			// indicate for the handshake to generate swf verification data
 			client.setSwfVerification(true);
 			// connect the client
@@ -162,13 +170,14 @@ public class StreamRelay {
 						client.disconnect();
 						proxy.stop();
 					} else if ("NetConnection.Connect.Success".equals(code)) {
-						client.createStream(createStreamCallback);
+						// 1. Wait for onBWDone
+						timer.schedule(new BandwidthStatusTask(), 2000L);
 					} else {
 						System.out.printf("Unhandled response code: %s\n", code);
 					}
 				}
 			});
-
+			// keep sleeping main thread while the proxy runs
 			do {
 				try {
 					Thread.sleep(100L);
@@ -176,7 +185,8 @@ public class StreamRelay {
 					e.printStackTrace();
 				}
 			} while (!proxy.isRunning());
-
+			// kill the timer
+			//timer.cancel();
 			System.out.println("Stream relay exit");
 		}
 
@@ -199,27 +209,64 @@ public class StreamRelay {
 	}
 
 	/**
+	 * Handles result from subscribe call.
+	 */
+	private static final class SubscribeStreamCallBack implements IPendingServiceCallback {
+
+		public void resultReceived(IPendingServiceCall call) {
+			System.out.println("resultReceived: " + call);
+		}
+
+	}	
+	
+	/**
 	 * Creates a "stream" via playback, this is the source stream.
 	 */
 	private static final class CreateStreamCallback implements IPendingServiceCallback {
-
-		private String streamName;
-
-		public CreateStreamCallback(String streamName) {
-			System.out.println("createStreamCallback: " + streamName);
-			this.streamName = streamName;
-		}
 
 		public void resultReceived(IPendingServiceCall call) {
 			System.out.println("resultReceived: " + call);
 			int streamId = (Integer) call.getResult();
 			System.out.println("stream id: " + streamId);
-			client.ping(Ping.CLIENT_BUFFER, streamId, 2000);
-			if (streamName.endsWith(".flv") || streamName.endsWith(".f4v") || streamName.endsWith(".mp4")) {
-				client.play(streamId, streamName, 0, -1);
+			if (sourceStreamName.endsWith(".flv") || sourceStreamName.endsWith(".f4v") || sourceStreamName.endsWith(".mp4")) {
+				client.play(streamId, sourceStreamName, 0, -1);
 			} else {
-				client.play(streamId, streamName, -1, -1);
+				client.play(streamId, sourceStreamName, -1, -1);
 			}
+			client.ping(Ping.CLIENT_BUFFER, streamId, 2000);
+		}
+
+	}
+
+	/**
+	 * Continues to check for onBWDone
+	 */
+	private static final class BandwidthStatusTask extends TimerTask {
+
+		@Override
+		public void run() {
+			// check for onBWDone
+			System.out.println("Bandwidth check done: " + client.isBandwidthCheckDone());
+			// cancel this task
+			this.cancel();
+			// create a task to wait for subscribed
+			timer.schedule(new PlayStatusTask(), 1000L);
+			// 2. send FCSubscribe
+			client.subscribe(new SubscribeStreamCallBack(), new Object[] { sourceStreamName });
+		}
+
+	}
+
+	private static final class PlayStatusTask extends TimerTask {
+
+		@Override
+		public void run() {
+			// checking subscribed
+			System.out.println("Subscribed: " + client.isSubscribed());
+			// cancel this task
+			this.cancel();
+			// 3. create stream
+			client.createStream(new CreateStreamCallback());
 		}
 
 	}
