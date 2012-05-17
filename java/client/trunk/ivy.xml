@@ -9,6 +9,11 @@
 		<conf name="utest" extends="eclipse" description="Unit testing dependencies" />
 	</configurations>
 	<dependencies>
+	    <!-- Red5 -->
+	    <!-- 
+	    <dependency org="org.red5" name="red5-server" rev="1.0-RC2" />
+	     -->
+	    <!-- JEE -->
 		<dependency org="javax" name="javaee-api" rev="5.1.2" />
 		<!-- Spring -->
 		<dependency org="org.springframework" name="spring-aop" rev="3.1.1.RELEASE" />
