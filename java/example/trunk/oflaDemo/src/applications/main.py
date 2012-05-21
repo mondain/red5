@@ -6,9 +6,6 @@ main.py - a translation into Python of the ofla demo Application class, a Red5 e
 """
 
 from org.red5.server.adapter import ApplicationAdapter
-from org.red5.server.api import IBandwidthConfigure
-from org.red5.server.api.stream import IStreamCapableConnection
-from org.red5.server.api.stream.support import SimpleConnectionBWConfig
 
 class Application(ApplicationAdapter):
     
@@ -21,14 +18,6 @@ class Application(ApplicationAdapter):
     def appConnect(self, conn, params):
         ApplicationAdapter.appConnect(self, conn, params)
         print 'Python appConnect:', conn, params
-        self.measureBandwidth(conn)
-        if isinstance(conn, IStreamCapableConnection):
-            print 'Python setting bandwidth limits'
-            sbc = SimpleConnectionBWConfig()
-            sbc.getChannelBandwidth()[IBandwidthConfigure.OVERALL_CHANNEL] = 1024 * 1024
-            sbc.getChannelInitialBurst()[IBandwidthConfigure.OVERALL_CHANNEL] = 128 * 1024
-            conn.setBandwidthConfigure(sbc)
-        
         return 1
 
     def toString(self):
