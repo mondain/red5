@@ -19,7 +19,7 @@
 	<property name="javadoc.dir" value="doc/api"/>
 	<property name="debug.state" value="true"/>
 	<!-- Documentation properties -->
-	<property name="doc.ref.dir" value="../../../doc/trunk/reference"/>
+	<property name="doc.ref.dir" value="../../../../doc/trunk/reference"/>
 	<property name="doc.ref.lib" value="${doc.ref.dir}/lib"/>
 	<property name="javadoc.style" value="${doc.ref.dir}/styles/javadoc.css"/>
 	<!-- unit testing -->
@@ -219,8 +219,7 @@
 		<javac sourcepath="" srcdir="${src.dir}" destdir="${dest.dir}" classpathref="project.classpath"
 			 optimize="${build.optimize}" verbose="${build.verbose}" fork="${build.fork}" nowarn="${build.nowarn}"
 			 deprecation="${build.deprecation}" debug="${debug.state}" compiler="${compiler}"
-			 source="${java.target_version}" target="${java.target_version}" memoryMaximumSize="${memory.maximum}"
-			 excludes="${std_excludes}" listfiles="false" includeantruntime="false"/>
+			 source="${java.target_version}" target="${java.target_version}" memoryInitialSize="256m" memoryMaximumSize="${memory.maximum}" excludes="${std_excludes}" listfiles="false" includeantruntime="false" />
 		<!-- touch this source file so that the revision number will be updated upon svn commit -->
 		<touch file="${src.dir}/org/red5/server/api/Red5.java"/>
 	</target>
@@ -549,7 +548,7 @@
 		<chmod file="${dist.dir}/red5-debug.sh" perm="755"/>
 		<chmod file="${dist.dir}/red5-highperf.sh" perm="755"/>
 	</target>
-	<target name="dist-installer" description="Create installer distribution" depends="clean, ivyclear, dist, javadoc">
+	<target name="dist-installer" description="Create installer distribution" depends="clean, dist, javadoc">
 		<copy todir="${dist.dir}/doc">
 			<fileset dir="doc"/>
 		</copy>
