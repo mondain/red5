@@ -12,7 +12,7 @@ from java.util import Date
 from java.util import HashMap
 
 from org.red5.server.api import Red5
-from org.red5.server.webapp.oflaDemo import IDemoService
+from org.red5.demos.oflaDemo import IDemoService
 
 class DemoService(IDemoService):
     
