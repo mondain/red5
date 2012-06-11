@@ -92,8 +92,8 @@ class RTMPTClientConnector extends Thread {
 			RTMPTClientConnection connection = openConnection();
 			while (!connection.isClosing() && !stopRequested) {
 				IoBuffer toSend = connection.getPendingMessages(SEND_TARGET_SIZE);			
-				int limit = toSend.limit();
-				if (toSend != null && limit > 0) {
+				int limit = toSend != null ? toSend.limit() : 0;
+				if (limit > 0) {
 					post = makePost("send");
 					post.setEntity(new InputStreamEntity(toSend.asInputStream(), limit));
 					post.addHeader("Content-Type", CONTENT_TYPE);
@@ -109,7 +109,9 @@ class RTMPTClientConnector extends Thread {
 				byte[] received = EntityUtils.toByteArray(response.getEntity());
 				IoBuffer data = IoBuffer.wrap(received);
 				data.flip();
-				data.skip(1); // XXX: polling interval lies in this byte
+				if (data.limit() > 0) {
+					data.skip(1); // XXX: polling interval lies in this byte
+				}
 				List<?> messages = connection.decode(data);
 				if (messages == null || messages.isEmpty()) {
 					try {

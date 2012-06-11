@@ -54,6 +54,7 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 		codecFactory = new RTMPTCodecFactory();
 		codecFactory.setDeserializer(new Deserializer());
 		codecFactory.setSerializer(new Serializer());
+		codecFactory.init();
 	}
 
 	public Map<String, Object> makeDefaultConnectionParams(String server, int port, String application) {
