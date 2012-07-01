@@ -108,7 +108,6 @@ class RTMPTClientConnector extends Thread {
 				// handle data
 				byte[] received = EntityUtils.toByteArray(response.getEntity());
 				IoBuffer data = IoBuffer.wrap(received);
-				data.flip();
 				if (data.limit() > 0) {
 					data.skip(1); // XXX: polling interval lies in this byte
 				}

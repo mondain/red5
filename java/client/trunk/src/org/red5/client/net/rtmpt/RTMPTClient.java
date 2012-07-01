@@ -27,7 +27,6 @@ import org.red5.io.object.Deserializer;
 import org.red5.io.object.Serializer;
 import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.RTMPConnection;
-import org.red5.server.net.rtmp.RTMPMinaConnection;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.codec.RTMPProtocolDecoder;
 import org.red5.server.net.rtmp.codec.RTMPProtocolEncoder;
@@ -74,7 +73,7 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 	/** {@inheritDoc} */
 	@Override
 	public void messageReceived(Object in, IoSession session) throws Exception {
-		RTMPConnection conn = (RTMPMinaConnection) session.getAttribute(RTMPConnection.RTMP_CONNECTION_KEY);
+		RTMPConnection conn = (RTMPTClientConnection) session.getAttribute(RTMPConnection.RTMP_CONNECTION_KEY);
 		RTMP state = (RTMP) session.getAttribute(ProtocolState.SESSION_KEY);
 		if (in instanceof IoBuffer) {
 			rawBufferRecieved(conn, state, (IoBuffer) in);
@@ -95,10 +94,16 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 	 */
 	private void rawBufferRecieved(RTMPConnection conn, ProtocolState state, IoBuffer in) {
 		log.debug("Handshake 3d phase - size: {}", in.remaining());
-		in.skip(1);
 		IoBuffer out = IoBuffer.allocate(Constants.HANDSHAKE_SIZE);
-		in.limit(in.position() + Constants.HANDSHAKE_SIZE);
-		out.put(in);
+		IoBuffer tmp = in;
+		if (!tmp.isAutoExpand()) {
+			tmp = IoBuffer.allocate(tmp.position() + Constants.HANDSHAKE_SIZE);
+			tmp.setAutoExpand(true);
+			tmp.put(tmp);
+		}
+		tmp.skip(1);
+		tmp.limit(tmp.position() + Constants.HANDSHAKE_SIZE);
+		out.put(tmp);
 		out.flip();
 		conn.writeRaw(out);
 		connectionOpened(conn, conn.getState());
