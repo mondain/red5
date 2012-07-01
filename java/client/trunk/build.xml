@@ -136,8 +136,7 @@
 		<javac sourcepath="" srcdir="${src.dir}" destdir="${dest.dir}" classpathref="project.classpath"
 			 optimize="${build.optimize}" verbose="${build.verbose}" fork="${build.fork}" nowarn="${build.nowarn}"
 			 deprecation="${build.deprecation}" debug="${debug.state}" compiler="${compiler}"
-			 source="${java.target_version}" target="${java.target_version}" memoryMaximumSize="${memory.maximum}"
-			 listfiles="false" includeantruntime="false"/>
+			 source="${java.target_version}" target="${java.target_version}" memoryInitialSize="${memory.minimum}" memoryMaximumSize="${memory.maximum}"  listfiles="false" includeantruntime="false"/>
 	</target>
 	<target name="javadoc" depends="-java6.check" description="Generate JavaDoc">
 		<condition property="available.envpath" value="Path: ${env.Path}" else="Not using env.Path">
