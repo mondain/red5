@@ -3,13 +3,13 @@
   <groupId>org.red5</groupId>
   <artifactId>red5-client</artifactId>
   <versioning>
-    <latest>1.0-RC3-r4388</latest>
+    <latest>1.0-RC3-r4388-java6</latest>
     <release>1.0-RC2</release>
     <versions>
       <version>1.0-RC2</version>
       <version>1.0-RC3-r4388</version>
       <version>1.0-RC3-r4388-java6</version>
     </versions>
-    <lastUpdated>20120730143302</lastUpdated>
+    <lastUpdated>20120730143304</lastUpdated>
   </versioning>
 </metadata>
