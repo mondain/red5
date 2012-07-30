@@ -21,8 +21,20 @@
     </archetype>
     <archetype>
       <groupId>org.red5</groupId>
+      <artifactId>red5-server</artifactId>
+      <version>1.0-RC3-r4388</version>
+      <description>Red5 core server</description>
+    </archetype>
+    <archetype>
+      <groupId>org.red5</groupId>
       <artifactId>red5-client</artifactId>
       <version>1.0-RC2</version>
+      <description>Red5 client</description>
+    </archetype>
+    <archetype>
+      <groupId>org.red5</groupId>
+      <artifactId>red5-client</artifactId>
+      <version>1.0-RC3-r4388</version>
       <description>Red5 client</description>
     </archetype>
   </archetypes>
