@@ -22,12 +22,13 @@ package org.red5.server.plugin.oflaDemo;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.ClientRegistry;
 import org.red5.server.Context;
-import org.red5.server.GlobalScope;
 import org.red5.server.MappingStrategy;
-import org.red5.server.Scope;
-import org.red5.server.ScopeResolver;
-import org.red5.server.api.IScope;
+import org.red5.server.api.scope.IScope;
+import org.red5.server.api.scope.ScopeType;
 import org.red5.server.plugin.Red5Plugin;
+import org.red5.server.scope.GlobalScope;
+import org.red5.server.scope.Scope;
+import org.red5.server.scope.ScopeResolver;
 import org.red5.server.service.ServiceInvoker;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -86,7 +87,7 @@ public class OflaDemoPlugin extends Red5Plugin {
 		ctx.setServiceInvoker(new ServiceInvoker());
 		
 		//create a scope for the admin
-		Scope scope = new Scope.Builder((IScope) global, "scope", "oflaDemo", false).build();
+		Scope scope = new Scope.Builder((IScope) global, ScopeType.APPLICATION, "oflaDemo", false).build();
 		scope.setContext(ctx);
 		scope.setHandler(handler);
 		
