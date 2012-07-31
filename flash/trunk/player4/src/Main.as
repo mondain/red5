@@ -45,7 +45,7 @@ package {
 		
 		public var server : String;
 		
-		public var location : String;
+		public var location : String = "prometheus.mp4";
 		
 		public var playerVideo : Video; 
 
@@ -225,7 +225,8 @@ package {
 				nc.objectEncoding = ObjectEncoding.AMF0;
 				//  set it's client/focus to this
 				nc.client = this;
-				//
+				// Acceptable values are "none", "HTTP", "CONNECT", and "best"
+				// The default value is "none".
 				nc.proxyType = "best";
         
 				// add listeners for netstatus and security issues
@@ -303,7 +304,6 @@ package {
 						ns.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
 						ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
 						ns.client = this;
-
                         if (location) {                                    
     						playerVideo = new Video();
     						playerVideo.attachNetStream(ns);
@@ -364,18 +364,24 @@ package {
 						break;
 					case "NetConnection.Connect.CertificateUntrustedSigner":
 					   log("Certificate is not trusted");
-                       desc = evt.info.description;
-                       log("Description: " + desc);
+					   if (evt.info.description) {
+						   desc = evt.info.description;
+						   log("Description: " + desc);
+					   }
 					   break;
 					case "NetConnection.Connect.CertificatePrincipalMismatch":
                        log("Certificate problem");
-                       desc = evt.info.description;
-                       log("Description: " + desc);
+					   if (evt.info.description) {
+	                       desc = evt.info.description;
+	                       log("Description: " + desc);
+					   }
                        break;
                     case "NetConnection.Connect.SSLHandshakeFailed":
                        log("SSL handshake failed");
-                       desc = evt.info.description;
-                       log("Description: " + desc);
+					   if (evt.info.description) {
+						   desc = evt.info.description;
+						   log("Description: " + desc);
+					   }
                        break;
 				}           
 			}

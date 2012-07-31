@@ -20,14 +20,14 @@ package org.red5.server.plugin.oflaDemo;
  */
 
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.Scope;
-import org.red5.server.api.IBasicScope;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
-import org.red5.server.api.IScope;
-import org.red5.server.api.IScopeHandler;
 import org.red5.server.api.event.IEvent;
+import org.red5.server.api.scope.IBasicScope;
+import org.red5.server.api.scope.IScope;
+import org.red5.server.api.scope.IScopeHandler;
 import org.red5.server.api.service.IServiceCall;
+import org.red5.server.scope.Scope;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 
