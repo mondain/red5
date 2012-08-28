@@ -531,8 +531,8 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 			// call play
 			Object[] params = new Object[3];
 			params[0] = name;
-			params[1] = (start >= 1000) ? start : start*1000;
-			params[2] = (length >= 1000) ? length : length*1000;
+			params[1] = (start >= 1000 || start <= -1000) ? start : start*1000;
+			params[2] = (length >= 1000 || length <= -1000) ? length : length*1000;
 			PendingCall pendingCall = new PendingCall("play", params);
 			conn.invoke(pendingCall, channel);
 		} else {
