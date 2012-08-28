@@ -17,6 +17,7 @@
                 <artifact pattern="http://oss.sonatype.org/content/repositories/central/[artifact]/[artifact]/[revision]/[artifact]-[revision].[ext]" />
             </url>
             <url name="googlecode">
+                <artifact pattern="http://red5.googlecode.com/svn/snapshots/[artifact](-[revision]).[ext]" />
                 <artifact pattern="http://red5.googlecode.com/svn/repository/[artifact](-[revision]).[ext]" />
                 <artifact pattern="http://red5.googlecode.com/svn/repository/[organisation]/[artifact](-[revision]).[ext]" />
                 <artifact pattern="http://red5.googlecode.com/svn/repository/[organisation]/[artifact]/[revision]/[artifact]-[revision].[ext]" />
