@@ -10,7 +10,7 @@
 	</configurations>
 	<dependencies>
 	    <!-- Red5 -->
-		<dependency org="red5" name="red5-server" rev="1.0-RC3-r4380"/>
+		<dependency name="red5-server" rev="1.0-RC3-r4388-java6"/>
 	    <!-- JEE -->
 		<dependency org="javax" name="javaee-api" rev="5.1.2" />
 		<!-- Spring -->
