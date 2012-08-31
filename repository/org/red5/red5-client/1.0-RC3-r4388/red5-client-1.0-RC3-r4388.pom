@@ -5,5 +5,7 @@
   <packaging>bundle</packaging>
   <name>Red5 :: Client</name>
   <description>The Red5 client</description>
+  <groupId>org.red5</groupId>
+  <version>1.0-RC3-r4388</version>
 </project>
 
