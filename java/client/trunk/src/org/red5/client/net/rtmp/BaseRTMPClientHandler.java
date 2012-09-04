@@ -642,7 +642,9 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		log.debug("connectionClosed");
 		super.connectionClosed(conn, state);
 		if (connectionClosedHandler != null) {
-			connectionClosedHandler.run();
+			Thread t = new Thread(connectionClosedHandler);
+			t.setDaemon(true);
+			t.start();
 		}
 	}
 

@@ -6,6 +6,7 @@ import org.red5.server.api.event.IEventDispatcher;
 import org.red5.server.api.service.IPendingServiceCallback;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.messaging.IMessage;
+import org.red5.server.net.rtmp.RTMPConnection;
 
 public interface IRTMPClient {
 	
@@ -49,4 +50,5 @@ public interface IRTMPClient {
 
 	public Map<String, Object> makeDefaultConnectionParams(String server, int port, String application);
 	
+	public RTMPConnection getConnection();
 }
