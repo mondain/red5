@@ -5,7 +5,7 @@
 	<configurations defaultconfmapping="default">
 		<conf name="default" />
 		<conf name="java6" extends="default" description="Java 6 dependencies" />
-		<conf name="eclipse" description="Special dependencies in Eclipse" />
+		<conf name="eclipse" extends="java6" description="Special dependencies in Eclipse" />
 		<conf name="utest" extends="eclipse" description="Unit testing dependencies" />
 	</configurations>
 	<dependencies>
