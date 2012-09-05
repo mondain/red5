@@ -5,7 +5,7 @@
 	<configurations defaultconfmapping="default">
 		<conf name="default" />
 		<conf name="java6" extends="default" description="Java 6 dependencies" />
-		<conf name="eclipse" extends="java6" description="Special dependencies in Eclipse" />
+		<conf name="eclipse" description="Special dependencies in Eclipse" />
 		<conf name="utest" extends="eclipse" description="Unit testing dependencies" />
 	</configurations>
 	<dependencies>
@@ -41,10 +41,14 @@
 		<dependency org="net.sf.ehcache" name="ehcache-core" rev="2.5.0" />
 		<!-- XML -->
 		<dependency org="org.apache.xerces" name="com.springsource.org.apache.xerces" rev="2.9.1" />
-		<!-- Mina -->
-		<dependency org="org.apache.mina" name="mina-integration-beans" rev="2.0.5" />
-		<dependency org="org.apache.mina" name="mina-integration-jmx" rev="2.0.5" />
-		<dependency org="org.apache.mina" name="mina-core" rev="2.0.5" />
+        <!-- Mina -->
+        <dependency org="org.apache.mina" name="mina-integration-beans" rev="2.0.5" conf="java6->*" />
+        <dependency org="org.apache.mina" name="mina-integration-jmx" rev="2.0.5" conf="java6->*" />
+        <dependency org="org.apache.mina" name="mina-core" rev="2.0.5" conf="java6->*" />
+        <!-- Special deps for IvyDE to continue working -->
+        <dependency org="mina" name="mina-integration-beans" rev="2.0.4" conf="eclipse->*" />
+        <dependency org="mina" name="mina-integration-jmx" rev="2.0.4" conf="eclipse->*" />
+        <dependency org="mina" name="mina-core" rev="2.0.4" conf="eclipse->*" />
 		<!-- Crypto -->
 		<dependency name="bcprov-jdk16" rev="145" conf="java6->*" />
 		<!-- MP3 -->
