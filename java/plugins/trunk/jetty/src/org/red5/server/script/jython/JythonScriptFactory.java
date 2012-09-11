@@ -27,7 +27,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.python.core.Py;
 import org.python.core.PyFunction;
-import org.python.core.PyJavaInstance;
+import org.python.core.PyJavaType;
 import org.python.core.PyObject;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
@@ -50,7 +50,6 @@ public class JythonScriptFactory implements ScriptFactory {
 	private static Logger logger = LoggerFactory.getLogger(JythonScriptFactory.class);
 	
 	private final String scriptSourceLocator;
-	@SuppressWarnings("unchecked")
 	private final Class[] scriptInterfaces;
 	private final Object[] arguments;
 
@@ -61,7 +60,6 @@ public class JythonScriptFactory implements ScriptFactory {
 		this.arguments = null;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public JythonScriptFactory(String scriptSourceLocator, Class[] scriptInterfaces) {
 		Assert.hasText(scriptSourceLocator);
 		Assert.notEmpty(scriptInterfaces);
@@ -70,7 +68,6 @@ public class JythonScriptFactory implements ScriptFactory {
 		this.arguments = null;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public JythonScriptFactory(String scriptSourceLocator, Class[] scriptInterfaces, Object[] arguments) {
 		Assert.hasText(scriptSourceLocator);
 		Assert.notEmpty(scriptInterfaces);
@@ -89,8 +86,7 @@ public class JythonScriptFactory implements ScriptFactory {
 	}
 
 	/** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-	public Class[] getScriptInterfaces() {
+    public Class[] getScriptInterfaces() {
 		return scriptInterfaces;
 	}
 
@@ -100,8 +96,7 @@ public class JythonScriptFactory implements ScriptFactory {
 	}
 
 	/** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-	public Object getScriptedObject(ScriptSource scriptSourceLocator, Class[] scriptInterfaces)
+    public Object getScriptedObject(ScriptSource scriptSourceLocator, Class[] scriptInterfaces)
 			throws IOException, ScriptCompilationException {
     	// TODO: how to do this when running under Tomcat?
     	ContextHandler handler = WebAppContext.getCurrentWebAppContext();
@@ -142,8 +137,8 @@ public class JythonScriptFactory implements ScriptFactory {
 					_this = ((PyFunction) getInstance).__call__();
 				} else {
 					PyObject[] args = new PyObject[arguments.length];
-					for (int i=0; i<arguments.length; i++) {
-						args[i] = new PyJavaInstance(arguments[i]);
+					for (int i = 0; i < arguments.length; i++) {
+						args[i] = PyJavaType.wrapJavaObject(arguments[i]);
 					}
 					_this = ((PyFunction) getInstance).__call__(args);
 				}
@@ -165,7 +160,6 @@ public class JythonScriptFactory implements ScriptFactory {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Class getScriptedObjectType(ScriptSource src) throws IOException, ScriptCompilationException {
 		return null;
 	}

@@ -15,13 +15,13 @@
         <dependency org="org.springframework" name="spring-expression" rev="3.1.1.RELEASE" />
         <dependency org="org.springframework" name="spring-web" rev="3.1.1.RELEASE" />
         <!-- Logging -->
-        <dependency org="org.slf4j" name="com.springsource.slf4j.api" rev="1.6.1" transitive="false" />
-        <dependency org="org.slf4j" name="com.springsource.slf4j.bridge" rev="1.6.1" transitive="false" />
-        <dependency name="jul-to-slf4j" rev="1.6.1" />
-        <dependency name="log4j-over-slf4j" rev="1.6.1" />
-        <dependency name="jcl-over-slf4j" rev="1.6.1" />
-        <dependency name="logback-classic" rev="0.9.28" />
-        <dependency name="logback-core" rev="0.9.28" />
+        <dependency org="org.slf4j" name="slf4j-api" rev="1.6.4" transitive="false" />
+        <dependency org="org.slf4j" name="jul-to-slf4j" rev="1.6.4" />
+        <dependency org="org.slf4j" name="log4j-over-slf4j" rev="1.6.4" />
+        <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.6.4" />
+        <dependency org="ch.qos.logback" name="logback-classic" rev="1.0.3" />
+        <dependency org="ch.qos.logback" name="logback-core" rev="1.0.3" />
+        <dependency name="sysout-over-slf4j" rev="1.0.2" />
         <!-- Jetty --> 
         <dependency org="org.eclipse.jetty" name="jetty-continuation" rev="7.6.4.v20120524" />
         <dependency org="org.eclipse.jetty" name="jetty-deploy" rev="7.6.4.v20120524" />
@@ -39,6 +39,8 @@
         <!-- XML -->
         <dependency org="org.apache.xerces" name="com.springsource.org.apache.xerces" rev="2.9.1" />
         <dependency name="xmlrpc" rev="2.0.1" />
+        <!-- Scripting -->
+        <dependency org="org.python" name="jython-standalone" rev="2.5.2" />
         <!-- Mina -->
         <dependency org="mina" name="mina-integration-beans" rev="2.0.4" />
         <dependency org="mina" name="mina-integration-jmx" rev="2.0.4" />
