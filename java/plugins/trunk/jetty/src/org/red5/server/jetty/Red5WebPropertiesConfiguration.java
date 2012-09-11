@@ -29,13 +29,13 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.red5.server.Context;
 import org.red5.server.ContextLoader;
 import org.red5.server.LoaderBase;
-import org.red5.server.WebScope;
 import org.red5.server.adapter.ApplicationAdapter;
 import org.red5.server.api.IClientRegistry;
 import org.red5.server.api.IMappingStrategy;
-import org.red5.server.api.IScopeResolver;
 import org.red5.server.api.IServer;
+import org.red5.server.api.scope.IScopeResolver;
 import org.red5.server.api.service.IServiceInvoker;
+import org.red5.server.scope.WebScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryLocator;
@@ -49,6 +49,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  */
 public class Red5WebPropertiesConfiguration implements Configuration, EventListener {
 
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 951479449391784526L;
 
 	/**
@@ -195,6 +196,19 @@ public class Red5WebPropertiesConfiguration implements Configuration, EventListe
 
 	@Override
 	public void preConfigure(WebAppContext context) throws Exception {
+	}
+
+	@Override
+	public void destroy(WebAppContext context) throws Exception {
+		if (!context.isStopped() && !context.isStopping()) {
+			context.stop();
+		}
+		context.destroy();
+	}
+
+	@Override
+	public void cloneConfigure(WebAppContext template, WebAppContext context) throws Exception {
+		throw new UnsupportedOperationException("Clone not supported");
 	}
 
 }

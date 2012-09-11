@@ -19,7 +19,19 @@ package org.red5.server.jetty;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.management.ManagementFactory;
+import java.util.Map;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.eclipse.jetty.deploy.WebAppDeployer;
 import org.eclipse.jetty.server.Connector;
@@ -31,15 +43,16 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.red5.server.LoaderBase;
 import org.red5.server.api.IApplicationContext;
-import org.red5.server.jmx.JMXAgent;
 import org.red5.server.jmx.mxbeans.LoaderMXBean;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.AbstractApplicationContext;
 
 /**
  * Class that loads Red5 applications using Jetty.
  */
+@SuppressWarnings("deprecation")
 public class JettyLoader extends LoaderBase implements LoaderMXBean {
 
 	/**
@@ -48,19 +61,16 @@ public class JettyLoader extends LoaderBase implements LoaderMXBean {
 	protected static Logger log = LoggerFactory.getLogger(JettyLoader.class);
 
 	/**
-	 *  Default web config filename
-	 */
-	protected String defaultWebConfig = "plugins/jetty-web.xml";
-
-	/**
 	 *  IServer implementation
 	 */
 	protected Server jetty;
 
 	protected Connector[] connectors;
+
 	protected ThreadPool threadPool;
+
 	protected HandlerCollection handlers;
-	
+
 	/**
 	 * Remove context from the current host.
 	 * 
@@ -96,6 +106,18 @@ public class JettyLoader extends LoaderBase implements LoaderMXBean {
 		log.info("Loading Jetty context");
 		// So this class is left just starting jetty
 		try {
+			// locate default web config
+			File webConfigFile = new File(System.getProperty("red5.plugins_root"), "jetty-web.xml");
+			if (!webConfigFile.exists()) {
+				// extract from the jar
+				extractFromJAR("jetty-web.xml", System.getProperty("red5.plugins_root"));
+				if (!webConfigFile.exists()) {
+					log.warn("Default web config was not found");
+				}
+			}
+			String defaultWebConfig = webConfigFile.getAbsolutePath();
+			log.info("Default web config file: {}", defaultWebConfig);
+
 			if (webappFolder == null) {
 				// Use default webapps directory
 				webappFolder = FileUtil.formatPath(System.getProperty("red5.root"), "/webapps");
@@ -116,7 +138,7 @@ public class JettyLoader extends LoaderBase implements LoaderMXBean {
 
 			// instance a new org.mortbay.jetty.Server
 			log.info("Starting jetty servlet engine");
-			jetty = new Server();			
+			jetty = new Server();
 			jetty.setConnectors(connectors);
 			jetty.setHandler(handlers);
 			jetty.setThreadPool(threadPool);
@@ -158,8 +180,30 @@ public class JettyLoader extends LoaderBase implements LoaderMXBean {
 		return false;
 	}
 
-	public void registerJMX() {
-		JMXAgent.registerMBean(this, this.getClass().getName(), LoaderMXBean.class);
+	protected void registerJMX() {
+		// register with jmx
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		try {
+			ObjectName oName = new ObjectName("org.red5.server:type=JettyLoader");
+			// check for existing registration before registering
+			if (!mbs.isRegistered(oName)) {
+				mbs.registerMBean(this, oName);
+			} else {
+				log.debug("ContextLoader is already registered in JMX");
+			}
+		} catch (Exception e) {
+			log.warn("Error on jmx registration", e);
+		}
+	}
+
+	protected void unregisterJMX() {
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		try {
+			ObjectName oName = new ObjectName("org.red5.server:type=JettyLoader");
+			mbs.unregisterMBean(oName);
+		} catch (Exception e) {
+			log.warn("Exception unregistering", e);
+		}
 	}
 
 	public Connector[] getConnectors() {
@@ -183,13 +227,58 @@ public class JettyLoader extends LoaderBase implements LoaderMXBean {
 	 */
 	public void shutdown() {
 		log.info("Shutting down Jetty context");
-		JMXAgent.shutdown();
+		//run through the applications and ensure that spring is told
+		//to commence shutdown / disposal
+		AbstractApplicationContext absCtx = (AbstractApplicationContext) LoaderBase.getApplicationContext();
+		if (absCtx != null) {
+			log.debug("Using loader base application context for shutdown");
+			//get all the app (web) contexts and shut them down first
+			Map<String, IApplicationContext> contexts = LoaderBase.getRed5ApplicationContexts();
+			if (contexts.isEmpty()) {
+				log.info("No contexts were found to shutdown");
+			}
+			for (Map.Entry<String, IApplicationContext> entry : contexts.entrySet()) {
+				//stop the context
+				log.debug("Calling stop on context: {}", entry.getKey());
+				entry.getValue().stop();
+			}
+			if (absCtx.isActive()) {
+				log.debug("Closing application context");
+				absCtx.close();
+			}
+		} else {
+			log.error("Error getting Spring bean factory for shutdown");
+		}
 		try {
 			jetty.stop();
 			System.exit(0);
 		} catch (Exception e) {
 			log.warn("Jetty could not be stopped", e);
 			System.exit(1);
+		}
+	}
+
+	private void extractFromJAR(String filePath, String dest) {
+		try {
+			String home = getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " ");
+			JarFile jar = new JarFile(home);
+			ZipEntry entry = jar.getEntry(filePath);
+			File efile = new File(dest, entry.getName());
+			InputStream in = new BufferedInputStream(jar.getInputStream(entry));
+			OutputStream out = new BufferedOutputStream(new FileOutputStream(efile));
+			byte[] buffer = new byte[2048];
+			for (;;) {
+				int nBytes = in.read(buffer);
+				if (nBytes <= 0) {
+					break;
+				}
+				out.write(buffer, 0, nBytes);
+			}
+			out.flush();
+			out.close();
+			in.close();
+		} catch (Exception e) {
+			log.warn("Exception extracting file from jar", e);
 		}
 	}
 
