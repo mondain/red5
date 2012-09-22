@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<registry lastupdate="2012-04-28T17:29">
+<registry lastupdate="2012-09-22T12:09">
 	<applications>
 		<application name="oflaDemo">
 			<author>Red5 Team</author>
@@ -10,6 +10,11 @@
 			<author>Red5 Team</author>
 			<desc>Shared object demo</desc>
 			<filename>SOSample-r4326-java6.war</filename>
+		</application>
+		<application name="SystemUtils">
+			<author>DZS|All-In-One (coolest2guy@gmail.com)</author>
+			<desc>System utility</desc>
+			<filename>SystemUtils-1.0-r4418.war</filename>
 		</application>
 	</applications>
 </registry>

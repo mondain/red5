@@ -66,3 +66,10 @@ application web.xml as follows.
     </mime-mapping>	
 	
 Special thanks to Infrared5 Inc. for donating the initial code.
+
+Notes:
+Cupertino / Apple HLS is very particular with encoding. 
+* Minimum of 10 second of chunk
+* Keyframe interval of 2
+* Use Baseline 3.0
+
