@@ -13,8 +13,8 @@
 	</organization>
     <modules>
         <module>SystemUtils</module>
-		<!--
         <module>oflaDemo</module>
+		<!--
         <module>admin</module>
 		-->
     </modules>

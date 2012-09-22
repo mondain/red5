@@ -23,7 +23,7 @@
 	<bean id="web.handler" class="org.red5.demos.oflaDemo.Application" />
 <!--
 	<bean id="web.handler" class="org.red5.server.script.rhino.RhinoScriptFactory">
-		<constructor-arg index="0" value="classpath:applications/main.js"/>
+		<constructor-arg index="0" value="classpath:main.js"/>
 		<constructor-arg index="1">
 			<list>
      			<value>org.red5.server.api.IScopeHandler</value>
@@ -36,7 +36,7 @@
 	</bean>
 
 	<bean id="web.handler" class="org.springframework.scripting.jruby.JRubyScriptFactory">
-		<constructor-arg index="0" value="classpath:applications/main.rb"/>
+		<constructor-arg index="0" value="classpath:main.rb"/>
 		<constructor-arg index="1">
 			<list>
 				<value>org.red5.server.api.IScopeHandler</value>
@@ -46,7 +46,7 @@
 	</bean>
 
 	<bean id="web.handler" class="org.red5.server.script.groovy.GroovyScriptFactory">
-		<constructor-arg index="0" value="classpath:applications/main.groovy"/>
+		<constructor-arg index="0" value="classpath:main.groovy"/>
 		<constructor-arg index="1">
 			<list>
 				<value>org.red5.server.api.IScopeHandler</value>
@@ -56,7 +56,7 @@
 	</bean>
 
 	<bean id="web.handler" class="org.red5.server.script.jython.JythonScriptFactory">
-		<constructor-arg index="0" value="classpath:applications/main.py"/>
+		<constructor-arg index="0" value="classpath:main.py"/>
 		<constructor-arg index="1">
 			<list>
      			<value>org.red5.server.api.IScopeHandler</value>
@@ -75,7 +75,7 @@
     <bean id="demoService.service" class="org.red5.demos.oflaDemo.DemoService" />
 <!--
 	<bean id="demoService.service" class="org.red5.server.script.rhino.RhinoScriptFactory">
-		<constructor-arg index="0" value="classpath:applications/demoservice.js"/>
+		<constructor-arg index="0" value="classpath:demoservice.js"/>
 		<constructor-arg index="1">
 			<list>
      			<value>org.red5.demos.oflaDemo.IDemoService</value>
@@ -87,7 +87,7 @@
 	</bean>
 
 	<bean id="demoService.service" class="org.springframework.scripting.jruby.JRubyScriptFactory">
-		<constructor-arg index="0" value="classpath:applications/demoservice.rb"/>
+		<constructor-arg index="0" value="classpath:demoservice.rb"/>
 		<constructor-arg index="1">
 			<list>
      			<value>org.red5.demos.oflaDemo.IDemoService</value>
@@ -96,7 +96,7 @@
 	</bean>
 
 	<bean id="demoService.service" class="org.red5.server.script.jython.JythonScriptFactory">
-		<constructor-arg index="0" value="classpath:applications/demoservice.py"/>
+		<constructor-arg index="0" value="classpath:demoservice.py"/>
 		<constructor-arg index="1">
 			<list>
 				<value>org.red5.demos.oflaDemo.IDemoService</value>
