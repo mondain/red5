@@ -368,5 +368,6 @@
 		<cargo.wait>false</cargo.wait>
 		<tomcat.version>6.0.29</tomcat.version>
 	</properties>
-	<url>http://red5.googlecode.com/svn/java/example/trunk/SystemUtils</url>
+	<url>http://red5.googlecode.com/svn/java/example/trunk/oflaDemo</url>
+	<description>Demo project originally created to showcase Red5 features during the OFLA convention.</description>
 </project>
