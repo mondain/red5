@@ -44,6 +44,18 @@
       <version>1.0-RC3-r4415-java6</version>
       <description>Red5 core server</description>
     </archetype>
+    <archetype>
+      <groupId>org.red5</groupId>
+      <artifactId>red5-server</artifactId>
+      <version>1.0-RC3-r4424</version>
+      <description>Red5 core server</description>
+    </archetype>
+    <archetype>
+      <groupId>org.red5</groupId>
+      <artifactId>red5-server</artifactId>
+      <version>1.0-RC3-r4424-java6</version>
+      <description>Red5 core server</description>
+    </archetype>	
     <!-- Client -->
     <archetype>
       <groupId>org.red5</groupId>
