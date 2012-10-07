@@ -40,9 +40,12 @@ import org.red5.server.net.rtmp.DeferredResult;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.event.ChunkSize;
+import org.red5.server.net.rtmp.event.ClientBW;
 import org.red5.server.net.rtmp.event.Invoke;
 import org.red5.server.net.rtmp.event.Notify;
 import org.red5.server.net.rtmp.event.Ping;
+import org.red5.server.net.rtmp.event.SWFResponse;
+import org.red5.server.net.rtmp.event.ServerBW;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.service.Call;
@@ -143,6 +146,10 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	 * Whether or not to use swf verification
 	 */
 	private boolean swfVerification;
+
+	private int bytesReadWindow = 2500000;
+
+	private int bytesWrittenWindow = 2500000;
 
 	protected BaseRTMPClientHandler() {
 	}
@@ -356,13 +363,36 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 				break;
 			case Ping.PING_SWF_VERIFY:
 				log.debug("SWF verification ping");
-				Ping swfPong = new Ping();
-				swfPong.setEventType(Ping.PONG_SWF_VERIFY);
-				swfPong.setValue2((int) (System.currentTimeMillis() & 0xffffffff));
+				// TODO get the swf verification bytes from the handshake
+				SWFResponse swfPong = new SWFResponse(new byte[42]);
 				conn.ping(swfPong);
 				break;
 			default:
 				log.warn("Unhandled ping: {}", ping);
+		}
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	protected void onServerBandwidth(RTMPConnection conn, Channel channel, ServerBW message) {
+		log.trace("onServerBandwidth");
+		// if the size is not equal to our read size send a client bw control message
+		int bandwidth = message.getBandwidth();
+		if (bandwidth != bytesReadWindow) {
+			ClientBW clientBw = new ClientBW(bandwidth, (byte) 2);
+			channel.write(clientBw);
+		}
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	protected void onClientBandwidth(RTMPConnection conn, Channel channel, ClientBW message) {
+		log.trace("onClientBandwidth");
+		// if the size is not equal to our write size send a server bw control message
+		int bandwidth = message.getBandwidth();
+		if (bandwidth != bytesWrittenWindow) {
+			ServerBW serverBw = new ServerBW(bandwidth);
+			channel.write(serverBw);
 		}
 	}
 
@@ -397,6 +427,14 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	 */
 	public void onBWDone(Object params) {
 		log.debug("onBWDone: {}", params);
+		bandwidthCheckDone = true;
+	}
+
+	/**
+	 * Called when bandwidth has been configured.
+	 */
+	public void onBWDone() {
+		log.debug("onBWDone");
 		bandwidthCheckDone = true;
 	}
 
@@ -531,8 +569,8 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 			// call play
 			Object[] params = new Object[3];
 			params[0] = name;
-			params[1] = (start >= 1000 || start <= -1000) ? start : start*1000;
-			params[2] = (length >= 1000 || length <= -1000) ? length : length*1000;
+			params[1] = (start >= 1000 || start <= -1000) ? start : start * 1000;
+			params[2] = (length >= 1000 || length <= -1000) ? length : length * 1000;
 			PendingCall pendingCall = new PendingCall("play", params);
 			conn.invoke(pendingCall, channel);
 		} else {
@@ -722,19 +760,21 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 					dr.setChannel(channel);
 					conn.registerDeferredResult(dr);
 				} else if (!onStatus) {
-					Invoke reply = new Invoke();
-					reply.setCall(call);
-					reply.setInvokeId(invoke.getInvokeId());
-					if (log.isDebugEnabled()) {
-						if ("onBWCheck".equals(methodName)) {
-							onBWCheck(call.getArguments().length > 0 ? call.getArguments()[0] : null);
-						} else if ("onBWDone".equals(methodName)) {
-							onBWDone(call.getArguments().length > 0 ? call.getArguments()[0] : null);
-						} else {
-							log.debug("Sending empty call reply: {}", reply);
-						}
+					if ("onBWCheck".equals(methodName)) {
+						onBWCheck(call.getArguments().length > 0 ? call.getArguments()[0] : null);
+						Invoke reply = new Invoke();
+						reply.setCall(call);
+						reply.setInvokeId(invoke.getInvokeId());
+						channel.write(reply);
+					} else if ("onBWDone".equals(methodName)) {
+						onBWDone(call.getArguments().length > 0 ? call.getArguments()[0] : null);
+					} else {
+						Invoke reply = new Invoke();
+						reply.setCall(call);
+						reply.setInvokeId(invoke.getInvokeId());
+						log.debug("Sending empty call reply: {}", reply);
+						channel.write(reply);
 					}
-					channel.write(reply);
 				}
 			}
 		} else {
@@ -895,9 +935,8 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 
 		public void resultReceived(IPendingServiceCall call) {
 			Integer streamIdInt = (Integer) call.getResult();
-			log.debug("Stream id: {}", streamIdInt);
-			log.debug("Connection: {}", conn);
 			log.debug("CreateStreamCallBack resultReceived - stream id: {}", streamIdInt);
+			log.debug("Connection: {}", conn);
 			if (conn != null && streamIdInt != null) {
 				log.debug("Setting new net stream");
 				NetStream stream = new NetStream(streamEventDispatcher);
