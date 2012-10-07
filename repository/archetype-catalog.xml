@@ -75,5 +75,17 @@
       <version>1.0-RC3-r4388-java6</version>
       <description>Red5 client</description>
     </archetype>
+    <archetype>
+      <groupId>org.red5</groupId>
+      <artifactId>red5-client</artifactId>
+      <version>1.0-RC3-r4426</version>
+      <description>Red5 client</description>
+    </archetype>
+    <archetype>
+      <groupId>org.red5</groupId>
+      <artifactId>red5-client</artifactId>
+      <version>1.0-RC3-r4426-java6</version>
+      <description>Red5 client</description>
+    </archetype>
   </archetypes>
 </archetype-catalog>

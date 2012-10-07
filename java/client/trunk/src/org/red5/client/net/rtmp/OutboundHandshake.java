@@ -383,7 +383,7 @@ public class OutboundHandshake extends RTMPHandshake {
 	}
 
 	/**
-	 * Initialize SWF verfication data.
+	 * Initialize SWF verification data.
 	 * 
 	 * @param swfFilePath path to the swf file or null
 	 */
@@ -399,7 +399,7 @@ public class OutboundHandshake extends RTMPHandshake {
 				bytes = "Red5 is awesome for handling non-accessable swf file".getBytes();
 			}
 		} else {
-			bytes = "Red5 is awesome!".getBytes();
+			bytes = new byte[42];
 		}
 		swfHash = calculateHMAC_SHA256(bytes, CLIENT_CONST, 30);
 		swfSize = bytes.length;
