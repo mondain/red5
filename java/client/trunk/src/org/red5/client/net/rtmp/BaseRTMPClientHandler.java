@@ -329,7 +329,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 			case Ping.STREAM_BEGIN:
 			case Ping.RECORDED_STREAM:
 			case Ping.STREAM_PLAYBUFFER_CLEAR:
-				// The server wants to measure the RTT
+				// the server wants to measure the RTT
 				Ping pong = new Ping();
 				pong.setEventType(Ping.PONG_SERVER);
 				pong.setValue2((int) (System.currentTimeMillis() & 0xffffffff));
@@ -339,24 +339,24 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 				log.debug("Stream indicates there is no data available");
 				break;
 			case Ping.CLIENT_BUFFER:
-				//set the client buffer
+				// set the client buffer
 				IClientStream stream = null;
-				//get the stream id
+				// get the stream id
 				int streamId = ping.getValue2();
-				//get requested buffer size in milliseconds
+				// get requested buffer size in milliseconds
 				int buffer = ping.getValue3();
 				log.debug("Client sent a buffer size: {} ms for stream id: {}", buffer, streamId);
 				if (streamId != 0) {
-					// The client wants to set the buffer time
+					// the client wants to set the buffer time
 					stream = conn.getStreamById(streamId);
 					if (stream != null) {
 						stream.setClientBufferDuration(buffer);
 						log.info("Setting client buffer on stream: {}", buffer);
 					}
 				}
-				//catch-all to make sure buffer size is set
+				// catch-all to make sure buffer size is set
 				if (stream == null) {
-					// Remember buffer time until stream is created
+					// remember buffer time until stream is created
 					conn.rememberStreamBufferDuration(streamId, buffer);
 					log.info("Remembering client buffer on stream: {}", buffer);
 				}
@@ -366,6 +366,14 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 				// TODO get the swf verification bytes from the handshake
 				SWFResponse swfPong = new SWFResponse(new byte[42]);
 				conn.ping(swfPong);
+				break;
+			case Ping.BUFFER_EMPTY:
+				log.debug("Buffer empty ping");
+				
+				break;
+			case Ping.BUFFER_FULL:
+				log.debug("Buffer full ping");
+				
 				break;
 			default:
 				log.warn("Unhandled ping: {}", ping);
