@@ -13,8 +13,7 @@
             <constructor-arg type="java.lang.String" value="org.apache.coyote.http11.Http11NioProtocol" />  
      -->                           
 				   			   						
-	<!-- Tomcat without SSL enabled -->			  
-<!-- 	
+	<!-- Tomcat without SSL enabled -->			  	
 	<bean id="tomcat.server" class="org.red5.server.tomcat.TomcatLoader" init-method="init" destroy-method="shutdown" depends-on="context.loader">
 
 		<property name="webappFolder" value="${red5.root}/webapps" />
@@ -26,6 +25,7 @@
 		        <property name="redirectPort"><value>${https.port}</value></property>
                 <property name="enableLookups"><value>false</value></property>
                 <property name="useIPVHosts"><value>true</value></property>
+                <property name="URIEncoding" value="${http.URIEncoding}" />
 			</bean>
 	    </property>
 	    	
@@ -60,9 +60,9 @@
         </property>
 	    
 	</bean>
- -->
  
 	<!-- Tomcat with SSL enabled -->
+<!-- 	
     <bean id="tomcat.server" class="org.red5.server.tomcat.TomcatLoader" init-method="init" destroy-method="shutdown" depends-on="context.loader">
 
         <property name="webappFolder" value="${red5.root}/webapps" />
@@ -74,6 +74,7 @@
                 <property name="redirectPort"><value>${http.port}</value></property>
                 <property name="enableLookups"><value>false</value></property>
                 <property name="useIPVHosts"><value>true</value></property>
+                <property name="URIEncoding" value="${http.URIEncoding}" />
             </bean>
         </property>
             
@@ -150,6 +151,7 @@
         </property>
         
     </bean>	
+ -->
 	
 	<!-- RTMPT (dedicated server) -->
 <!--
@@ -162,6 +164,7 @@
 				<constructor-arg type="java.lang.String" value="org.apache.coyote.http11.Http11NioProtocol" />	
 				<property name="port"><value>${rtmpt.port}</value></property>
 				<property name="enableLookups"><value>false</value></property>
+                <property name="URIEncoding" value="${http.URIEncoding}" />
 			</bean>
 		</property>
 
@@ -206,6 +209,7 @@
 				<constructor-arg type="java.lang.String" value="org.apache.coyote.http11.Http11NioProtocol" />	
 				<property name="port" value="${rtmps.port}" />
 				<property name="redirectPort" value="${rtmp.port}" />
+				<property name="URIEncoding" value="${http.URIEncoding}" />
 			</bean>			
 		</property>	
 		

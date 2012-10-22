@@ -122,7 +122,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 	public static final String defaultParentContextKey = "default.context";
 
 	static {
-		log.debug("Initializing tomcat");
+		log.debug("Initializing Tomcat");
 	}
 
 	/**
