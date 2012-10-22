@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Constructor;
 import java.net.BindException;
 import java.net.InetAddress;
@@ -36,18 +37,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.servlet.ServletContext;
 
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.LoaderBase;
 import org.red5.server.api.IApplicationContext;
-import org.red5.server.jmx.JMXAgent;
 import org.red5.server.jmx.mxbeans.LoaderMXBean;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -61,6 +64,7 @@ import winstone.WebAppConfiguration;
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
+@ManagedResource(objectName = "org.red5.server:type=WinstoneLoader", description = "WinstoneLoader")
 public class WinstoneLoader extends LoaderBase implements ApplicationContextAware, LoaderMXBean {
 
 	// Initialize Logging
@@ -313,10 +317,32 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 		this.connectionProperties.putAll(props);
 	}
 
-	public void registerJMX() {
-		JMXAgent.registerMBean(this, this.getClass().getName(), LoaderMXBean.class);
+	protected void registerJMX() {
+		// register with jmx
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		try {
+			ObjectName oName = new ObjectName("org.red5.server:type=WinstoneLoader");
+			// check for existing registration before registering
+			if (!mbs.isRegistered(oName)) {
+				mbs.registerMBean(this, oName);
+			} else {
+				log.debug("ContextLoader is already registered in JMX");
+			}
+		} catch (Exception e) {
+			log.warn("Error on jmx registration", e);
+		}
 	}
 
+	protected void unregisterJMX() {
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		try {
+			ObjectName oName = new ObjectName("org.red5.server:type=WinstoneLoader");
+			mbs.unregisterMBean(oName);
+		} catch (Exception e) {
+			log.warn("Exception unregistering", e);
+		}
+	}	
+	
 	/**
 	 * Shut server down.
 	 */
@@ -344,8 +370,6 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 		} else {
 			log.error("Error getting Spring bean factory for shutdown");
 		}
-		//shutdown jmx
-		JMXAgent.shutdown();
 		try {
 			//stop Winstone
 			embedded.shutdown();
