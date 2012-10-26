@@ -202,7 +202,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		params.put("objectEncoding", Integer.valueOf(0));
 		params.put("fpad", Boolean.FALSE);
 		params.put("flashVer", "WIN 11,2,202,235");
-		params.put("audioCodecs", Integer.valueOf(1639));
+		params.put("audioCodecs", Integer.valueOf(3575));
 		params.put("videoFunction", Integer.valueOf(1));
 		params.put("pageUrl", null);
 		params.put("path", application);
