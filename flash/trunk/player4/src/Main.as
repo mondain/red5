@@ -44,6 +44,8 @@ package {
 		public var connectorLabel : String = "Connect";    
 		
 		public var server : String;
+
+		public var encoding : String = "amf3";
 		
 		public var location : String = "prometheus.mp4";
 		
@@ -90,8 +92,26 @@ package {
 			}
 		}
 
+		public function echo() : void {
+			log('Calling method echo');
+			if (nc.connected) {
+				var responder : Responder = new Responder(methodResponseHandlerRequirementSet, null);
+				var requirementSet : RequirementSet = new RequirementSet();
+				requirementSet.children.addItem(new Requirement());
+				requirementSet.children.addItem(new Requirement());
+				log('Children: ' + requirementSet.children.length);
+				//rtmp://localhost/svp-server
+				nc.call("echo", responder, requirementSet);
+			}
+		}		
+		
 		public function methodResponseHandler(resp : Object) : void {
 			log("Response: " + resp);
+		}
+
+		public function methodResponseHandlerRequirementSet(resp : RequirementSet) : void {
+			log("Response: " + resp.children.length);
+			log("Child 0: " + resp.children[0]);
 		}
 
 		public function onBWDone() : void {
@@ -222,7 +242,7 @@ package {
 				log('Connecting...');
 				//  create the netConnection
 				nc = new NetConnection();
-				nc.objectEncoding = ObjectEncoding.AMF0;
+				nc.objectEncoding = encoding == 'amf3' ? ObjectEncoding.AMF3 : ObjectEncoding.AMF0;
 				//  set it's client/focus to this
 				nc.client = this;
 				// Acceptable values are "none", "HTTP", "CONNECT", and "best"
@@ -266,7 +286,7 @@ package {
         	this.authMode = authMode;
         }
 
-		public static function computeSimpleSHA256(text : String) : String {
+		public function computeSimpleSHA256(text : String) : String {
 			var bytes : ByteArray = new ByteArray();
 			bytes.writeUTFBytes(text);
 			// ByteArray moves the cursor after each read/write, so must reset it!
@@ -275,13 +295,13 @@ package {
 			return hash;
 		}
 
-		private static function computeSHA256(input : String) : String {
+		public function computeSHA256(input : String) : String {
 			var hash : IHash = Crypto.getHash("sha256");
 			var data : ByteArray = Hex.toArray(Hex.fromString(input));
 			return Base64.encodeByteArray(hash.hash(data));
 		}
 
-		private function computeHMACSHA256(key : String, input : String) : String {
+		public function computeHMACSHA256(key : String, input : String) : String {
 			var hmac : HMAC = Crypto.getHMAC("sha256");
 			var kdata : ByteArray = Hex.toArray(Hex.fromString(key));
 			var data : ByteArray = Hex.toArray(Hex.fromString(input));
@@ -457,7 +477,7 @@ package {
 			}
 		}		
 		
-        private function getNearestKeyframe(second : Number, keytimes : Array):uint {
+		public function getNearestKeyframe(second : Number, keytimes : Array):uint {
             var index1:uint = 0;
             var index2:uint = 0;
             // Iterate through array to find keyframes before and after scrubber second
@@ -477,7 +497,7 @@ package {
             }
         }
         
-        private function getNearestSeekpoint(second : Number, seekpoints : Array):uint {
+		public function getNearestSeekpoint(second : Number, seekpoints : Array):uint {
             var index1:uint = 0;
             var index2:uint = 0;
             // Iterate through array to find keyframes before and after scrubber second
