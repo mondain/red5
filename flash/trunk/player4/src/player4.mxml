@@ -81,6 +81,10 @@
         	//trace("Location: " + backingClass.location);
         }
 		
+		public function echo(event : Event) : void {
+			backingClass.echo();
+		}
+		
 		public function clearMessages() : void {
 			messages.data = "";
 		}
@@ -122,7 +126,7 @@
 		<mx:Button x="10" y="460" id="connector" label="{backingClass.connectorLabel}" click="connect()"/>
 		<mx:TextInput x="110" y="460" id="server" width="220" text="{backingClass.server}" change="updateTextInput(event)"/>
 		<mx:TextInput x="403" y="460" id="location" width="226" text="{backingClass.location}" change="updateTextInput(event)"/>
-		<mx:TextArea x="338" y="10" width="291" height="431" id="messages" editable="false"/>
+		<mx:TextArea x="338" y="10" width="291" height="377" id="messages" editable="false"/>
 		<mx:Canvas x="10" y="258" width="320" height="183" id="canvas" click="resize(event)" doubleClick="hide(event)" doubleClickEnabled="true"/>
 		<mx:Label x="338" y="462" text="Filename" fontWeight="bold"/>
 		<mx:Label x="10" y="497" text="Method" fontWeight="bold"/>
@@ -146,6 +150,7 @@
 		<mx:TextInput x="582" y="524" width="47" id="fps" text="0" textAlign="right"/>
 		<mx:Label x="551" y="528" text="FPS" fontWeight="bold"/>
 		<mx:Button x="478" y="524" label="Clear" click="clearMessages()"/>
+		<mx:Button x="338" y="395" label="Echo" click="echo(event)"/>
 	</mx:Panel>
 	
 </mx:Application>
