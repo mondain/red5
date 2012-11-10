@@ -11,7 +11,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.version>3.1.1.RELEASE</spring.version>
     <slf4j.version>1.6.4</slf4j.version>
-    <mina.version>2.0.4</mina.version>
+    <mina.version>2.0.5</mina.version>
     <logback.version>1.0.3</logback.version>
   </properties>  
   <repositories>
@@ -24,6 +24,10 @@
       <id>springsource-repo</id>
       <name>SpringSource Repository</name>
       <url>http://repo.springsource.org/release</url>
+    </repository>
+    <repository>
+      <id>repo1.maven.org</id>
+      <url>http://repo1.maven.org/maven2</url>
     </repository>
     <repository>
       <id>maven2-repository.dev.java.net</id>
