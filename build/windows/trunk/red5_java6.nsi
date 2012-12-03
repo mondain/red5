@@ -13,7 +13,7 @@ RequestExecutionLevel admin
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION 1.0.0
 !define COMPANY "Red5 Server"
-!define DESCRIPTION "Red5 is an Open Source Flash Server written in Java"
+!define DESCRIPTION "Red5 is an Open Source Flash Media Server written in Java"
 !define URL http://red5.googlecode.com
 !define DocumentRoot "..\..\..\doc\trunk"
 !define BuildRoot "..\..\..\java\server\trunk"
@@ -57,7 +57,7 @@ Var /GLOBAL IP_ADDRESS
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile setup-Red5-${VERSION}-RC3.exe
+OutFile setup-Red5-${VERSION}-java6.exe
 InstallDir $PROGRAMFILES\Red5
 CRCCheck on
 XPStyle on
@@ -108,8 +108,8 @@ Section -post SEC0001
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) on the Web.lnk" "http://red5.googlecode.com/"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\API documents.lnk" $INSTDIR\doc\api\index.html
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Eclipse setup.lnk" $INSTDIR\doc\eclipsesetup.html
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Bugtracker.lnk" "http://trac.red5.org/report"
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Wiki.lnk" "http://trac.red5.org/wiki/Documentation"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Bugtracker.lnk" "https://code.google.com/p/red5/issues/list"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Wiki.lnk" "https://code.google.com/p/red5/w/list"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
 
