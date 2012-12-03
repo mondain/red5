@@ -1,0 +1,30 @@
+<ivy-module version="2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info organisation="red5" module="policy" />
+    <configurations defaultconfmapping="default">
+        <conf name="default" />
+        <conf name="java6" extends="default" description="Java 6 dependencies" />
+    </configurations>
+    <dependencies>
+        <dependency org="org.apache.commons" name="commons-codec" rev="1.6" />
+        <!-- Crypto -->
+        <dependency name="bcprov-jdk16" rev="145" conf="java6->*" />
+        <!-- Spring -->
+        <dependency org="org.springframework" name="spring-beans" rev="3.1.1.RELEASE" />
+        <dependency org="org.springframework" name="spring-context" rev="3.1.1.RELEASE" />
+        <dependency org="org.springframework" name="spring-core" rev="3.1.1.RELEASE" />
+        <!-- Logging -->
+        <dependency org="org.slf4j" name="com.springsource.slf4j.api" rev="1.6.1" transitive="false" />
+        <dependency org="org.slf4j" name="com.springsource.slf4j.bridge" rev="1.6.1" transitive="false" />
+        <dependency name="jul-to-slf4j" rev="1.6.1" />
+        <dependency name="log4j-over-slf4j" rev="1.6.1" />
+        <dependency name="jcl-over-slf4j" rev="1.6.1" />
+        <dependency name="logback-classic" rev="0.9.28" />
+        <dependency name="logback-core" rev="0.9.28" />
+        <!-- Mina -->
+        <dependency org="mina" name="mina-integration-beans" rev="2.0.4" />
+        <dependency org="mina" name="mina-integration-jmx" rev="2.0.4" />
+        <dependency org="mina" name="mina-core" rev="2.0.4" />
+    </dependencies>
+</ivy-module>
