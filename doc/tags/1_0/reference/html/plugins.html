@@ -1,0 +1,282 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;19.&nbsp;Plugins</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="testing.html" title="Chapter&nbsp;18.&nbsp;Testing Red5"><link rel="next" href="rtmp-specification.html" title="Appendix&nbsp;A.&nbsp;RTMP Specification"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="plugins"></a>Chapter&nbsp;19.&nbsp;Plugins</h2></div></div></div><p>Available in Red5 is a Plugin architecture system to enable to extend features into Red5 for an entire server or application. Plugins are loaded on startup and then configured on a per application basis. </p><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../images/admons/tip.png"></td><th align="left">Tip</th></tr><tr><td align="left" valign="top"><p>
+			Currently only available via SVN trunk.
+		</p></td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e4850"></a>19.1.&nbsp;Loading</h2></div></div></div><p>Plugins are compiled into jar files which will be loaded and parsed by the server on startup. </p><p>Path to load the plugins is in:</p><div class="literallayout"><p><br>
+/path/to/red5/plugins<br>
+</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e4859"></a>19.2.&nbsp;Configuring</h2></div></div></div><p>Plugins can be configured via the application adaptor by setting a property inside the red5-web.xml config file. The plugins property has one child node which is a list of plugins to load for the application</p><pre class="programlisting">
+
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.demos.oflaDemo.Application"</span><b class="hl-tag" style="color: blue">&gt;</b>
+<b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"plugins"</span><b class="hl-tag" style="color: blue">&gt;</b>
+            <b class="hl-tag" style="color: blue">&lt;list&gt;</b>
+...
+
+</pre><p>Inside the list can be configured multiple plugins beans</p><pre class="programlisting">
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.plugin.PluginDescriptor"</span><b class="hl-tag" style="color: blue">&gt;</b>
+	<b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"pluginName"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"authPlugin"</span><b class="hl-tag" style="color: blue">/&gt;</b>
+    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"pluginType"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"org.red5.server.plugin.auth.AuthPlugin"</span><b class="hl-tag" style="color: blue">/&gt;</b>
+    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"method"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"getRed5AuthenticationHandler"</span><b class="hl-tag" style="color: blue">/&gt;</b>
+    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"methodReturnType"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"org.red5.server.plugin.auth.Red5AuthenticationHandler"</span><b class="hl-tag" style="color: blue">/&gt;</b>
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b>
+
+</pre><div class="itemizedlist"><ul type="disc"><li><p>pluginName - the name of the plugin compiled into the plugin</p></li><li><p>pluginType - the fully qualified name of the plugin class ie org.red5.server.plugin.auth.AuthPlugin</p></li><li><p>method - method is a getter for a factory method as the plugin may provide multiple features ie getRed5AuthenticationHandler</p></li><li><p>methodReturnType - methodReturnType is the fully qualified name of the plugin factory class to provider a certain feature ie org.red5.server.plugin.auth.Red5AuthenticationHandler</p></li></ul></div><p>Plugins are able to be configured with config properties using a property setter which is a spring hashmap list of values ie</p><pre class="programlisting">
+
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.plugin.PluginDescriptor"</span><b class="hl-tag" style="color: blue">&gt;</b>
+                    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"pluginName"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"securityPlugin"</span><b class="hl-tag" style="color: blue">/&gt;</b>
+                    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"pluginType"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"org.red5.server.plugin.security.SecurityPlugin"</span><b class="hl-tag" style="color: blue">/&gt;</b>
+                    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"method"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"getPlaybackSecurityHandler"</span><b class="hl-tag" style="color: blue">/&gt;</b>
+                    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"methodReturnType"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"org.red5.server.plugin.security.PlaybackSecurityHandler"</span><b class="hl-tag" style="color: blue">/&gt;</b>
+                    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"properties"</span><b class="hl-tag" style="color: blue">&gt;</b>
+                        <b class="hl-tag" style="color: blue">&lt;map&gt;</b>
+                            <b class="hl-tag" style="color: blue">&lt;entry&gt;</b>
+                                <b class="hl-tag" style="color: blue">&lt;key&gt;</b><b class="hl-tag" style="color: blue">&lt;value&gt;</b>htmlDomains<b class="hl-tag" style="color: blue">&lt;/value&gt;</b><b class="hl-tag" style="color: blue">&lt;/key&gt;</b>
+                                <b class="hl-tag" style="color: blue">&lt;value&gt;</b>file:///path/to/allowedHTMLdomains.txt<b class="hl-tag" style="color: blue">&lt;/value&gt;</b>
+                            <b class="hl-tag" style="color: blue">&lt;/entry&gt;</b>
+                            <b class="hl-tag" style="color: blue">&lt;entry&gt;</b>
+                                <b class="hl-tag" style="color: blue">&lt;key&gt;</b><b class="hl-tag" style="color: blue">&lt;value&gt;</b>swfDomains<b class="hl-tag" style="color: blue">&lt;/value&gt;</b><b class="hl-tag" style="color: blue">&lt;/key&gt;</b>
+                                <b class="hl-tag" style="color: blue">&lt;value&gt;</b>file:///path/to/allowedSWFdomains.txt<b class="hl-tag" style="color: blue">&lt;/value&gt;</b>
+                            <b class="hl-tag" style="color: blue">&lt;/entry&gt;</b>
+                        <b class="hl-tag" style="color: blue">&lt;/map&gt;</b>
+                    <b class="hl-tag" style="color: blue">&lt;/property&gt;</b> 
+                <b class="hl-tag" style="color: blue">&lt;/bean&gt;</b>
+
+
+</pre><p>Where using spring map syntax each property key / value is within an entry tag</p><pre class="programlisting">
+
+
+
+<b class="hl-tag" style="color: blue">&lt;entry&gt;</b>
+          <b class="hl-tag" style="color: blue">&lt;key&gt;</b><b class="hl-tag" style="color: blue">&lt;value&gt;</b>htmlDomains<b class="hl-tag" style="color: blue">&lt;/value&gt;</b><b class="hl-tag" style="color: blue">&lt;/key&gt;</b>
+                                <b class="hl-tag" style="color: blue">&lt;value&gt;</b>file:///path/to/allowedHTMLdomains.txt<b class="hl-tag" style="color: blue">&lt;/value&gt;</b>
+                            <b class="hl-tag" style="color: blue">&lt;/entry&gt;</b>
+
+</pre><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../images/admons/tip.png"></td><th align="left">Tip</th></tr><tr><td align="left" valign="top"><p>
+				Due to some issues with spring context paths loading in plugins, full absolute paths are required to files to be loaded ie file:///path/to/allowedHTMLdomains.txt
+			</p></td></tr></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e4894"></a>19.3.&nbsp;Developing</h2></div></div></div><p>To begin developing a new plugin it's best to download already built ones from SVN to use as a template ie</p><div class="literallayout"><p><br>
+http://red5.googlecode.com/svn/java/plugins/trunk/securityplugin/<br>
+</p></div><p>To configure some ant properties to compile the plugin correctly, inside build.properties update the following</p><div class="literallayout"><p><br>
+red5.root=/www/red5_server_xuggle_timestamp_fixes<br>
+main-class=org.red5.server.plugin.security.SecurityPlugin<br>
+</p></div><p>Where red5.root is the path to red5 and main-class is the fully qualified name of the plugin.</p><p>At the top of the ant build script, update the project name to the name of the plugin which will be used to generate the plugin jar file</p><pre class="programlisting">
+
+
+
+<b class="hl-tag" style="color: blue">&lt;project</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"securityplugin"</span> <span class="hl-attribute" style="color: blue">basedir</span>=<span class="hl-value" style="color: blue">"."</span> <span class="hl-attribute" style="color: blue">default</span>=<span class="hl-value" style="color: blue">"all"</span> <span class="hl-attribute" style="color: blue">xmlns:ivy</span>=<span class="hl-value" style="color: blue">"antlib:org.apache.ivy.ant"</span><b class="hl-tag" style="color: blue">&gt;</b>
+
+</pre><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../images/admons/tip.png"></td><th align="left">Tip</th></tr><tr><td align="left" valign="top"><p>
+				Make sure the following ant property is set to either the main-class property or static to the plugin fully qualified name. If this is not setup correctly the Plugin loader will detect there is no manifest and not load the plugin.
+				&lt;attribute name="Red5-Plugin-Main-Class" value="${main-class}"/&gt;
+			</p></td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e4914"></a>19.3.1.&nbsp;Plugin Main Class</h3></div></div></div><p>The plugin main class requires to extend the Red5Plugin base class which the plugin loader will then use this as the main class for loading the plugin and factory methods. </p><pre class="programlisting">
+
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">class</font> SecurityPlugin <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">extends</font> Red5Plugin {
+
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">private</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">static</font> Logger log = Red5LoggerFactory.getLogger(SecurityPlugin.<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">class</font>, <b class="hl-string"><i style="color:red">"plugins"</i></b>);
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">private</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">static</font> Serializer serializer = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Serializer();
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">private</font> MultiThreadedApplicationAdapter application;
+	
+
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> doStart() <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">throws</font> Exception {
+		log.debug(<b class="hl-string"><i style="color:red">"Start"</i></b>);
+	}
+
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> doStop() <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">throws</font> Exception {
+		log.debug(<b class="hl-string"><i style="color:red">"Stop"</i></b>);
+	}
+
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> String getName() {
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> <b class="hl-string"><i style="color:red">"securityPlugin"</i></b>;
+	}
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> setApplication(MultiThreadedApplicationAdapter app) {	
+		log.trace(<b class="hl-string"><i style="color:red">"Setting application adapter: {}"</i></b>, app);
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.application = app;
+	}
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//methods specific to this plug-in</font>
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> PlaybackSecurityHandler getPlaybackSecurityHandler() {
+		PlaybackSecurityHandler ph = null;
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">try</font> {
+			ph = (PlaybackSecurityHandler) Class.forName(<b class="hl-string"><i style="color:red">"org.red5.server.plugin.security.PlaybackSecurityHandler"</i></b>).newInstance();
+			ph.setApplication(application);
+		} <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">catch</font> (Exception e) {
+			log.error(<b class="hl-string"><i style="color:red">"PlaybackSecurityHandler could not be loaded"</i></b>, e);
+		}
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> ph;		
+	}
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> PublishSecurityHandler getPublishSecurityHandler() {
+		PublishSecurityHandler ps = null;
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">try</font> {
+			ps = (PublishSecurityHandler) Class.forName(<b class="hl-string"><i style="color:red">"org.red5.server.plugin.security.PublishSecurityHandler"</i></b>).newInstance();
+			ps.setApplication(application);
+		} <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">catch</font> (Exception e) {
+			log.error(<b class="hl-string"><i style="color:red">"PublishSecurityHandler could not be loaded"</i></b>, e);
+		}
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> ps;		
+	}
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> SharedObjectSecurityHandler getSharedObjectSecurityHandler() {
+		SharedObjectSecurityHandler sh = null;
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">try</font> {
+			sh = (SharedObjectSecurityHandler) Class.forName(<b class="hl-string"><i style="color:red">"org.red5.server.plugin.security.SharedObjectSecurityHandler"</i></b>).newInstance();
+			sh.setApplication(application);
+		} <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">catch</font> (Exception e) {
+			log.error(<b class="hl-string"><i style="color:red">"SharedObjectSecurityHandler could not be loaded"</i></b>, e);
+		}
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> sh;		
+	}
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//common methods</font>
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">/**
+	 * Invokes the "onStatus" event on the client, passing our derived status.
+	 * 
+	 * @param conn
+	 * @param status
+	 */</font>
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">static</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> writeStatus(IConnection conn, StatusObject status) {
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//make a buffer to put our data in</font>
+		IoBuffer buf = IoBuffer.allocate(128);
+		buf.setAutoExpand(true);
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//create amf output</font>
+		Output out = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Output(buf);
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//mark it as an amf object</font>
+		buf.put(AMF.TYPE_OBJECT);
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//serialize our status</font>
+    	status.serialize(out, serializer);
+    	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//write trailer</font>
+		buf.put((<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">byte</font>) 0x00);
+		buf.put((<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">byte</font>) 0x00);
+		buf.put(AMF.TYPE_END_OF_OBJECT);
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//make the buffer read to be read</font>
+		buf.flip();
+		
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//create an RTMP event of Notify type</font>
+		IRTMPEvent event = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Notify(buf);
+
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//construct a packet</font>
+		Header header = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Header();
+		Packet packet = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Packet(header, event);
+
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//get our stream id</font>
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">int</font> streamId = BaseRTMPHandler.getStreamId();
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//set channel to "data" which im pretty sure is 3</font>
+		header.setChannelId(3);
+		header.setTimer(event.getTimestamp()); <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//0</font>
+		header.setStreamId(streamId);
+		header.setDataType(event.getDataType());
+		
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">//write to the client</font>
+		((RTMPConnection) conn).write(packet);
+	}	
+	
+}
+
+
+</pre><p>The getter method getName is required to be set so the plugin can be identified and loaded correctly using the plugin config in the application</p><pre class="programlisting">
+
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> String getName() {
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> <b class="hl-string"><i style="color:red">"securityPlugin"</i></b>;
+}
+
+
+</pre><pre class="programlisting">
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> doStart() <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">throws</font> Exception {
+		log.debug(<b class="hl-string"><i style="color:red">"Start"</i></b>);
+	}
+
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> doStop() <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">throws</font> Exception {
+		log.debug(<b class="hl-string"><i style="color:red">"Stop"</i></b>);
+	}
+
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> String getName() {
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> <b class="hl-string"><i style="color:red">"securityPlugin"</i></b>;
+	}
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> setApplication(MultiThreadedApplicationAdapter app) {	
+		log.trace(<b class="hl-string"><i style="color:red">"Setting application adapter: {}"</i></b>, app);
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.application = app;
+	}
+
+</pre><p>Other methods are doStart , doStop and setApplication setter method which is required to set a reference to the loaded application. </p><p>The plugin factory method is required to be configured and return a reference to the factory class which is then loaded in the application config. A reference to the application can also be set if desired so the factory method class can manipulate methods and properties on the application.</p><pre class="programlisting">
+
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> PlaybackSecurityHandler getPlaybackSecurityHandler() {
+		PlaybackSecurityHandler ph = null;
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">try</font> {
+			ph = (PlaybackSecurityHandler) Class.forName(<b class="hl-string"><i style="color:red">"org.red5.server.plugin.security.PlaybackSecurityHandler"</i></b>).newInstance();
+			ph.setApplication(application);
+		} <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">catch</font> (Exception e) {
+			log.error(<b class="hl-string"><i style="color:red">"PlaybackSecurityHandler could not be loaded"</i></b>, e);
+		}
+		<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> ph;		
+	}
+
+
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e4933"></a>19.3.2.&nbsp;Factory Method Class</h3></div></div></div><p>The factory method class is what gets configured to load and is where the features to run happen. It is required to extend the ApplicationLifeCycle class as well as implement the IRed5PluginHandler  interface.</p><pre class="programlisting">
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">abstract</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">class</font> SecurityBase <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">extends</font> ApplicationLifecycle <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">implements</font> IRed5PluginHandler {
+...
+
+</pre><p>Setter methods for both application and properties is required so the class is able to get a reference to the application as well as have property configs set.</p><pre class="programlisting">
+
+
+	public void setApplication(MultiThreadedApplicationAdapter app) {
+		application = app;
+	}
+
+	public void setProperties(Map&lt;String, Object&gt; props) {
+		properties = props;
+	}
+}
+
+</pre><p>An init method is required to be overridden to enable the factory class to start and then enable features and manipulate the application</p><pre class="programlisting">
+
+
+
+	@Override
+	public void init() {
+		if (properties.containsKey("htmlDomains")) {
+			htmlDomains = properties.get("htmlDomains").toString();
+		}
+		if (properties.containsKey("swfDomains")) {
+			swfDomains = properties.get("swfDomains").toString();
+		}
+		
+		allowedHTMLDomains = readValidDomains(htmlDomains, "HTMLDomains");
+
+		// Populating the list of domains which are allowed to host a SWF file
+		// which may connect to this application
+		allowedSWFDomains = readValidDomains(swfDomains, "SWFDomains");
+
+		// Logging
+		if (HTMLDomainsAuth) {
+			log.debug("Authentication of HTML page URL domains is enabled");
+		}
+		if (SWFDomainsAuth) {
+			log.debug("Authentication of SWF URL domains is enabled");
+		}
+
+		log.debug("...loading completed.");
+		
+		//now register with the application
+		application.registerStreamPlaybackSecurity(this);
+	}
+
+</pre></div></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="testing.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="rtmp-specification.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;18.&nbsp;Testing Red5&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Appendix&nbsp;A.&nbsp;RTMP Specification</td></tr></table></div></body></html>

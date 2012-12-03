@@ -1,0 +1,343 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="logging-setup.html" title="Chapter&nbsp;10.&nbsp;Logging Setup"><link rel="next" href="stream-paths.html" title="Chapter&nbsp;12.&nbsp;Customize Stream Paths"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="tomcat-deployment"></a>Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2917"></a>11.1.&nbsp;Preface</h2></div></div></div><p>This document describes how to deploy Red5 to Tomcat as web application 
+			archive (WAR). The standard Red5 deployment consists of a standalone Java 
+			application with an embedded J2EE container (Jetty or Tomcat) running as a 
+			system service, whereas the WAR version runs inside of a J2EE container.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2922"></a>11.2.&nbsp;Deployment</h2></div></div></div><p>The Tomcat war deployer scans the webapps directory for wars periodically. 
+			When a war is found that has not yet been deployed, the deployer will expand 
+			the war file into a directory based on the filename of the war. A war named 
+			myapp.war would be expanded into a directory named myapp; depending upon 
+			your installation the full path would look similar to this C:\Tomcat- 
+			6.0.14\webapps\myapp. </p><p>Red5 server is packaged into a file named ROOT.war, this filename has a 
+			special connotation on most J2EE application servers and is normally the default 
+			or root web context. The root web context is responsible for servicing requests 
+			which do not contain a path component. A url with a path component looks like 
+
+			<a class="link" href="http://www.example.com/myapp" target="_top">http://www.example.com/myapp</a> wheres root web application url would resemble 
+			this 
+			<a class="link" href="http://www.example.com/" target="_top">http://www.example.com/</a>. An additional configuration file the context 
+			descriptor, is located in the META-INF directory for each web context. 
+			Applications that are not accessed via HTTP, do not require a web / servlet 
+			context. The root war file contains nearly everything that is in a standalone server 
+			build except for embedded server classes and select configuration files.
+		</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2935"></a>11.3.&nbsp;Context descriptors</h2></div></div></div><p>A Context XML descriptor is a fragment of XML data which contains a valid 
+			Context element which would normally be found in the main Tomcat server 
+			configuration file (conf/server.xml). For a given host, the Context descriptors are 
+			located in $CATALINA_HOME/conf/[enginename]/[hostname]/. Note that while 
+			the name of the file is not tied to the webapp name, when the deployer creates 
+			descriptors from the context.xml files contained in the war; their names will match 
+			the web application name. </p><p>Context descriptors allow defining all aspects and configuration parameters of a 
+			context, such as naming resources and session manager configuration. It should 
+			be noted that the docBase specified in the Context element can refer to either the 
+			.WAR or the directory which will be created when the .WAR is expanded or the 
+			.WAR itself. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2942"></a>11.4.&nbsp;Red5 Configuration</h2></div></div></div><p>Configuration of the Red5 server consists of a few context parameters in the 
+			web.xml, a default context file, a bean ref file, and a Spring web context file for 
+			each application that will utilize Red5 features. Web applications that use only 
+			AMF to communicate with Red5 do not require a configuration entry in the servers application context. The application context which is managed via Spring 
+			is only available to applications that are contained within the root war; due to the 
+			way that the web application classloaders work. In addition, Red5 uses a context 
+			counterpart called a Scope which serves as a container for the context, handler, 
+			server core instance, and a few other objects. A scope is similar to the 
+			application model in FMS. 
+			The initial entry point or startup servlet for Red5 is the WarLoaderServlet and it is 
+			configured as a servlet listener in the web.xml as shown below. Functionally this 
+			servlet  takes the place of the Standalone class in a standard Red5 server</p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;listener&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;listener-class&gt;</b>org.red5.server.war.WarLoaderServlet<b class="hl-tag" style="color: blue">&lt;/listener-class&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/listener&gt;</b> 
+
+</pre><p>This listener is responsible for starting and stopping Red5 upon receipt of context 
+			initialized and context destroyed container events. The war loader is similar in 
+			function to the Spring ContextLoaderListener servlet but is specialized for Red5.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2951"></a>11.4.1.&nbsp;Spring contexts</h3></div></div></div><p>There are two types of contexts used by Red5, "default" and "web"; there may be 
+				only one default context but any number of web contexts. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2956"></a>11.4.2.&nbsp;Default context</h3></div></div></div><p>The default context is synonymous with the global application context and is 
+				responsible for providing objects and resources at the top or global level. Spring 
+				beans in this level are configured via the defaultContext.xml and 
+				beanRefContext.xml which are located in the ROOT classes directory (ex. 
+				C:\Tomcat-6.0.14\webapps\ROOT\WEB-INF\classes). The bean ref file defines 
+				the default.context bean which as an instance of 
+				org.springframework.context.support.ClassPathXmlApplicationContext. Two 
+				other configuration files red5-common.xml and red5-core.xml are used to 
+				construct the default context; these files are derived from the standalone 
+				configuration files of the same names, the primary difference is that the server 
+				embedding sections have been removed. </p><p>The default context is referenced in the web.xml via the parentContextKey 
+				parameter: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;context-param&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;param-name&gt;</b>parentContextKey<b class="hl-tag" style="color: blue">&lt;/param-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;param-value&gt;</b>default.context<b class="hl-tag" style="color: blue">&lt;/param-value&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/context-param&gt;</b> 
+
+</pre><p>This parameter is used by the ContextLoader to locate the parent context, which 
+				in turn allows the global resources to be located. The context loader is used by 
+				the WarLoaderServlet to initialize the web contexts. </p><p>The scope counterpart to the global context is the global scope and it is 
+				referenced in the web.xml via the globalScope parameter: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;context-param&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;param-name&gt;</b>globalScope<b class="hl-tag" style="color: blue">&lt;/param-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;param-value&gt;</b>default<b class="hl-tag" style="color: blue">&lt;/param-value&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/context-param&gt;</b> 
+
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2971"></a>11.4.3.&nbsp;Web context</h3></div></div></div><p>Web context definitions are specified in Spring configuration files suffixed with 
+				-web.xml; If your application is named oflaDemo then its configuration file would 
+				be named oflaDemo-web.xml. The Spring web context files should not be 
+				confused with J2EE context descriptors as they are only used for red5 web 
+				contexts and the later are used by Tomcat. Each web context must have a 
+				corresponding configuration file, the configuration files are specified using an ant- 
+				style parameter in the web.xml as shown below. </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;context-param&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;param-name&gt;</b>contextConfigLocation<b class="hl-tag" style="color: blue">&lt;/param-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;param-value&gt;</b>WEB-INF/classes/*-web.xml<b class="hl-tag" style="color: blue">&lt;/param-value&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/context-param&gt;</b> 
+
+</pre><p>Context configuration files specify the resources that are used to notify the 
+				application about joining / leaving clients and provide the methods that 
+				a client can call. Additionally, the configuration files specify the scope hierarchy 
+				for these classes. </p><p>Every context configuration must contain a minimum of three entries - a context, 
+				scope, and handler. The only exception to this rule is the root web application 
+				since it does not have a handler application, in this case the global handler is 
+				used. </p><div class="itemizedlist"><ul type="disc"><li><p>
+						<span class="bold"><strong>Context</strong></span> - Each context must have a unique name assigned since all the 
+					</p></li></ul></div><p>contexts exist within a single Spring application context. The root web 
+				context is named web.context, additional contexts suffix this base name 
+				with their web application name; for example oflaDemo would be named 
+				web.context.oflaDemo. A context is specified in the web context file as 
+				shown below. </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.context"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.Context"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"scopeResolver"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"red5.scopeResolver"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"clientRegistry"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.clientRegistry"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"serviceInvoker"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.serviceInvoker"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"mappingStrategy"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.mappingStrategy"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><div class="itemizedlist"><ul type="disc"><li><p>
+						<span class="bold"><strong>Scope</strong></span> - Every application needs at least one scope that links the handler 
+					</p></li></ul></div><p>to the context and the server. The scopes can be used to build a tree 
+				where clients can connect to every node and share objects inside this 
+				scope (like shared objects or live streams). You can consider the scopes 
+				as rooms or instances. 
+				The root scope has the name web.scope, additional scope names should 
+				follow the naming convention specified for contexts. A scope for oflaDemo 
+				would be named web.scope.oflaDemo so that it will not conflict with other 
+				contexts. </p><div class="itemizedlist"><ul type="disc"><li><p>A scope bean has the following properties: </p><div class="orderedlist"><ol type="1"><li><p>server - This references the server red5.server </p></li><li><p>parent - The parent for this scope is normally global.scope </p></li><li><p>context - Context for this scope, use the web.context for root and </p></li></ol></div></li></ul></div><div class="itemizedlist"><ul type="disc"><li><p>web.context.oflaDemo for oflaDemo </p><div class="orderedlist"><ol type="1"><li><p>handler - Handler for this scope, which is similar to a main.asc in </p></li></ol></div></li></ul></div><div class="itemizedlist"><ul type="disc"><li><p>FMS. </p><div class="orderedlist"><ol type="1"><li><p>contextPath - The path to use when connecting to this scope. </p></li><li><p>virtualHosts - A comma separated list of host names or IP addresses this scope listens on. In the war version we do not control the host names, this is accomplished by Tomcat.</p></li></ol></div></li></ul></div><p>The root scope definition looks like this: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.scope"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.WebScope"</span> <span class="hl-attribute" style="color: blue">init-method</span>=<span class="hl-value" style="color: blue">"register"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"server"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"red5.server"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"parent"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.scope"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"context"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"web.context"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"handler"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.handler"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"contextPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"/"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"virtualHosts"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"*,localhost, localhost:8080"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><p>The contextPath is similar to the docBase in the J2EE context file for each 
+				web application. Where the docBase is used to locate resources by HTTP, 
+				the contextPath is use to find resources via RTMP. Your applications may 
+				add additional elements after the configured path to dynamically create 
+				extra scopes. The dynamically created scopes all use the same handler 
+				but have their own properties, shared objects and live streams. </p><div class="itemizedlist"><ul type="disc"><li><p>
+						<span class="bold"><strong>Handler</strong></span> - Every context needs a handler to provide the methods called by 
+					</p></li></ul></div><p>connecting clients. All handlers are required to implement 
+				org.red5.server.api.IScopeHandler, however you may implement 
+				additional interfaces for controlling access to shared objects or streams. A 
+				sample implementation is provided with Red5 that may be used as your 
+				base class: org.red5.server.adapter.ApplicationAdapter. Please refer to 
+				the javadoc for this class for additional details. 
+				As an example the scope handler for the oflaDemo is shown: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler.oflaDemo"</span> 
+<span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.webapp.oflaDemo.Application"</span><b class="hl-tag" style="color: blue">/&gt;</b>
+
+</pre><p>The id attribute is referenced by the oflaDemo scope definition: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.scope.oflaDemo"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.WebScope"</span> <span class="hl-attribute" style="color: blue">init-</span> 
+  <span class="hl-attribute" style="color: blue">method</span>=<span class="hl-value" style="color: blue">"register"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"server"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"red5.server"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"parent"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.scope"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"context"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"web.context.oflaDemo"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"handler"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"web.handler.oflaDemo"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"contextPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"/oflaDemo"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"virtualHosts"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"*,localhost, localhost:8080"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><p>If you don't need any special server-side logic, you can use the default 
+				application handler provided by Red5: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.adapter.ApplicationAdapter"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="DeployingRed5ToTomcatExternalapplications"></a>11.4.4.&nbsp;External applications</h3></div></div></div><p>An external application refers to a web application that accesses Red5 outside of 
+				the ROOT web application. Whether these applications exist within the same 
+				JVM instance or not, they may only access Red5 via RTMP or the AMF tunnel 
+				servlet. The tunnel servlet is configured in the web.xml for each application that 
+				requires AMF communication with Red5, an example is shown below: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;servlet&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>gateway<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-class&gt;</b>org.red5.server.net.servlet.AMFTunnelServlet<b class="hl-tag" style="color: blue">&lt;/servlet-class&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/servlet&gt;</b> 
+    
+<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>gateway<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b><b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
+
+</pre><p>The tunnel servlet class must be on the classpath of the application under which 
+				it is executed. In addition to the tunnel servlet the 
+				org.red5.server.net.servlet.ServletUtils class is required along with the following 
+				library jars: </p><div class="literallayout"><p><br>
+commons-codec-1.3.jar&nbsp;<br>
+commons-httpclient-3.0.1.jar&nbsp;<br>
+commons-logging-1.1.jar&nbsp;<br>
+log4j-1.2.14.jar&nbsp;<br>
+mina-core-1.1.2.jar&nbsp;<br>
+</p></div><p>These jars should be placed in the WEB-INF/lib directory of your application. ex. </p><div class="literallayout"><p><br>
+C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib<br>
+</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3075"></a>11.5.&nbsp;Creating and deploying your application</h2></div></div></div><p>In the following section, two applications will be covered. The first will be a web 
+			application that communicates with Red5 via AMF or RTMP and has its own 
+			handler, referred to as "RemoteApp". The second will consist an SWF that 
+			communicates with Red5 via RTMP, this application will be called "LocalApp". 
+			Any IDE may be used to create these applications as long as it supports Java; 
+			the Eclipse IDE is suggested. SWF files outlined in the examples were created 
+			using AS3 in Flex. </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3080"></a>11.5.1.&nbsp;Remote application</h3></div></div></div><p>This example will provide you with the minimum amount of configuration needed 
+				for a remote Red5 application. The following resources will be created: </p><div class="itemizedlist"><ul type="disc"><li><p>J2EE web application </p></li><li><p>Client SWF </p></li><li><p>Red5 handler class </p></li><li><p>Spring web context </p></li></ul></div><p>
+				<span class="bold"><strong>Steps</strong></span> 
+			</p><div class="orderedlist"><ol type="1"><li><p>Create a web application named RemoteApp in your IDE. </p></li><li><p>Obtain a red5.jar, which may be downloaded from 
+						<a class="link" href="http://red5.googlecode.com/files/red5.jar" target="_top">http://red5.googlecode.com/files/red5.jar</a> or built from source with the command "ant jar". This library is needed if you extend the ApplicationAdapter for your scope handler. 
+					</p></li><li><p>Obtain the red5-remoting.jar, this may be accomplished by building yourself from the command line with "ant remotejar" or by downloading it from 
+						<a class="link" href="http://red5.googlecode.com/files/red5-remoting.jar" target="_top">http://red5.googlecode.com/files/red5-remoting.jar</a>. This library provides the AMF tunnel servlet. 
+					</p></li><li><p>Place the library jars in your project library directory and add them to your build classpath. </p></li><li><p>Compile the Java and Flex source. </p></li><li><p>Create a directory named RemoteApp in the Tomcat webapps directory. ex. C:\Tomcat-6.0.14\webapps\RemoteApp </p></li><li><p>Copy the contents of the web directory to the RemoteApp directory. </p></li><li><p>From the bin directory copy the RemoteApp.swf to the webapps\RemoteApp directory. </p></li><li><p>Copy the lib directory and its contents to the WEB-INF, excluding the red5.jar file. </p></li><li><p>Copy the whole example directory and the RemoteApp-web.xml file from the bin directory to the classes directory under ROOT. ex. C:\Tomcat- 6.0.14\webapps\ROOT\WEB-INF\classes </p></li><li><p>Restart tomcat </p></li><li><p>Open your browser and go to: 
+						<a class="link" href="http://localhost:8080/RemoteApp/RemoteApp.html" target="_top">http://localhost:8080/RemoteApp/RemoteApp.html</a>
+					</p></li><li><p>Click on the RTMP or HTTP connect buttons. For a successful test you should see a server response of "Hello World". </p></li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3152"></a>11.5.2.&nbsp;Local application</h3></div></div></div><p>A simple application that resides entirely within the ROOT web application. This 
+				example consists of a Spring web context, handler class, and a client SWF. </p><p>
+				<span class="italic">'Steps '</span>
+			</p><div class="orderedlist"><ol type="1"><li><p>Create a web application named LocalApp in your IDE. </p></li><li><p>Obtain a red5.jar, which may be downloaded from 
+						<a class="link" href="http://red5.googlecode.com/files/red5.jar" target="_top">http://red5.googlecode.com/files/red5.jar</a> or built from source with the command "ant jar". This library is needed if you extend the ApplicationAdapter for your scope handler. 
+					</p></li><li><p>Place the library jar in your project library directory and add it to your build classpath. </p></li><li><p>Compile the Java and Flex source. </p></li><li><p>Copy the LocalApp.html and LocalApp.swf from the bin directory to the ROOT directory. ex. C:\Tomcat-6.0.14\webapps\ROOT </p></li><li><p>Copy the whole example directory and the LocalApp-web.xml file from the bin directory to the classes directory under ROOT. ex. C:\Tomcat- 6.0.14\webapps\ROOT\WEB-INF\classes </p></li><li><p>Restart tomcat </p></li><li><p>Open your browser and go to: 
+						<a class="link" href="http://localhost:8080/LocalApp.html" target="_top">http://localhost:8080/LocalApp.html</a> 
+					</p></li><li><p>Click on the connect button. For a successful test you should see a server response of "Hello World". </p></li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3196"></a>11.5.3.&nbsp;Example Source</h3></div></div></div><p>The example application source is available in Subversion at 
+
+				<a class="link" href="https://red5.googlecode.com/svn/java/example/trunk/" target="_top">https://red5.googlecode.com/svn/java/example/trunk/</a>
+			</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3204"></a>11.6.&nbsp;Additional web configuration</h2></div></div></div><p>
+			<span class="bold"><strong>Log4j</strong></span> - The path to the logging configuration file and the Spring logging startup 
+			servlet are shown below. These entries should precede the war loader servlet 
+			entry so that logging is initialized prior to Red5 startup. 
+		</p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;context-param&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;param-name&gt;</b>log4jConfigLocation<b class="hl-tag" style="color: blue">&lt;/param-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;param-value&gt;</b>/WEB-INF/log4j.properties<b class="hl-tag" style="color: blue">&lt;/param-value&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/context-param&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;listener&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;listener-class&gt;</b>org.springframework.web.util.Log4jConfigListener<b class="hl-tag" style="color: blue">&lt;/listener-class&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/listener&gt;</b>  
+
+</pre><p>
+			<span class="bold"><strong>AMF gateway</strong></span> - This servlet provides communication with server applications 
+			using AMF. 
+		</p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;servlet&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>gateway<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-class&gt;</b>org.red5.server.net.servlet.AMFGatewayServlet<b class="hl-tag" style="color: blue">&lt;/servlet-class&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;load-on-startup&gt;</b>1<b class="hl-tag" style="color: blue">&lt;/load-on-startup&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/servlet&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>gateway<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/gateway<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
+
+</pre><p>
+			<span class="bold"><strong>RTMPT</strong></span> - This servlet implements an RTMP tunnel via HTTP, this is normally 
+			used to bypass firewall issues. 
+		</p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;servlet&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>rtmpt<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-class&gt;</b>org.red5.server.net.rtmpt.RTMPTServlet<b class="hl-tag" style="color: blue">&lt;/servlet-class&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;load-on-startup&gt;</b>2<b class="hl-tag" style="color: blue">&lt;/load-on-startup&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/servlet&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>rtmpt<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/open/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>rtmpt<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/idle/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>rtmpt<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/send/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>rtmpt<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/close/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
+
+</pre><p>
+			<span class="bold"><strong>Security</strong></span> - The following entries are used to prevent retrieval of sensitive 
+			information.
+		</p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;security-constraint&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;web-resource-collection&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;web-resource-name&gt;</b>Forbidden<b class="hl-tag" style="color: blue">&lt;/web-resource-name&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/WEB-INF/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;/web-resource-collection&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;auth-constraint /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/security-constraint&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;security-constraint&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;web-resource-collection&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;web-resource-name&gt;</b>Forbidden<b class="hl-tag" style="color: blue">&lt;/web-resource-name&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/persistence/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;/web-resource-collection&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;auth-constraint /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/security-constraint&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;security-constraint&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;web-resource-collection&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;web-resource-name&gt;</b>Forbidden<b class="hl-tag" style="color: blue">&lt;/web-resource-name&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/streams/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;/web-resource-collection&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;auth-constraint /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/security-constraint&gt;</b>
+
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3235"></a>11.7.&nbsp;Troubleshooting</h2></div></div></div><p>If you have problems with deployment or if your application does not start, follow 
+			these steps prior to posting a bug. Directory examples use a typical windows 
+			based path structure. </p><div class="orderedlist"><ol type="1"><li><p>Stop the Tomcat server </p></li><li><p>Locate your Tomcat installation directory </p></li></ol></div><div class="literallayout"><p><br>
+C:\Program&nbsp;Files\Apache\Tomcat&nbsp;<br>
+</p></div><div class="orderedlist"><ol type="1"><li><p>Delete the "work" directory </p></li></ol></div><div class="literallayout"><p><br>
+C:\Program&nbsp;Files\Apache\Tomcat\work&nbsp;<br>
+</p></div><div class="orderedlist"><ol type="1"><li><p>Delete the "Catalina" directory from the "conf" directory </p></li></ol></div><div class="literallayout"><p><br>
+C:\Program&nbsp;Files\Apache\Tomcat\conf\Catalina&nbsp;<br>
+</p></div><div class="orderedlist"><ol type="1"><li><p>Delete the expanded war directories, if they exist </p></li></ol></div><div class="literallayout"><p><br>
+C:\Program&nbsp;Files\Apache\Tomcat\webapps\ROOT&nbsp;<br>
+C:\Program&nbsp;Files\Apache\Tomcat\webapps\echo&nbsp;<br>
+C:\Program&nbsp;Files\Apache\Tomcat\webapps\SOSample&nbsp;<br>
+</p></div><div class="orderedlist"><ol type="1"><li><p>Ensure your WAR files are in the webapps directory </p></li></ol></div><div class="literallayout"><p><br>
+C:\Program&nbsp;Files\Apache\Tomcat\webapps\ROOT.war&nbsp;<br>
+C:\Program&nbsp;Files\Apache\Tomcat\webapps\echo.war&nbsp;<br>
+C:\Program&nbsp;Files\Apache\Tomcat\webapps\SOSample.war&nbsp;<br>
+</p></div><div class="orderedlist"><ol type="1"><li><p>Restart Tomcat </p></li></ol></div><p>If you still experience problems, gather the following information and post an 
+			issue on Trac after you do a quick search to see if others have experienced the 
+			same problem. </p><div class="orderedlist"><ol type="1"><li><p>Java version </p></li><li><p>Tomcat version </p></li><li><p>Operating system </p></li><li><p>Red5 version (0.8, Trunk, Revision 2283, etc...)</p></li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3292"></a>11.8.&nbsp;Definitions</h2></div></div></div><p> AMF:: </p><div class="blockquote"><blockquote class="blockquote"><p>  A binary format based loosely on the Simple Object Access Protocol (SOAP). It is used primarily to exchange data between an Adobe Flash application and a database, using a Remote Procedure Call. Each AMF message contains a body which holds the error or response, which will be expressed as an ActionScript Object. </p></blockquote></div><p> Ant:: </p><div class="blockquote"><blockquote class="blockquote"><p>  Software tool for automating software build processes. It is similar to make but is written in the Java language, requires the Java platform, and is best suited to building Java projects. </p></blockquote></div><p> AS3:: </p><div class="blockquote"><blockquote class="blockquote"><p>  A scripting language based on ECMAScript, used primarily for the development of websites and software using the Adobe Flash Player platform. </p></blockquote></div><p> Flex::</p><div class="blockquote"><blockquote class="blockquote"><p>  Software development kit and an IDE for a group of technologies initially released in March of 2004 by Macromedia to support the development and deployment of cross platform, rich Internet applications based on their proprietary Macromedia Flash platform. </p></blockquote></div><p> RTMP:: </p><div class="blockquote"><blockquote class="blockquote"><p>  Real Time Messaging Protocol (RTMP) is a proprietary protocol developed by Adobe Systems that is primarily used with Adobe Flash Media Server to stream audio, video, and data over the internet to the Adobe Flash Player client. RTMP can be used for Remote Procedure Calls. RTMP maintains a persistent connection with an endpoint and allows real-time communication. Other RPC services are made asynchronously with a single client/server request/response model, so real-time communication is not necessary. </p></blockquote></div><p> RTMPT:: </p><div class="blockquote"><blockquote class="blockquote"><p> RTMP using HTTP tunneling. </p></blockquote></div><p> SWF::</p><div class="blockquote"><blockquote class="blockquote"><p>  Proprietary vector graphics file format produced by the Flash software from Adobe. Intended to be small enough for publication on the web, SWF files can contain animations or applets of varying degrees of interactivity and function. SWF is also sometimes used for creating animated display graphics and menus for DVD movies, and television commercials. </p></blockquote></div><p> Tomcat::</p><div class="blockquote"><blockquote class="blockquote"><p> A web container, or application server developed at the Apache Software Foundation (ASF). Tomcat implements the servlet and the JavaServer Pages (JSP) specifications from Sun Microsystems, providing an environment for Java code to run in cooperation with a web server. It adds tools for configuration and management but can also be configured by editing configuration files that are normally XML-formatted. Tomcat includes its own internal HTTP server.</p></blockquote></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3335"></a>11.9.&nbsp;Bibliography</h2></div></div></div><div class="itemizedlist"><ul type="disc"><li><p>Red5 - 
+					<a class="link" href="http://red5.org" target="_top">http://red5.org</a>
+				</p></li><li><p>Apache Tomcat - 
+					<a class="link" href="http://tomcat.apache.org" target="_top">http://tomcat.apache.org</a>
+				</p></li><li><p>Wikipedia - 
+					<a class="link" href="http://en.wikipedia.org" target="_top">http://en.wikipedia.org</a>
+				</p></li></ul></div></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="logging-setup.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="stream-paths.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;10.&nbsp;Logging Setup&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;12.&nbsp;Customize Stream Paths</td></tr></table></div></body></html>

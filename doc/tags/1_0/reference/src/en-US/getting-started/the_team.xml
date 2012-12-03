@@ -1,0 +1,109 @@
+<section xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:id="the-team">
+	<title>
+		Who is on the Red5 Team?
+	</title>
+	<para>
+		The Red5 Project (red5 AT osflash.org)
+	</para>
+	<section>
+		<title>
+			Project Managers
+		</title>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Chris Allen (mrchrisallen AT gmail.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					John Grden (johng AT acmewebworks.com)
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+	<section>
+		<title>
+			Active Members
+		</title>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Dominick Accattato (daccattato AT gmail.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Steven Gong (steven.gong AT gmail.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Paul Gregoire (mondain AT gmail.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Thijs Triemstra (info AT collab.nl)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Dan Rossi (electroteque AT gmail.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Anton Lebedevich (mabrek AT gmail.com)
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+	<section>
+		<title>
+			Inactive Members
+		</title>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Luke Hubbard (luke AT codegent.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Joachim Bauch (jojo AT struktur.de)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Mick Herres (mickherres AT hotmail.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Grant Davies (grant AT bluetube.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Steven Elliott (steven.s.elliott AT gmail.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Jokul Tian (tianxuefeng AT gmail.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Michael Klishin (michael.s.klishin AT gmail.com)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Martijn van Beek (martijn.vanbeek AT gmail.com)
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+</section>

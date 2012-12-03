@@ -1,0 +1,76 @@
+<?xml version='1.0' ?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="security">
+	<title>Security</title>
+	<para>This document describes the Red5 API that was introduced in version 0.6 to protect access 
+		to streams and/or shared objects similar to what the properties Client.readAccess and 
+		Client.writeAccess provide in the Macromedia Flash Communication Server / Flash Media 
+		Server 2. </para>
+	<section>
+		<title>Stream Security</title>
+		<para>Read (playback) and write (publishing/recording) access to streams is protected separately 
+			in Red5. </para>
+		<section>
+			<title>Stream playback security</title>
+			<para>For applications that want to limit the playback of streams per user or only want to provide 
+				access to streams with a given name, the interface IStreamPlaybackSecurity 
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPlaybackSecurity.html">http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPlaybackSecurity.html</link> is 
+				available in Red5. 
+			</para>
+			<para>It can be implemented by any object and registered in the ApplicationAdapter 
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html">http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html</link> . An arbitrary 
+				number of stream security handlers is supported per application. If at least one of the 
+				handlers denies access to the stream, the client receives an error NetStream.Failed with a 
+				description field giving a corresponding error message. 
+			</para>
+			<para>An example handler that only allows access to streams that have a name starting with 
+				liveStream is described below:</para>
+			<programlisting language="java">
+<![CDATA[
+
+import org.red5.server.api.IScope; 
+import org.red5.server.api.stream.IStreamPlaybackSecurity; 
+            
+public class NamePlaybackSecurity implements IStreamPlaybackSecurity { 
+            
+    public boolean isPlaybackAllowed(IScope scope, String name, int start, 
+     int length, boolean flushPlaylist) { 
+         if (!name.startswith("liveStream")) { 
+            return false; 
+         } else { 
+            return true; 
+         } 
+     };             
+} 
+]]>
+</programlisting>
+			<para>To register this handler in the application, add the following code in the appStart method: </para>
+			<programlisting language="java">
+<![CDATA[
+
+registerStreamPlaybackSecurity(new NamePlaybackSecurity()); 
+]]>
+</programlisting>
+			<para>Red5 includes a sample security handler that denies all access to streams 
+				(DenyAllStreamAccess 
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/support/DenyAllStreamAccess.html">http://dl.fancycode.com/red5/api/org/red5/server/api/stream/support/DenyAllStreamAccess.html</link>).
+			</para>
+		</section>
+		<section>
+			<title>Stream publishing security</title>
+			<para>In most applications that allow the user to publish and/or record streams, this access must 
+				be limited to prevent the server from being misused. Therefore, Red5 provides the interface 
+				IStreamPublishSecurity 
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPublishSecurity.html">http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPublishSecurity.html</link> to deny publishing of certain streams. 
+			</para>
+			<para>Similar to IStreamPlaybackSecurity 
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPlaybackSecurity.html">http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPlaybackSecurity.html</link>, it can be implemented by any object and 
+				registered in the ApplicationAdapter 
+				<link xl:href="http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html">http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html</link>. If one of the registered handlers denies access, the client 
+				receives an error NetStream.Failed with a description field giving a corresponding error 
+				message. 
+			</para>
+			<para>An example handler that only allows authenticated connections to publish a live stream 
+				starting with liveStream and deny all other access is described below:</para>
+		</section>
+	</section>
+</chapter>

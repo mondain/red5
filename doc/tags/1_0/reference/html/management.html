@@ -1,0 +1,97 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;16.&nbsp;Management</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="clustering.html" title="Chapter&nbsp;15.&nbsp;Clustering"><link rel="next" href="demo-applications.html" title="Chapter&nbsp;17.&nbsp;Red5 Demo Applications"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="management"></a>Chapter&nbsp;16.&nbsp;Management</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3798"></a>16.1.&nbsp;JMX Classes</h2></div></div></div><p>Red5's implementation consists of the following classes and various other 
+			MBeans: </p><p>org.red5.server.jmx.JMXFactory - Provides access to the platform 
+			MBeanServer as well as registration, unregistration, and creation of 
+			new MBean instances. Creation and registration is performed using 
+			StandardMBean wrappers. </p><p>org.red5.server.jmx.JMXAgent - Provides the HTML adapter and registration 
+			of MBeans. </p><p>org.red5.server.jmx.JMXUtil - Helper methods for working with ObjectName 
+			or MBean instances. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3809"></a>16.2.&nbsp;Spring configuration</h2></div></div></div><p>The Spring configuration for the JMX implementation allows you to configure the "domain" 
+			for MBean registration and listener port for the HTML adaptor. The default entries are 
+			shown below. </p><pre class="programlisting">
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">&lt;!-- JMX server --&gt;</font> 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">&lt;!-- JMX server --&gt;</font> 
+ <b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"jmxFactory"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.jmx.JMXFactory"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"domain"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"org.red5.server"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"jmxAgent"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.jmx.JMXAgent"</span> <span class="hl-attribute" style="color: blue">init-method</span>=<span class="hl-value" style="color: blue">"init"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">&lt;!-- The RMI adapter allows remote connections to the MBeanServer --&gt;</font> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"enableRmiAdapter"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"true"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"rmiAdapterPort"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${jmx.rmi.port.registry}"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"rmiAdapterRemotePort"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${jmx.rmi.port.remoteobjects}"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"rmiAdapterHost"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${jmx.rmi.host}"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">&lt;!-- SSL 
+   To use jmx with ssl you must also supply the location of the keystore and its password 
+   when starting the server with the following JVM options: 
+    -Djavax.net.ssl.keyStore=keystore 
+        -Djavax.net.ssl.keyStorePassword=password 
+  --&gt;</font> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"enableSsl"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${jmx.rmi.ssl}"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">&lt;!-- Starts a registry if it doesnt exist --&gt;</font> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"startRegistry"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"true"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">&lt;!-- Authentication --&gt;</font> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"remoteAccessProperties"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${red5.config_root}/access.properties"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"remotePasswordProperties"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${red5.config_root}/password.properties"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"remoteSSLKeystore"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${red5.config_root}/keystore.jmx"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"remoteSSLKeystorePass"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${rtmps.keystorepass}"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">&lt;!-- The HTML adapter allows connections to the MBeanServer via a web browser --&gt;</font> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"enableHtmlAdapter"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${jmx.http}"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"htmlAdapterPort"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${jmx.http.port}"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">&lt;!-- Mina offers its own Mbeans so you may integrate them here --&gt;</font> 
+  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"enableMinaMonitor"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"true"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><p>The config settings for the jmxAgent bean is located in the red5.properties, these are: </p><p>red5.properties -</p><div class="literallayout"><p><br>
+&nbsp;#&nbsp;JMX&nbsp;<br>
+jmx.rmi.port.registry=9999&nbsp;<br>
+jmx.rmi.port.remoteobjects=&nbsp;<br>
+jmx.rmi.host=0.0.0.0&nbsp;<br>
+jmx.rmi.ssl=false&nbsp;<br>
+jmx.http=false&nbsp;<br>
+jmx.http.port=8082&nbsp;<br>
+</p></div><div class="orderedlist"><ol type="1"><li><p>jmx.rmi.port.registry - The RMI registry port. The RMI adapter may only be used if an </p></li></ol></div><p>RMI registry is running. The RMI registry is enabled by default. </p><div class="orderedlist"><ol type="1"><li><p>jmx.rmi.port.remoteobjects - The RMI remote objects export port to specify for access </p></li></ol></div><p>through firewalls. The default port is generated from the RMI stack. </p><div class="orderedlist"><ol type="1"><li><p>jmx.rmi.host - For RMI remote access specify the host to bind to usually the public </p></li></ol></div><p>address. </p><div class="orderedlist"><ol type="1"><li><p>jmx.rmi.ssl - Enable RMI / JMX SSL. SSL is off by default. </p></li><li><p>jmx.http - Enable HTTP RMI adapter. The HTML adapter is disabled by default, but it </p></li></ol></div><p>allows easy management of MBeans from a web browser. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3849"></a>16.3.&nbsp;RMI Authentication</h2></div></div></div><p>RMI authentication is configured and enabled by default. This is to secure the RMI 
+			connection from anonymous clients. 
+			The bean properties remoteAccessProperties and remotePasswordProperties set the JMX 
+			access and password config files. 
+			The access.properties and password.properties config files define the JMX user rights and 
+			clear text password. 
+			access.properties contains a user and group rights config</p><p>access.properties - </p><div class="literallayout"><p><br>
+red5user&nbsp;readwrite&nbsp;<br>
+</p></div><p>Where red5user is the JMX username and readwrite is the rights which is usually left as 
+			default. 
+			password.properties contains the JMX user and password </p><p>password.properties -</p><div class="literallayout"><p><br>
+red5user&nbsp;changeme&nbsp;<br>
+</p></div><p>Where red5user is the JMX username and changeme is the JMX password. </p><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Tip"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../images/admons/tip.png"></td><th align="left">Tip</th></tr><tr><td align="left" valign="top"><p>
+				It is advisable to change the default login, aswell as configure with SSL enabled 
+				as the login is cleartext. 
+			</p></td></tr></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3869"></a>16.4.&nbsp;JMX / RMI / SSL</h2></div></div></div><p>When RMI is enabled with SSL, the bean properties remoteSSLKeystore and 
+			remoteSSLKeystorePass are required to load the SSL keystore and the keystore password 
+			for the SSL request. 
+			The default keystore loaded is the conf/keystore.jmx file which can also share the keystore 
+			required for RTMPS connections. 
+			The java properties javax.net.ssl.keyStore and javax.net.ssl.keyStorePassword are 
+			transparently set. 
+			To generate the keystore / and truststore for client / server connections run from the source </p><div class="literallayout"><p><br>
+&nbsp;&nbsp;ant&nbsp;truststore<br>
+</p></div><p>This will generate a keystore.jmx, red5server.cer and truststore.jmx certificate.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3878"></a>16.5.&nbsp;jConsole / JMX Client</h2></div></div></div><p>JConsole is a utility that ships with the JRE (since 1.5), it allows you to manage local and 
+			remote JMX implementations. To enable introspection you must add the following VM 
+			parameter to your startup: </p><div class="literallayout"><p><br>
+-Dcom.sun.management.jmxremote&nbsp;<br>
+</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3885"></a>16.5.1.&nbsp;Local Management</h3></div></div></div><p>After the parameter is set and the application initialized you can start jConsole at the 
+				command line by typing: </p><pre class="screen">
+$ jconsole
+</pre><p>A Swing application will appear and you must select the implementation (agent) you wish to 
+				manage, for local simply select "org.red5.server.Standalone". </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3894"></a>16.5.2.&nbsp;Remote Management</h3></div></div></div><p>For remote connections with jconsole / JMX clients the command is</p><pre class="screen">
+$ jconsole service:jmx:rmi://host:port/jndi/rmi://host:port/red5 
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3901"></a>16.5.3.&nbsp;SSL Remote Management</h3></div></div></div><p>For remote ssl connections with jconsole / JMX clients the client is required to load the 
+				truststore certificate generated previouslly. </p><p>The command for setting the truststore properties </p><pre class="screen">
+$ jconsole -J-Djavax.net.ssl.trustStore=truststore.jmx \ 
+-J-Djavax.net.ssl.trustStorePassword=password \ 
+service:jmx:rmi://host:port/jndi/rmi://host:port/red5 
+</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3910"></a>16.6.&nbsp;Links</h2></div></div></div><div class="itemizedlist"><ul type="disc"><li><p>
+					<a class="link" href="http://www.onjava.com/pub/a/onjava/2004/09/29/tigerjmx.html?page=1" target="_top">http://www.onjava.com/pub/a/onjava/2004/09/29/tigerjmx.html?page=1</a>
+				</p></li><li><p>
+					<a class="link" href="http://java.sun.com/developer/JDCTechTips/2005/tt0315.html#2" target="_top">http://java.sun.com/developer/JDCTechTips/2005/tt0315.html#2</a>
+				</p></li></ul></div></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="clustering.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="demo-applications.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;15.&nbsp;Clustering&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;17.&nbsp;Red5 Demo Applications</td></tr></table></div></body></html>

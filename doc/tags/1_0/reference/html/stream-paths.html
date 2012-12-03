@@ -1,0 +1,102 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;12.&nbsp;Customize Stream Paths</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="tomcat-deployment.html" title="Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat"><link rel="next" href="security.html" title="Chapter&nbsp;13.&nbsp;Security"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="stream-paths"></a>Chapter&nbsp;12.&nbsp;Customize Stream Paths</h2></div></div></div><p>This document describes how applications can stream ondemand videos (VOD) from or 
+		record to custom directories other than the default streams folder inside the webapp. </p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3362"></a>12.1.&nbsp;Filename generator service</h2></div></div></div><p>Red5 uses a concept called scope services for functionality that is provided for a certain 
+			scope. One of these scope services is IStreamFilenameGenerator 
+			<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamFilenameGenerator.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamFilenameGenerator.html</a> that generates 
+			filenames for VOD streams that should be played or recorded. 
+		</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3370"></a>12.2.&nbsp;Custom generator</h2></div></div></div><p>To generate filename in different folders, a new filename generator must be implemented: </p><pre class="programlisting">
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> org.red5.server.api.IScope; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> org.red5.server.api.stream.IStreamFilenameGenerator; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">class</font> CustomFilenameGenerator <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">implements</font> IStreamFilenameGenerator { 
+ <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">/** Path that will store recorded videos. */</font> 
+ <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> String recordPath = <b class="hl-string"><i style="color:red">"recordedStreams/"</i></b>; 
+ <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">/** Path that contains VOD streams. */</font> 
+ <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> String playbackPath = <b class="hl-string"><i style="color:red">"videoStreams/"</i></b>; 
+ <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">/** Set if the path is absolute or relative */</font> 
+ <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">boolean</font> resolvesAbsolutePath = false; 
+ <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> String generateFilename(IScope scope, String name, GenerationType type) { 
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">// Generate filename without an extension. </font>
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> generateFilename(scope, name, null, type); 
+ } 
+ <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> String generateFilename(IScope scope, String name, String extension, GenerationType type) { 
+  String filename; 
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (type == GenerationType.RECORD) 
+   filename = recordPath + name; 
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">else</font> 
+   filename = playbackPath + name; 
+  
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (extension != null) 
+   <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">// Add extension </font>
+   filename += extension; 
+  
+  <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> filename; 
+ } 
+ 
+ <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">boolean</font> resolvesToAbsolutePath() 
+    { 
+     <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> resolvesAbsolutePath; 
+    } 
+} 
+
+</pre><p>The above class will generate filenames for recorded streams like recordedStreams/ 
+			red5RecordDemo1234.flv and use the directory videoStreams as source for all VOD 
+			streams.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3379"></a>12.3.&nbsp;Activate custom generator</h2></div></div></div><p>In the next step, the custom generator must be activate in the configuration files for the 
+			desired application. </p><p>Add the following definition to yourApp/WEB-INF/red5-web.xml: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"streamFilenameGenerator"</span> 
+    <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"path.to.your.CustomFilenameGenerator"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+
+</pre><p>This will use the class defined above to generate stream filenames. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3390"></a>12.4.&nbsp;Change paths through configuration</h2></div></div></div><p>While the class described here works as expected, it's a bit unhandy to change the paths 
+			inside the code as every change requires recompilation of the class. </p><p>Therefore you can pass parameters to the bean defined in the previous step to specify the 
+			paths to use inside the configuration file. </p><p>Add three methods to your class that will be executed while the configuration file is parsed:</p><pre class="programlisting">
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> setRecordPath(String path) { 
+ recordPath = path; 
+} 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> setPlaybackPath(String path) { 
+ playbackPath = path; 
+} 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> setAbsolutePath(Boolean absolute) { 
+ resolvesAbsolutePath = absolute; 
+} 
+
+</pre><p>Now you can set the paths inside the bean definition: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"streamFilenameGenerator"</span> 
+   <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"path.to.your.CustomFilenameGenerator"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"recordPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"recordedStreams/"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"playbackPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"videoStreams/"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"absolutePath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"false"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"streamFilenameGenerator"</span> 
+   <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"path.to.your.CustomFilenameGenerator"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"recordPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"/path/to/recordedStreams/"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"playbackPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"/path/to/videoStreams/"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"absolutePath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"true"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><p>You can also move the paths to the yourApp/WEB-INF/red5-web.properties file and use 
+			parameters to access them: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"streamFilenameGenerator"</span> 
+   <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"path.to.your.CustomFilenameGenerator"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"recordPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${recordPath}"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"playbackPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${playbackPath}"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"absolutePath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${absolutePath}"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><p>In that case you will have to add the following lines to your properties file: </p><p>red5-web.properties -</p><div class="literallayout"><p><br>
+recordPath=recordedStreams/&nbsp;<br>
+playbackPath=videoStreams/&nbsp;<br>
+absolutePath=false&nbsp;<br>
+recordPath=/path/to/recordedStreams/&nbsp;<br>
+playbackPath=/path/to/videoStreams/&nbsp;<br>
+absolutePath=true&nbsp;<br>
+</p></div></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="tomcat-deployment.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="security.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;13.&nbsp;Security</td></tr></table></div></body></html>

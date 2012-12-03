@@ -1,0 +1,54 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;13.&nbsp;Security</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="stream-paths.html" title="Chapter&nbsp;12.&nbsp;Customize Stream Paths"><link rel="next" href="scripting.html" title="Chapter&nbsp;14.&nbsp;Scripting Implementations"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="security"></a>Chapter&nbsp;13.&nbsp;Security</h2></div></div></div><p>This document describes the Red5 API that was introduced in version 0.6 to protect access 
+		to streams and/or shared objects similar to what the properties Client.readAccess and 
+		Client.writeAccess provide in the Macromedia Flash Communication Server / Flash Media 
+		Server 2. </p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3420"></a>13.1.&nbsp;Stream Security</h2></div></div></div><p>Read (playback) and write (publishing/recording) access to streams is protected separately 
+			in Red5. </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3425"></a>13.1.1.&nbsp;Stream playback security</h3></div></div></div><p>For applications that want to limit the playback of streams per user or only want to provide 
+				access to streams with a given name, the interface IStreamPlaybackSecurity 
+				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPlaybackSecurity.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPlaybackSecurity.html</a> is 
+				available in Red5. 
+			</p><p>It can be implemented by any object and registered in the ApplicationAdapter 
+				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html</a> . An arbitrary 
+				number of stream security handlers is supported per application. If at least one of the 
+				handlers denies access to the stream, the client receives an error NetStream.Failed with a 
+				description field giving a corresponding error message. 
+			</p><p>An example handler that only allows access to streams that have a name starting with 
+				liveStream is described below:</p><pre class="programlisting">
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> org.red5.server.api.IScope; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> org.red5.server.api.stream.IStreamPlaybackSecurity; 
+            
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">class</font> NamePlaybackSecurity <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">implements</font> IStreamPlaybackSecurity { 
+            
+    <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">boolean</font> isPlaybackAllowed(IScope scope, String name, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">int</font> start, 
+     <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">int</font> length, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">boolean</font> flushPlaylist) { 
+         <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (!name.startswith(<b class="hl-string"><i style="color:red">"liveStream"</i></b>)) { 
+            <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> false; 
+         } <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">else</font> { 
+            <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> true; 
+         } 
+     };             
+} 
+
+</pre><p>To register this handler in the application, add the following code in the appStart method: </p><pre class="programlisting">
+
+
+registerStreamPlaybackSecurity(<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> NamePlaybackSecurity()); 
+
+</pre><p>Red5 includes a sample security handler that denies all access to streams 
+				(DenyAllStreamAccess 
+				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/support/DenyAllStreamAccess.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/stream/support/DenyAllStreamAccess.html</a>).
+			</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3451"></a>13.1.2.&nbsp;Stream publishing security</h3></div></div></div><p>In most applications that allow the user to publish and/or record streams, this access must 
+				be limited to prevent the server from being misused. Therefore, Red5 provides the interface 
+				IStreamPublishSecurity 
+				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPublishSecurity.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPublishSecurity.html</a> to deny publishing of certain streams. 
+			</p><p>Similar to IStreamPlaybackSecurity 
+				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPlaybackSecurity.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamPlaybackSecurity.html</a>, it can be implemented by any object and 
+				registered in the ApplicationAdapter 
+				<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/adapter/ApplicationAdapter.html</a>. If one of the registered handlers denies access, the client 
+				receives an error NetStream.Failed with a description field giving a corresponding error 
+				message. 
+			</p><p>An example handler that only allows authenticated connections to publish a live stream 
+				starting with liveStream and deny all other access is described below:</p></div></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="stream-paths.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="scripting.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;12.&nbsp;Customize Stream Paths&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;14.&nbsp;Scripting Implementations</td></tr></table></div></body></html>
