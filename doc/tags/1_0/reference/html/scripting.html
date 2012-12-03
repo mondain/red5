@@ -1,0 +1,351 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;14.&nbsp;Scripting Implementations</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="security.html" title="Chapter&nbsp;13.&nbsp;Security"><link rel="next" href="clustering.html" title="Chapter&nbsp;15.&nbsp;Clustering"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="scripting"></a>Chapter&nbsp;14.&nbsp;Scripting Implementations</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3472"></a>14.1.&nbsp;I. Select a scripting implementation</h2></div></div></div><p>Level: Beginner </p><p>Red5 includes interpreters for the following scripting languages: </p><div class="itemizedlist"><ul type="disc"><li><p>Javascript - version 1.6 (Mozilla Rhino version 1.6 R7) </p></li><li><p>JRuby - version 1.0.1 (Ruby version 1.8.5) </p></li><li><p>Jython - version 2.2 (Python version 2.1) </p></li><li><p>Groovy - version 1.0 </p></li><li><p>Beanshell - version 2.0b4 </p></li></ul></div><p>Future versions may include: </p><div class="itemizedlist"><ul type="disc"><li><p>JudoScript </p></li><li><p>Scala </p></li><li><p>PHP (This one is non-trivial, I may just provide a bridge) </p></li><li><p>Actionscript (Maybe SSAS) </p></li></ul></div><p>The scripting implementation classes are pre-specified in the following locations depending 
+			upon your Java version: </p><div class="literallayout"><p><br>
+Java5&nbsp;-&nbsp;js-engine.jar,&nbsp;jython-engine.jar,&nbsp;groovy-engine.jar&nbsp;<br>
+Java6&nbsp;-&nbsp;resources.jar&nbsp;<br>
+</p></div><p>File location: /META-INF/services/javax.script.ScriptEngineFactory </p><p>It is most likely that the classes read from the jdk or jre will be prefered over any specified 
+			elsewhere. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3518"></a>14.2.&nbsp;II. Configuring Spring</h2></div></div></div><p>Level: Intermediate </p><p>Step one is to locate your web applications red5-web.xml file. Within the xml config file the 
+			web.scope bean definition must supply a web.handler, this handler is your Red5 application 
+			(An application must extend the org.red5.server.adapter.ApplicationAdapter class). </p><p>The application provides access to the Red5 server and any service instances that are 
+			created. The service instances and the application itself may be scripted. Bean definitions 
+			in Spring config files may not have the same id, here are some web handler definition 
+			examples:</p><div class="itemizedlist"><ul type="disc"><li><p>Java class implementation </p></li></ul></div><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.webapp.oflaDemo.MultiThreadedApplicationAdapter"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+
+</pre><div class="itemizedlist"><ul type="disc"><li><p>Javascript implementation </p></li></ul></div><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.script.rhino.RhinoScriptFactory"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"0"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"classpath:applications/main.js"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"1"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;list&gt;</b> 
+     <b class="hl-tag" style="color: blue">&lt;value&gt;</b>org.red5.server.api.IScopeHandler<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+     <b class="hl-tag" style="color: blue">&lt;value&gt;</b>org.red5.server.adapter.IApplication<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;/list&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/constructor-arg&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"2"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;value&gt;</b>org.red5.server.adapter.ApplicationAdapter<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/constructor-arg&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><div class="itemizedlist"><ul type="disc"><li><p>Ruby implementation </p></li></ul></div><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.springframework.scripting.jruby.JRubyScriptFactory"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"0"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"classpath:applications/main.rb"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"1"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;list&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;value&gt;</b>org.red5.server.api.IScopeHandler<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;value&gt;</b>org.red5.server.adapter.IApplication<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;/list&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/constructor-arg&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><div class="itemizedlist"><ul type="disc"><li><p>Groovy implementation </p></li></ul></div><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.script.groovy.GroovyScriptFactory"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"0"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"classpath:applications/main.groovy"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"1"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;list&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;value&gt;</b>org.red5.server.api.IScopeHandler<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;value&gt;</b>org.red5.server.adapter.IApplication<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;/list&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/constructor-arg&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><div class="itemizedlist"><ul type="disc"><li><p>Python implementation </p></li></ul></div><pre class="programlisting">
+
+
+Red5 Open Source 
+Flash Server (0.7.1) 51 
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.script.jython.JythonScriptFactory"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"0"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"classpath:applications/main.py"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"1"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;list&gt;</b> 
+      <b class="hl-tag" style="color: blue">&lt;value&gt;</b>org.red5.server.api.IScopeHandler<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+      <b class="hl-tag" style="color: blue">&lt;value&gt;</b>org.red5.server.adapter.IApplication<b class="hl-tag" style="color: blue">&lt;/value&gt;</b>
+Scripting Implementations 
+  <b class="hl-tag" style="color: blue">&lt;/list&gt;</b> 
+ <b class="hl-tag" style="color: blue">&lt;/constructor-arg&gt;</b> 
+        <b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"2"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+  <b class="hl-tag" style="color: blue">&lt;list&gt;</b> 
+            <b class="hl-tag" style="color: blue">&lt;value&gt;</b>One<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+            <b class="hl-tag" style="color: blue">&lt;value&gt;</b>2<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+            <b class="hl-tag" style="color: blue">&lt;value&gt;</b>III<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+        <b class="hl-tag" style="color: blue">&lt;/list&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;/constructor-arg&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><p>In general the configuration using scripted classes is defined using the constructor 
+			arguments (see interpreter section) in the following order: </p><div class="itemizedlist"><ul type="disc"><li><p>Argument 1 - Location of the script source file </p></li><li><p>Argument 2 - Java interfaces implemented by the script.</p></li></ul></div><p> The interfaces for the code which extends an Application are basically boilerplate 
+			as seen in the examples above; You do not have to use those interfaces in all your 
+			script definitions. </p><div class="itemizedlist"><ul type="disc"><li><p>Argument 3 - Java classes extended by the script.</p></li></ul></div><p> The extended class is not always necessary, it depends upon the scripting engine 
+			implementation. </p><p>The example location starts with classpath:applications which in physical disk terms for the 
+			"oflaDemo" application equates to webapps/oflaDemo/WEB-INF/applications </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3576"></a>14.3.&nbsp;III. Creating an application script</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3579"></a>14.3.1.&nbsp;1. Application adapter</h3></div></div></div><p>Scripting an application adapter is more difficult in some languages than it is in others, 
+				because of this I present the Ruby example which works really well and is easy to write and 
+				integrate. The application services are easily written in any of the supported languages, but 
+				they require a Java interface at a minimum. </p><p> i. JRuby application adapter implementation </p><div class="literallayout"><p><br>
+#&nbsp;JRuby&nbsp;<br>
+require&nbsp;'java'&nbsp;<br>
+module&nbsp;RedFive&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;include_package&nbsp;"org.red5.server.api"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;include_package&nbsp;"org.red5.server.api.stream"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;include_package&nbsp;"org.red5.server.api.stream.support"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;include_package&nbsp;"org.red5.server.adapter"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;include_package&nbsp;"org.red5.server.stream"&nbsp;<br>
+end&nbsp;<br>
+#&nbsp;<br>
+#&nbsp;application.rb&nbsp;-&nbsp;a&nbsp;translation&nbsp;into&nbsp;Ruby&nbsp;of&nbsp;the&nbsp;ofla&nbsp;demo&nbsp;application,&nbsp;a&nbsp;red5&nbsp;example.&nbsp;<br>
+#&nbsp;<br>
+#&nbsp;@author&nbsp;Paul&nbsp;Gregoire&nbsp;<br>
+#<br>
+class&nbsp;Application&nbsp;&amp;lt;&nbsp;RedFive::ApplicationAdapter&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;attr_reader&nbsp;:appScope,&nbsp;:serverStream&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attr_writer&nbsp;:appScope,&nbsp;:serverStream&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;initialize&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#call&nbsp;super&nbsp;to&nbsp;init&nbsp;the&nbsp;superclass,&nbsp;in&nbsp;this&nbsp;case&nbsp;a&nbsp;Java&nbsp;class&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Initializing&nbsp;ruby&nbsp;application"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;appStart(app)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Ruby&nbsp;appStart"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@appScope&nbsp;=&nbsp;app&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;true&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;appConnect(conn,&nbsp;params)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Ruby&nbsp;appConnect"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;measureBandwidth(conn)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Ruby&nbsp;appConnect&nbsp;2"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;conn.instance_of?(RedFive::IStreamCapableConnection)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Got&nbsp;stream&nbsp;capable&nbsp;connection"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sbc&nbsp;=&nbsp;RedFive::SimpleBandwidthConfigure.new&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sbc.setMaxBurst(8388608)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sbc.setBurst(8388608)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sbc.setOverallBandwidth(8388608)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;conn.setBandwidthConfigure(sbc)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;super&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;appDisconnect(conn)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Ruby&nbsp;appDisconnect"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;appScope&nbsp;==&nbsp;conn.getScope&nbsp;&amp;amp;&amp;amp;&nbsp;@serverStream&nbsp;!=&nbsp;nil&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@serverStream.close&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;toString&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;"Ruby&nbsp;toString"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;setScriptContext(scriptContext)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Ruby&nbsp;application&nbsp;setScriptContext"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;method_missing(m,&nbsp;*args)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super&nbsp;unless&nbsp;@value.respond_to?(m)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;@value.send(m,&nbsp;*args)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+end&nbsp;&nbsp;&nbsp;<br>
+<br>
+</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3588"></a>14.3.2.&nbsp;2. Application services</h3></div></div></div><p>Here is an example of a Java interface (Yes, the methods are supposed to be empty) which 
+				is used in the examples to provide a template for applications which will gather a list of files 
+				and return them as a "Map" (key-value pairs) to the caller.</p><p> i. Simple Java interface for implementation by scripts</p><pre class="programlisting">
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">package</font> org.red5.server.webapp.oflaDemo; 
+             
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> java.util.Map; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">interface</font> IDemoService { 
+        <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">/** 
+     * Getter for property 'listOfAvailableFLVs'. 
+     * 
+     * @return Value for property 'listOfAvailableFLVs'. 
+     */</font> 
+    <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> Map getListOfAvailableFLVs(); 
+    <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> Map getListOfAvailableFLVs(String string); 
+} 
+
+</pre><p> ii. Spring bean definition for a script implementation of the interface</p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"demoService.service"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.springframework.scripting.jruby.JRubyScriptFactory"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"0"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"classpath:applications/demoservice.rb"</span><b class="hl-tag" style="color: blue">/&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;constructor-arg</b> <span class="hl-attribute" style="color: blue">index</span>=<span class="hl-value" style="color: blue">"1"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+      <b class="hl-tag" style="color: blue">&lt;list&gt;</b> 
+         <b class="hl-tag" style="color: blue">&lt;value&gt;</b>org.red5.server.webapp.oflaDemo.IDemoService<b class="hl-tag" style="color: blue">&lt;/value&gt;</b> 
+      <b class="hl-tag" style="color: blue">&lt;/list&gt;</b> 
+   <b class="hl-tag" style="color: blue">&lt;/constructor-arg&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><p> iii.JRuby script implementing the interface </p><div class="literallayout"><p><br>
+#&nbsp;JRuby&nbsp;-&nbsp;style&nbsp;<br>
+require&nbsp;'java'&nbsp;<br>
+module&nbsp;RedFive&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;include_package&nbsp;"org.springframework.core.io"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;include_package&nbsp;"org.red5.server.webapp.oflaDemo"&nbsp;<br>
+end&nbsp;<br>
+include_class&nbsp;"org.red5.server.api.Red5"&nbsp;<br>
+include_class&nbsp;"java.util.HashMap"&nbsp;<br>
+#&nbsp;<br>
+#&nbsp;demoservice.rb&nbsp;-&nbsp;a&nbsp;translation&nbsp;into&nbsp;Ruby&nbsp;of&nbsp;the&nbsp;ofla&nbsp;demo&nbsp;application,&nbsp;a&nbsp;red5&nbsp;example.&nbsp;<br>
+#&nbsp;<br>
+#&nbsp;@author&nbsp;Paul&nbsp;Gregoire&nbsp;<br>
+#&nbsp;<br>
+class&nbsp;DemoService&nbsp;&amp;lt;&nbsp;RedFive::DemoServiceImpl&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;attr_reader&nbsp;:filesMap&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;attr_writer&nbsp;:filesMap&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;initialize&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Initializing&nbsp;ruby&nbsp;demoservice"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@filesMap&nbsp;=&nbsp;HashMap.new&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end<br>
+&nbsp;def&nbsp;getListOfAvailableFLVs&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Getting&nbsp;the&nbsp;FLV&nbsp;files"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;begin&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dirname&nbsp;=&nbsp;File.expand_path('webapps/oflaDemo/streams').to_s&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dir.open(dirname).entries.grep(/\.flv$/)&nbsp;do&nbsp;|dir|&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dir.each&nbsp;do&nbsp;|flvName|&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fileInfo&nbsp;=&nbsp;HashMap.new&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stats&nbsp;=&nbsp;File.stat(dirname+'/'+flvName)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fileInfo["name"]&nbsp;=&nbsp;flvName&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fileInfo["lastModified"]&nbsp;=&nbsp;stats.mtime&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fileInfo["size"]&nbsp;=&nbsp;stats.size&nbsp;||&nbsp;0&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@filesMap[flvName]&nbsp;=&nbsp;fileInfo&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'FLV&nbsp;Name:',&nbsp;flvName&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'Last&nbsp;modified&nbsp;date:',&nbsp;stats.mtime&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'Size:',&nbsp;stats.size&nbsp;||&nbsp;0&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'-------'&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rescue&nbsp;Exception&nbsp;=&amp;gt;&nbsp;ex&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Error&nbsp;in&nbsp;getListOfAvailableFLVs&nbsp;#{errorType}&nbsp;\n"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;"Exception:&nbsp;#{ex}&nbsp;\n"&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;puts&nbsp;caller.join("\n");&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;filesMap&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;formatDate(date)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;date.strftime("%d/%m/%Y&nbsp;%I:%M:%S")&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;method_missing(m,&nbsp;*args)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super&nbsp;unless&nbsp;@value.respond_to?(m)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;@value.send(m,&nbsp;*args)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;end&nbsp;<br>
+end&nbsp;<br>
+<br>
+</p></div><p> iv.Java application implementing the interface, upon which the Ruby code was based (This 
+				code is NOT needed when using the script) </p><pre class="programlisting">
+
+
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">package</font> org.red5.server.webapp.oflaDemo; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> java.io.File; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> java.io.IOException; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> java.text.SimpleDateFormat; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> java.util.Date; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> java.util.HashMap; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> java.util.Locale; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> java.util.Map; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> org.apache.commons.logging.Log; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> org.apache.commons.logging.LogFactory; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> org.red5.server.api.IScope; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> org.red5.server.api.Red5; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">import</font> org.springframework.core.io.Resource; 
+<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">class</font> DemoService { 
+        <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">protected</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">static</font> Log log = LogFactory.getLog(DemoService.<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">class</font>.getName()); 
+
+ <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">/** 
+     * Getter for property 'listOfAvailableFLVs'.
+Scripting Implementations 
+     * 
+     * @return Value for property 'listOfAvailableFLVs'. 
+     */</font> 
+    <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> Map getListOfAvailableFLVs() { 
+                IScope scope = Red5.getConnectionLocal().getScope(); 
+                Map&amp;lt;String, Map&amp;gt; filesMap = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> HashMap&amp;lt;String, Map&amp;gt;(); 
+                Map&amp;lt;String, Object&amp;gt; fileInfo; 
+                <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">try</font> { 
+                        log.debug(<b class="hl-string"><i style="color:red">"getting the FLV files"</i></b>); 
+                        Resource[] flvs = scope.getResources(<b class="hl-string"><i style="color:red">"streams/*.flv"</i></b>); 
+                        <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (flvs != null) { 
+                                <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">for</font> (Resource flv : flvs) { 
+                                        File file = flv.getFile(); 
+                                        Date lastModifiedDate = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Date(file.lastModified()); 
+                                        String lastModified = formatDate(lastModifiedDate); 
+                                        String flvName = flv.getFile().getName(); 
+                                        String flvBytes = Long.toString(file.length()); 
+                                        <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (log.isDebugEnabled()) { 
+                                                log.debug(<b class="hl-string"><i style="color:red">"flvName: "</i></b> + flvName); 
+                                                log.debug(<b class="hl-string"><i style="color:red">"lastModified date: "</i></b> + lastModified); 
+                                                log.debug(<b class="hl-string"><i style="color:red">"flvBytes: "</i></b> + flvBytes); 
+                                                log.debug(<b class="hl-string"><i style="color:red">"-------"</i></b>); 
+                                        } 
+                                        fileInfo = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> HashMap&amp;lt;String, Object&amp;gt;(); 
+                                        fileInfo.put(<b class="hl-string"><i style="color:red">"name"</i></b>, flvName); 
+                                        fileInfo.put(<b class="hl-string"><i style="color:red">"lastModified"</i></b>, lastModified); 
+                                        fileInfo.put(<b class="hl-string"><i style="color:red">"size"</i></b>, flvBytes); 
+                                        filesMap.put(flvName, fileInfo); 
+                                } 
+} 
+                        Resource[] mp3s = scope.getResources(<b class="hl-string"><i style="color:red">"streams/*.mp3"</i></b>); 
+                        <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (mp3s != null) { 
+                                <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">for</font> (Resource mp3 : mp3s) { 
+                                        File file = mp3.getFile(); 
+                                        Date lastModifiedDate = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Date(file.lastModified()); 
+                                        String lastModified = formatDate(lastModifiedDate); 
+                                        String flvName = mp3.getFile().getName(); 
+                                        String flvBytes = Long.toString(file.length()); 
+                                        <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (log.isDebugEnabled()) { 
+                                                log.debug(<b class="hl-string"><i style="color:red">"flvName: "</i></b> + flvName); 
+                                                log.debug(<b class="hl-string"><i style="color:red">"lastModified date: "</i></b> + lastModified); 
+                                                log.debug(<b class="hl-string"><i style="color:red">"flvBytes: "</i></b> + flvBytes); 
+                                                log.debug(<b class="hl-string"><i style="color:red">"-------"</i></b>); 
+                                        } 
+                                        fileInfo = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> HashMap&amp;lt;String, Object&amp;gt;(); 
+                                        fileInfo.put(<b class="hl-string"><i style="color:red">"name"</i></b>, flvName); 
+                                        fileInfo.put(<b class="hl-string"><i style="color:red">"lastModified"</i></b>, lastModified); 
+                                        fileInfo.put(<b class="hl-string"><i style="color:red">"size"</i></b>, flvBytes); 
+                                        filesMap.put(flvName, fileInfo); 
+                                } 
+                        } 
+                } <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">catch</font> (IOException e) { 
+                        log.error(e); 
+                } 
+                <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> filesMap; 
+        } 
+        
+        <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">private</font> String formatDate(Date date) { 
+                SimpleDateFormat formatter; 
+                String pattern = <b class="hl-string"><i style="color:red">"dd/MM/yy H:mm:ss"</i></b>; 
+                Locale locale = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Locale(<b class="hl-string"><i style="color:red">"en"</i></b>, <b class="hl-string"><i style="color:red">"US"</i></b>); 
+                formatter = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> SimpleDateFormat(pattern, locale); 
+                <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> formatter.format(date); 
+        } 
+}   
+
+</pre><p> v. Flex AS3 method calling the service </p><div class="literallayout"><p><br>
+[Bindable]&nbsp;<br>
+public&nbsp;var&nbsp;videoList:ArrayCollection;&nbsp;<br>
+public&nbsp;function&nbsp;catchVideos():void{&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;call&nbsp;server-side&nbsp;method&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;create&nbsp;a&nbsp;responder&nbsp;and&nbsp;set&nbsp;it&nbsp;to&nbsp;getMediaList&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;nc_responder:Responder&nbsp;=&nbsp;new&nbsp;Responder(getMediaList,&nbsp;null);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;call&nbsp;the&nbsp;server&nbsp;side&nbsp;method&nbsp;to&nbsp;get&nbsp;list&nbsp;of&nbsp;FLV's&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nc.call("demoService.getListOfAvailableFLVs",&nbsp;nc_responder);&nbsp;<br>
+}&nbsp;<br>
+public&nbsp;function&nbsp;getMediaList(list:Object):void{&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;this&nbsp;is&nbsp;the&nbsp;result&nbsp;of&nbsp;the&nbsp;server&nbsp;side&nbsp;getListOfAvailableFLVs&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;mediaList:Array&nbsp;=&nbsp;new&nbsp;Array();&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(var&nbsp;items:String&nbsp;in&nbsp;list){&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mediaList.push({label:items,&nbsp;size:list[items].size,&nbsp;dateModified:list[items].lastModifi&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;videoList&nbsp;is&nbsp;bindable&nbsp;and&nbsp;the&nbsp;datagrid&nbsp;is&nbsp;set&nbsp;to&nbsp;use&nbsp;this&nbsp;for&nbsp;it's&nbsp;dataprovider&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;wrap&nbsp;it&nbsp;in&nbsp;an&nbsp;ArrayCollection&nbsp;first&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;videoList&nbsp;=&nbsp;new&nbsp;ArrayCollection(mediaList);&nbsp;<br>
+}&nbsp;<br>
+</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3613"></a>14.4.&nbsp;Creating your own interpreter</h2></div></div></div><p>Level: Advanced </p><p>Lets just open this up by saying that I attempted to build an interpreter for PHP this last 
+			weekend 02/2007 and it was a real pain; after four hours I had to give up. So what I learned 
+			from this is that you must first identify scripting languages which operate as applications, 
+			not as http request processors. Heres a test: Can X language be compiled into an 
+			executable or be run on the command-line? If yes then it should be trivial to integrate. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3620"></a>14.5.&nbsp;Links with scripting information</h2></div></div></div><div class="itemizedlist"><p class="title"><b>Spring scripting</b></p><ul type="disc"><li><p><a class="link" href="http://static.springframework.org/spring/docs/2.0.x/reference/dynamic-language.html" target="_top">http://static.springframework.org/spring/docs/2.0.x/reference/dynamic-language.html</a></p></li><li><p><a class="link" href="http://rhinoinspring.sourceforge.net/" target="_top">http://rhinoinspring.sourceforge.net/</a></p></li></ul></div><div class="itemizedlist"><p class="title"><b>Java scripting</b></p><ul type="disc"><li><p><a class="link" href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/" target="_top">http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/</a></p></li><li><p><a class="link" href="http://blogs.sun.com/sundararajan/" target="_top">http://blogs.sun.com/sundararajan/</a></p></li><li><p><a class="link" href="https://scripting.dev.java.net/" target="_top">https://scripting.dev.java.net/</a></p></li><li><p><a class="link" href="http://today.java.net/pub/a/today/2006/04/11/scripting-for-java-platform.html" target="_top">http://today.java.net/pub/a/today/2006/04/11/scripting-for-java-platform.html</a></p></li><li><p><a class="link" href="http://www.javaworld.com/javaworld/jw-03-2005/jw-0314-scripting_p.html" target="_top">http://www.javaworld.com/javaworld/jw-03-2005/jw-0314-scripting_p.html</a></p></li><li><p><a class="link" href="http://www.oreillynet.com/onjava/blog/2004/01/java_scripting_half_the_size_h.html" target="_top">http://www.oreillynet.com/onjava/blog/2004/01/java_scripting_half_the_size_h.html</a></p></li><li><p><a class="link" href="http://www.robert-tolksdorf.de/vmlanguages.html" target="_top">http://www.robert-tolksdorf.de/vmlanguages.html</a></p></li></ul></div><div class="itemizedlist"><p class="title"><b>Javascript</b></p><ul type="disc"><li><p><a class="link" href="http://www.mozilla.org/rhino/" target="_top">http://www.mozilla.org/rhino/</a></p></li><li><p><a class="link" href="http://www.mozilla.org/rhino/ScriptingJava.html" target="_top">http://www.mozilla.org/rhino/ScriptingJava.html</a></p></li></ul></div><div class="itemizedlist"><p class="title"><b>Ruby</b></p><ul type="disc"><li><p><a class="link" href="http://jruby.codehaus.org/" target="_top">http://jruby.codehaus.org/</a> </p></li></ul></div><div class="itemizedlist"><p class="title"><b>BeanShell</b></p><ul type="disc"><li><p><a class="link" href="http://www.beanshell.org/" target="_top">http://www.beanshell.org/</a> </p></li></ul></div><div class="itemizedlist"><p class="title"><b>Python</b></p><ul type="disc"><li><p><a class="link" href="http://www.jython.org/Project/" target="_top">http://www.jython.org/Project/</a></p></li><li><p><a class="link" href="http://www.onjava.com/pub/a/onjava/2002/03/27/jython.html" target="_top">http://www.onjava.com/pub/a/onjava/2002/03/27/jython.html</a></p></li><li><p><a class="link" href="http://jepp.sourceforge.net/" target="_top">http://jepp.sourceforge.net/</a></p></li><li><p><a class="link" href="http://jpe.sourceforge.net/" target="_top">http://jpe.sourceforge.net/</a></p></li><li><p><a class="link" href="http://jpype.sourceforge.net/" target="_top">http://jpype.sourceforge.net/</a></p></li></ul></div><div class="itemizedlist"><p class="title"><b>Groovy</b></p><ul type="disc"><li><p><a class="link" href="http://groovy.codehaus.org/" target="_top">http://groovy.codehaus.org/</a></p></li></ul></div></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="security.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="clustering.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;13.&nbsp;Security&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;15.&nbsp;Clustering</td></tr></table></div></body></html>

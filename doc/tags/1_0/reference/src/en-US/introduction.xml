@@ -1,0 +1,63 @@
+<?xml version='1.0' ?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="Introduction">
+	<title>Introduction</title>
+	<para>Red5 is an Open Source Flash Server written in Java that supports:</para>
+	<itemizedlist>
+		<listitem>
+			<para>Streaming Audio/Video (FLV and MP3)</para>
+		</listitem>
+		<listitem>
+			<para>Recording Client Streams (FLV only)</para>
+		</listitem>
+		<listitem>
+			<para>Shared Objects</para>
+		</listitem>
+		<listitem>
+			<para>Live Stream Publishing</para>
+		</listitem>
+		<listitem>
+			<para>Remoting (AMF)</para>
+		</listitem>
+	</itemizedlist>
+	<para>For the current release information goto the  <link xl:href="http://www.red5.org/red5-server/">Releases</link> page at red5.org.
+	</para>
+	<para>Lastly the documentation is under development at the moment.  If you have unanswered questions after using it, please check out our 
+		<link xl:href="http://groups.google.com/group/red5interest">mailing list</link>
+	</para>
+	
+	<section xml:id="whats-new">
+	    <title>0.8 Public Beta Release</title>
+	    <para>More stable version of 0.7 for production environment 
+	    testing. This public beta release will have many more features and 
+	    so the focus should be on testing and bug reports.</para>
+	    <itemizedlist>
+	      <listitem>
+	        <para>Hot Deployment</para>
+	      </listitem>
+	      <listitem>
+	        <para>Auto-unpacking of wars</para>
+	      </listitem>
+	      <listitem>
+	        <para>New Install application for example apps</para>
+	      </listitem>
+	    </itemizedlist>
+	    <para>** examples are downloaded and installed on demand</para>
+	    <itemizedlist>
+	      <listitem>
+	        <para>No installed examples by default</para>
+	      </listitem>
+	      <listitem>
+	        <para>New Download Repository</para>
+	      </listitem>
+	      <listitem>
+	        <para>Official Release Home (red5.org)</para>
+	      </listitem>
+	      <listitem>
+	        <para>New Welcome page with new styles</para>
+	      </listitem>
+	      <listitem>
+	        <para>Bug fixes</para>
+	      </listitem>
+	    </itemizedlist>
+  </section>
+</chapter>

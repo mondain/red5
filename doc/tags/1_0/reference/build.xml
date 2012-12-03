@@ -1,0 +1,172 @@
+<?xml version="1.0" ?>
+<project name="Red5 Documentation" basedir="." default="doc-all">
+    <property name="doc.ref.dir" value="${basedir}"/>
+	<property name="doc.ref.lib" value="${doc.ref.dir}/lib"/>
+
+    <!-- base project properties -->
+	<property file="${basedir}/build.properties"/>
+
+    <!-- XSLT task because default is not customizable -->
+	<macrodef name="dbxslt">
+		<attribute name="xincludes" default="true"/>
+		<attribute name="out" default=""/>
+		<attribute name="in" default=""/>
+		<attribute name="style" default=""/>
+		<attribute name="basedir" default="${doc.ref.dir}"/>
+		<attribute name="params" default=""/>
+		<sequential>
+			<condition property="xslt.out" value="" else="-o @{out}">
+				<length string="@{out}" trim="true" length="0"/>
+			</condition>
+			<condition property="xslt.xincludes" value="-Djavax.xml.parsers.DocumentBuilderFactory=org.apache.xerces.jaxp.DocumentBuilderFactoryImpl         -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl         -Dorg.apache.xerces.xni.parser.XMLParserConfiguration=org.apache.xerces.parsers.XIncludeParserConfiguration"
+				 else="">
+				<equals arg1="@{xincludes}" arg2="true"/>
+			</condition>
+			<java classname="com.icl.saxon.StyleSheet" fork="true" dir="@{basedir}" classpathref="doc.lib.classpath">
+				<jvmarg line="${xslt.xincludes}"/>
+				<jvmarg value="-Dxslthl.config=file://${doc.ref.dir}/lib/docbook-xsl-ns/highlighting/xslthl-config.xml"/>
+				<jvmarg value="-Xms128m"/>
+				<jvmarg value="-Xmx512m"/>
+				<arg line="${xslt.out} @{in} @{style} @{params}"/>
+			</java>
+		</sequential>
+	</macrodef>
+	
+	<!-- FOP Task because default cannot send memory args -->
+	<macrodef name="fop-pdf">
+		<attribute name="basedir" default="."/>
+		<attribute name="fofile" default=""/>
+		<attribute name="outfile" default=""/>
+		<sequential>
+			<java classname="org.apache.fop.cli.Main" dir="@{basedir}" fork="true" failonerror="true"
+				 classpathref="doc.lib.classpath">
+				<sysproperty key="java.awt.headless" value="true"/>
+				<jvmarg value="-Xms128m"/>
+				<jvmarg value="-Xmx512m"/>
+				<jvmarg value="-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.NoOpLog"/>
+				<arg value="-fo"/>
+				<arg path="@{fofile}"/>
+				<arg value="-pdf"/>
+				<arg path="@{outfile}"/>
+			</java>
+		</sequential>
+	</macrodef>
+
+    <!-- Check if Docbook libraries are installed -->
+	<target name="doc-prepare" description="Extra preparation for the documentation" unless="doc.prepare">
+
+
+		<path id="doc.lib.classpath">
+			<fileset dir="${doc.ref.lib}/docbook">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${doc.ref.lib}/tracwiki2docbook">
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+		<sequential>
+		 <get src="http://red5.electroteque.org/doc/reference/docbook-reference-libs.tar.bz2"
+		    dest="${doc.ref.dir}/docbook-reference-libs.tar.bz2"
+		    verbose="true"
+		    usetimestamp="true"/>
+
+			<untar compression="bzip2" src="${doc.ref.dir}/docbook-reference-libs.tar.bz2" dest="${doc.ref.dir}/" overwrite="false"/>
+		</sequential>
+
+
+		<property name="doc.prepare" value="true"/>
+	</target>
+
+    <!-- Clean doc source -->
+	<target name="doc-clean" >
+        <delete>
+            <fileset dir="${doc.ref.dir}" includes="pdf/*.pdf"/>
+            <fileset dir="${doc.ref.dir}" includes="html/**.html"/>
+            <fileset dir="${doc.ref.dir}" includes="html_single/**.html"/>
+
+        </delete>
+	</target>
+	
+	
+	
+
+    <target name="doc-all" depends="doc-prepare" description="Generate all reference documentation">
+		<sequential>
+			<antcall target="doc-clean" inheritAll="true" inheritRefs="true"/>
+			<antcall target="doc-pdf" inheritAll="true" inheritRefs="true"/>
+			<antcall target="doc-html" inheritAll="true" inheritRefs="true"/>
+		</sequential>
+	</target>
+
+    <!-- PDF Documentation -->
+	<target name="doc-pdf" description="Compile reference documentation in PDF format">
+
+		<path id="doc.lib.classpath">
+            <fileset dir="${doc.ref.lib}/docbook">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${doc.ref.lib}/tracwiki2docbook">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+
+		<!-- Build fo file -->
+		<mkdir dir="${doc.ref.dir}/pdf"/>
+		<dbxslt basedir="${doc.ref.dir}/src" in="${doc.ref.dir}/src/${locale}/book.xml"
+			 out="${doc.ref.dir}/src/docbook_fop.tmp" style="${doc.ref.dir}/styles/fopdf.xsl"/>
+		<!-- Build pdf -->
+		<fop-pdf basedir="${doc.ref.dir}/src" fofile="${doc.ref.dir}/src/docbook_fop.tmp"
+			 outfile="${doc.ref.dir}/pdf/red5-reference-0.9.pdf"/>
+		<delete file="${doc.ref.dir}/src/docbook_fop.tmp"/>
+	</target>
+	<!-- HTML Site Documentation -->
+	<target name="doc-html" description="Compile reference documentation in HTML format">
+		
+
+		<path id="doc.lib.classpath">
+            <fileset dir="${doc.ref.lib}/docbook">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${doc.ref.lib}/tracwiki2docbook">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+
+		<mkdir dir="${doc.ref.dir}/html"/>
+		<mkdir dir="${doc.ref.dir}/html/images"/>
+		<copy todir="${doc.ref.dir}/html/images">
+			<fileset dir="${doc.ref.dir}/src/${locale}/images">
+				<include name="*.gif"/>
+				<include name="*.svg"/>
+				<include name="*.jpg"/>
+				<include name="*.png"/>
+			</fileset>
+		</copy>
+		<copy todir="${doc.ref.dir}/html/" failonerror="false">
+			<fileset dir="${doc.ref.dir}/styles/">
+				<include name="*.css"/>
+				<include name="*.js"/>
+			</fileset>
+		</copy>
+		<dbxslt basedir="${doc.ref.dir}/html/" in="${doc.ref.dir}/src/${locale}/book.xml"
+			 style="${doc.ref.dir}/styles/html_chunk.xsl"/>
+	</target>
+	<!-- HTML Single Documentation -->
+	<target name="doc-html-single" depends="doc-prepare" description="Compile reference documentation in single page HTML format">
+		<mkdir dir="${doc.ref.dir}/html"/>
+		<mkdir dir="${doc.ref.dir}/html_single/images"/>
+		<copy todir="${doc.ref.dir}/html_single/images">
+			<fileset dir="${doc.ref.dir}/src/${locale}/images">
+				<include name="*.gif"/>
+				<include name="*.svg"/>
+				<include name="*.jpg"/>
+				<include name="*.png"/>
+			</fileset>
+		</copy>
+		<copy todir="${doc.ref.dir}/html_single/" file="${doc.ref.dir}/styles/html.css"
+			 failonerror="false"/>
+		<dbxslt basedir="${doc.ref.dir}/html_single/" in="${doc.ref.dir}/src/${locale}/index.xml"
+			 out="${doc.ref.dir}/html_single/index.html" style="${doc.ref.dir}/styles/html.xsl"/>
+	</target>
+
+</project>

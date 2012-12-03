@@ -1,0 +1,177 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;17.&nbsp;Red5 Demo Applications</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="management.html" title="Chapter&nbsp;16.&nbsp;Management"><link rel="next" href="testing.html" title="Chapter&nbsp;18.&nbsp;Testing Red5"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="demo-applications"></a>Chapter&nbsp;17.&nbsp;Red5 Demo Applications</h2></div></div></div><p>The Red5 demo applications are available for downloaded on demand using the installer application located at 
+		<a class="link" href="http://localhost:5080/installer" target="_top">http://localhost:5080/installer</a>.
+	</p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3935"></a>17.1.&nbsp;Getting Red5 Demo Applications Server-Side and Client-Side Source</h2></div></div></div><div class="orderedlist"><ol type="1"><li><p>With your favourite SVN client check out the source code from svn at this address 
+					<a class="link" href="http://red5.googlecode.com/svn/java/example/trunk/" target="_top">http://red5.googlecode.com/svn/java/example/trunk/</a> or 
+					<a class="link" href="https://red5.googlecode.com/svn/java/example/trunk/" target="_top">https://red5.googlecode.com/svn/java/example/trunk/</a> if you have a google code login.
+				</p></li></ol></div><div class="orderedlist"><ol type="1"><li><p>With your favourite SVN client check out the source code from svn at this address 
+					<a class="link" href="http://red5.googlecode.com/svn/flash/trunk/" target="_top">http://red5.googlecode.com/svn/flash/trunk/</a> or 
+					<a class="link" href="https://red5.googlecode.com/svn/flash/trunk/" target="_top">https://red5.googlecode.com/svn/flash/trunk/</a> if you have a google code login.
+				</p></li></ol></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3958"></a>17.1.1.&nbsp;List Of Available Demo Applications (Server Side)</h3></div></div></div><div class="itemizedlist"><ul type="disc"><li><p>SOSample - A simple shared ball demo that makes use of Shared Objects.</p></li><li><p>admin - The Red5 administration panel.</p></li><li><p>echo - A test application that runs RTMP/AMF datatype tests.</p></li><li><p>oflaDemo - Simple video player as shown on the Online Open Source Flash conference.</p></li><li><p>bwcheck - Demo application that detects the client bandwidth.</p></li><li><p>fitcDemo - Video conference with chat.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3980"></a>17.1.2.&nbsp;List Of Available Demo Applications (Client Side)</h3></div></div></div><div class="itemizedlist"><ul type="disc"><li><p>admin - The admin panel client application</p></li><li><p>bwcheck - Demo to interface with the bandwidth check application, tests both download and upload rates.</p></li><li><p>echo - Simple echo test AMF client</p></li><li><p>loadtest - Simple loading testing tool, requesting a file multiple times.</p></li><li><p>port-tester - Open port tester application.</p></li><li><p>publisher - Simple broadcaster application</p></li></ul></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e4002"></a>17.2.&nbsp;Environment Build Setup</h2></div></div></div><p>To build the demo applications and add WAR snapshots to the subversion repository, the ant environment requires a SvnAnt task library added to the ant common library directory:</p><div class="orderedlist"><ol type="1"><li><p>Go here: 
+					<a class="link" href="http://subclipse.tigris.org/svnant.html" target="_top">http://subclipse.tigris.org/svnant.html</a>
+				</p></li><li><p>Download the latest SvnAnt</p></li></ol></div><p> ex: 
+			<a class="link" href="http://subclipse.tigris.org/files/documents/906/43359/svnant-1.2.0-RC1.zip" target="_top">http://subclipse.tigris.org/files/documents/906/43359/svnant-1.2.0-RC1.zip</a>
+		</p><div class="orderedlist"><ol type="1"><li><p>Unzip the archive and place the jar files in your Ant lib directory</p></li></ol></div><pre class="screen">
+C:\dev\ant\lib
+</pre><p> 
+			4. Using your svn client or subclipse svn client in eclipse checkout or update the snapshots repository 
+			<a class="link" href="https://red5.googlecode.com/svn/snapshots" target="_top">https://red5.googlecode.com/svn/snapshots</a>. It will keep the registry.xml file up to date for modifying later.
+		</p><div class="orderedlist"><ol type="1"><li><p>Add these variables to a build.properties file into user home directory </p></li></ol></div><div class="literallayout"><p>&nbsp;<br>
+			&nbsp;svn.url=http://red5.googlecode.com/svn/snapshots/<br>
+			&nbsp;svn.login=youruser<br>
+			&nbsp;svn.password=the&nbsp;google&nbsp;code&nbsp;password<br>
+			&nbsp;snapshot.path=/www/red5_snapshots/<br>
+			&nbsp;Where&nbsp;snapshot.path&nbsp;is&nbsp;the&nbsp;path&nbsp;to&nbsp;the&nbsp;checked&nbsp;out&nbsp;snapshots&nbsp;directory.&nbsp;<br>
+		</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e4039"></a>17.3.&nbsp;Building The Demo Application</h2></div></div></div><p>To build the application and upload the created WAR file to the snapshots repository run the following ant target.</p><pre class="screen">
+$ ant upload-snapshot
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e4046"></a>17.4.&nbsp;Updating The Applications Registry</h2></div></div></div><p>Once the updated WAR has been uploaded to the snapshots repository, the registry.xml file requires to be updated so the demo applications installer will collect the update. </p><div class="orderedlist"><ol type="1"><li><p>Locate in the console output after uploading snapshot something like Destination: /www/red5_snapshots/admin-
+					<a class="link" href="nullchangeset/3197" target="_top">r3197</a>-java6.war the file of the new war will be admin-
+					<a class="link" href="nullchangeset/3197" target="_top">r3197</a>-java6.war.
+				</p></li><li><p>Edit the registry.xml in the snapshots checkout update the webapp entry with the new filename and commit the change</p></li></ol></div><p>ie</p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;application</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"admin"</span><b class="hl-tag" style="color: blue">&gt;</b>
+			<b class="hl-tag" style="color: blue">&lt;author&gt;</b>Martin M, Dan Rossi<b class="hl-tag" style="color: blue">&lt;/author&gt;</b>
+			<b class="hl-tag" style="color: blue">&lt;desc&gt;</b>Administration console<b class="hl-tag" style="color: blue">&lt;/desc&gt;</b>
+			<b class="hl-tag" style="color: blue">&lt;filename&gt;</b>admin-r3197-java6.war<b class="hl-tag" style="color: blue">&lt;/filename&gt;</b>
+<b class="hl-tag" style="color: blue">&lt;/application&gt;</b>
+
+</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../images/admons/note.png"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p> 
+				Subclipse version for committing changes also made by svnant in the snapshots repository, needs to be version 1.4 which is bound to subversion version 1.5 using this update site http://subclipse.tigris.org/update_1.4.x. 
+				Other svn clients also need to be bound to subversion 1.5 or you will get client too old errors.
+			</p></td></tr></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e4071"></a>17.5.&nbsp;Demo Applications Documentation</h2></div></div></div><p>Following is documentation for the demo applications:</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e4076"></a>17.5.1.&nbsp;Bandwidth Check Application</h3></div></div></div><p> This section explains the bandwidth check application and how to use it. The bandwidth check application handles two service method calls to trigger a download or upload rate check and return information to the flash client to determine what video bitrate to use. </p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e4081"></a>17.5.1.1.&nbsp;Source Code</h4></div></div></div><div class="itemizedlist"><ul type="disc"><li><p>Server Side - 
+							<a class="link" href="http://code.google.com/p/red5/source/browse/#svn/java/example/trunk/bwcheck" target="_top">http://code.google.com/p/red5/source/browse/#svn/java/example/trunk/bwcheck</a>
+						</p></li><li><p>Client Side - 
+							<a class="link" href="http://code.google.com/p/red5/source/browse/#svn/flash/trunk/bwcheck" target="_top">http://code.google.com/p/red5/source/browse/#svn/flash/trunk/bwcheck</a>
+						</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e4097"></a>17.5.1.2.&nbsp;Bandwidth Check Service Methods</h4></div></div></div><p>The service method is enabled in the bean with a name bwCheckService.service.</p><pre class="programlisting">
+	
+	
+	<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"bwCheckService.service"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.demos.bwcheck.BandwidthDetection"</span><b class="hl-tag" style="color: blue"> /&gt;</b>
+	
+	</pre><p>Inside the BandwidthDetection class there are two service methods:</p><div class="itemizedlist"><ul type="disc"><li><p>Trigger a server to client rate check</p></li></ul></div><pre class="programlisting">
+	
+	
+	 <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> onServerClientBWCheck(Object[] params) {
+			IConnection conn = Red5.getConnectionLocal();
+			ServerClientDetection serverClient = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> ServerClientDetection();
+			serverClient.checkBandwidth(conn);
+	 }
+	
+	</pre><div class="itemizedlist"><ul type="disc"><li><p>Trigger a client to server rate check</p></li></ul></div><pre class="programlisting">
+	
+	
+	 <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> Map&lt;String, Object&gt; onClientBWCheck(Object[] params) {
+			ClientServerDetection clientServer = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> ClientServerDetection();
+			<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> clientServer.onClientBWCheck(params);
+	 }
+	
+	</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e4118"></a>17.5.1.3.&nbsp;ServerClientDetection</h4></div></div></div><p>The ServerClientDetection class detects server to client bandwidth. 3 set of payload data arrays are intialized, the first with 1200 keys, and the next two with 12000 keys ie</p><pre class="programlisting">
+	
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">for</font> (<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">int</font> i = 0; i &lt; 12000; i++) {
+	  payload_1[i] = Math.random();
+	}
+	
+	  p_client.setAttribute(<b class="hl-string"><i style="color:red">"payload_1"</i></b>, payload_1);
+	
+	</pre><p>The start microtime is recorded, along with an initial number of bytes sent to the client. </p><p>To initiate the handshake with the client method 
+					<span class="bold"><strong>onBWCheck</strong></span> is called with parameters
+				</p><div class="itemizedlist"><ul type="disc"><li><p>count - the number of times a result has been received from the client</p></li><li><p>sent - the number of times the client method onBWCheck has been called</p></li><li><p>timePassed - The interval time in milliseconds since the beginning of the bandwidth checking has occured.</p></li><li><p>latency - </p></li><li><p>cumLatency - the value of the increased passes from server to client. </p></li></ul></div><pre class="programlisting">
+	
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">private</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> callBWCheck(Object payload)
+		{
+			IConnection conn = Red5.getConnectionLocal();
+			
+	
+			Map&lt;String, Object&gt; statsValues = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> HashMap&lt;String, Object&gt;();
+			statsValues.put(<b class="hl-string"><i style="color:red">"count"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.count);
+			statsValues.put(<b class="hl-string"><i style="color:red">"sent"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.sent);
+			statsValues.put(<b class="hl-string"><i style="color:red">"timePassed"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.timePassed);
+			statsValues.put(<b class="hl-string"><i style="color:red">"latency"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.latency);
+			statsValues.put(<b class="hl-string"><i style="color:red">"cumLatency"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.cumLatency);
+			statsValues.put(<b class="hl-string"><i style="color:red">"payload"</i></b>, payload);
+			
+			<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (conn <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">instanceof</font> IServiceCapableConnection) {
+				((IServiceCapableConnection) conn).invoke(<b class="hl-string"><i style="color:red">"onBWCheck"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Object[]{statsValues}, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>);
+			}
+		}
+	
+	</pre><p>An initial payload is sent with a size of 1200 keys, of the second pass, if the pass count is less than 3 and the time interval passed is less than 1 second progressively increase the payload packet sent with a size of 12000 keys. </p><p>On the next pass if its between 3 and less than 6 times and less than 1 second, send the 3rd payload packet. </p><p>On the next pass if its greater than 6 times and less than 1 second, send the 4th payload packet.</p><p>Once the times passed reaches the amount of times sent, send the client the calculated rate, calculated by the following</p><pre class="programlisting">
+	
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.deltaDown = (endStats.getWrittenBytes() - beginningValues.get(<b class="hl-string"><i style="color:red">"b_down"</i></b>)) * 8 / 1000; <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">// bytes to kbits</font>
+	            <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.deltaTime = ((now - beginningValues.get(<b class="hl-string"><i style="color:red">"time"</i></b>)) - (latency * cumLatency)) / 1000; <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">// total dl time - latency for each packet sent in secs</font>
+	            
+	            <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (Math.round(deltaTime) &lt;= 0) {
+					<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.deltaTime = (now - beginningValues.get(<b class="hl-string"><i style="color:red">"time"</i></b>) + latency) / 1000;
+				}
+				<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.kbitDown = Math.round(deltaDown / deltaTime); <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-style="italic" color="grey">// kbits / sec</font>
+				
+	            <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (kbitDown &lt; 100) <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.kbitDown = 100;
+	            
+	            log.info(<b class="hl-string"><i style="color:red">"onBWDone: kbitDown: {} deltaDown: {} deltaTime: {} latency: {} "</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Object[]{kbitDown, deltaDown, deltaTime, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.latency});
+	            
+	            <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.callBWDone();                                 
+	
+	</pre><p>This will call a client method 
+					<span class="bold"><strong>onBWDone</strong></span>
+				</p><div class="itemizedlist"><ul type="disc"><li><p>kbitDown - the kbits down value</p></li><li><p>deltaDown - </p></li><li><p>deltaTime - </p></li><li><p>latency - The latency delay calculated between server and client</p></li></ul></div><pre class="programlisting">
+	
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">private</font> <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">void</font> callBWDone()
+		{
+			IConnection conn = Red5.getConnectionLocal();
+			
+			Map&lt;String, Object&gt; statsValues = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> HashMap&lt;String, Object&gt;();
+			statsValues.put(<b class="hl-string"><i style="color:red">"kbitDown"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.kbitDown);
+			statsValues.put(<b class="hl-string"><i style="color:red">"deltaDown"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.deltaDown);
+			statsValues.put(<b class="hl-string"><i style="color:red">"deltaTime"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.deltaTime);
+			statsValues.put(<b class="hl-string"><i style="color:red">"latency"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.latency);
+			
+			<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">if</font> (conn <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">instanceof</font> IServiceCapableConnection) {
+				((IServiceCapableConnection) conn).invoke(<b class="hl-string"><i style="color:red">"onBWDone"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Object[]{statsValues});
+			}
+		}
+	
+	</pre><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d0e4180"></a>17.5.1.3.1.&nbsp;Client Side Download Detection</h5></div></div></div><p>Client side callback methods are setup to enable the detection.</p><div class="literallayout"><p><br>
+	public&nbsp;function&nbsp;onBWCheck(obj:Object):void<br>
+			{<br>
+					dispatchStatus(obj);<br>
+			}<br>
+				<br>
+			public&nbsp;function&nbsp;onBWDone(obj:Object):void&nbsp;<br>
+			{&nbsp;<br>
+				dispatchComplete(obj);<br>
+			}&nbsp;<br>
+	<br>
+	</p></div><p>And then the information is obtainable on the Object argument</p><div class="literallayout"><p><br>
+	public&nbsp;function&nbsp;onServerClientComplete(event:BandwidthDetectEvent):void<br>
+			{<br>
+				txtLog.data&nbsp;+=&nbsp;"\n\n&nbsp;kbit&nbsp;Down:&nbsp;"&nbsp;+&nbsp;event.info.kbitDown&nbsp;+&nbsp;"&nbsp;Delta&nbsp;Down:&nbsp;"&nbsp;+&nbsp;event.info.deltaDown&nbsp;+&nbsp;"&nbsp;Delta&nbsp;Time:&nbsp;"&nbsp;+&nbsp;event.info.deltaTime&nbsp;+&nbsp;"&nbsp;Latency:&nbsp;"&nbsp;+&nbsp;event.info.latency;<br>
+				txtLog.data&nbsp;+=&nbsp;"\n\n&nbsp;Server&nbsp;Client&nbsp;Bandwidth&nbsp;Detect&nbsp;Complete";<br>
+				txtLog.data&nbsp;+=&nbsp;"\n\n&nbsp;Detecting&nbsp;Client&nbsp;Server&nbsp;Bandwidth\n\n";<br>
+				ClientServer();<br>
+			}<br>
+	</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e4191"></a>17.5.1.4.&nbsp;ClientServerDetection</h4></div></div></div><p>The ClientServerDetection class helps detect client to server bandwidth. The server side method 
+					<span class="bold"><strong>onClientBWCheck</strong></span> is called with some information to help the client to determine the bandwidth.
+				</p><div class="itemizedlist"><ul type="disc"><li><p>cOutBytes - The bytes read from the client</p></li><li><p>cInBytes - The bytes sent to the client</p></li><li><p>time - </p></li></ul></div><pre class="programlisting">
+	
+	
+	<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">public</font> Map&lt;String, Object&gt; onClientBWCheck(Object[] params) {
+			<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">final</font> IStreamCapableConnection stats = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">this</font>.getStats();
+	
+			Map&lt;String, Object&gt; statsValues = <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> HashMap&lt;String, Object&gt;();
+			Integer time = (Integer) (params.length &gt; 0 ? params[0] : 0);
+			statsValues.put(<b class="hl-string"><i style="color:red">"cOutBytes"</i></b>, stats.getReadBytes());
+			statsValues.put(<b class="hl-string"><i style="color:red">"cInBytes"</i></b>, stats.getWrittenBytes());
+			statsValues.put(<b class="hl-string"><i style="color:red">"time"</i></b>, time);
+			
+			log.info(<b class="hl-string"><i style="color:red">"cOutBytes: {} cInBytes: {} time: {}"</i></b>, <font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">new</font> Object[]{stats.getReadBytes(), stats.getWrittenBytes(), time});
+	
+			<font xmlns="http://www.w3.org/TR/xhtml1/transitional" font-weight="bold" color="blue">return</font> statsValues;
+	
+		}
+	
+	</pre></div></div></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="management.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="testing.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;16.&nbsp;Management&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;18.&nbsp;Testing Red5</td></tr></table></div></body></html>

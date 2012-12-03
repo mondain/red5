@@ -1,0 +1,26 @@
+<?xml version='1.0' ?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="releasing">
+	<title>Releasing Red5</title>
+	<para>This document describes the steps necessary to create a new release of Red5: </para>
+	<orderedlist>
+		<listitem>
+			<para>Make sure everything has been committed to the trunk or correct branch. </para>
+		</listitem>
+		<listitem>
+			<para>Update the file doc/changelog.txt with informations about the new release. </para>
+		</listitem>
+		<listitem>
+			<para>Create tags of the modules that are linked into the main code tree:</para>
+		</listitem>
+	</orderedlist>
+	<blockquote>
+		<para>documentation at 
+			<link xl:href="http://red5.googlecode.com/svn/doc/tags">http://red5.googlecode.com/svn/doc/tags</link>
+
+			Tags for versions should always be the version string with dots replaced by underscores, e.g. version "1.2.3" becomes tag "1_2_3". 
+		</para>
+	</blockquote>
+	<para> If you would tag the documentation folder for version "1.2.3", you would use the url 
+		<link xl:href="http://red5.googlecode.com/svn/doc/tags/1_2_3">http://red5.googlecode.com/svn/doc/tags/1_2_3</link> 
+	</para>
+</chapter>

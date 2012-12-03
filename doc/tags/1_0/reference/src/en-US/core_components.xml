@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<part xml:id="core-components" xmlns="http://docbook.org/ns/docbook"
+    xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+    <title>Red5 Core Components</title>
+    <partintro xml:id="core-intro">
+        <para>
+        	Core components available in Red5. 
+        </para>
+        <itemizedlist>
+            <listitem>
+                <para><xref linkend="new-applications"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="logging-setup"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="tomcat-deployment"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="stream-paths"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="security"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="scripting"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="clustering"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="management"/></para>
+            </listitem>
+            <!--<listitem>
+                <para><xref linkend="bean-definitions"/></para>
+         </listitem>-->
+            <listitem>
+                <para><xref linkend="demo-applications"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="testing"/></para>
+            </listitem>
+            <listitem>
+                <para><xref linkend="plugins"/></para>
+            </listitem>
+        </itemizedlist>
+    </partintro>
+
+    <xi:include href="core/new_applications.xml" />
+    
+    <xi:include href="core/logging_setup.xml" />
+
+    <xi:include href="core/tomcat_deployment.xml" />
+
+    <xi:include href="core/stream_paths.xml" />
+
+    <xi:include href="core/security.xml" />
+
+    <xi:include href="core/scripting.xml" />
+
+    <xi:include href="core/clustering.xml" />
+
+    <xi:include href="core/management.xml" />
+
+    <!--<xi:include href="core/bean_definitions.xml" />-->
+
+    <xi:include href="core/demo_applications.xml" />
+
+    <xi:include href="core/testing.xml" />
+    
+    <xi:include href="core/plugins.xml" />
+
+</part>

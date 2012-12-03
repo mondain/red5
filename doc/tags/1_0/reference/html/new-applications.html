@@ -1,0 +1,90 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;9.&nbsp;Create new applications in Red5</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="next" href="logging-setup.html" title="Chapter&nbsp;10.&nbsp;Logging Setup"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="new-applications"></a>Chapter&nbsp;9.&nbsp;Create new applications in Red5</h2></div></div></div><p>This document describes how new applications can be created in Red5. It applies to the 
+		new API introduced by Red5 0.4. </p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2623"></a>9.1.&nbsp;The application directory</h2></div></div></div><p>Red5 stores all application definitions as folders inside the "webapps" directory beneath the 
+			root of Red5. So the first thing you will have to do in order to create a new application, is to 
+			create a new subfolder in "webapps". By convention this folder should get the same name 
+			the application will be reached later. </p><p>Inside your new application, you will need a folder "WEB-INF" containing configuration files 
+			about the classes to use. You can use the templates provided by Red5 in the folder "doc/ 
+			templates/myapp". </p><p>During the start of Red5, all folders inside "webapps" are searched for a directory "WEB- 
+			INF" containing the configuration files. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2632"></a>9.2.&nbsp;Configuration</h2></div></div></div><p>The main configuration file that is loaded is "web.xml". It contains the following parameters: </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2637"></a>9.2.1.&nbsp;webAppRootKey</h3></div></div></div><p>Unique name for this application, should be the public name: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;context-param&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;param-name&gt;</b>webAppRootKey<b class="hl-tag" style="color: blue">&lt;/param-name&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;param-value&gt;</b>/myapp<b class="hl-tag" style="color: blue">&lt;/param-value&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/context-param&gt;</b> 
+
+</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2644"></a>9.3.&nbsp;Handler configuration</h2></div></div></div><p>Every handler configuration file must contain at least three beans: </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2649"></a>9.3.1.&nbsp;Context</h3></div></div></div><p>The context bean has the reserved name web.context and is used to map paths to scopes, 
+				lookup services and handlers. The default class for this is org.red5.server.Context. </p><p>By default this bean is specified as: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.context"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.Context"</span> 
+    <span class="hl-attribute" style="color: blue">autowire</span>=<span class="hl-value" style="color: blue">"byType"</span><b class="hl-tag" style="color: blue"> /&gt;</b>   
+
+</pre><p>Every application can only have one context. However this context can be shared across 
+				multiple scopes. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2660"></a>9.3.2.&nbsp;Scopes</h3></div></div></div><p>Every application needs at least one scope that links the handler to the context and the 
+				server. The scopes can be used to build a tree where clients can connect to every node 
+				and share objects inside this scope (like shared objects or live streams). You can see the 
+				scopes as rooms or instances. </p><p>The default scope usually has the name web.scope, but the name can be chosen 
+				arbitrarily. </p><p>The bean has the following properties: </p><p>- server 
+				This references the global server red5.server. 
+				- parent 
+				References the parent for this scope and usually is global.scope. 
+				- context 
+				The server context for this scope, use the web.context from above. 
+				- handler 
+				The handler for this scope (see below). 
+				- contextPath 
+				The path to use when connecting to this scope. 
+				- virtualHosts 
+				A comma separated list of hostnames or ip addresses this scope runs at. </p><p>A sample definition looks like this: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.scope"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.WebScope"</span> 
+    <span class="hl-attribute" style="color: blue">init-method</span>=<span class="hl-value" style="color: blue">"register"</span><b class="hl-tag" style="color: blue">&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"server"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"red5.server"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"parent"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.scope"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"context"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"web.context"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"handler"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"web.handler"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"contextPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"/myapp"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"virtualHosts"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"localhost, 127.0.0.1"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><p>You can move the values for contextPath and virtualHosts to a separate properties file and 
+				use parameters. In that case you need another bean: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"placeholderConfig"</span> 
+    <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"</span><b class="hl-tag" style="color: blue">&gt;</b>
+Create new applications in Red5 
+    <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"location"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"/WEB-INF/red5-web.properties"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+
+</pre><p>Assuming a red5-web.properties containing the following data: </p><div class="literallayout"><p><br>
+webapp.contextPath=/myapp&nbsp;<br>
+webapp.virtualHosts=localhost,&nbsp;127.0.0.1&nbsp;<br>
+</p></div><p>the properties of the scope can now be changed to: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"contextPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${webapp.contextPath}"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+<b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"virtualHosts"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"${webapp.virtualHosts}"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+
+</pre><p>The contextPath specified in the configuration can be seen as "root" path of the scope. </p><p>You can add additional elements after the configured path when connecting to dynamically 
+				create extra scopes. </p><p>These extra scopes all use the same handler but have their own properties, shared objects 
+				and live streams. </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2693"></a>9.4.&nbsp;Handlers</h2></div></div></div><p>Every context needs a handler that implements the methods called when a client 
+			connects to the scope, leaves it and that contains additional methods that can be 
+			called by the client. The interface these handlers need to implement is specified by 
+			org.red5.server.api.IScopeHandler, however you can implement other interfaces if you 
+			want to control access to shared objects or streams. </p><p>A sample implementation that can be used as base class can be found at 
+			org.red5.server.adapter.ApplicationAdapter. Please refer to the javadoc documentation for 
+			further details. </p><p>The bean for a scope handler is configured by: </p><pre class="programlisting">
+
+
+<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler"</span> 
+    <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"the.path.to.my.Application"</span> 
+    <span class="hl-attribute" style="color: blue">singleton</span>=<span class="hl-value" style="color: blue">"true"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2704"></a>9.5.&nbsp;Logging</h2></div></div></div><p>
+			<a class="link" href="Documentation/Tutorials/LoggingSetup" target="_top">Logging Setup Tutorial</a>
+		</p></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="core-components.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="logging-setup.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Part&nbsp;II.&nbsp;Red5 Core Components&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;10.&nbsp;Logging Setup</td></tr></table></div></body></html>

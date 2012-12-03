@@ -1,0 +1,33 @@
+<?xml version='1.0' ?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="bean-definitions">
+	<title>List of Custom bean definitions</title>
+	<para>This document gives a list of available custom-bean names</para>
+	<section>
+		<title>how to use the custom settings</title>
+		<para>see: 
+			<link xl:href="Documentation/UsersReferenceManual/Red5CoreTechnologies/Chapter3">Customize Stream Paths</link>
+		</para>
+	</section>
+	<section>
+		<title>Bean Definitions</title>
+		<informaltable>
+			<tr>
+				<td>Class </td>
+				<td>Bean </td>
+				<td>Description </td>
+			</tr>
+			<tr>
+				<td>org.red5.server.api.stream.IStreamFilenameGenerator </td>
+				<td>streamFilenameGenerator </td>
+				<td>
+					<link xl:href="Chapter13.CustomizeStreamPaths">Chapter13.CustomizeStreamPaths</link> 
+				</td>
+			</tr>
+			<tr>
+				<td>org.red5.io.IStreamableFileService </td>
+				<td>streamableFileService </td>
+				<td>? </td>
+			</tr>
+		</informaltable>
+	</section>
+</chapter>

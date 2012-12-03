@@ -1,0 +1,6 @@
+org.red5.client
+org.red5.client.net.remoting
+org.red5.client.net.rtmp
+org.red5.client.net.rtmps
+org.red5.client.net.rtmpt
+org.red5.server.stream

@@ -1,0 +1,822 @@
+<?xml version='1.0' ?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="frequently-asked-questions">
+	<title>Frequently Asked Questions</title>
+	<para>The best way you can help make this FAQ more useful is by asking questions: either in any of the places above, or by leaving your questions in the comments below.</para>
+	<itemizedlist>
+		<listitem>
+			<para>Bugs and requests for new features can be submitted to Trac</para>
+		</listitem>
+		<listitem>
+			<para>Ideas for new features can be talked about on the mailinglist</para>
+		</listitem>
+	</itemizedlist>
+	
+	<section>
+		<title>Questions</title>
+		<section>
+			<title>General</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#what-is-red5">What is Red5?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#what-does-red5-stand-for">What does Red5 stand for?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#migration-guide-from">Is there a migration guide from FMS to Red5?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#create-new-applications">applications? How do I create new applications?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#configurationfiles">What are configuration files?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#mailing-list">Is there a mailing list?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>What is the mailing list etiquette? (TODO)</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#what-ports">What Ports does Red5 use?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#helping-the-project">How can I help? I'm interested in helping the project. How can I help?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#the-team">Who is on the Red5 Team?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>Are there any benchmarks? (TODO)</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Documentation</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#official-documentation">Where is the official documentation?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#documentation-in-pdf">Can I get the documentation in PDF format?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#latest-javadocs">Where can I find the latest javadocs?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Configuration</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#disable-policy-checking">How to disable Socket policy checking for 443 (RTMPS and HTTPS)?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Streaming</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#stream-custom-directories">How do I stream to/from custom directories?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#detect-end-recording">How to detect the end of recording?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#record-streams-from">How can I record RTMP streams from Red5?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#multicast-streaming">Does Red5 support multicast streaming?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#streamusing-udp">Can Red5 stream using UDP?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Codecs</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#supported-codecs">What Codecs does Red5 Support?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#what-is-rtmfp">What is RTMFP and when will it be available in Red5?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Database</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#supported-databases">What databases are supported?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#hibernate-with-red5">Can I use Hibernate with Red5?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Scripting</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#scripting-languages">What scripting languages are available?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#actionscript1-support">Does Red5 support Actionscript 1?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#actionscript3-support">Does Red5 support Actionscript 3?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Shared Objects</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#remote-sharedobjects">How do you setup a Remote SharedObject?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#persistant-sharedobject">How can I make a Remote SharedObject persistant on the server?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#sharedobject-slots">What are remote SharedObject slots?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Legal</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#licence-information">Licence Information</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#red5-legal">Is Red5 Legal?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#codec-licenses">Codec Licenses</command> (TODO)
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#third-party-licenses">Third Party Licenses</command> (TODO)
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Red5 WAR version</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#war-documentation">Is there any documentation on the Red5 war version?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Misc</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#irc-channel">Is there an IRC channel?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#forums">Are there forums?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#frameworks">Are there any frameworks that I can start with?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#paperworld3d">What is Paperworld3D?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#jedai">What is Jedai?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#free-tools">Are there free tools</command> (TODO)
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#development-tools">Are there development tools?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#video-tutorials">there video tutorials Are there video tutorials</command> (TODO)
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#web-examples">Are there any examples on the web?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#professional-support">Is there professional support?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#hosting-solutions">Are there hosting solutions?</command>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<command xl:href="#groups">What Red5 groups can I join?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Troubleshooting</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<command xl:href="#long-handshake">Why am I receiving "closing due to long handshake?</command>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+	
+	<section>
+		<title>Answers</title>
+		<section>
+			<title>General</title>
+			<section xml:id="what-is-red5">
+				<title>What is Red5?</title>
+				<para>
+					<emphasis role="bold">Red5</emphasis> is an open source Flash RTMP server written in Java that supports:
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>Streaming Audio/Video (FLV and MP3)</para>
+					</listitem>
+					<listitem>
+						<para>Recording Client Streams (FLV only)</para>
+					</listitem>
+					<listitem>
+						<para>Shared Objects</para>
+					</listitem>
+					<listitem>
+						<para>Live Stream Publishing</para>
+					</listitem>
+					<listitem>
+						<para>Remoting</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+			<section xml:id="what-does-red5-stand-for">
+				<title>What does Red5 stand for?</title>
+				<para>Originally referenced to Star Wars.&amp;nbsp; Red5 was the "one who did the impossible".&amp;nbsp;</para>
+			</section>
+			<section xml:id="migration-guide-from">
+				<title>Is there a migration guide from FMS to Red5?</title>	
+				<para>Yes: 
+					<link linkend="migration-guide">Migration Guide</link>
+				</para>
+			</section>
+			<section xml:id="create-new-applications">
+				<title>How do I create new applications?</title>
+				<para>
+					<link linkend="new-applications">Creating New Applications</link>
+				</para>	
+			</section>
+			<section xml:id="configurationfiles">
+				<title>What are configuration files?</title>
+				<para>see: 
+					<link linkend="configuration-files">Configuration Files In Red5</link>
+				</para>	
+			</section>
+			<section xml:id="mailing-list">
+				<title>Is there a mailing list?</title>
+				<para>Check the <link xl:href="http://trac.red5.org/wiki/MailingLists">mailing list page</link>.</para>
+			</section>
+			<section xml:id="what-ports">
+				<title>What Ports does Red5 use?</title>
+				<literallayout>http.port=5080  // tomcat or jetty servlet container 
+
+				rtmp.port=1935  // traditional rtmp 
+
+				rtmpt.port=8088  // rtmp tunneled over http 
+
+				mrtmp.port=9035  // used with an edge/origin setup 
+
+				proxy.source_port=1936  // used to debug 
+</literallayout>
+				<para>These default ports can be changed in "RED5_HOME]\conf\red5.properties"</para>
+				<para>Additionally, most users only forward port 1935 and 5080</para>
+			</section>
+			<section xml:id="helping-the-project">
+				<title>I'm interested in helping the project. How can I help?</title>
+				<para>You can create a new Trac ticket for any contributions you want to make, attach the files there or link it. Make sure you signup on the 
+					<link xl:href="http://trac.red5.org/wiki/MailingLists">mailinglist</link> as well..
+				</para>
+			</section>
+			
+			<!-- Red5 Team -->
+			<xi:include href="the_team.xml" />
+			
+		</section>
+		<section>
+			<title>Documentation</title>
+			<section xml:id="official-documentation">
+				<title>Where is the official documentation?</title>
+				<para></para>
+			</section>
+			<section xml:id="documentation-in-pdf">
+				<title>Can I get the documentation in PDF format?</title>	\
+				<para></para>
+			</section>
+			<section xml:id="latest-javadocs">
+				<title>Where can I find the latest javadocs?</title>
+				<para>
+					<link xl:href="http://api.red5.nl">http://api.red5.nl</link>
+				</para>
+			</section>
+		</section> 
+		<section>
+			<title>Configuration</title>
+			<section xml:id="disable-policy-checking">
+				<title>How to disable Socket policy checking for 443 (rtmps and https)?</title>
+				<para>You can change the port to something over 1024 like 8443 or comment out the RTMPS section.</para>
+			</section>
+		</section>
+		<section>
+			<title>Streaming</title>
+			<section xml:id="stream-custom-directories">
+				<title>How do I stream to/from custom directories?</title>
+				<para>
+					<link linkend="stream-paths">Customize Stream Paths</link>
+				</para>
+			</section>
+			<section xml:id="detect-end-recording">
+				<title>How to detect the end of recording ?</title>
+				<para>See the 
+					<link xl:href="http://api.red5.nl/org/red5/server/api/stream/IStreamAwareScopeHandler.html">API docs</link>.
+				</para>
+			</section>
+			<section xml:id="record-streams-from">
+				<title>How can I record RTMP streams from Red5?</title>
+				<para>See: 
+					<link xl:href="http://ptrthomas.wordpress.com/2008/04/19/how-to-record-rtmp-flash-video-streams-using-red5">http://ptrthomas.wordpress.com/2008/04/19/how-to-record-rtmp-flash-video-streams-using-red5</link>
+				</para>
+			</section>
+			<section xml:id="multicast-streaming">
+				<title>Does Red5 support multicast streaming?</title>
+				<para>It should be noted that multicasting support is not available in the Flash Player.  For that reason, no media server can deliver a multi-casting solution to the Flash Player.  In addition, many networks have multicasting turned off so it may not be realiable for other platforms either such as Windows Media Player.  These solutions usually fall back to unicasting when clients cannot receive muliticasted media.  In regards to Unicasting, Red5 already has this functionality.  In addition, we have an edge-origin solution sometimes referred to as stream-reapeating.</para>
+			</section>
+			<section xml:id="streamusing-udp">
+				<title>Can Red5 stream using UDP?</title>
+				<para>No.  Even though Java can stream using UDP, the Flash Player can not receive data sent using UDP.</para>	
+			</section>
+		</section>
+		<section>
+			<title>Codecs</title>
+			<section xml:id="supported-codecs">
+				<title>What Codecs does Red5 Support?</title>
+				<para>
+					<emphasis role="bold">Video codecs:</emphasis>
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>ScreenVideo</para>
+					</listitem>
+					<listitem>
+						<para>On2 VP6</para>
+					</listitem>
+					<listitem>
+						<para>Sorenson H.263</para>
+					</listitem>
+					<listitem>
+						<para>H264</para>
+					</listitem>
+				</itemizedlist>
+				<para>
+					<emphasis role="bold">Audio codecs:</emphasis>
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>ADPCM</para>
+					</listitem>
+					<listitem>
+						<para>NellyMoser</para>
+					</listitem>
+					<listitem>
+						<para>MP3</para>
+					</listitem>
+					<listitem>
+						<para>Speex</para>
+					</listitem>
+					<listitem>
+						<para>AAC</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+			<section xml:id="what-is-rtmfp">
+				<title>What is RTMFP and when will it be available in Red5?</title>
+				<para>RTMFP stands for "RTMFP (Real Time Media Flow Protocol".  You can read more about it in the release notes.  Just search the following 
+					<link xl:href="http://labs.adobe.com/technologies/flashplayer10/releasenotes.html">page</link>.
+				</para>
+				<para>To understand what this protocol is and does, read the following 
+					<link xl:href="http://download.macromedia.com/pub/labs/flashplayer10/flashplayer10_rtmfp_faq_071708.pdf">FAQ</link>.
+				</para>
+				<para>Red5 does not support RTMFP.  At the moment, there isn't enough exposure to RTMFP and discussion can resume once it is released and more is known about the protocol.</para>
+			</section>
+		</section>
+		<section>
+			<title>Database</title>
+			<section xml:id="supported-databases">
+				<title>What databases are supported?</title>
+				<para>Red5 is built with Java.  So any database that has a JDBC driver will work.</para>
+			</section>
+			<section xml:id="hibernate-with-red5">
+				<title>Can I use Hibernate with Red5?</title>
+				<para>
+					
+				</para>	
+			</section>
+		</section>
+		<section>
+			<title>Scripting</title>
+			<section xml:id="scripting-languages">
+				<title>What scripting languages are available?</title>
+				<para>Scripting support (JavaScript, Groovy, Beanshell, JRuby, Jython)</para>
+			</section>
+			<section xml:id="actionscript1-support">
+				<title>Does Red5 support Actionscript 1?</title>
+				<para>Not yet, but there is development in this area and proof of concepts have been presented at conferences.</para>
+			</section>
+			<section xml:id="actionscript3-support">
+				<title>Does Red5 support Actionscript 3?</title>
+				<para>Not yet, but there is development in this area and proof of concepts have viewed by Red5 team members.</para>
+			</section>
+		</section>
+		<section>
+			<title>Shared Objects</title>
+			<section xml:id="remote-sharedobjects">
+				<title>How do you setup a Remote SharedObject?</title>
+				<para>see: 
+					<link xl:href="http://livedocs.adobe.com/fms/2/docs/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&amp;file=00000607.html">http://livedocs.adobe.com/fms/2/docs/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&amp;file=00000607.html</link>
+				</para>
+			</section>
+		</section>
+		<section>
+			<title>Legal</title>
+			<section xml:id="licence-information">
+				<title>Licence Information</title>
+				<para>
+					<link xl:href="http://www.opensource.org/licenses/lgpl-license.php">http://www.opensource.org/licenses/lgpl-license.php</link>
+				</para>
+				<para>For an easier explanation, please see: 
+					
+				</para>
+			</section>
+			<section xml:id="red5-legal">
+				<title>Is Red5 Legal?</title>
+				<para>Please read our response: 
+					<link xl:href="http://osflash.org/red5/fud">http://osflash.org/red5/fud</link>
+				</para>
+			</section>
+		</section>
+		<section xml:id="war-documentation">
+			<title>Red5 WAR version</title>
+			<section>
+				<title>Is there any documentation on the Red5 war version?</title>
+				<para>read: 
+					<link linkend="tomcat-deployment">Deploying To Tomcat</link>
+				</para>
+			</section>
+		</section>
+		<section>
+			<title>Misc</title>
+			<section xml:id="irc-channel">
+				<title>Is there an IRC channel?</title>
+				<para>Yes:  #red5 on irc.freenode.net</para>
+				<para>Flash non-IRC based chat: 
+					<link xl:href="http://red5.newviewnetworks.com/iChatBar2/#">http://red5.newviewnetworks.com/iChatBar2/#</link>
+				</para>
+			</section>
+			<section xml:id="web-examples">
+				<title>Are there any examples on the web?</title>
+				<para> Below is a list of applications that use Red5.</para>
+				<itemizedlist>
+					<listitem>
+						<para>
+							<link xl:href="http://www.snappmx.com/">http://www.snappmx.com/</link> a Rapid Application Development System that supports the creation of Red5 applications.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://code.google.com/p/openmeetings">http://code.google.com/p/openmeetings</link> by Sebastian Wagner.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.dokeos.com">http://www.dokeos.com</link> videconf module by Sebastian Wagner.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://spreed.com">http://spreed.com</link>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.videokent.com/videochat.php">http://www.videokent.com/videochat.php</link>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.weekee.tv">http://www.weekee.tv</link> an online video editing site by Weekee team.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://blipback.com">http://blipback.com</link> BlipBack is a video comment widget that you can embed on any number of social network sites or blogs you]have. Blipback lets you or your friends record short video comments directly to your page.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://artemis.effectiveui.com">http://artemis.effectiveui.com</link> Bridge AIR applications to the Java runtime.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://jooce.com">http://jooce.com</link> Jooce is your very own, private online desktop - with public file sharing capabilities. A highly-secure, on]ine space to keep, view, listen to - and instantly share with friends - all your files, photos,music and video.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://facebook.com/video">http://facebook.com/video</link> Video uploading/recording/messaging system that allows you to record a video on the upload page or]send a private message to another user and attach a video.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.f-ab.net">http://www.f-ab.net</link> F-ab is a simple browser for Flash movies. F-ab has "FLVPhone", which is a video conferencing telephone ]sing the Flash movie. Red5 is embedded in F-ab to communicate with the remote FLVPhone.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.streamingvideosoftware.info">Streaming video chat software script is a RED5 based system that allows you to build</link> comprehensive pay per minute / pay per view video chat site.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://pixelquote.com">http://pixelquote.com</link> Huge Pixelwall where visitors can simply add Pixels with  their Messages - by Simon Kusterer.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://nonoba.com/chris/fridge-magnets">http://nonoba.com/chris/fridge-magnets</link> Classical fridge magnet toy.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.quarterlife.com">http://www.quarterlife.com</link> Video blogging
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.avchat.net">http://www.avchat.net</link> Red5 Flash Audio/Video Chat Software
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.avchat.net/fms-bandwidth-checker.php">http://www.avchat.net/fms-bandwidth-checker.php</link> Red5 bandwidth checker with upload/download and latency tests
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.justepourrire-nantes.fr">http://www.justepourrire-nantes.fr</link> Red5 Flash Video streaming
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.nielsenaa.com/TV/tv.php">http://www.nielsenaa.com/TV/tv.php</link> Red5 Flash Php/MySql/Ajax driven scheduled &amp; streamed multi  channel TV - VOD
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.videoflashchat.com">http://www.videoflashchat.com</link> VideoFlashChat - Red5 version for Web Based Video Chat
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.videogirls.biz">http://www.videogirls.biz</link> VideoGirls BiZ - Red5 version for Pay Per View Video Chat Software
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.ligachannel.com">http://www.ligachannel.com</link> Ligachannel.com - Italian singer site. Red5 used for VOD Protected Streaming and audio/video reco]ding widgets
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.sticko.com/">http://www.sticko.com/</link> Video portal with widgets for popular social networking sites
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.zingaya.jp/">http://www.zingaya.jp/</link> VOIP server built on Red5 for Flashphone
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.gchats.com/red5chat/visichat/">http://www.gchats.com/red5chat/visichat/</link> Visichat, flash video and audio chat with red5
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.agileagenda.com/">http://www.agileagenda.com/</link> The AgileAgenda web service was written with Red5
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.videoondemandsoftware.com">http://www.videoondemandsoftware.com</link> RED5 based Video on demand HD-TV quality pay per view/minutes software
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.videochatsoftware.org">http://www.videochatsoftware.org</link> Flash red5 video chat software
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.hubbabubba.com/">http://www.hubbabubba.com/</link> HubbaBubba world
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<link xl:href="http://www.deltastrike.org/">http://www.deltastrike.org/</link> DeltaStrike - free online realtime multiplayer strategy game
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+			<section xml:id="professional-support">
+				<title>Is there any professional support?</title>
+				<para>Companies Listed:</para>
+				<itemizedlist>
+					<listitem>
+						<para>Infrared5 (
+							<link xl:href="http://www.infrared5.com">www.infrared5.com</link>)
+						</para>
+					</listitem>
+					<listitem>
+						<para>Red5Server (
+							<link xl:href="http://www.red5server.com">http://www.red5server.com</link>)
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+			<section xml:id="hosting-solutions">
+				<title>Are there hosting solutions?</title>
+				<itemizedlist>
+					<listitem>
+						<para>Red5Server (
+							<link xl:href="http://www.red5server.com">http://www.red5server.com</link>)
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+			<section xml:id="forum">
+				<title>Are there forums?</title>
+				<para>see: 
+					<link xl:href="http://red5server.com/forum/">http://red5server.com/forum/</link>
+				</para>
+			</section>
+			<section xml:id="jedai">
+				<title>What is Jedai?</title>
+				<para>see: 
+					<link xl:href="http://jedai.googlecode.com">http://jedai.googlecode.com</link>
+				</para>
+			</section>
+			<section xml:id="frameworks">
+				<title>Are there any frameworks that I can start with?</title>
+				<itemizedlist>
+					<listitem>
+						<para>see: 
+							<link xl:href="http://jedai.googlecode.com">http://jedai.googlecode.com</link>
+						</para>
+					</listitem>
+					<listitem>
+						<para>see: 
+							<link xl:href="http://paperworld3d.googlecode.com">http://paperworld3d.googlecode.com</link>
+						</para>
+					</listitem>
+				</itemizedlist>	
+			</section>
+			<section xml:id="development-tools">
+				<title>Are there development tools?</title>
+				<para>See 
+					<link xl:href="http://trac.red5.org/wiki/Red5Plugin">http://trac.red5.org/wiki/Red5Plugin</link>
+				</para>
+			</section>
+			<section xml:id="paperworld3d">
+				<title>What is Paperworld3D ?</title>
+				<para>See 
+					<link xl:href="http://www.paperworld3d.org">http://www.paperworld3d.org</link>
+				</para>
+			</section>
+			<section xml:id="groups">
+				<title>What Red5 groups can I join?</title>
+				<para>
+					<link xl:href="http://www.linkedin.com/e/gis/64004/24689F7691AB">Linked in Red5 group</link>
+				</para>
+			</section>
+		</section>
+		<section>
+			<title>Troubleshooting</title>
+			<section xml:id="long-handshake">
+				<title>Why am I receiving "closing due to long handshake?</title>
+				<para>
+					<literal>issue: Closing RTMPMinaConnection from [IP_ADDRESS] : 2610 to [IP_ADDRESS] (in: 3415 out 3212 ), with id 512231886 due to long handshake</literal>
+				</para>
+				<para>solution: Have you installed the example your trying to connect to?  The examples are installed on demand starting with Red5 0.8.  Just check the welcome page 
+					<link xl:href="http://localhost:5080/">http://localhost:5080/</link> and look for a link that allows you to install them.  After an example is installed, you should be able to run the examples.
+				</para>
+				<para>Note:  We are improving this so that if an example is chosen, it will be installed.</para>
+			</section>
+		</section>
+	</section>
+</chapter>
