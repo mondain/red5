@@ -15,10 +15,9 @@
 	<property name="config.dir" value="src/conf"/>
 	<property name="javadoc.dir" value="doc/api"/>
 	<property name="debug.state" value="true"/>
-	<!-- Documentation properties -->
-	<property name="doc.ref.dir" value="doc/reference"/>
-	<property name="doc.ref.lib" value="${doc.ref.dir}/lib"/>
-	<property name="javadoc.style" value="${doc.ref.dir}/styles/javadoc.css"/>
+	<!-- documentation properties -->
+	<property name="doc.ref.dir" value="src/main/javadoc"/>
+	<property name="javadoc.style" value="${doc.ref.dir}/javadoc.css"/>
 	<!-- unit testing -->
 	<property name="test.dir" value="test"/>
 	<property name="testclass.dir" value="bin/testcases/classes"/>
@@ -46,6 +45,12 @@
 		<fileset dir="${lib.dir}"/>
 		<pathelement location="${classes.dir}"/>
 	</path>
+	<path id="full.classpath">
+		<fileset dir="${lib.dir}"/>
+		<fileset dir="../../server/trunk">
+			<filename name="red5.jar"/>
+		</fileset>
+	</path>	
 	<path id="runtime.classpath">
 		<fileset dir="${lib.dir}">
 			<exclude name="*robo*.jar"/>
