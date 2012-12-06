@@ -228,6 +228,25 @@
 		<dependency>
 			<groupId>org.red5</groupId>
 			<artifactId>red5-server</artifactId>
+			<scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.mina</groupId>
+          <artifactId>mina-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.mina</groupId>
+          <artifactId>mina-integration-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.mina</groupId>
+          <artifactId>mina-integration-jmx</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.mina</groupId>
+          <artifactId>mina-integration-ognl</artifactId>
+        </exclusion>
+      </exclusions>			
 		</dependency>
 		<dependency>
             <groupId>org.slf4j</groupId>
@@ -312,7 +331,7 @@
         <profile>
             <id>qa</id>
             <build>
-                <plugins>
+                <plugins>		
                     <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
                             <executions>
@@ -326,7 +345,7 @@
                                     </configuration>
                                 </execution>
                             </executions>
-                    </plugin>
+                    </plugin>				
                 </plugins>
             </build>
         </profile>
