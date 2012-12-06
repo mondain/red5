@@ -20,19 +20,29 @@
       <url>http://red5.googlecode.com/svn/repository</url>
     </repository>
     <repository>
+      <id>repo1.maven.org</id>
+      <url>http://repo1.maven.org/maven2</url>
+    </repository>	
+    <repository>
       <id>springsource-repo</id>
       <name>SpringSource Repository</name>
       <url>http://repo.springsource.org/release</url>
-    </repository>
-    <repository>
-      <id>repo1.maven.org</id>
-      <url>http://repo1.maven.org/maven2</url>
     </repository>
     <repository>
       <id>maven2-repository.dev.java.net</id>
       <url>http://download.java.net/maven/2</url>
     </repository>
   </repositories>
+  <dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-parent</artifactId>
+			<version>${mina.version}</version>
+			<type>pom</type>
+		</dependency>  
+	</dependencies>
+  </dependencyManagement>  
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
