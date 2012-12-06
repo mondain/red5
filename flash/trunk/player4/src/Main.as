@@ -100,7 +100,6 @@ package {
 				requirementSet.children.addItem(new Requirement());
 				requirementSet.children.addItem(new Requirement());
 				log('Children: ' + requirementSet.children.length);
-				//rtmp://localhost/svp-server
 				nc.call("echo", responder, requirementSet);
 			}
 		}		
