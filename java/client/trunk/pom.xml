@@ -16,8 +16,14 @@
 		<slf4j.version>1.7.2</slf4j.version>
 		<mina.version>2.0.7</mina.version>
 		<logback.version>1.0.9</logback.version>
+		<junit.version>4.10</junit.version>
 		<red5-server.version>1.0</red5-server.version>
 	</properties>
+	<scm>
+		<connection>scm:svn:http://red5.googlecode.com/svn/java/client/trunk</connection>
+		<developerConnection>scm:svn:https://red5.googlecode.com/svn/java/client/trunk</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 	<build>
 		<defaultGoal>install</defaultGoal>
 		<directory>${basedir}/target</directory>
@@ -63,7 +69,14 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<useDefaultManifestFile>true</useDefaultManifestFile>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestEntries>
+							<SCM-Revision>${buildNumber}</SCM-Revision>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -119,6 +132,30 @@
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<doCheck>false</doCheck>
+					<doUpdate>true</doUpdate>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-scm-plugin</artifactId>
+				<version>1.8.1</version>
+				<configuration>
+					<connectionType>connection</connectionType>
+				</configuration>
 			</plugin>
 		</plugins>
 		<resources>
@@ -187,7 +224,7 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.10</version>
+				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
