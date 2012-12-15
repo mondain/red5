@@ -173,6 +173,15 @@
 			<testResource>
 				<directory>src/test/resources</directory>
 			</testResource>
+			<resource>
+				<directory>src/test/java</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
 		</testResources>
 	</build>
 	<repositories>
