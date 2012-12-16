@@ -103,7 +103,7 @@
 					<sourcepath>${basedir}/src/main/java</sourcepath>
 					<includeDependencySources>false</includeDependencySources>
 					<dependencySourceIncludes>
-						<dependencySourceInclude>com.infrared5:*</dependencySourceInclude>
+						<dependencySourceInclude>org.red5:*</dependencySourceInclude>
 					</dependencySourceIncludes>
 					<detectOfflineLinks>false</detectOfflineLinks>
 					<stylesheetfile>javadoc.css</stylesheetfile>
@@ -207,7 +207,7 @@
 			<id>opensymphony-releases</id>
 			<name>Opensymphony Releases</name>
 			<url>https://oss.sonatype.org/content/repositories/opensymphony-releases</url>
-		</repository>		
+		</repository>
 		<repository>
 			<id>jboss-public-repository-group</id>
 			<name>JBoss Public Maven Repository Group</name>
@@ -241,18 +241,18 @@
 				<version>${mina.version}</version>
 				<type>pom</type>
 			</dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.groboutils</groupId>
-                <artifactId>groboutils-core</artifactId>
-                <version>5</version>
-                <scope>test</scope>
-            </dependency>			
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.groboutils</groupId>
+				<artifactId>groboutils-core</artifactId>
+				<version>5</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
@@ -289,13 +289,13 @@
 			<groupId>org.apache.mina</groupId>
 			<artifactId>mina-core</artifactId>
 			<version>${mina.version}</version>
-            <type>bundle</type>
+			<type>bundle</type>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.mina</groupId>
 			<artifactId>mina-integration-jmx</artifactId>
 			<version>${mina.version}</version>
-            <type>bundle</type>
+			<type>bundle</type>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.mina</groupId>
@@ -307,7 +307,7 @@
 			<groupId>org.apache.mina</groupId>
 			<artifactId>mina-integration-beans</artifactId>
 			<version>${mina.version}</version>
-            <type>bundle</type>
+			<type>bundle</type>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
@@ -412,23 +412,23 @@
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
 			</exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.groboutils</groupId>
-            <artifactId>groboutils-core</artifactId>
-        </dependency>        
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.groboutils</groupId>
+			<artifactId>groboutils-core</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
