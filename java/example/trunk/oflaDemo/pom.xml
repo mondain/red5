@@ -5,12 +5,14 @@
 	<artifactId>oflaDemo</artifactId>
 	<packaging>war</packaging>
 	<name>oflaDemo</name>
-    <parent>
-        <groupId>org.red5</groupId>
-        <artifactId>examples</artifactId>
-        <version>1.0</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>	
+	<url>http://red5.googlecode.com/svn/java/example/trunk/oflaDemo</url>
+	<description>Demo project originally created to showcase Red5 features during the OFLA convention.</description>
+	<parent>
+		<groupId>org.red5</groupId>
+		<artifactId>examples</artifactId>
+		<version>1.0</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
 	<build>
 		<defaultGoal>install</defaultGoal>
 		<directory>${basedir}/target</directory>
@@ -38,7 +40,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<version>2.1.2</version>
 				<executions>
@@ -52,7 +53,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
@@ -67,7 +67,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.12</version>
 				<configuration>
@@ -77,14 +76,12 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.0</version>
 				<configuration>
 					<reportPlugins>
 						<!-- Reporting on success / failure of unit tests -->
 						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-surefire-report-plugin</artifactId>
 							<version>2.6</version>
 						</plugin>
@@ -104,12 +101,10 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 				<version>2.4</version>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.8.1</version>
 				<executions>
@@ -172,6 +167,12 @@
 					</additionalClasspathDirs>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
+			</plugin>
 		</plugins>
 		<resources>
 			<resource>
@@ -206,7 +207,7 @@
 				<includes>
 					<include>**/*.groovy</include>
 				</includes>
-			</resource>			
+			</resource>
 		</resources>
 		<testResources>
 			<testResource>
@@ -224,60 +225,64 @@
 			</testResource>
 		</testResources>
 	</build>
-	<dependencies>  
+	<dependencies>
 		<dependency>
 			<groupId>org.red5</groupId>
 			<artifactId>red5-server</artifactId>
-			<scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.mina</groupId>
-          <artifactId>mina-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.mina</groupId>
-          <artifactId>mina-integration-beans</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.mina</groupId>
-          <artifactId>mina-integration-jmx</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.mina</groupId>
-          <artifactId>mina-integration-ognl</artifactId>
-        </exclusion>
-      </exclusions>			
 		</dependency>
 		<dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-			<version>1.6.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-			<version>1.6.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-			<version>1.6.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-			<version>1.6.6</version>
-        </dependency>
-         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-			<version>1.0.6</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-			<version>1.0.6</version>
-        </dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
+			<version>${mina.version}</version>
+			<type>bundle</type>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-integration-jmx</artifactId>
+			<version>${mina.version}</version>
+			<type>bundle</type>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.mina</groupId>
+					<artifactId>mina-integration-ognl</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-integration-beans</artifactId>
+			<version>${mina.version}</version>
+			<type>bundle</type>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
@@ -326,29 +331,29 @@
 			<groupId>net.sourceforge.groboutils</groupId>
 			<artifactId>groboutils-core</artifactId>
 		</dependency>
-    </dependencies>
-    <profiles>
-        <profile>
-            <id>qa</id>
-            <build>
-                <plugins>		
-                    <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <phase>install</phase>
-                                    <goals>
-                                        <goal>copy-dependencies</goal>
-                                    </goals>
-                                    <configuration>
-                                        <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                    </plugin>				
-                </plugins>
-            </build>
-        </profile>
+	</dependencies>
+	<profiles>
+		<profile>
+			<id>qa</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}/lib</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>tomcat</id>
 			<activation>
@@ -381,12 +386,4 @@
 			</build>
 		</profile>
 	</profiles>
-	<properties>
-		<cargo.host>localhost</cargo.host>
-		<cargo.port>25888</cargo.port>
-		<cargo.wait>false</cargo.wait>
-		<tomcat.version>6.0.29</tomcat.version>
-	</properties>
-	<url>http://red5.googlecode.com/svn/java/example/trunk/oflaDemo</url>
-	<description>Demo project originally created to showcase Red5 features during the OFLA convention.</description>
 </project>
