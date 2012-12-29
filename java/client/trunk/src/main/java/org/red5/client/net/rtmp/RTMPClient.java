@@ -62,6 +62,7 @@ public class RTMPClient extends BaseRTMPClientHandler {
 		ioHandler.setRtmpConnManager(RTMPClientConnManager.getInstance());
 	}
 
+	/** {@inheritDoc} */
 	public Map<String, Object> makeDefaultConnectionParams(String server, int port, String application) {
 		Map<String, Object> params = super.makeDefaultConnectionParams(server, port, application);
 		if (!params.containsKey("tcUrl")) {
@@ -70,6 +71,7 @@ public class RTMPClient extends BaseRTMPClientHandler {
 		return params;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	protected void startConnector(String server, int port) {
 		socketConnector = new NioSocketConnector();
@@ -91,6 +93,7 @@ public class RTMPClient extends BaseRTMPClientHandler {
 		future.awaitUninterruptibly(CONNECTOR_WORKER_TIMEOUT);
 	}
 
+	/** {@inheritDoc} */	
 	@Override
 	public void disconnect() {
 		if (future != null) {
