@@ -157,10 +157,8 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	/**
 	 * Start network connection to server
 	 * 
-	 * @param server
-	 *            Server
-	 * @param port
-	 *            Connection port
+	 * @param server Server
+	 * @param port Connection port
 	 */
 	protected abstract void startConnector(String server, int port);
 
@@ -191,11 +189,14 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	}
 
 	/**
-	 * @param server Server
-	 * @param port Connection port
-	 * @param application Application at that server
-	 * @return default connection parameters
-	 */
+	 * Creates the default connection parameters collection. Many implementations of this handler will create a tcUrl if not found, 
+	 * it is created with the current server url.
+	 * 
+	 * @param server the server location
+	 * @param port the port for the protocol
+	 * @param application the application name at the given server
+	 * @return connection parameters map
+	 */	
 	public Map<String, Object> makeDefaultConnectionParams(String server, int port, String application) {
 		Map<String, Object> params = new ObjectMap<String, Object>();
 		params.put("app", application);
