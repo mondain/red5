@@ -54,13 +54,8 @@
 
     <!-- Check if Docbook libraries are installed -->
 	<target name="doc-prepare" description="Extra preparation for the documentation" unless="doc.prepare">
-
-
 		<path id="doc.lib.classpath">
 			<fileset dir="${doc.ref.lib}/docbook">
-				<include name="*.jar"/>
-			</fileset>
-			<fileset dir="${doc.ref.lib}/tracwiki2docbook">
 				<include name="*.jar"/>
 			</fileset>
 		</path>
@@ -69,11 +64,8 @@
 		    dest="${doc.ref.dir}/docbook-reference-libs.tar.bz2"
 		    verbose="true"
 		    usetimestamp="true"/>
-
 			<untar compression="bzip2" src="${doc.ref.dir}/docbook-reference-libs.tar.bz2" dest="${doc.ref.dir}/" overwrite="false"/>
 		</sequential>
-
-
 		<property name="doc.prepare" value="true"/>
 	</target>
 
@@ -86,9 +78,6 @@
 
         </delete>
 	</target>
-	
-	
-	
 
     <target name="doc-all" depends="doc-prepare" description="Generate all reference documentation">
 		<sequential>
@@ -100,23 +89,18 @@
 
     <!-- PDF Documentation -->
 	<target name="doc-pdf" description="Compile reference documentation in PDF format">
-
 		<path id="doc.lib.classpath">
             <fileset dir="${doc.ref.lib}/docbook">
                 <include name="*.jar"/>
             </fileset>
-            <fileset dir="${doc.ref.lib}/tracwiki2docbook">
-                <include name="*.jar"/>
-            </fileset>
         </path>
-
 		<!-- Build fo file -->
 		<mkdir dir="${doc.ref.dir}/pdf"/>
 		<dbxslt basedir="${doc.ref.dir}/src" in="${doc.ref.dir}/src/${locale}/book.xml"
 			 out="${doc.ref.dir}/src/docbook_fop.tmp" style="${doc.ref.dir}/styles/fopdf.xsl"/>
 		<!-- Build pdf -->
 		<fop-pdf basedir="${doc.ref.dir}/src" fofile="${doc.ref.dir}/src/docbook_fop.tmp"
-			 outfile="${doc.ref.dir}/pdf/red5-reference-0.9.pdf"/>
+			 outfile="${doc.ref.dir}/pdf/red5-reference-${red5.version}.pdf"/>
 		<delete file="${doc.ref.dir}/src/docbook_fop.tmp"/>
 	</target>
 	<!-- HTML Site Documentation -->
@@ -125,9 +109,6 @@
 
 		<path id="doc.lib.classpath">
             <fileset dir="${doc.ref.lib}/docbook">
-                <include name="*.jar"/>
-            </fileset>
-            <fileset dir="${doc.ref.lib}/tracwiki2docbook">
                 <include name="*.jar"/>
             </fileset>
         </path>

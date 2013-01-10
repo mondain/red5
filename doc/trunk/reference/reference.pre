@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<Red5Reference path="E:\dev\red5\doc\trunk\reference\reference.pre">
+ <item path="E:\dev\red5\doc\trunk\reference\src\en-US\legal_notice.xml" type="XML" encoding="AUTOMATIC" open="false">
+  <property name="encoding" value="AUTOMATIC"/>
+ </item>
+ <item path="E:\dev\red5\doc\trunk\reference\src\en-US\introduction.xml" type="XML" encoding="AUTOMATIC" open="false">
+  <property name="encoding" value="AUTOMATIC"/>
+ </item>
+ <item path="E:\dev\red5\doc\trunk\reference\src\en-US\getting_started.xml" type="XML" encoding="AUTOMATIC" open="false">
+  <property name="encoding" value="AUTOMATIC"/>
+ </item>
+ <group path="getting-started">
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\getting-started\the_team.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\getting-started\system_requirements.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\getting-started\releasing.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\getting-started\migration_guide.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\getting-started\libraries.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\getting-started\frequently_asked_questions.xml" type="XML" encoding="AUTOMATIC" open="false" test="true">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\getting-started\configuration_files.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\getting-started\building.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+
+ </group>
+ <group path="core">
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\tomcat_deployment.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\testing.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\stream_paths.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\security.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\scripting.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\plugins.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\new_applications.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\management.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\logging_setup.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\demo_applications.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\clustering.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\bean_definitions.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core\bandwidth_limiting.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+
+ </group>
+ <item path="E:\dev\red5\doc\trunk\reference\src\en-US\core_components.xml" type="XML" encoding="AUTOMATIC" open="false">
+  <property name="encoding" value="AUTOMATIC"/>
+ </item>
+ <item path="E:\dev\red5\doc\trunk\reference\src\en-US\book_info.xml" type="XML" encoding="AUTOMATIC" open="false">
+  <property name="encoding" value="AUTOMATIC"/>
+ </item>
+ <item path="E:\dev\red5\doc\trunk\reference\src\en-US\book.xml" type="XML" encoding="AUTOMATIC" open="false">
+  <property name="encoding" value="AUTOMATIC"/>
+ </item>
+ <item path="E:\dev\red5\doc\trunk\reference\src\en-US\author_group.xml" type="XML" encoding="AUTOMATIC" open="false">
+  <property name="encoding" value="AUTOMATIC"/>
+ </item>
+ <group path="appendix">
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\appendix\amf.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\appendix\data_mappings.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\appendix\rtmp.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <item path="E:\dev\red5\doc\trunk\reference\src\en-US\appendix\rtmpt.xml" type="XML" encoding="AUTOMATIC" open="false">
+   <property name="encoding" value="AUTOMATIC"/>
+  </item>
+  <group path="codecs">
+   <item path="E:\dev\red5\doc\trunk\reference\src\en-US\appendix\codecs\speex.xml" type="XML" encoding="AUTOMATIC" open="false">
+    <property name="encoding" value="AUTOMATIC"/>
+   </item>
+   <item path="E:\dev\red5\doc\trunk\reference\src\en-US\appendix\codecs\h264.xml" type="XML" encoding="AUTOMATIC" open="false">
+    <property name="encoding" value="AUTOMATIC"/>
+   </item>
+   <item path="E:\dev\red5\doc\trunk\reference\src\en-US\appendix\codecs\flv.xml" type="XML" encoding="AUTOMATIC" open="false">
+    <property name="encoding" value="AUTOMATIC"/>
+   </item>
+
+  </group>
+
+ </group>
+
+</Red5Reference>
