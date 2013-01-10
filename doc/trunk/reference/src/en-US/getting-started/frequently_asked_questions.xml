@@ -329,21 +329,27 @@
 					<emphasis role="bold">Red5</emphasis> is an open source Flash RTMP server written in Java that supports:
 				</para>
 				<itemizedlist>
-					<listitem>
-						<para>Streaming Audio/Video (FLV and MP3)</para>
-					</listitem>
-					<listitem>
-						<para>Recording Client Streams (FLV only)</para>
-					</listitem>
-					<listitem>
-						<para>Shared Objects</para>
-					</listitem>
-					<listitem>
-						<para>Live Stream Publishing</para>
-					</listitem>
-					<listitem>
-						<para>Remoting</para>
-					</listitem>
+		<listitem>
+			<para>Streaming Video (FLV, F4V, MP4, 3GP)</para>
+		</listitem>
+		<listitem>
+			<para>Streaming Audio (MP3, F4A, M4A, AAC)</para>
+		</listitem>
+		<listitem>
+			<para>Recording Client Streams (FLV and AVC+AAC in FLV container)</para>
+		</listitem>
+		<listitem>
+			<para>Shared Objects</para>
+		</listitem>
+		<listitem>
+			<para>Live Stream Publishing</para>
+		</listitem>
+		<listitem>
+			<para>Remoting (AMF)</para>
+		</listitem>
+		<listitem>
+			<para>Protocols: RTMP, RTMPT, RTMPS, and RTMPE</para>
+		</listitem>
 				</itemizedlist>
 			</section>
 			<section xml:id="what-does-red5-stand-for">
@@ -411,7 +417,8 @@
 			<section xml:id="latest-javadocs">
 				<title>Where can I find the latest javadocs?</title>
 				<para>
-					<link xl:href="http://api.red5.nl">http://api.red5.nl</link>
+					<link xl:href="http://red5.googlecode.com/svn/doc/tags/1_0/api/index.html">Server</link>
+					<link xl:href="http://red5.googlecode.com/svn/doc/tags/1_0/api-client/index.html">Client</link>
 				</para>
 			</section>
 		</section> 
@@ -433,7 +440,7 @@
 			<section xml:id="detect-end-recording">
 				<title>How to detect the end of recording ?</title>
 				<para>See the 
-					<link xl:href="http://api.red5.nl/org/red5/server/api/stream/IStreamAwareScopeHandler.html">API docs</link>.
+					<link xl:href="http://red5.googlecode.com/svn/doc/tags/1_0/api/org/red5/server/api/stream/IStreamAwareScopeHandler.html">Use the stream scope handler</link>.
 				</para>
 			</section>
 			<section xml:id="record-streams-from">
@@ -513,7 +520,8 @@
 			<section xml:id="hibernate-with-red5">
 				<title>Can I use Hibernate with Red5?</title>
 				<para>
-					
+					Absolutely, as well as any other Java ORM solution. 
+					<link xl:href="http://sziebert.net/posts/red5-hibernate-revisited/">Red5 + Hibernate Revisited</link>
 				</para>	
 			</section>
 		</section>
@@ -546,16 +554,358 @@
 			<section xml:id="licence-information">
 				<title>Licence Information</title>
 				<para>
-					<link xl:href="http://www.opensource.org/licenses/lgpl-license.php">http://www.opensource.org/licenses/lgpl-license.php</link>
-				</para>
-				<para>For an easier explanation, please see: 
-					
+					Red5 is licensed under <link xl:href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License 2.0</link>
 				</para>
 			</section>
 			<section xml:id="red5-legal">
 				<title>Is Red5 Legal?</title>
-				<para>Please read our response: 
-					<link xl:href="http://osflash.org/red5/fud">http://osflash.org/red5/fud</link>
+				<para>
+					<emphasis>DCMA and Red5</emphasis>
+					
+					First, we make it clear: we are here to support Macromedia and Flashers the world around. We have always stated it, and we will continue to show
+					it in our actions and statements. We hope to enrich the community AND projects everywhere with Red5. We've been hearing alot about FUD and 
+					Reverse Engineering. So, to clear up the questions with where we're coming from, I've posted a blurb from the DMCA that "could have" related to us.
+					I say "could have" because it talks about how and why it's legal to reverse engineer software that you own. Thing is, if you read through the
+					entire doc here, you'll see that the issue revolves around the issue of circumventing a security measure put in place by the producer of the 
+					software to protect the technology.
+
+					In the case of RTMP, we're sniffing packets (which is completely legal - read Discovery through Observation) for creating software that is 
+					completely interoperable with a free Flash player that has no security measure in place with regards to RTMP. It recieves packets whether they be
+					HTTP or RTMP - to cause the player to handshake via RTMP, all you have to do is send the proper packets - no encryption is required. So, by the 
+					fact that looking at packets to see how they're constructed and then recreating those packets to cause a free player to respond back for the 
+					purpose of interoperability, we see no issue with this process at all. Below is a snippet from the DMCA that talks about if we had to by-pass a
+					security measure (which we don't), we'd still have the right to create software that is interoperable.
+					
+<![CDATA[
+(f) Reverse Engineering.— (1) Notwithstanding the provisions of subsection (a)(1)(A), a person who has lawfully obtained the right to use a copy of a computer program may circumvent a technological measure that effectively controls access to a particular portion of that program for the sole purpose of identifying and analyzing those elements of the program that are necessary to achieve interoperability of an independently created computer program with other programs, and that have not previously been readily available to the person engaging in the circumvention, to the extent any such acts of identification and analysis do not constitute infringement under this title.
+
+(2) Notwithstanding the provisions of subsections (a)(2) and (b), a person may develop and employ technological means to circumvent a technological measure, or to circumvent protection afforded by a technological measure, in order to enable the identification and analysis under paragraph (1), or for the purpose of enabling interoperability of an independently created computer program with other programs, if such means are necessary to achieve such interoperability, to the extent that doing so does not constitute infringement under this title.
+
+(3) The information acquired through the acts permitted under paragraph (1), and the means permitted under paragraph (2), may be made available to others if the person referred to in paragraph (1) or (2), as the case may be, provides such information or means solely for the purpose of enabling interoperability of an independently created computer program with other programs, and to the extent that doing so does not constitute infringement under this title or violate applicable law other than this section.
+
+(4) For purposes of this subsection, the term “interoperability” means the ability of computer programs to exchange information, and of such programs mutually to use the information which has been exchanged.					
+]]>
+
+					To form your own opinion, you may review the <link xl:href="http://www.acmewebworks.com/red5/dmca/dmca.html">DCMA</link> document yourself.
+				</para>
+				<para>
+					<emphasis>Clearing the FUD</emphasis>
+
+					It's been a core principal for us since the beginning to be totally open about our intentions and actions. The progress of this project is 
+					recorded on the mailing list and wiki. However some people still seem to be confused about what we have and have not done. We hope to clear 
+					some of the ambiguity and FUD (fear uncertainty and doubt) floating around by documenting our history and methods.
+				</para>
+				<para>
+					<emphasis>Discovery through Observation</emphasis>
+
+					In retrospect we think the term “reverse engineering” has generated quite a lot of confusion and misunderstanding. When people hear it they think
+					we are somehow illegally cracking something. This isn't the case. We simply look at unencrypted bytes captured over a public network. No software 
+					is ever decompiled. Reverse engineering of protocols for the purpose of interoperability is legal and even protected by the DCMA in the USA. A 
+					better term for what we do would be "discovery through observation", as that's exactly what we have done.
+				</para>
+				<para>
+					<emphasis>How it all started</emphasis>
+
+					The RED5 project started in August 2005 with a call to action posted on the OSFlash mailing list by John. It had been discussed before but nobody had 
+					actually managed to put a team together. This time things were different. Lots of people offered their help, we chatted on the list, choose some 
+					technologies, and put together the initial team.
+					
+<![CDATA[
+john grden neoriley at gmail.com 
+Tue Aug 30 10:28:03 PDT 2005
+
+Ok, that's it, I'm not a C++/C#/Java guy at all, but I know plenty of guys 
+who are. I've used Flash Comm extensively, so I'm pretty familar with what 
+it does /doesn't do etc.
+
+I'm a pretty decent project manager, so, If everyone thinks its a good 
+starting point, I'll start the project, start head hunting talent for a team 
+and get the ball rolling.
+
+What say you? anyone want to co-manage this? anyone with Java experience on 
+the backend would be a great help ;) (ummm Chris?)
+
+Do we have the talent here to pull it off?
+
+-- 
+John Grden - Blitz
+]]>			
+					
+					A week or two after starting the project Claus helped the project immensely by introducing us to Mick. Mick had successfully discovered the RTMP
+					protocol way back in the days of flash 6. He used the same methods as us and even started before FCS was released. Over a rather long msn group
+					chat he took us through some bytes describing the basic structure of the RTMP packet headers. We tried to take it all in, but it was over our 
+					heads at that point. So John asked him to put together a simple spec based on what he remembered. A few days later we received this document.
+
+					<link xl:href="http://www.acmewebworks.com/Downloads/openCS/TheAMF.pdf">Packet structure document in PDF</link>
+				</para>
+				<para>
+					<emphasis>Connecting the dots …</emphasis>
+
+					Based on the document we quickly put together a crude a packet decoder and socket server. This basically took care of the handshake, read the 
+					packet headers and joined chunks of body data back together.
+
+					We knew that AMF was the data format, and so started work on an AMF marshaling code. Using publicly available (alas unofficial) AMF specs published
+					online we put together a generic object serializer / deserializer and abstracted the AMF format into data input and output objects. The idea being
+					to add support for more formats in future. We tested the AMF code with some unit tests and a simple http server.
+
+					Now it was simply a matter of putting the two things together and it didn't take long before we had RTMP packets decoding. In fact I think it was
+					about half an hour. It was a little bit of a shock to see it working. It really wasn't that complicated after all.
+
+<![CDATA[
+[Red5] Decoding packets :)
+
+Luke Hubbard (luke@codegent.com) king.selassie at gmail.com 
+Mon Sep 26 10:42:08 PDT 2005
+
+So.. I spent quite a bit of the time over the weekend, working on putting in
+place remoting protocol handlers.
+The idea being so I can test the amf code with a real life client. Sounds
+simple.. but I had to do all the service invoker stuff too.
+Anyway I got it remoting going but its not finished.
+Then I though heck remoting seems to be working lets try it out on that RTMP
+packet.
+30 mins later...
+
+public void onFunctionCallPacket(Packet packet){
+Deserializer deserializer = new Deserializer();
+Input input = new Input(packet.getData());
+String action = (String) deserializer.deserialize(input);
+Number number = (Number) deserializer.deserialize(input);
+Map params = (Map) deserializer.deserialize(input);
+log.debug("Action:" + action);
+log.debug("Number: "+number.toString());
+log.debug("Params: "+params);
+}
+
+
+- 02 00 07 63 6F 6E 6E 65 63 74 00 3F F0 00 00 00 00 00 00 03
+00 03 61 70 70 02 00 09 6C 6F 63 61 6C 68 6F 73 74 00 08 66
+6C 61 73 68 56 65 72 02 00 0C 4D 41 43 20 37 2C 30 2C 31 39
+2C 30 00 06 73 77 66 55 72 6C 02 00 30 66 69 6C 65 3A 2F 2F
+2F 54 49 47 45 52 2F 55 73 65 72 73 2F 6C 75 6B 65 2F 44 65
+73 6B 74 6F 70 2F 74 65 73 74 25 35 46 72 74 6D 70 2E 73 77
+66 00 05 74 63 55 72 6C 02 00 0F 72 74 6D 70 3A 2F 6C 6F 63
+61 6C 68 6F 73 74 00 00 09
+
+- Action:connect
+- Number: 1
+- Params: {swfUrl=file:///TIGER/Users/luke/Desktop/test%5Frtmp.swf,
+flashVer=MAC 7,0,19,0, app=localhost, tcUrl=rtmp:/localhost}
+
+All it took was 3 calls to deserialize.
+
+I need to tidy things up in terms of logging and structure a bit before
+checking in.
+But just wanted to say.. YAY!!!.
+
+-- Luke
+]]>			
+
+					After that point it didn't take long to get services (which are basically remoting over RTMP) working. This can be seen in an early test app we
+					created to echo different data types using a simple echo service.
+				</para>
+				<para>
+					<emphasis>Getting in the flow of things</emphasis>
+
+					Next thing on the to-do list was obviously streaming. Before we could do this we needed to understand the network conversation. The way we did
+					this was some members of the team captured bytes using Ethereal and emailed them for manual decoding by the rest of the team. This email gives a
+					good example of the way we discovered the structure / conversation of the packets. As far as we are aware this is the same kind process taken by
+					those who discovered AMF and is not illegal.
+
+<![CDATA[
+[Red5] Decoding the stream conversion
+
+Luke Hubbard (luke@codegent.com) king.selassie at gmail.com 
+Thu Oct 13 01:02:58 PDT 2005
+
+Hi Guys,
+
+Im have just decoded the packets D sent me, I will get to Marcos' capture
+later.
+The first thing I do is decode it manually by splitting things up with
+square brackets. This helps to read the data.
+For info on packet structure see micks doc.
+
+I have also color coded it blue (client->server) red (server->client).
+Comments are in black, channel ids and function calls are in green
+
+I will go through the conversion packet by packet until we hit action
+streaming video.
+
+-----------
+
+Rigth so first thing we get is a function call to createStream
+
+03 createStream()
+
+0000 [03] [00 00 04] [00 00 19] [14] [00 00 00 00] [02] [00 0c] [63
+...............c
+0010 72 65 61 74 65 53 74 72 65 61 6d] [00] [40 00 00 00 reateStream. at ...
+0020 00 00 00 00] [05] .....
+
+-----------
+
+The server responds to this in the normal way, only it sends a number back.
+What this number is I dont know ? Perhaps a timestamp or some form of ID ?
+Mick got any ideas?
+
+03 _result(double)
+
+0000 [03] [00 00 00] [00 00 1d] [14] [00 00 00 00] [02] [00 07] [5f
+..............._
+0010 72 65 73 75 6c 74] [00] [40 00 00 00 00 00 00 00] [05] result. at ........
+0020 [00] [3f f0 00 00 00 00 00 00] .?.......
+
+-----------
+
+Ok, now the client sends a ping packet.
+Im not sure about the meaning of structure of the 10 bytes.
+Looking at it a quess its [short short short int]
+One thing to note, all ping traffic seems to happen on channel 2
+We may be able to ignore these pings for the demo.
+
+02 ping(byte[10])
+
+0000 [02] [cd f6 41] [00 00 0a] [04] [00 00 00 00] [00 03 00 00
+...A............
+0010 00 01 00 00 00 00]
+-----------
+
+Now the client sends a play request with the flv filename (not inc .flv)
+
+08 play(flvFileName)
+
+[08] [00 00 04] [00 00 1c] [14] [01 00 00 00] [02] [00 04] [70 6c 61 79] [00
+00 00 00 00 00 00 .....play.......
+0030 00 00] [05] [02] [00 08] [6e 76 6e 6c 6f 67 6f 31] ......nvnlogo1
+
+-----------
+
+The server now sends back a ping. This looks like a response to the ping
+above.
+Only 03 has changed to 04 and we have lost the 4 bytes on the end.
+
+02 ping(byte[8])
+
+0000 [02] [00 00 00] [00 00 06] [04] [00 00 00 00] [00 04 00 00
+................
+0010 00 01] ..
+
+-----------
+
+And other ping sent to the client, anyone have any idea why 2?
+Perhaps this is the server requesting a ping from the client?
+
+02 ping(byte[8])
+
+0000 [02] [00 00 00] [00 00 06] [04] [00 00 00 00] [00 00 00 00
+................
+0010 00 01]
+
+-----------
+
+Before starting the stream the server sends a Play.Reset event.
+Note this is the first time channel 4 has been used.
+
+04 onStatus(NetStream.Play.Reset)
+
+[04] [00 00 00] [00 00 9c] [14] [01 00 00 00] 02 00 ................
+0020 08 6f 6e 53 74 61 74 75 73 00 00 00 00 00 00 00 .onStatus.......
+0030 00 00 05 03 00 05 6c 65 76 65 6c 02 00 06 73 74 ......level...st
+0040 61 74 75 73 00 04 63 6f 64 65 02 00 14 4e 65 74 atus..code...Net
+0050 53 74 72 65 61 6d 2e 50 6c 61 79 2e 52 65 73 65 Stream.Play.Rese
+0060 74 00 0b 64 65 73 63 72 69 70 74 69 6f 6e 02 00 t..description..
+0070 1f 50 6c 61 79 69 6e 67 20 61 6e 64 20 72 65 73 .Playing and res
+0080 65 74 74 69 6e 67 20 6e 76 6e 6c 6f 67 6f 31 2e etting nvnlogo1.
+0090 00 07 64 65 74 61 69 6c 73 02 00 08 6e 76 c4 6e ..details...nv.n
+00a0 6c 6f 67 6f 31 00 08 63 6c 69 65 6e 74 69 64 00 logo1..clientid.
+00b0 41 8d 74 41 80 00 00 00 00 00 09 A.tA.......
+
+-----------
+
+Now the server sends a Play.Start status down channel 5.
+Channel 5 is the channel which will be used for the video.
+We seem to be using channel 5 for metadata now.
+
+05 onStatus(NetStream.Play.Start)
+
+0000 [05] [00 00 00] [00 00 96] [14] [01 00 00 00] [02 00 08 6f
+...............o
+0010 6e 53 74 61 74 75 73 00 00 00 00 00 00 00 00 00 nStatus.........
+0020 05 03 00 05 6c 65 76 65 6c 02 00 06 73 74 61 74 ....level...stat
+0030 75 73 00 04 63 6f 64 65 02 00 14 4e 65 74 53 74 us..code...NetSt
+0040 72 65 61 6d 2e 50 6c 61 79 2e 53 74 61 72 74 00 ream.Play.Start.
+0050 0b 64 65 73 63 72 69 70 74 69 6f 6e 02 00 19 53 .description...S
+0060 74 61 72 74 65 64 20 70 6c 61 79 69 6e 67 20 6e tarted playing n
+0070 76 6e 6c 6f 67 6f 31 2e 00 07 64 65 74 61 69 6c vnlogo1...detail
+0080 73 02 00 08 6e 76 6e 6c 6f 67 6f 31 c5 00 08 63 s...nvnlogo1...c
+0090 6c 69 65 6e 74 69 64 00 41 8d 74 41 80 00 00 00 lientid.A.tA....
+00a0 00 00 09 ...
+
+-----------
+
+This is then followed by a Data.Start on the same channel.
+
+05 onStatus(NetStream.Data.Start)
+
+0000 [05] [00 00 00] [00 00 2c] [12] [01 00 00 00] [02 00 08 6f
+......,........o
+0010 6e 53 74 61 74 75 73 03 00 04 63 6f 64 65 02 00 nStatus...code..
+0020 14 4e 65 74 53 74 72 65 61 6d 2e 44 61 74 61 2e .NetStream.Data.
+0030 53 74 61 72 74 00 00 09 Start...
+
+-----------
+
+Now comes the actual data on channel 4.
+Looking at the flv in a hexeditor it looks like its just reading the file.
+[12 00 00 84... is the start which is at position 0xDD in the flv after the
+metadata.
+
+04 video data packet.
+
+0000 [04] [00 00 00] [00 04 27] [09] [01 00 00 00] [12 00 00 84
+......'.........
+0010 00 80 84 00 2f 9c a8 83 44 bc cd 6e c2 64 e0 60 ..../...D..n.d.`
+0020 3e 01 88 82 7a 7a ac 23 e7 42 83 fb 73 19 ab 57 >...zz.#.B..s..W
+0030 1e d1 fa 81 1e c4 90 da dd 6f d8 da e4 cd 13 d2 .........o......
+0040 25 5e 9b 84 7d a2 b0 21 fe b5 ea 42 aa 3d 2f 13 %^..}..!...B.=/.
+0050 ab aa 42 bd d1 26 17 bc ba 03 40 f8 b0 af 0a f7 ..B..&.... at .....
+0060 91 41 05 6d c7 8e 7a eb a0 9f ee 22 64 a4 33 10 .A.m..z...."d.3.
+0070 2f f9 b8 17 fa 1a 8f 6a 64 02 b3 31 ed 4c 80 56 /......jd..1.L.V
+0080 82 79 08 f9 52 95 4a d4 c3 e2 09 c5 c4 dc ff d5 .y..R.J.........
+0090 01 37 08 c0 bf cc 40 40 40 43 ff ff 62 86 b1 5d .7....@@@C..b..]
+00a0 ab 0d 0b 0b ee 79 e7 3e 99 23 a0 9f e8 59 b5 30 .....y.>.#...Y.0
+00b0 d0 b7 7e 48 5a 59 04 fd 81 67 1c 52 fa 3b 24 10 ..~HZY...g.R.;$.
+00c0 45 f8 34 4f d0 4f f8 35 1e d1 31 d8 1f a2 63 b4 E.4O.O.5..1...c.
+00d0 57 c1 be d0 ae 7c e1 b5 00 b4 64 b8 47 da 28 55 W....|....d.G.(U
+00e0 7f 25 5b 03 e5 eb 69 0a 8a b4 2b de 12 fc 24 b1 .%[...i...+...$.
+00f0 f9 7c 46 33 29 f5 66 18 07 3b 10 0b 20 df 64 10 .|F3).f..;.. .d.
+0100 10 1e f5 3e 21 ff ff 54 a3 0b 09 6c 10 c4 2a c3 ...>!..T...l..*.
+0110 3d cd 65 59 51 1a 19 eb 48 f1 ca 44 51 c3 aa 1d =.eYQ...H..DQ...
+0120 06 fb 22 d2 c2 3f e1 e5 88 67 ac 34 2b 9b 13 ce .."..?...g.4+...
+0130 b9 28 7d f1 9a db 02 ae 48 98 33 85 7b 8c 40 83 .(}.....H.3.{. at .
+
+Lots more data packets like this.
+
+-----------
+
+Cool well thats all for now.
+We are making good progress.
+Thanks to marcos and dominick for the captures.
+Just need to turn this into code now.
+
+-- Luke
+]]>	
+
+					Once we understood the packets we improved the discovery workflow by creating a RTMP debug proxy that can print out raw bytes or decoded packets to
+					a log file. This helps a lot with debugging byte level issues.
+				</para>
+				<para>
+					<emphasis>In the end its only bytes</emphasis>
+
+					One final thing we would like to clarify is that RED5 does not encode or decode any proprietary audio / video codec. The server sends and receives
+					FLV format data. The FLV format is a container format that wraps the encoded data chunks along with headers and metadata into a single file. As far
+					as the RED5 server is concerned it’s just pushing bits.					
 				</para>
 			</section>
 		</section>
