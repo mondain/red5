@@ -1,0 +1,8 @@
+#summary How to do some given task with Red5.
+#labels Phase-Deploy
+
+= Introduction =
+
+Herein we cover how to do stuff with Red5.
+
+= Details =
