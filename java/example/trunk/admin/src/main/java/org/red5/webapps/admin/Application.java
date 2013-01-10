@@ -1,38 +1,39 @@
-package org.red5.webapps.admin;
-
 /*
- * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ * RED5 Open Source Flash Server - http://code.google.com/p/red5/
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright 2006-2012 by respective authors (see below). All rights reserved.
  * 
- * This library is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License as published by the Free Software 
- * Foundation; either version 2.1 of the License, or (at your option) any later 
- * version. 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * You should have received a copy of the GNU Lesser General Public License along 
- * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
+package org.red5.webapps.admin;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.ApplicationAdapter;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
-import org.red5.server.api.IScope;
-import org.red5.server.api.ScopeUtils;
-
-import org.red5.logging.Red5LoggerFactory;
+import org.red5.server.api.scope.IScope;
+import org.red5.server.util.ScopeUtils;
+import org.red5.webapps.admin.handler.Red5AuthenticationHandler;
 import org.slf4j.Logger;
-
-
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.security.authentication.ProviderManager;
 
 /**
  * Admin Panel for Red5 Server
@@ -41,13 +42,23 @@ import org.slf4j.Logger;
  * @author Martijn van Beek (martijn.vanbeek@gmail.com)
  * @author Paul Gregoire (mondain@gmail.com)
  */
-public class Application extends ApplicationAdapter {
+public class Application extends ApplicationAdapter implements ApplicationContextAware {
 
-	//provide the logger context for other parts of the app
+	// provide the logger context for other parts of the app
 	private static Logger log = Red5LoggerFactory.getLogger(Application.class, "admin");
-	
-	private IScope scope;
 
+	private static ApplicationContext applicationContext;
+
+	@SuppressWarnings("unused")
+	private static ResourceBundleMessageSource messageSource;
+
+	// used to insert test routines / data
+	@SuppressWarnings("unused")
+	private static boolean debug = false;
+
+	// useful for debugging with clients that use our CRAM auth
+	private static boolean enforceAuthentication = true;	
+	
 	private HashMap<Integer, String> scopes;
 
 	private int scope_id = 0;
@@ -55,6 +66,17 @@ public class Application extends ApplicationAdapter {
 	@Override
 	public boolean appStart(IScope app) {
 		log.info("Admin application started");
+		// authentication check
+		ProviderManager authManager = (ProviderManager) applicationContext.getBean("authenticationManager");
+		log.info("Available auth providers: {}", authManager.getProviders().size());
+		if (authManager.isEraseCredentialsAfterAuthentication()) {
+			log.info("Provider set to erase creds, changing to NOT do this");
+			authManager.setEraseCredentialsAfterAuthentication(false);
+		}
+		// add an authentication listener
+		if (enforceAuthentication) {
+			addListener(new Red5AuthenticationHandler(applicationContext));
+		}		
 		return true;
 	}
 
@@ -72,15 +94,13 @@ public class Application extends ApplicationAdapter {
 	 */
 	public HashMap<Integer, Object> getApplications() {
 		IScope root = ScopeUtils.findRoot(scope);
-		Iterator<String> iter = root.getScopeNames();
+		Set<String> names = root.getScopeNames();
 		HashMap<Integer, Object> apps = new HashMap<Integer, Object>();
 		int id = 0;
-		while (iter.hasNext()) {
-			String name = iter.next();
-			String name2 = name.substring(1, name.length());
-			int size = getConnections(name2).size();
+		for (String name : names) {
+			int size = getConnections(name).size();
 			HashMap<String, String> app = new HashMap<String, String>();
-			app.put("name", name2);
+			app.put("name", name);
 			app.put("clients", size + "");
 			apps.put(id, app);
 			id++;
@@ -94,7 +114,7 @@ public class Application extends ApplicationAdapter {
 	 * @param scopeName
 	 * @return HashMap with the statistics
 	 */
-	public HashMap getStatistics(String scopeName) {
+	public HashMap<Integer, HashMap<String, String>> getStatistics(String scopeName) {
 		ScopeStatistics scopestats = new ScopeStatistics();
 		return scopestats.getStats(getScope(scopeName));
 	}
@@ -105,7 +125,7 @@ public class Application extends ApplicationAdapter {
 	 * @param userid
 	 * @return HashMap with the statistics
 	 */
-	public HashMap getUserStatistics(String userid) {
+	public HashMap<Integer, HashMap<String, String>> getUserStatistics(String userid) {
 		UserStatistics userstats = new UserStatistics();
 		return userstats.getStats(userid, scope);
 	}
@@ -125,6 +145,7 @@ public class Application extends ApplicationAdapter {
 		} catch (NullPointerException npe) {
 			log.debug(npe.toString());
 		}
+		log.debug("Scopes: {}", scopes);
 		return scopes;
 	}
 
@@ -137,21 +158,19 @@ public class Application extends ApplicationAdapter {
 	 *            scope depth
 	 */
 	public void getRooms(IScope root, int depth) {
-		Iterator<String> iter = root.getScopeNames();
+		Set<String> names = root.getScopeNames();
 		String indent = "";
 		for (int i = 0; i < depth; i++) {
 			indent += " ";
 		}
-		while (iter.hasNext()) {
-			String name = iter.next();
-			String name2 = name.substring(1, name.length());
+		for (String name : names) {
 			try {
-				IScope parent = root.getScope(name2);
-				// parent.
+				IScope parent = root.getScope(name);
+				// parent
 				getRooms(parent, depth + 1);
-				scopes.put(scope_id, indent + name2);
+				scopes.put(scope_id, indent + name);
 				scope_id++;
-				// log.info("Found scope: "+name2);
+				log.debug("Found scope: {}", name);
 			} catch (NullPointerException npe) {
 				log.debug(npe.toString());
 			}
@@ -222,12 +241,10 @@ public class Application extends ApplicationAdapter {
 		if (root.getName().equals(scopeName)) {
 			return root;
 		} else {
-			Iterator<String> iter = root.getScopeNames();
-			while (iter.hasNext()) {
-				String name = iter.next();
-				String name2 = name.substring(1, name.length());
+			Set<String> names = root.getScopeNames();
+			for (String name : names) {
 				try {
-					IScope parent = root.getScope(name2);
+					IScope parent = root.getScope(name);
 					IScope scope = getScopes(parent, scopeName);
 					if (scope != null) {
 						return scope;
@@ -258,4 +275,27 @@ public class Application extends ApplicationAdapter {
 	public IScope getScope() {
 		return scope;
 	}
+	
+	/**
+	 * @param debug the debug to set
+	 */
+	public void setDebug(boolean debug) {
+		Application.debug = debug;
+	}
+
+	/**
+	 * @param enforceAuthentication the enforceAuthentication to set
+	 */
+	public void setEnforceAuthentication(boolean enforceAuthentication) {
+		Application.enforceAuthentication = enforceAuthentication;
+	}
+
+	/**
+	 * @param applicationContext
+	 */
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		Application.applicationContext = applicationContext;
+		log.trace("setApplicationContext {}", Application.applicationContext);
+	}
+	
 }

@@ -1,51 +1,52 @@
-package org.red5.webapps.admin;
-
 /*
- * RED5 Open Source Flash Server - http://www.osflash.org/red5
+ * RED5 Open Source Flash Server - http://code.google.com/p/red5/
  * 
- * Copyright (c) 2006-2008 by respective authors (see below). All rights reserved.
+ * Copyright 2006-2012 by respective authors (see below). All rights reserved.
  * 
- * This library is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License as published by the Free Software 
- * Foundation; either version 2.1 of the License, or (at your option) any later 
- * version. 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * You should have received a copy of the GNU Lesser General Public License along 
- * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
+package org.red5.webapps.admin;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.red5.webapps.admin.utils.Utils;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
-import org.red5.server.api.IScope;
-import org.red5.server.api.ScopeUtils;
+import org.red5.server.api.scope.IScope;
+import org.red5.server.util.ScopeUtils;
+import org.red5.webapps.admin.utils.Utils;
 
 /**
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Martijn van Beek (martijn.vanbeek@gmail.com)
+ * @author Paul Gregoire (mondain@gmail.com)
  */
-class UserStatistics {
-	private HashMap<Integer, Object> apps;
+public class UserStatistics {
+	
+	private HashMap<Integer, HashMap<String, String>> apps;
 
-	private int id;
+	private AtomicInteger id = new AtomicInteger(0);
 
-	public void UserStatistics() {
+	public UserStatistics() {
 	}
 
-	public HashMap getStats(String userid, IScope scope) {
-		apps = new HashMap();
-		id = 0;
+	public HashMap<Integer, HashMap<String, String>> getStats(String userid, IScope scope) {
+		apps = new HashMap<Integer, HashMap<String, String>>();
 		IScope root = ScopeUtils.findRoot(scope);
 		Set<IClient> clients = root.getClients();
 		Iterator<IClient> client = clients.iterator();
@@ -67,31 +68,26 @@ class UserStatistics {
 	}
 
 	protected void addData(String name, Object value) {
-		HashMap<String, Object> app = new HashMap();
+		HashMap<String, String> app = new HashMap<String, String>();
 		app.put("name", name);
 		app.put("value", value.toString());
-		apps.put(id, app);
-		id++;
+		apps.put(id.getAndIncrement(), app);
 	}
 
 	protected void extractConnectionData(IScope root) {
 
 		Collection<Set<IConnection>> conns = root.getConnections();
-		
+
 		for (Set<IConnection> set : conns) {
 			for (IConnection connection : set) {
 				addData("Scope statistics", "--");
-				addData("Send bytes", Utils.formatBytes(connection
-						.getWrittenBytes()));
-				addData("Received bytes", Utils.formatBytes(connection
-						.getReadBytes()));
+				addData("Send bytes", Utils.formatBytes(connection.getWrittenBytes()));
+				addData("Received bytes", Utils.formatBytes(connection.getReadBytes()));
 				addData("Send messages", connection.getWrittenMessages());
 				addData("Received messages", connection.getReadMessages());
 				addData("Dropped messages", connection.getDroppedMessages());
 				addData("Pending messages", connection.getPendingMessages());
-				addData("Remote address", connection.getRemoteAddress() + ":"
-						+ connection.getRemotePort() + " (" + connection.getHost()
-						+ ")");
+				addData("Remote address", connection.getRemoteAddress() + ":" + connection.getRemotePort() + " (" + connection.getHost() + ")");
 				addData("Path", connection.getPath());
 			}
 		}
