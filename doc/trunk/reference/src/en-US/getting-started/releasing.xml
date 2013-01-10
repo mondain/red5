@@ -16,7 +16,6 @@
 	<blockquote>
 		<para>documentation at 
 			<link xl:href="http://red5.googlecode.com/svn/doc/tags">http://red5.googlecode.com/svn/doc/tags</link>
-
 			Tags for versions should always be the version string with dots replaced by underscores, e.g. version "1.2.3" becomes tag "1_2_3". 
 		</para>
 	</blockquote>

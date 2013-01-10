@@ -137,7 +137,7 @@
 
 import org.red5.server.api.IClient; 
 import org.red5.server.api.IConnection; 
-import org.red5.server.api.IScope; 
+import org.red5.server.api.scope.IScope; 
 import org.red5.server.api.Red5; 
 public void whoami() { 
     IConnection conn = Red5.getConnectionLocal(); 
@@ -158,7 +158,7 @@ public void whoami() {
 
 import org.red5.server.api.IClient; 
 import org.red5.server.api.IConnection; 
-import org.red5.server.api.IScope; 
+import org.red5.server.api.scope.IScope; 
 public void whoami(IConnection conn) { 
     IClient client = conn.getClient(); 
     IScope scope = conn.getScope(); 
@@ -304,7 +304,7 @@ if (conn instanceof IServiceCapableConnection) {
 <![CDATA[
 
 import org.red5.server.adapter.ApplicationAdapter; 
-import org.red5.server.api.IScope; 
+import org.red5.server.api.scope.IScope; 
 import org.red5.server.api.so.ISharedObject; 
 public class SampleApplication extends ApplicationAdapter { 
   public boolean roomStart(IScope room) { 
@@ -471,7 +471,7 @@ class MyPersistentObject implements IPersistable {
 <![CDATA[
 
 import org.red5.server.adapter.ApplicationAdapter; 
-import org.red5.server.api.IScope; 
+import org.red5.server.api.scope.IScope; 
 import org.red5.server.api.Red5; 
 import org.red5.server.api.persistence.IPersistenceStore; 
 class MyApplication extends ApplicationAdapter { 
@@ -519,7 +519,7 @@ class MyApplication extends ApplicationAdapter {
 		<programlisting language="java">
 <![CDATA[
 
-import org.red5.server.api.IScope; 
+import org.red5.server.api.scope.IScope; 
 import org.red5.server.api.IScheduledJob; 
 import org.red5.server.api.ISchedulingService; 
 import org.red5.server.adapter.ApplicationAdapter; 

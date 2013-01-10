@@ -14,8 +14,7 @@
 					</entry>
 					<entry>
 						<literallayout>
-							Windows 2000 Server
-							Windows 2003 Server, Standard Edition
+							Windows
 							Linux Variants
 							Mac OSX 10.4 and above	
 						</literallayout>
@@ -60,7 +59,7 @@
 					</entry>
 					<entry>
 						<literallayout>
-							Java JRE 1.5 or 1.6
+							Java JRE 1.5+ (Java 7 is preferred)
 							Service Scripts (Java Service Wrapper, FireDaemon Pro)
 						</literallayout>
 					</entry>
