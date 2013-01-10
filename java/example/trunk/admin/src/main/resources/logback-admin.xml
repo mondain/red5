@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-
     <contextName>admin</contextName>
-    
     <jmxConfigurator contextName="admin" />
-
 	<appender name="ADMIN" class="ch.qos.logback.core.FileAppender">
 		<File>log/admin.log</File>
 		<Append>false</Append>
@@ -17,11 +14,11 @@
 	</appender>
 	<root>
 		<appender-ref ref="ADMIN" />
-	</root>	
+	</root>
 	<logger name="org.red5">
 		<level value="DEBUG"/>
 	</logger>
-	<logger name="org.apache.derby">
-		<level value="DEBUG"/>
-	</logger>
+    <logger name="org.apache.jasper">
+        <level value="WARN"/>
+    </logger>
 </configuration>
