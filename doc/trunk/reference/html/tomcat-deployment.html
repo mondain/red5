@@ -1,9 +1,9 @@
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-   <title>Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="logging-setup.html" title="Chapter&nbsp;10.&nbsp;Logging Setup"><link rel="next" href="stream-paths.html" title="Chapter&nbsp;12.&nbsp;Customize Stream Paths"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="tomcat-deployment"></a>Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2917"></a>11.1.&nbsp;Preface</h2></div></div></div><p>This document describes how to deploy Red5 to Tomcat as web application 
+   <title>Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="logging-setup.html" title="Chapter&nbsp;10.&nbsp;Logging Setup"><link rel="next" href="stream-paths.html" title="Chapter&nbsp;12.&nbsp;Customize Stream Paths"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="tomcat-deployment"></a>Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2987"></a>11.1.&nbsp;Preface</h2></div></div></div><p>This document describes how to deploy Red5 to Tomcat as web application 
 			archive (WAR). The standard Red5 deployment consists of a standalone Java 
 			application with an embedded J2EE container (Jetty or Tomcat) running as a 
-			system service, whereas the WAR version runs inside of a J2EE container.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2922"></a>11.2.&nbsp;Deployment</h2></div></div></div><p>The Tomcat war deployer scans the webapps directory for wars periodically. 
+			system service, whereas the WAR version runs inside of a J2EE container.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2992"></a>11.2.&nbsp;Deployment</h2></div></div></div><p>The Tomcat war deployer scans the webapps directory for wars periodically. 
 			When a war is found that has not yet been deployed, the deployer will expand 
 			the war file into a directory based on the filename of the war. A war named 
 			myapp.war would be expanded into a directory named myapp; depending upon 
@@ -20,7 +20,7 @@
 			Applications that are not accessed via HTTP, do not require a web / servlet 
 			context. The root war file contains nearly everything that is in a standalone server 
 			build except for embedded server classes and select configuration files.
-		</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2935"></a>11.3.&nbsp;Context descriptors</h2></div></div></div><p>A Context XML descriptor is a fragment of XML data which contains a valid 
+		</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3005"></a>11.3.&nbsp;Context descriptors</h2></div></div></div><p>A Context XML descriptor is a fragment of XML data which contains a valid 
 			Context element which would normally be found in the main Tomcat server 
 			configuration file (conf/server.xml). For a given host, the Context descriptors are 
 			located in $CATALINA_HOME/conf/[enginename]/[hostname]/. Note that while 
@@ -30,7 +30,7 @@
 			context, such as naming resources and session manager configuration. It should 
 			be noted that the docBase specified in the Context element can refer to either the 
 			.WAR or the directory which will be created when the .WAR is expanded or the 
-			.WAR itself. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2942"></a>11.4.&nbsp;Red5 Configuration</h2></div></div></div><p>Configuration of the Red5 server consists of a few context parameters in the 
+			.WAR itself. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3012"></a>11.4.&nbsp;Red5 Configuration</h2></div></div></div><p>Configuration of the Red5 server consists of a few context parameters in the 
 			web.xml, a default context file, a bean ref file, and a Spring web context file for 
 			each application that will utilize Red5 features. Web applications that use only 
 			AMF to communicate with Red5 do not require a configuration entry in the servers application context. The application context which is managed via Spring 
@@ -44,14 +44,14 @@
 			servlet  takes the place of the Standalone class in a standard Red5 server</p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;listener&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;listener-class&gt;</b>org.red5.server.war.WarLoaderServlet<b class="hl-tag" style="color: blue">&lt;/listener-class&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/listener&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;listener&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;listener-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>org.red5.server.war.WarLoaderServlet<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/listener-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/listener&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
 </pre><p>This listener is responsible for starting and stopping Red5 upon receipt of context 
 			initialized and context destroyed container events. The war loader is similar in 
-			function to the Spring ContextLoaderListener servlet but is specialized for Red5.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2951"></a>11.4.1.&nbsp;Spring contexts</h3></div></div></div><p>There are two types of contexts used by Red5, "default" and "web"; there may be 
-				only one default context but any number of web contexts. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2956"></a>11.4.2.&nbsp;Default context</h3></div></div></div><p>The default context is synonymous with the global application context and is 
+			function to the Spring ContextLoaderListener servlet but is specialized for Red5.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3021"></a>11.4.1.&nbsp;Spring contexts</h3></div></div></div><p>There are two types of contexts used by Red5, "default" and "web"; there may be 
+				only one default context but any number of web contexts. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3026"></a>11.4.2.&nbsp;Default context</h3></div></div></div><p>The default context is synonymous with the global application context and is 
 				responsible for providing objects and resources at the top or global level. Spring 
 				beans in this level are configured via the defaultContext.xml and 
 				beanRefContext.xml which are located in the ROOT classes directory (ex. 
@@ -65,10 +65,10 @@
 				parameter: </p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;context-param&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;param-name&gt;</b>parentContextKey<b class="hl-tag" style="color: blue">&lt;/param-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;param-value&gt;</b>default.context<b class="hl-tag" style="color: blue">&lt;/param-value&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/context-param&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;context-param&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;param-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>parentContextKey<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/param-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;param-value&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>default.context<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/param-value&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/context-param&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
 </pre><p>This parameter is used by the ContextLoader to locate the parent context, which 
 				in turn allows the global resources to be located. The context loader is used by 
@@ -76,12 +76,12 @@
 				referenced in the web.xml via the globalScope parameter: </p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;context-param&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;param-name&gt;</b>globalScope<b class="hl-tag" style="color: blue">&lt;/param-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;param-value&gt;</b>default<b class="hl-tag" style="color: blue">&lt;/param-value&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/context-param&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;context-param&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;param-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>globalScope<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/param-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;param-value&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>default<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/param-value&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/context-param&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
-</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2971"></a>11.4.3.&nbsp;Web context</h3></div></div></div><p>Web context definitions are specified in Spring configuration files suffixed with 
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3041"></a>11.4.3.&nbsp;Web context</h3></div></div></div><p>Web context definitions are specified in Spring configuration files suffixed with 
 				-web.xml; If your application is named oflaDemo then its configuration file would 
 				be named oflaDemo-web.xml. The Spring web context files should not be 
 				confused with J2EE context descriptors as they are only used for red5 web 
@@ -90,10 +90,10 @@
 				style parameter in the web.xml as shown below. </p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;context-param&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;param-name&gt;</b>contextConfigLocation<b class="hl-tag" style="color: blue">&lt;/param-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;param-value&gt;</b>WEB-INF/classes/*-web.xml<b class="hl-tag" style="color: blue">&lt;/param-value&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/context-param&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;context-param&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;param-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>contextConfigLocation<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/param-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;param-value&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>WEB-INF/classes/*-web.xml<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/param-value&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/context-param&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
 </pre><p>Context configuration files specify the resources that are used to notify the 
 				application about joining / leaving clients and provide the methods that 
@@ -110,12 +110,12 @@
 				shown below. </p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.context"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.Context"</span><b class="hl-tag" style="color: blue">&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"scopeResolver"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"red5.scopeResolver"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"clientRegistry"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.clientRegistry"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"serviceInvoker"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.serviceInvoker"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"mappingStrategy"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.mappingStrategy"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;bean&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;id&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"web.context"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;class&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"org.red5.server.Context"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"scopeResolver"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"red5.scopeResolver"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"clientRegistry"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"global.clientRegistry"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"serviceInvoker"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"global.serviceInvoker"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"mappingStrategy"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"global.mappingStrategy"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/bean&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
 </pre><div class="itemizedlist"><ul type="disc"><li><p>
 						<span class="bold"><strong>Scope</strong></span> - Every application needs at least one scope that links the handler 
@@ -129,14 +129,14 @@
 				contexts. </p><div class="itemizedlist"><ul type="disc"><li><p>A scope bean has the following properties: </p><div class="orderedlist"><ol type="1"><li><p>server - This references the server red5.server </p></li><li><p>parent - The parent for this scope is normally global.scope </p></li><li><p>context - Context for this scope, use the web.context for root and </p></li></ol></div></li></ul></div><div class="itemizedlist"><ul type="disc"><li><p>web.context.oflaDemo for oflaDemo </p><div class="orderedlist"><ol type="1"><li><p>handler - Handler for this scope, which is similar to a main.asc in </p></li></ol></div></li></ul></div><div class="itemizedlist"><ul type="disc"><li><p>FMS. </p><div class="orderedlist"><ol type="1"><li><p>contextPath - The path to use when connecting to this scope. </p></li><li><p>virtualHosts - A comma separated list of host names or IP addresses this scope listens on. In the war version we do not control the host names, this is accomplished by Tomcat.</p></li></ol></div></li></ul></div><p>The root scope definition looks like this: </p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.scope"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.WebScope"</span> <span class="hl-attribute" style="color: blue">init-method</span>=<span class="hl-value" style="color: blue">"register"</span><b class="hl-tag" style="color: blue">&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"server"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"red5.server"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"parent"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.scope"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"context"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"web.context"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"handler"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.handler"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"contextPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"/"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"virtualHosts"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"*,localhost, localhost:8080"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;bean&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;id&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"web.scope"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;class&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"org.red5.server.WebScope"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;init-method&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"register"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"server"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"red5.server"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"parent"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"global.scope"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"context"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"web.context"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"handler"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"global.handler"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"contextPath"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;value&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"/"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"virtualHosts"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;value&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"*,localhost, localhost:8080"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/bean&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
 </pre><p>The contextPath is similar to the docBase in the J2EE context file for each 
 				web application. Where the docBase is used to locate resources by HTTP, 
@@ -154,27 +154,27 @@
 				As an example the scope handler for the oflaDemo is shown: </p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler.oflaDemo"</span> 
-<span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.webapp.oflaDemo.Application"</span><b class="hl-tag" style="color: blue">/&gt;</b>
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;bean&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;id&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"web.handler.oflaDemo"&lt;/http://xslthl.sf.net:value&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;class&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"org.red5.server.webapp.oflaDemo.Application"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt;/&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
 
 </pre><p>The id attribute is referenced by the oflaDemo scope definition: </p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.scope.oflaDemo"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.WebScope"</span> <span class="hl-attribute" style="color: blue">init-</span> 
-  <span class="hl-attribute" style="color: blue">method</span>=<span class="hl-value" style="color: blue">"register"</span><b class="hl-tag" style="color: blue">&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"server"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"red5.server"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"parent"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"global.scope"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"context"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"web.context.oflaDemo"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"handler"</span> <span class="hl-attribute" style="color: blue">ref</span>=<span class="hl-value" style="color: blue">"web.handler.oflaDemo"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"contextPath"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"/oflaDemo"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;property</b> <span class="hl-attribute" style="color: blue">name</span>=<span class="hl-value" style="color: blue">"virtualHosts"</span> <span class="hl-attribute" style="color: blue">value</span>=<span class="hl-value" style="color: blue">"*,localhost, localhost:8080"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/bean&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;bean&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;id&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"web.scope.oflaDemo"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;class&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"org.red5.server.WebScope"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;init-&lt;/http://xslthl.sf.net:attribute&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;method&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"register"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"server"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"red5.server"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"parent"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"global.scope"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"context"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"web.context.oflaDemo"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"handler"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"web.handler.oflaDemo"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"contextPath"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;value&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"/oflaDemo"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;property&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"virtualHosts"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;value&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"*,localhost, localhost:8080"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/bean&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
 </pre><p>If you don't need any special server-side logic, you can use the default 
 				application handler provided by Red5: </p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;bean</b> <span class="hl-attribute" style="color: blue">id</span>=<span class="hl-value" style="color: blue">"web.handler"</span> <span class="hl-attribute" style="color: blue">class</span>=<span class="hl-value" style="color: blue">"org.red5.server.adapter.ApplicationAdapter"</span><b class="hl-tag" style="color: blue"> /&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;bean&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;id&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"web.handler"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;class&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"org.red5.server.adapter.ApplicationAdapter"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
 </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="DeployingRed5ToTomcatExternalapplications"></a>11.4.4.&nbsp;External applications</h3></div></div></div><p>An external application refers to a web application that accesses Red5 outside of 
 				the ROOT web application. Whether these applications exist within the same 
@@ -183,15 +183,15 @@
 				requires AMF communication with Red5, an example is shown below: </p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;servlet&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>gateway<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-class&gt;</b>org.red5.server.net.servlet.AMFTunnelServlet<b class="hl-tag" style="color: blue">&lt;/servlet-class&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/servlet&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>gateway<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>org.red5.server.net.servlet.AMFTunnelServlet<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
     
-<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>gateway<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b><b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>gateway<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
 </pre><p>The tunnel servlet class must be on the classpath of the application under which 
 				it is executed. In addition to the tunnel servlet the 
@@ -204,13 +204,13 @@ log4j-1.2.14.jar&nbsp;<br>
 mina-core-1.1.2.jar&nbsp;<br>
 </p></div><p>These jars should be placed in the WEB-INF/lib directory of your application. ex. </p><div class="literallayout"><p><br>
 C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib<br>
-</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3075"></a>11.5.&nbsp;Creating and deploying your application</h2></div></div></div><p>In the following section, two applications will be covered. The first will be a web 
+</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3145"></a>11.5.&nbsp;Creating and deploying your application</h2></div></div></div><p>In the following section, two applications will be covered. The first will be a web 
 			application that communicates with Red5 via AMF or RTMP and has its own 
 			handler, referred to as "RemoteApp". The second will consist an SWF that 
 			communicates with Red5 via RTMP, this application will be called "LocalApp". 
 			Any IDE may be used to create these applications as long as it supports Java; 
 			the Eclipse IDE is suggested. SWF files outlined in the examples were created 
-			using AS3 in Flex. </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3080"></a>11.5.1.&nbsp;Remote application</h3></div></div></div><p>This example will provide you with the minimum amount of configuration needed 
+			using AS3 in Flex. </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3150"></a>11.5.1.&nbsp;Remote application</h3></div></div></div><p>This example will provide you with the minimum amount of configuration needed 
 				for a remote Red5 application. The following resources will be created: </p><div class="itemizedlist"><ul type="disc"><li><p>J2EE web application </p></li><li><p>Client SWF </p></li><li><p>Red5 handler class </p></li><li><p>Spring web context </p></li></ul></div><p>
 				<span class="bold"><strong>Steps</strong></span> 
 			</p><div class="orderedlist"><ol type="1"><li><p>Create a web application named RemoteApp in your IDE. </p></li><li><p>Obtain a red5.jar, which may be downloaded from 
@@ -219,30 +219,30 @@ C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib<br>
 						<a class="link" href="http://red5.googlecode.com/files/red5-remoting.jar" target="_top">http://red5.googlecode.com/files/red5-remoting.jar</a>. This library provides the AMF tunnel servlet. 
 					</p></li><li><p>Place the library jars in your project library directory and add them to your build classpath. </p></li><li><p>Compile the Java and Flex source. </p></li><li><p>Create a directory named RemoteApp in the Tomcat webapps directory. ex. C:\Tomcat-6.0.14\webapps\RemoteApp </p></li><li><p>Copy the contents of the web directory to the RemoteApp directory. </p></li><li><p>From the bin directory copy the RemoteApp.swf to the webapps\RemoteApp directory. </p></li><li><p>Copy the lib directory and its contents to the WEB-INF, excluding the red5.jar file. </p></li><li><p>Copy the whole example directory and the RemoteApp-web.xml file from the bin directory to the classes directory under ROOT. ex. C:\Tomcat- 6.0.14\webapps\ROOT\WEB-INF\classes </p></li><li><p>Restart tomcat </p></li><li><p>Open your browser and go to: 
 						<a class="link" href="http://localhost:8080/RemoteApp/RemoteApp.html" target="_top">http://localhost:8080/RemoteApp/RemoteApp.html</a>
-					</p></li><li><p>Click on the RTMP or HTTP connect buttons. For a successful test you should see a server response of "Hello World". </p></li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3152"></a>11.5.2.&nbsp;Local application</h3></div></div></div><p>A simple application that resides entirely within the ROOT web application. This 
+					</p></li><li><p>Click on the RTMP or HTTP connect buttons. For a successful test you should see a server response of "Hello World". </p></li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3222"></a>11.5.2.&nbsp;Local application</h3></div></div></div><p>A simple application that resides entirely within the ROOT web application. This 
 				example consists of a Spring web context, handler class, and a client SWF. </p><p>
 				<span class="italic">'Steps '</span>
 			</p><div class="orderedlist"><ol type="1"><li><p>Create a web application named LocalApp in your IDE. </p></li><li><p>Obtain a red5.jar, which may be downloaded from 
 						<a class="link" href="http://red5.googlecode.com/files/red5.jar" target="_top">http://red5.googlecode.com/files/red5.jar</a> or built from source with the command "ant jar". This library is needed if you extend the ApplicationAdapter for your scope handler. 
 					</p></li><li><p>Place the library jar in your project library directory and add it to your build classpath. </p></li><li><p>Compile the Java and Flex source. </p></li><li><p>Copy the LocalApp.html and LocalApp.swf from the bin directory to the ROOT directory. ex. C:\Tomcat-6.0.14\webapps\ROOT </p></li><li><p>Copy the whole example directory and the LocalApp-web.xml file from the bin directory to the classes directory under ROOT. ex. C:\Tomcat- 6.0.14\webapps\ROOT\WEB-INF\classes </p></li><li><p>Restart tomcat </p></li><li><p>Open your browser and go to: 
 						<a class="link" href="http://localhost:8080/LocalApp.html" target="_top">http://localhost:8080/LocalApp.html</a> 
-					</p></li><li><p>Click on the connect button. For a successful test you should see a server response of "Hello World". </p></li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3196"></a>11.5.3.&nbsp;Example Source</h3></div></div></div><p>The example application source is available in Subversion at 
+					</p></li><li><p>Click on the connect button. For a successful test you should see a server response of "Hello World". </p></li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e3266"></a>11.5.3.&nbsp;Example Source</h3></div></div></div><p>The example application source is available in Subversion at 
 
 				<a class="link" href="https://red5.googlecode.com/svn/java/example/trunk/" target="_top">https://red5.googlecode.com/svn/java/example/trunk/</a>
-			</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3204"></a>11.6.&nbsp;Additional web configuration</h2></div></div></div><p>
+			</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3274"></a>11.6.&nbsp;Additional web configuration</h2></div></div></div><p>
 			<span class="bold"><strong>Log4j</strong></span> - The path to the logging configuration file and the Spring logging startup 
 			servlet are shown below. These entries should precede the war loader servlet 
 			entry so that logging is initialized prior to Red5 startup. 
 		</p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;context-param&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;param-name&gt;</b>log4jConfigLocation<b class="hl-tag" style="color: blue">&lt;/param-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;param-value&gt;</b>/WEB-INF/log4j.properties<b class="hl-tag" style="color: blue">&lt;/param-value&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/context-param&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;listener&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;listener-class&gt;</b>org.springframework.web.util.Log4jConfigListener<b class="hl-tag" style="color: blue">&lt;/listener-class&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/listener&gt;</b>  
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;context-param&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;param-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>log4jConfigLocation<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/param-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;param-value&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/WEB-INF/log4j.properties<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/param-value&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/context-param&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;listener&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;listener-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>org.springframework.web.util.Log4jConfigListener<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/listener-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/listener&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>  
 
 </pre><p>
 			<span class="bold"><strong>AMF gateway</strong></span> - This servlet provides communication with server applications 
@@ -250,15 +250,15 @@ C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib<br>
 		</p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;servlet&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>gateway<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-class&gt;</b>org.red5.server.net.servlet.AMFGatewayServlet<b class="hl-tag" style="color: blue">&lt;/servlet-class&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;load-on-startup&gt;</b>1<b class="hl-tag" style="color: blue">&lt;/load-on-startup&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/servlet&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>gateway<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/gateway<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>gateway<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>org.red5.server.net.servlet.AMFGatewayServlet<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;load-on-startup&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>1<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/load-on-startup&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>gateway<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/gateway<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
 </pre><p>
 			<span class="bold"><strong>RTMPT</strong></span> - This servlet implements an RTMP tunnel via HTTP, this is normally 
@@ -266,27 +266,27 @@ C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib<br>
 		</p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;servlet&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>rtmpt<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-class&gt;</b>org.red5.server.net.rtmpt.RTMPTServlet<b class="hl-tag" style="color: blue">&lt;/servlet-class&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;load-on-startup&gt;</b>2<b class="hl-tag" style="color: blue">&lt;/load-on-startup&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/servlet&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>rtmpt<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/open/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>rtmpt<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/idle/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>rtmpt<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/send/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;servlet-mapping&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;servlet-name&gt;</b>rtmpt<b class="hl-tag" style="color: blue">&lt;/servlet-name&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/close/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/servlet-mapping&gt;</b> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>rtmpt<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>org.red5.server.net.rtmpt.RTMPTServlet<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;load-on-startup&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>2<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/load-on-startup&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>rtmpt<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/open/*<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>rtmpt<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/idle/*<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>rtmpt<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/send/*<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>rtmpt<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/close/*<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/servlet-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
 </pre><p>
 			<span class="bold"><strong>Security</strong></span> - The following entries are used to prevent retrieval of sensitive 
@@ -294,29 +294,29 @@ C:\Tomcat-6.0.14\webapps\myapp\WEB-INF\lib<br>
 		</p><pre class="programlisting">
 
 
-<b class="hl-tag" style="color: blue">&lt;security-constraint&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;web-resource-collection&gt;</b> 
-    <b class="hl-tag" style="color: blue">&lt;web-resource-name&gt;</b>Forbidden<b class="hl-tag" style="color: blue">&lt;/web-resource-name&gt;</b> 
-    <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/WEB-INF/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;/web-resource-collection&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;auth-constraint /&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/security-constraint&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;security-constraint&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;web-resource-collection&gt;</b> 
-    <b class="hl-tag" style="color: blue">&lt;web-resource-name&gt;</b>Forbidden<b class="hl-tag" style="color: blue">&lt;/web-resource-name&gt;</b> 
-    <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/persistence/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;/web-resource-collection&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;auth-constraint /&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/security-constraint&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;security-constraint&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;web-resource-collection&gt;</b> 
-    <b class="hl-tag" style="color: blue">&lt;web-resource-name&gt;</b>Forbidden<b class="hl-tag" style="color: blue">&lt;/web-resource-name&gt;</b> 
-    <b class="hl-tag" style="color: blue">&lt;url-pattern&gt;</b>/streams/*<b class="hl-tag" style="color: blue">&lt;/url-pattern&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;/web-resource-collection&gt;</b> 
-  <b class="hl-tag" style="color: blue">&lt;auth-constraint /&gt;</b> 
-<b class="hl-tag" style="color: blue">&lt;/security-constraint&gt;</b>
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;security-constraint&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;web-resource-collection&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;web-resource-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>Forbidden<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/web-resource-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/WEB-INF/*<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/web-resource-collection&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;auth-constraint /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/security-constraint&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;security-constraint&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;web-resource-collection&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;web-resource-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>Forbidden<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/web-resource-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/persistence/*<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/web-resource-collection&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;auth-constraint /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/security-constraint&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;security-constraint&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;web-resource-collection&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;web-resource-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>Forbidden<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/web-resource-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/streams/*<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/web-resource-collection&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;auth-constraint /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/security-constraint&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
 
-</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3235"></a>11.7.&nbsp;Troubleshooting</h2></div></div></div><p>If you have problems with deployment or if your application does not start, follow 
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3305"></a>11.7.&nbsp;Troubleshooting</h2></div></div></div><p>If you have problems with deployment or if your application does not start, follow 
 			these steps prior to posting a bug. Directory examples use a typical windows 
 			based path structure. </p><div class="orderedlist"><ol type="1"><li><p>Stop the Tomcat server </p></li><li><p>Locate your Tomcat installation directory </p></li></ol></div><div class="literallayout"><p><br>
 C:\Program&nbsp;Files\Apache\Tomcat&nbsp;<br>
@@ -334,7 +334,7 @@ C:\Program&nbsp;Files\Apache\Tomcat\webapps\echo.war&nbsp;<br>
 C:\Program&nbsp;Files\Apache\Tomcat\webapps\SOSample.war&nbsp;<br>
 </p></div><div class="orderedlist"><ol type="1"><li><p>Restart Tomcat </p></li></ol></div><p>If you still experience problems, gather the following information and post an 
 			issue on Trac after you do a quick search to see if others have experienced the 
-			same problem. </p><div class="orderedlist"><ol type="1"><li><p>Java version </p></li><li><p>Tomcat version </p></li><li><p>Operating system </p></li><li><p>Red5 version (0.8, Trunk, Revision 2283, etc...)</p></li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3292"></a>11.8.&nbsp;Definitions</h2></div></div></div><p> AMF:: </p><div class="blockquote"><blockquote class="blockquote"><p>  A binary format based loosely on the Simple Object Access Protocol (SOAP). It is used primarily to exchange data between an Adobe Flash application and a database, using a Remote Procedure Call. Each AMF message contains a body which holds the error or response, which will be expressed as an ActionScript Object. </p></blockquote></div><p> Ant:: </p><div class="blockquote"><blockquote class="blockquote"><p>  Software tool for automating software build processes. It is similar to make but is written in the Java language, requires the Java platform, and is best suited to building Java projects. </p></blockquote></div><p> AS3:: </p><div class="blockquote"><blockquote class="blockquote"><p>  A scripting language based on ECMAScript, used primarily for the development of websites and software using the Adobe Flash Player platform. </p></blockquote></div><p> Flex::</p><div class="blockquote"><blockquote class="blockquote"><p>  Software development kit and an IDE for a group of technologies initially released in March of 2004 by Macromedia to support the development and deployment of cross platform, rich Internet applications based on their proprietary Macromedia Flash platform. </p></blockquote></div><p> RTMP:: </p><div class="blockquote"><blockquote class="blockquote"><p>  Real Time Messaging Protocol (RTMP) is a proprietary protocol developed by Adobe Systems that is primarily used with Adobe Flash Media Server to stream audio, video, and data over the internet to the Adobe Flash Player client. RTMP can be used for Remote Procedure Calls. RTMP maintains a persistent connection with an endpoint and allows real-time communication. Other RPC services are made asynchronously with a single client/server request/response model, so real-time communication is not necessary. </p></blockquote></div><p> RTMPT:: </p><div class="blockquote"><blockquote class="blockquote"><p> RTMP using HTTP tunneling. </p></blockquote></div><p> SWF::</p><div class="blockquote"><blockquote class="blockquote"><p>  Proprietary vector graphics file format produced by the Flash software from Adobe. Intended to be small enough for publication on the web, SWF files can contain animations or applets of varying degrees of interactivity and function. SWF is also sometimes used for creating animated display graphics and menus for DVD movies, and television commercials. </p></blockquote></div><p> Tomcat::</p><div class="blockquote"><blockquote class="blockquote"><p> A web container, or application server developed at the Apache Software Foundation (ASF). Tomcat implements the servlet and the JavaServer Pages (JSP) specifications from Sun Microsystems, providing an environment for Java code to run in cooperation with a web server. It adds tools for configuration and management but can also be configured by editing configuration files that are normally XML-formatted. Tomcat includes its own internal HTTP server.</p></blockquote></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3335"></a>11.9.&nbsp;Bibliography</h2></div></div></div><div class="itemizedlist"><ul type="disc"><li><p>Red5 - 
+			same problem. </p><div class="orderedlist"><ol type="1"><li><p>Java version </p></li><li><p>Tomcat version </p></li><li><p>Operating system </p></li><li><p>Red5 version (0.8, Trunk, Revision 2283, etc...)</p></li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3362"></a>11.8.&nbsp;Definitions</h2></div></div></div><p> AMF:: </p><div class="blockquote"><blockquote class="blockquote"><p>  A binary format based loosely on the Simple Object Access Protocol (SOAP). It is used primarily to exchange data between an Adobe Flash application and a database, using a Remote Procedure Call. Each AMF message contains a body which holds the error or response, which will be expressed as an ActionScript Object. </p></blockquote></div><p> Ant:: </p><div class="blockquote"><blockquote class="blockquote"><p>  Software tool for automating software build processes. It is similar to make but is written in the Java language, requires the Java platform, and is best suited to building Java projects. </p></blockquote></div><p> AS3:: </p><div class="blockquote"><blockquote class="blockquote"><p>  A scripting language based on ECMAScript, used primarily for the development of websites and software using the Adobe Flash Player platform. </p></blockquote></div><p> Flex::</p><div class="blockquote"><blockquote class="blockquote"><p>  Software development kit and an IDE for a group of technologies initially released in March of 2004 by Macromedia to support the development and deployment of cross platform, rich Internet applications based on their proprietary Macromedia Flash platform. </p></blockquote></div><p> RTMP:: </p><div class="blockquote"><blockquote class="blockquote"><p>  Real Time Messaging Protocol (RTMP) is a proprietary protocol developed by Adobe Systems that is primarily used with Adobe Flash Media Server to stream audio, video, and data over the internet to the Adobe Flash Player client. RTMP can be used for Remote Procedure Calls. RTMP maintains a persistent connection with an endpoint and allows real-time communication. Other RPC services are made asynchronously with a single client/server request/response model, so real-time communication is not necessary. </p></blockquote></div><p> RTMPT:: </p><div class="blockquote"><blockquote class="blockquote"><p> RTMP using HTTP tunneling. </p></blockquote></div><p> SWF::</p><div class="blockquote"><blockquote class="blockquote"><p>  Proprietary vector graphics file format produced by the Flash software from Adobe. Intended to be small enough for publication on the web, SWF files can contain animations or applets of varying degrees of interactivity and function. SWF is also sometimes used for creating animated display graphics and menus for DVD movies, and television commercials. </p></blockquote></div><p> Tomcat::</p><div class="blockquote"><blockquote class="blockquote"><p> A web container, or application server developed at the Apache Software Foundation (ASF). Tomcat implements the servlet and the JavaServer Pages (JSP) specifications from Sun Microsystems, providing an environment for Java code to run in cooperation with a web server. It adds tools for configuration and management but can also be configured by editing configuration files that are normally XML-formatted. Tomcat includes its own internal HTTP server.</p></blockquote></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3405"></a>11.9.&nbsp;Bibliography</h2></div></div></div><div class="itemizedlist"><ul type="disc"><li><p>Red5 - 
 					<a class="link" href="http://red5.org" target="_top">http://red5.org</a>
 				</p></li><li><p>Apache Tomcat - 
 					<a class="link" href="http://tomcat.apache.org" target="_top">http://tomcat.apache.org</a>

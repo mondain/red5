@@ -3,8 +3,8 @@
 	xmlns:xl="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
 	<title>Red5 - Reference Documentation</title>
 	<subtitle>Red5 Open Source Flash Server</subtitle>
-	<releaseinfo>0.8</releaseinfo>
-	<edition>0.8</edition>
+	<releaseinfo>1.0</releaseinfo>
+	<edition>1.0</edition>
 	<pubsnumber>1</pubsnumber>
 	<productname>Red5 Open Source Flash Server</productname>
 	<pubdate><?dbtimestamp format="Y-m-d" ?></pubdate>
@@ -20,7 +20,7 @@
 	<copyright>
 		<year><?dbtimestamp format="Y"?></year>
 		<holder>
-			<link xl:href="http://osflash.org/red5">Red5 Open Source Flash Server</link>
+			<link xl:href="https://code.google.com/p/red5/">Red5 Open Source Flash Server</link>
 		</holder>
 	</copyright>
 	<xi:include href="legal_notice.xml" />
