@@ -5,4 +5,15 @@
 
 Herein we cover how to do stuff with Red5.
 
-= Details =
+== Details ==
+
+Video tutorials: 
+
+* [http://www.youtube.com/dominickaccattato#p/c/9B94807E1D0AF2DE Official] 
+
+* [http://vimeo.com/27059211 Getting started with 1.0 RC]
+
+* [http://www.youtube.com/watch?v=TlgPhvXBf9M Red5 and BlazeDS] 
+
+* [http://www.technogumbo.com/tutorials/Recording-Decent-Quality-Video-And-Audio-With-Flash-and-Red5/index.php Recording] 
+ 
