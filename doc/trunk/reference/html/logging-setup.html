@@ -1,0 +1,118 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;10.&nbsp;Logging Setup</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="new-applications.html" title="Chapter&nbsp;9.&nbsp;Create new applications in Red5"><link rel="next" href="tomcat-deployment.html" title="Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="logging-setup"></a>Chapter&nbsp;10.&nbsp;Logging Setup</h2></div></div></div><p>The logging system uses Simple Logging Facade for Java (
+		<a class="link" href="http://www.slf4j.org/" target="_top">SLF4J</a>). This framework supports many of the logging systems available for Java and also provides simple implementations. The logging used by our dependencies are mainly Log4j and Apache commons logging and SLF4J allows us to combine them into one system. SLF4J gives you the ability to select a logging implementation and provides proxies for you dependencies if their maintainers did not select the same framework.
+	</p><p>We prefer the 
+		<a class="link" href="http://logback.qos.ch/" target="_top">logback</a> log implementation, but you may use whatever you like. There are some hoops you will have to jump through to get 
+		<a class="link" href="http://logging.apache.org/" target="_top">Log4j</a> or 
+		<a class="link" href="http://commons.apache.org/logging/" target="_top">Commons logging</a> to work. Blog post about using other loggers 
+		<a class="link" href="http://gregoire.org/2009/05/05/support-for-other-slf4j-loggers/" target="_top">here</a>.
+	</p><p>After you chose an implementation framework, some of the SLF4J jars must 
+		<span class="bold"><strong>NOT</strong></span> be in your applications classpath or they will cause conflicts. The default case it to use Logback, so the following jars must be included:
+	</p><div class="itemizedlist"><ul type="disc"><li><p>slf4j-api - The core API</p></li><li><p>logback-core - Current Logback core library</p></li><li><p>logback-classic - Logback support library</p></li><li><p>log4j-over-slf4j - Log4j proxy/bridge</p></li><li><p>jcl-over-slf4j - Apache commons logging proxy/bridge</p></li><li><p>jul-to-slf4j - java.util.logging proxy/bridge</p></li></ul></div><p>The items denoted as "proxy/bridge" listen for the logging calls to those implementations and pass them through to SLF4J.</p><p>The following two strategies are to be consider 
+		<span class="bold"><strong>untested</strong></span>.
+	</p><p>If you prefer to use Log4j instead, the following jars are required:</p><div class="itemizedlist"><ul type="disc"><li><p>slf4j-api - The core API</p></li><li><p>log4j - Current Log4j library (1.2+)</p></li><li><p>slf4j-log4j12 - Log4j adapter</p></li><li><p>jcl-over-slf4j - Apache commons logging proxy/bridge</p></li><li><p>jul-to-slf4j - java.util.logging proxy/bridge</p></li></ul></div><p>If you prefer to use Commons logging the following jars are required:</p><div class="itemizedlist"><ul type="disc"><li><p>slf4j-api - The core API</p></li><li><p>commons-logging - Apache commons logging library</p></li><li><p>slf4j-jcl - Commons logging adapter</p></li><li><p>log4j-over-slf4j - Log4j proxy/bridge</p></li><li><p>jul-to-slf4j - java.util.logging proxy/bridge</p></li></ul></div><p>If you want to use another implementation not shown here, simply check out the faq 
+		<a class="link" href="http://www.slf4j.org/faq.html" target="_top">SLF4J FAQ</a>
+	</p><p>Logback is the successor of Log4j and was created by the creator of Log4j and SLF4J. A conversion tool has been created for your log4j properties files 
+		<a class="link" href="http://logback.qos.ch/translator/Welcome.do" target="_top">configuration converter</a>
+		There is also an eclipse console plugin 
+		<a class="link" href="http://logback.qos.ch/consolePlugin.html" target="_top">eclipse console plugin</a>.
+	</p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2908"></a>10.1.&nbsp;Web applications</h2></div></div></div><p>In your web applications remove the following entry from your web.xml</p><pre class="programlisting">
+
+
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;context-param&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;param-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>log4jConfigLocation<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/param-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+  <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;param-value&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/WEB-INF/log4j.properties<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/param-value&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/context-param&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+
+</pre><p>Add the following to the web.xml</p><pre class="programlisting">
+
+
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;listener&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;listener-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>org.red5.logging.ContextLoggingListener<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/listener-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/listener&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;filter&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;filter-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>LoggerContextFilter<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/filter-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;filter-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>org.red5.logging.LoggerContextFilter<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/filter-class&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/filter&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;filter-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;filter-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>LoggerContextFilter<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/filter-name&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>/*<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/url-pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/filter-mapping&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+
+</pre><p>You should also:</p><div class="itemizedlist"><ul type="disc"><li><p>Remove any "log4j" listeners from the web.xml</p></li><li><p>Remove any log4j.properties or log4j.xml files</p></li><li><p>Create a logback-myApp.xml where myApp is the name for your webapp and place it on your webapp classpath (WEB-INF/classes or in your application jar within WEB-INF/lib)</p></li><li><p>Set your display-name in the web application to match the context name you will be using (Use the example oflaDemo as a guide).</p></li><li><p>Ensure that the contextName and jmxConfigurator have the correct context name, this is the name of your web application</p></li></ul></div><p>Sample webapp logback config file (logback-myApp.xml), not to be confused with the red5 log config file located in /conf</p><pre class="programlisting">
+
+
+<span style="color: red">&lt;http://xslthl.sf.net:directive&gt;&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;/http://xslthl.sf.net:directive&gt;</span>
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;configuration&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>	
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;contextName&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>myApp<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/contextName&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;jmxConfigurator&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;contextName&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"myApp"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>    
+
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;appender&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"FILE"&lt;/http://xslthl.sf.net:value&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;class&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"ch.qos.logback.core.FileAppender"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+        <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;File&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>example.log<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/File&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+        <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;Append&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>false<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/Append&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+        <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;BufferedIO&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>false<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/BufferedIO&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+        <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;ImmediateFlush&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>true<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/ImmediateFlush&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+        <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;layout&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;class&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"ch.qos.logback.classic.PatternLayout"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+            <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;Pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>%-4relative [%thread] %-5level %logger{35} - %msg%n<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/Pattern&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+        <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/layout&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/appender&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;root&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+        <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;level&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;value&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"DEBUG"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+        <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;appender-ref&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;ref&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"FILE"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/root&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;logger&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;name&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"com.example"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+        <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;level&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;value&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"DEBUG"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+    <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/logger&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+<span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;/configuration&gt;&lt;/http://xslthl.sf.net:tag&gt;</span>
+
+</pre><p>
+			<span class="bold"><strong>Reminder</strong></span> replace everything that says "myApp" with your application name.
+		</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2946"></a>10.2.&nbsp;Imports</h2></div></div></div><p>When using logback and slf4j, your imports should consist only of the following for a non webapp class:</p><pre class="programlisting">
+
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
+</pre><p>It is suggested that you use Red5LoggerFactory in-place of LoggerFactory to ensure that your application gets the correct logger.</p><p>For loggers inside your webapp imports should be:</p><pre class="programlisting">
+
+
+import org.slf4j.Logger;
+import org.red5.logging.Red5LoggerFactory;
+
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="LoggingSetupLoggerInstantiation"></a>10.3.&nbsp;Logger Instantiation</h2></div></div></div><p>For non webapp classes:</p><p>To log to a "root" logger, change all your logger instantiation statements to:</p><pre class="programlisting">
+
+
+private static Logger log = Red5LoggerFactory.getLogger(MyClassName.class);
+
+</pre><p>
+			<span class="bold"><strong>Reminder</strong></span> replace "MyClassName" with the name of the class itself.
+		</p><p>To log to a "context" logger, change all your logger instantiation statements to:</p><pre class="programlisting">
+
+
+private static Logger log = Red5LoggerFactory.getLogger(MyClassName.class, "myApp");
+
+</pre><p>
+			<span class="bold"><strong>Reminder</strong></span> replace "myApp" with the name of the context; "myApp" would become "oflaDemo" for the oflaDemo application.
+		</p><p>Your old instantiations probably resemble this:</p><pre class="programlisting">
+
+
+private static Logger log = Logger.getLogger(MyClassName.class.getName());
+
+</pre><p>Your applications logging configuration file must contain the name of your application context in its file name; For instance the "oflaDemo" uses the configuration logback-oflaDemo.xml. </p><p>Lastly, as an optimation change your log statements to:</p><pre class="programlisting">
+
+
+log.debug("Here is a log message for an object {}", myobject);
+
+</pre><p>You no longer need to concatenate strings when logging, if you need more than one variable do the following:</p><pre class="programlisting">
+
+
+log.debug("Here is a log message with a couple vars {} or {} or {}", new Object[] {object1, myobject, object3});
+
+</pre><p>= Further Information =</p><p>
+			<a class="link" href="http://jazoon.com/en/conference/presentationdetails.html?type=sid&amp;detail=6080" target="_top">Ceki G&uuml;lc&uuml;  presentation for Jazoon09</a>
+		</p><p>
+			<a class="link" href="http://beta.parleys.com/share/parleysshare2.swf?pageId=357" target="_top">SLF4J Presentation (video)</a>
+		</p></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="new-applications.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="tomcat-deployment.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;9.&nbsp;Create new applications in Red5&nbsp;</td><td width="20%" align="center"><span style="color:white;font-size:90%;"><a href="http://osflash.org/red5" title="Red5">Red5 Open Source Flash Server</a></span></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat</td></tr></table></div></body></html>
