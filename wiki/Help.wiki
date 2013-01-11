@@ -44,3 +44,20 @@ A [http://en.wikipedia.org/wiki/Comparison_of_Subversion_clients Subversion clie
 === Get Red5 Source ===
 
 The source repository uri's may be found [https://code.google.com/p/red5/source/checkout here]
+
+*Build the source*
+To build the red5 jars, execute the following on the command line:
+{{{
+mvn -Dmaven.test.skip=true -Dclassifier=bootstrap install
+}}}
+This will create the jars in the "target" directory of the workspace; this will also skip the unit tests.
+
+To build and package the server in zip and gz, execute the following:
+{{{
+mvn -Dmaven.test.skip=true -Dclassifier=bootstrap package
+}}}
+Right now, this will skip the demos directory but I'm working on a fix.
+
+*Building in Eclipse*
+
+Install the maven plugin and it will build automatically.
