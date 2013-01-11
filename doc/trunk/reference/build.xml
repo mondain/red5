@@ -59,6 +59,7 @@
 				<include name="*.jar"/>
 			</fileset>
 		</path>
+		<!--
 		<sequential>
 		 <get src="http://red5.electroteque.org/doc/reference/docbook-reference-libs.tar.bz2"
 		    dest="${doc.ref.dir}/docbook-reference-libs.tar.bz2"
@@ -66,6 +67,7 @@
 		    usetimestamp="true"/>
 			<untar compression="bzip2" src="${doc.ref.dir}/docbook-reference-libs.tar.bz2" dest="${doc.ref.dir}/" overwrite="false"/>
 		</sequential>
+		-->
 		<property name="doc.prepare" value="true"/>
 	</target>
 
