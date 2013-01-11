@@ -2,7 +2,7 @@
 <registry lastupdate="2013-01-09T19:11">
 	<applications>
 		<application name="oflaDemo">
-			<author>Red5 Team</author>
+			<author>Red5 Team, Martin M, Dan Rossi</author>
 			<desc>Admin demo</desc>
 			<filename>admin-r4506-java6.war</filename>
 		</application>
