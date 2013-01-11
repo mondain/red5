@@ -26,16 +26,6 @@
 			<desc>Demo originally created for the FITC conference, to demonstrate Midi functionality</desc>
 			<filename>midiDemo-r3339-java6.war</filename>
 		</application>
-		<application name="echo">
-			<author>Red5 Team</author>
-			<desc>Test tool for AMF0/AMF3 and RTMP/HTTP functionality</desc>
-			<filename>echo-r3451-java6.war</filename>
-		</application>
-		<application name="echo">
-			<author>Red5 Team</author>
-			<desc>Test tool for AMF0/AMF3 and RTMP/HTTP functionality</desc>
-			<filename>echo-r3445-java5.war</filename>
-		</application>
 		<application name="dump">
 			<author>Red5 Team</author>
 			<desc>Test tool for diagnosing protocol issues</desc>
@@ -75,26 +65,6 @@
 			<author>Paul Gregoire</author>
 			<desc>Load tester for video playback and shared objects</desc>
 			<filename>loadtest-r2977-java6.war</filename>
-		</application>						
-		<application name="audiotranscoder">
-			<author>Art Clarke</author>
-                        <desc>Transcode audio to new formats.  You must install Xuggle first.</desc>
-			<filename>audiotranscoder-r366-java6.war</filename>
-		</application>						
-		<application name="audiotranscoder">
-			<author>Art Clarke</author>
-                        <desc>Transcode audio to new formats.  You must install Xuggle first.</desc>
-			<filename>audiotranscoder-r366-java5.war</filename>
-		</application>						
-		<application name="videotranscoder">
-			<author>Art Clarke</author>
-                        <desc>Change video on the fly to mirror half the screen.  You must install Xuggle first.</desc>
-			<filename>videotranscoder-r366-java6.war</filename>
-		</application>						
-		<application name="videotranscoder">
-			<author>Art Clarke</author>
-                        <desc>Change video on the fly to mirror half the screen.  You must install Xuggle first.</desc>
-			<filename>videotranscoder-r366-java5.war</filename>
-		</application>						
+		</application>							
 	</applications>
 </registry>
