@@ -1,10 +1,17 @@
 <?xml version='1.0' ?>
 <appendix xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="flv">
-	<title>FLV</title>
+	<title>FLV/F4V</title>
 	<para>
-		<link xl:href="http://osflash.org/flv">http://osflash.org/flv</link>
+		F4V/FLV Technology Center
+		<link xl:href="http://www.adobe.com/devnet/f4v.edu.html">http://www.adobe.com/devnet/f4v.edu.html</link>
+		<link xl:href="http://download.macromedia.com/f4v/video_file_format_spec_v10_1.pdf">http://download.macromedia.com/f4v/video_file_format_spec_v10_1.pdf</link>
 	</para>
 	<para>
-		<link xl:href="http://www.adobe.com/devnet/flv/pdf/video_file_format_spec_v9.pdf">http://www.adobe.com/devnet/flv/pdf/video_file_format_spec_v9.pdf</link>
+		Wikipedia
+		<link xl:href="http://en.wikipedia.org/wiki/Flash_Video">http://en.wikipedia.org/wiki/Flash_Video</link>
+	</para>
+	<para>
+		Flash Video (FLV) on OSFlash
+		<link xl:href="http://osflash.org/flv">http://osflash.org/flv</link>
 	</para>
 </appendix>
