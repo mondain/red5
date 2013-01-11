@@ -13,6 +13,8 @@ Video tutorials:
 
 * [http://vimeo.com/27059211 Getting started with 1.0 RC]
 
+* [http://red5guide.com/ Red5 Guides]
+
 * [http://www.youtube.com/watch?v=TlgPhvXBf9M Red5 and BlazeDS] 
 
 * [http://www.technogumbo.com/tutorials/Recording-Decent-Quality-Video-And-Audio-With-Flash-and-Red5/index.php Recording] 
