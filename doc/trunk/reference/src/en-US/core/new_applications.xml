@@ -23,7 +23,6 @@
 			<para>Unique name for this application, should be the public name: </para>
 			<programlisting language="xml">
 <![CDATA[
-
 <context-param> 
     <param-name>webAppRootKey</param-name> 
     <param-value>/myapp</param-value> 
@@ -42,7 +41,6 @@
 			<para>By default this bean is specified as: </para>
 			<programlisting language="xml">
 <![CDATA[
-
 <bean id="web.context" class="org.red5.server.Context" 
     autowire="byType" />   
 ]]>
@@ -74,7 +72,6 @@
 			<para>A sample definition looks like this: </para>
 			<programlisting language="xml">
 <![CDATA[
-
 <bean id="web.scope" class="org.red5.server.WebScope" 
     init-method="register"> 
     <property name="server" ref="red5.server" /> 
@@ -90,7 +87,6 @@
 				use parameters. In that case you need another bean: </para>
 			<programlisting language="xml">
 <![CDATA[
-
 <bean id="placeholderConfig" 
     class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 Create new applications in Red5 
@@ -106,7 +102,6 @@ webapp.virtualHosts=localhost, 127.0.0.1
 			<para>the properties of the scope can now be changed to: </para>
 			<programlisting language="xml">
 <![CDATA[
-
 <property name="contextPath" value="${webapp.contextPath}" /> 
 <property name="virtualHosts" value="${webapp.virtualHosts}" /> 
 ]]>
@@ -131,7 +126,6 @@ webapp.virtualHosts=localhost, 127.0.0.1
 		<para>The bean for a scope handler is configured by: </para>
 		<programlisting language="xml">
 <![CDATA[
-
 <bean id="web.handler" 
     class="the.path.to.my.Application" 
     singleton="true" /> 

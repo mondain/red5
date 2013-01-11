@@ -2,28 +2,13 @@
 <appendix xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:id="h264">
 	<title>H264</title>
 	<para>This Section contains some of the answers from the mailing list about h.264.
-		Please read this first before sending another question to the mailing list.</para>
-	<para>Paul Gregoire Posted initial Support in his Blog 6. October 2008 18:34:
-		Steven and I got h264 working !
-
+		Please read this first before sending another question to the mailing list.
+	</para>
+	<para>
+		Initial blog post when h.264 was implemented 
 		<link xl:href="http://gregoire.org/2008/10/06/red5-h264/">http://gregoire.org/2008/10/06/red5-h264/</link>
 	</para>
 	<para>Questions:</para>
-	<section>
-		<title>Does Red5 plan to support H.264/ACC streams in the next release, maybe 0.7.1?</title>
-		<para>You can check out Paul's mp4/f4v branch here:
-
-			<link xl:href="http://red5.googlecode.com/svn/java/server/branches/paulg_mp4/">http://red5.googlecode.com/svn/java/server/branches/paulg_mp4/</link>
-		</para>
-		<para>and according to the plan it should be part of the 0.7.1 release - afaik.</para>
-		<para>And I'll let Paul speak for himself :-)
-
-			<link xl:href="http://osflash.org/pipermail/red5_osflash.org/2008-January/018483.html">http://osflash.org/pipermail/red5_osflash.org/2008-January/018483.html</link>
-		</para>
-		<para>Paul:I feel like I'm done it myself a million times :-)
-			I'm currently active in the mp4 / h.264 branch and I would love to have it be part of the 0.7.1 release. The problem for me is that I'm not sure when I will be done and I would like to 0.7.1 go live very soon; it is more likely that 0.7.2 will include the release of h.264.</para>
-		<para>In actuality it is now scheduled for the 0.9.0 release but it may make it into 0.8.0. The 0.7.1 version will not be released - Paul</para>
-	</section>
 	<section>
 		<title>why are .mp4 files also listed in oflaDemo webapp grid as possible streams?</title>
 		<para>The "correct" extension in Adobe's case is F4V for Mpeg4 / h.264 encoded content. If you want a video that works, use the sample that comes with FMS3: AdobeBand_1500K_H264.mp4

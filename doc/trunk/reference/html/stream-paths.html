@@ -1,11 +1,11 @@
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
    <title>Chapter&nbsp;12.&nbsp;Customize Stream Paths</title><link rel="stylesheet" href="html.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"><link rel="home" href="index.html" title="Red5 - Reference Documentation"><link rel="up" href="core-components.html" title="Part&nbsp;II.&nbsp;Red5 Core Components"><link rel="prev" href="tomcat-deployment.html" title="Chapter&nbsp;11.&nbsp;Deploying Red5 To Tomcat"><link rel="next" href="security.html" title="Chapter&nbsp;13.&nbsp;Security"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" style="background-color:white;border:none;height:73px;border:1px solid black;"><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;" src="images/red5-banner.png"></img></a><a style="border:none;" href="http://osflash.org/red5" title="Red5 Open Source Flash Server"><img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/red5-banner-logo.png"></img></a></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="stream-paths"></a>Chapter&nbsp;12.&nbsp;Customize Stream Paths</h2></div></div></div><p>This document describes how applications can stream ondemand videos (VOD) from or 
-		record to custom directories other than the default streams folder inside the webapp. </p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3432"></a>12.1.&nbsp;Filename generator service</h2></div></div></div><p>Red5 uses a concept called scope services for functionality that is provided for a certain 
+		record to custom directories other than the default streams folder inside the webapp. </p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3456"></a>12.1.&nbsp;Filename generator service</h2></div></div></div><p>Red5 uses a concept called scope services for functionality that is provided for a certain 
 			scope. One of these scope services is IStreamFilenameGenerator 
 			<a class="link" href="http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamFilenameGenerator.html" target="_top">http://dl.fancycode.com/red5/api/org/red5/server/api/stream/IStreamFilenameGenerator.html</a> that generates 
 			filenames for VOD streams that should be played or recorded. 
-		</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3440"></a>12.2.&nbsp;Custom generator</h2></div></div></div><p>To generate filename in different folders, a new filename generator must be implemented: </p><pre class="programlisting">
+		</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3464"></a>12.2.&nbsp;Custom generator</h2></div></div></div><p>To generate filename in different folders, a new filename generator must be implemented: </p><pre class="programlisting">
 
 
 import org.red5.server.api.IScope; 
@@ -43,14 +43,14 @@ public class CustomFilenameGenerator implements IStreamFilenameGenerator {
 
 </pre><p>The above class will generate filenames for recorded streams like recordedStreams/ 
 			red5RecordDemo1234.flv and use the directory videoStreams as source for all VOD 
-			streams.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3449"></a>12.3.&nbsp;Activate custom generator</h2></div></div></div><p>In the next step, the custom generator must be activate in the configuration files for the 
+			streams.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3473"></a>12.3.&nbsp;Activate custom generator</h2></div></div></div><p>In the next step, the custom generator must be activate in the configuration files for the 
 			desired application. </p><p>Add the following definition to yourApp/WEB-INF/red5-web.xml: </p><pre class="programlisting">
 
 
 <span style="color: red">&lt;http://xslthl.sf.net:tag&gt;&lt;bean&lt;/http://xslthl.sf.net:tag&gt;</span> <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;id&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"streamFilenameGenerator"&lt;/http://xslthl.sf.net:value&gt;</span> 
     <span style="color: red">&lt;http://xslthl.sf.net:attribute&gt;class&lt;/http://xslthl.sf.net:attribute&gt;</span>=<span style="color: red">&lt;http://xslthl.sf.net:value&gt;"path.to.your.CustomFilenameGenerator"&lt;/http://xslthl.sf.net:value&gt;</span><span style="color: red">&lt;http://xslthl.sf.net:tag&gt; /&gt;&lt;/http://xslthl.sf.net:tag&gt;</span> 
 
-</pre><p>This will use the class defined above to generate stream filenames. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3460"></a>12.4.&nbsp;Change paths through configuration</h2></div></div></div><p>While the class described here works as expected, it's a bit unhandy to change the paths 
+</pre><p>This will use the class defined above to generate stream filenames. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e3484"></a>12.4.&nbsp;Change paths through configuration</h2></div></div></div><p>While the class described here works as expected, it's a bit unhandy to change the paths 
 			inside the code as every change requires recompilation of the class. </p><p>Therefore you can pass parameters to the bean defined in the previous step to specify the 
 			paths to use inside the configuration file. </p><p>Add three methods to your class that will be executed while the configuration file is parsed:</p><pre class="programlisting">
 
