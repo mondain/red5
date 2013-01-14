@@ -4,6 +4,22 @@ Red5 Changelog
 This file contains informations about the changes between the different
 versions of Red5.
 
+Red5 1.0.1 (2013-01-14)
+-----------------------
+This is primarily a bug-fix release, a little over a month after the 1.0 release.
+Bugfixes: 12
+https://code.google.com/p/red5/issues/list?can=1&q=status%3AFixed+closed-after%3A2012%2F12%2F3&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&cells=tiles
+
+- Admin application fixed
+- ClientBroadcastStream was modified to handle stream listeners more efficiently
+- Fixed RTMPS server freeze
+- Plugged memory leak in the RTMP protocol decoder
+- Fixed several minor issues with client streams
+- Addressed tight-loop issue bubbled up from Mina when file handles are exceeded
+- Fixed loading issue with persistent shared objects
+- Repaired some Maven related problems with our builds
+
+
 Red5 1.0.0 (2012-12-03)
 -----------------------
 New Features:
