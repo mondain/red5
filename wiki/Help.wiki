@@ -55,9 +55,17 @@ This will create the jars in the "target" directory of the workspace; this will 
 
 To build and package the server in zip and gz, execute the following:
 {{{
+mvn dependency:copy-dependencies
+}}}
+This will download all the dependencies into the "target" directory under "dependency". The next command will package everything up:
+{{{
 mvn -Dmaven.test.skip=true -Dclassifier=bootstrap package
 }}}
-Right now, this will skip the demos directory but I'm working on a fix.
+Right now, this will skip the demos directory but I'm working on a fix. The xml nodes to copy the demos are in the
+{{{
+trunk/src/main/server/assembly/server.xml
+}}}
+and may be uncommented for a package build, if you have the entire svn tree checked out.
 
 *Building in Eclipse*
 
