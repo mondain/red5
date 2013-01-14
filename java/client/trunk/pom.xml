@@ -175,13 +175,13 @@
 			<testResource>
 				<directory>src/test/resources</directory>
 			</testResource>
-			<resource>
+			<testResource>
 				<directory>src/test/java</directory>
 				<includes>
 					<include>**/*.xml</include>
 					<include>**/*.properties</include>
 				</includes>
-			</resource>
+			</testResource>
 		</testResources>
 	</build>
 	<repositories>

@@ -80,7 +80,7 @@ Section -Main SEC0000
     ; copy wrapper files
     File /r /x .svn bin\*
     ; copy the java6 files
-    File /r /x war /x *.sh /x Makefile ${BuildRoot}\dist.java7\*
+    File /r /x war /x *.sh /x Makefile /x *.gz /x *.zip ${BuildRoot}\dist.java7\*
     ; cd to conf dir
     SetOutPath $INSTDIR\conf
     ; copy wrapper conf
@@ -106,7 +106,8 @@ Section -post SEC0001
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Start $(^Name).lnk" $INSTDIR\Red5.bat
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) on the Web.lnk" "http://red5.googlecode.com/"
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\API documents.lnk" $INSTDIR\doc\api\index.html
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\API (server) documents.lnk" $INSTDIR\doc\api\index.html
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\API (client) documents.lnk" $INSTDIR\doc\api-client\index.html
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Eclipse setup.lnk" $INSTDIR\doc\eclipsesetup.html
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Bugtracker.lnk" "https://code.google.com/p/red5/issues/list"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Wiki.lnk" "https://code.google.com/p/red5/w/list"
@@ -200,7 +201,8 @@ Section -un.post UNSEC0001
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) on the Web.lnk" 
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Bugtracker.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Tutorials.lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\API documents.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\API (server) documents.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\API (client) documents.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Eclipse setup.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
