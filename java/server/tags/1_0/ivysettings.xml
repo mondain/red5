@@ -8,6 +8,13 @@
             <url name="mavencentral">
                 <artifact pattern="http://repo1.maven.org/maven2/[organisation]/[artifact]-[revision].[ext]" />
             </url>
+			<url name="jboss">
+                <artifact pattern="https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/[revision]/[artifact]-[revision].[ext]" />
+            </url>
+            <url name="javanet">
+                <artifact pattern="http://download.java.net/maven/2/[organisation]/[artifact]-[revision].[ext]" />
+                <artifact pattern="http://download.java.net/maven/2/[organisation]/[artifact]/[revision]/[artifact]-[revision].[ext]" />
+            </url>
             <url name="apache">
                 <artifact pattern="https://repository.apache.org/content/repositories/releases/[artifact]/[artifact]/[revision]/[artifact]-[revision].[ext]" />
                 <artifact pattern="https://repository.apache.org/content/repositories/releases/[organisation]/[artifact]/[revision]/[artifact]-[revision].[ext]" />
