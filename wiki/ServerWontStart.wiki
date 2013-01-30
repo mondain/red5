@@ -31,22 +31,10 @@ Major  Minor      Java version
 This happens when a spring configuration doesn't match the code. In many cases, its a simple fix. Your error will look something like this:
 
 {{{
-[INFO] [main] org.springframework.beans.factory.support.DefaultListableBeanFacto
-ry - Destroying singletons in org.springframework.beans.factory.support.DefaultL
-istableBeanFactory@467ddc66: defining beans [placeholderConfig,red5.common,red5.
-core,context.loader,pluginLauncher,tomcat.server]; root of factory hierarchy
-Exception org.springframework.beans.factory.BeanCreationException: Error creatin
-g bean with name 'red5.common' defined in class path resource [red5.xml]: Instan
-tiation of bean failed; nested exception is org.springframework.beans.BeanInstan
-tiationException: Could not instantiate bean class [org.springframework.context.
-support.FileSystemXmlApplicationContext]: Constructor threw exception; nested ex
-ception is org.springframework.beans.factory.BeanCreationException: Error creati
+[INFO] [main] org.springframework.beans.factory.support.DefaultListableBeanFactory - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@467ddc66: defining beans [placeholderConfig,red5.common,red5.core,context.loader,pluginLauncher,tomcat.server]; root of factory hierarchy
+Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.common' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creati
 ng bean with name 'red5.server' defined in class path resource [red5-common.xml]
-: Error setting property values; nested exception is org.springframework.beans.N
-otWritablePropertyException: Invalid property 'notifierThreadPoolSize' of bean c
-lass [org.red5.server.Server]: Bean property 'notifierThreadPoolSize' is not wri
-table or has an invalid setter method. Does the parameter type of the setter mat
-ch the return type of the getter?
+: Error setting property values; nested exception is org.springframework.beans.NotWritablePropertyException: Invalid property 'notifierThreadPoolSize' of bean class [org.red5.server.Server]: Bean property 'notifierThreadPoolSize' is not writable or has an invalid setter method. Does the parameter type of the setter match the return type of the getter?
 }}}
 
 The invalid property is _notifierThreadPoolSize_ in the _red5-common.xml_ file; go to that section and simply remove the property.
@@ -67,6 +55,7 @@ becomes this
 == ClassNotFoundException: Launcher ==
 
 When the _Launcher_ cannot be located, it usually means the server jar is missing or misnamed. The Red5 server jar must be named like so until we fix the bootstrap bug: {{{red5-server-1.0.jar}}}
+
 Here is what the error may look like:
 {{{
 Exception in thread "main" java.lang.ClassNotFoundException: org.red5.server.Launcher
