@@ -1,0 +1,65 @@
+#summary What to look for when Red5 wont start.
+
+= Introduction =
+
+It can be frustrating when the server wont start, this can be caused due to a lot of factors.
+
+== Wrong Java Version ==
+
+When the code has been compiled with a JDK version newer than the one you are using to execute it, you will see an error similar to this:
+
+{{{
+Exception in thread "main" java.lang.UnsupportedClassVersionError: Test : Unsupported major.minor version 51.0
+}}}
+
+Here are the current versions with their major / minor identifiers
+
+{{{
+Major  Minor      Java version  
+45       3           1.0
+45       3           1.1
+46       0           1.2
+47       0           1.3
+48       0           1.4
+49       0           1.5
+50       0           1.6
+51       0           1.7
+}}}
+
+== Invalid Property ==
+
+This happens when a spring configuration doesn't match the code. In many cases, its a simple fix. Your error will look something like this:
+
+{{{
+[INFO] [main] org.springframework.beans.factory.support.DefaultListableBeanFacto
+ry - Destroying singletons in org.springframework.beans.factory.support.DefaultL
+istableBeanFactory@467ddc66: defining beans [placeholderConfig,red5.common,red5.
+core,context.loader,pluginLauncher,tomcat.server]; root of factory hierarchy
+Exception org.springframework.beans.factory.BeanCreationException: Error creatin
+g bean with name 'red5.common' defined in class path resource [red5.xml]: Instan
+tiation of bean failed; nested exception is org.springframework.beans.BeanInstan
+tiationException: Could not instantiate bean class [org.springframework.context.
+support.FileSystemXmlApplicationContext]: Constructor threw exception; nested ex
+ception is org.springframework.beans.factory.BeanCreationException: Error creati
+ng bean with name 'red5.server' defined in class path resource [red5-common.xml]
+: Error setting property values; nested exception is org.springframework.beans.N
+otWritablePropertyException: Invalid property 'notifierThreadPoolSize' of bean c
+lass [org.red5.server.Server]: Bean property 'notifierThreadPoolSize' is not wri
+table or has an invalid setter method. Does the parameter type of the setter mat
+ch the return type of the getter?
+}}}
+
+The invalid property is _notifierThreadPoolSize_ in the _red5-common.xml_ file; go to that section and simply remove the property.
+
+{{{
+<bean id="red5.server" class="org.red5.server.Server">
+    <property name="notifierThreadPoolSize" value="${notifier.threads}"/>
+</bean>
+}}}
+
+becomes this
+
+{{{
+<bean id="red5.server" class="org.red5.server.Server">
+</bean>
+}}}
