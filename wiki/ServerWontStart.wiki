@@ -63,3 +63,21 @@ becomes this
 <bean id="red5.server" class="org.red5.server.Server">
 </bean>
 }}}
+
+== ClassNotFoundException: Launcher ==
+
+When the _Launcher_ cannot be located, it usually means the server jar is missing or misnamed. The Red5 server jar must be named like so until we fix the bootstrap bug: {{{red5-server-1.0.jar}}}
+Here is what the error may look like:
+{{{
+Exception in thread "main" java.lang.ClassNotFoundException: org.red5.server.Launcher
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:366)
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:355)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:354)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:423)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:356)
+        at java.lang.Class.forName0(Native Method)
+        at java.lang.Class.forName(Class.java:264)
+        at org.red5.server.Bootstrap.bootStrap(Bootstrap.java:115)
+        at org.red5.server.Bootstrap.main(Bootstrap.java:48)
+}}}
