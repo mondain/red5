@@ -242,7 +242,9 @@
 			<pathelement location="${classes.dir}"/>
 		</path>
 		<antcall target="compile-demos" inheritAll="true" inheritRefs="true"/>
+		<!--
 		<antcall target="compile-script" inheritAll="true" inheritRefs="true"/>
+		-->
 	</target>
     
 	<!-- Core -->
