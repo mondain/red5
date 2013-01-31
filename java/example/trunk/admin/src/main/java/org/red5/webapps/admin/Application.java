@@ -241,17 +241,19 @@ public class Application extends ApplicationAdapter implements ApplicationContex
 		if (root.getName().equals(scopeName)) {
 			return root;
 		} else {
-			Set<String> names = root.getScopeNames();
-			for (String name : names) {
-				try {
-					IScope parent = root.getScope(name);
-					IScope scope = getScopes(parent, scopeName);
-					if (scope != null) {
-						return scope;
-					}
-				} catch (NullPointerException npe) {
-					log.debug(npe.toString());
-				}
+			if (root instanceof IScope) {
+    			Set<String> names = root.getScopeNames();
+    			for (String name : names) {
+    				try {
+    					IScope parent = root.getScope(name);
+    					IScope scope = getScopes(parent, scopeName);
+    					if (scope != null) {
+    						return scope;
+    					}
+    				} catch (NullPointerException npe) {
+    					log.debug(npe.toString());
+    				}
+    			}
 			}
 		}
 		return null;
