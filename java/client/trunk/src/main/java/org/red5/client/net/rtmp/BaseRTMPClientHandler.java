@@ -100,12 +100,12 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	/**
 	 * Shared objects map
 	 */
-	private volatile ConcurrentMap<String, ClientSharedObject> sharedObjects = new ConcurrentHashMap<String, ClientSharedObject>();
+	private volatile ConcurrentMap<String, ClientSharedObject> sharedObjects = new ConcurrentHashMap<String, ClientSharedObject>(1, 0.9f, 1);
 
 	/**
 	 * Net stream handling
 	 */
-	private volatile ConcurrentMap<Integer, NetStreamPrivateData> streamDataMap = new ConcurrentHashMap<Integer, NetStreamPrivateData>();
+	private volatile ConcurrentMap<Integer, NetStreamPrivateData> streamDataMap = new ConcurrentHashMap<Integer, NetStreamPrivateData>(3, 0.75f, 1);
 
 	/**
 	 * Task to start on connection close
@@ -410,18 +410,25 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	protected void onSharedObject(RTMPConnection conn, Channel channel, Header source, SharedObjectMessage object) {
 		log.trace("onSharedObject");
 		ClientSharedObject so = sharedObjects.get(object.getName());
-		if (so == null) {
+		if (so != null) {
+			if (so.isPersistent() == object.isPersistent()) {				
+				log.debug("Received SO request: {}", object);
+				so.dispatchEvent(object);			
+			} else {
+				log.error("Ignoring request for wrong-persistent SO: {}", object);
+			}
+		} else {
 			log.error("Ignoring request for non-existend SO: {}", object);
-			return;
 		}
-		if (so.isPersistent() != object.isPersistent()) {
-			log.error("Ignoring request for wrong-persistent SO: {}", object);
-			return;
-		}
-		log.debug("Received SO request: {}", object);
-		so.dispatchEvent(object);
 	}
 
+	/**
+	 * Called when negotiating bandwidth.
+	 */
+	public void onBWCheck() {
+		log.debug("onBWCheck");
+	}
+	
 	/**
 	 * Called when negotiating bandwidth.
 	 * 
@@ -755,6 +762,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 				// client doesn't support calling methods on him
 				call.setStatus(Call.STATUS_METHOD_NOT_FOUND);
 				call.setException(new MethodNotFoundException(methodName));
+				log.info("No service provider / method not found; to handle calls like onBWCheck, add a service provider");
 			} else {
 				serviceInvoker.invoke(call, serviceProvider);
 			}
