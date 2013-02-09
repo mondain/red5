@@ -52,7 +52,7 @@ becomes this
 </bean>
 }}}
 
-== ClassNotFoundException: Launcher ==
+== ClassNotFoundException Launcher ==
 
 When the _Launcher_ cannot be located, it usually means the server jar is missing or misnamed. The Red5 server jar must be named like so until we fix the bootstrap bug: {{{red5-server-1.0.jar}}}
 
@@ -70,3 +70,43 @@ Exception in thread "main" java.lang.ClassNotFoundException: org.red5.server.Lau
         at org.red5.server.Bootstrap.bootStrap(Bootstrap.java:115)
         at org.red5.server.Bootstrap.main(Bootstrap.java:48)
 }}}
+
+== Missing getter or setter for serializer / deserializer ==
+
+A change was made in 1.0.2 which added static-access to the Serializer and Deserializer classes. This change will cause this issue to appear if you don't have an updated configuration file.
+{{{
+[INFO] [main] org.springframework.beans.factory.support.DefaultListableBeanFactory - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@1378732d: defining beans [placeholderConfig,red5.common,red5.core,context.loader,pluginLauncher,tomcat.server]; root of factory hierarchy Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.common' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'rtmptCodecFactory' defined in class path resource [red5-common.xml]: Error setting property values; nested exception is org.springframework.beans.NotWritablePropertyException: Invalid property 'serializer' of bean class [org.red5.server.net.rtmpt.codec.RTMPTCodecFactory]: Bean property 'serializer' is not writable or has an invalid setter method. Does the parameter type of the setter match the return type of the getter?
+}}}
+
+To fix this, perform the following steps:
+
+1. Open the conf/red5-common.xml file
+2. Remove these two nodes
+{{{
+  <!-- Serializes objects to AMF binary -->
+  <bean id="serializer" class="org.red5.io.object.Serializer"/>
+  <!-- Deserializes objects from AMF binary -->
+  <bean id="deserializer" class="org.red5.io.object.Deserializer"/>
+}}}
+3. Remove these lines from minaEncoder bean
+{{{
+  <property name="serializer">
+    <ref bean="serializer"/>
+  </property>
+}}}
+4. Remove these lines from minaDecoder bean
+{{{
+  <property name="deserializer">
+    <ref bean="deserializer"/>
+  </property>
+}}}
+5. Remove these lines from rtmptCodecFactory bean
+{{{
+  <property name="serializer">
+    <ref bean="serializer"/>
+  </property>
+  <property name="deserializer">
+    <ref bean="deserializer"/>
+  </property>
+}}}
+6. Save the file and restart the server
