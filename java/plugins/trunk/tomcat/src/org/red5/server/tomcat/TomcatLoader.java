@@ -478,13 +478,13 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		}
 		// determine if https support is requested
 		if (useSSL) {
-    		// turn off native apr support
-    		AprLifecycleListener listener = new AprLifecycleListener();
-    		listener.setSSLEngine("off");
-    		connector.addLifecycleListener(listener);
-    		// set connection properties
-    		connector.setSecure(true);
-            connector.setScheme("https");		
+			// turn off native apr support
+			AprLifecycleListener listener = new AprLifecycleListener();
+			listener.setSSLEngine("off");
+			connector.addLifecycleListener(listener);
+			// set connection properties
+			connector.setSecure(true);
+			connector.setScheme("https");
 		}
 		// set the bind address
 		if (address == null) {
@@ -575,39 +575,40 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 								try {
 									Class<?> clazz = Class.forName(contextClass, true, webClassLoader);
 									appctx = (ConfigurableWebApplicationContext) clazz.newInstance();
-								} catch (Throwable e) {
-									throw new RuntimeException("Failed to load webapplication context class.", e);
-								}
-								appctx.setConfigLocations(new String[] { contextConfigLocation });
-								appctx.setServletContext(servletContext);
-								//set parent context or use current app context
-								if (parentContext != null) {
-									appctx.setParent(parentContext);
-								} else {
-									appctx.setParent(applicationContext);
-								}
-								// set the root webapp ctx attr on the each servlet context so spring can find it later
-								servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appctx);
-								//refresh the factory
-								log.trace("Classloader prior to refresh: {}", appctx.getClassLoader());
-								appctx.refresh();
-								if (log.isDebugEnabled()) {
-									log.debug("Red5 app is active: {} running: {}", appctx.isActive(), appctx.isRunning());
-								}
-								// set a realm for the webapp if one is specified
-								if (appctx.containsBean("realm")) {
-									log.debug("Realm specified in context configuration");
-									Realm contextRealm = (Realm) appctx.getBean("realm");
-									if (contextRealm != null) {
-										log.debug("Realm class: {}", contextRealm.getClass().getName());
-										contextRealm.setContainer(cont);
-										ctx.setRealm(contextRealm);
-										if (contextRealm instanceof JAASRealm) {
-											log.debug("Realm is JAAS type");
-											System.setProperty("java.security.auth.login.config", prefix + "WEB-INF/jaas.config");
-										}
-										log.debug("Realm info: {} path: {}", contextRealm.getInfo(), ((RealmBase) contextRealm).getRealmPath());
+									// set the root webapp ctx attr on the each servlet context so spring can find it later
+									servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appctx);
+									appctx.setConfigLocations(new String[] { contextConfigLocation });
+									appctx.setServletContext(servletContext);
+									//set parent context or use current app context
+									if (parentContext != null) {
+										appctx.setParent(parentContext);
+									} else {
+										appctx.setParent(applicationContext);
 									}
+									//refresh the factory
+									log.trace("Classloader prior to refresh: {}", appctx.getClassLoader());
+									appctx.refresh();
+									if (log.isDebugEnabled()) {
+										log.debug("Red5 app is active: {} running: {}", appctx.isActive(), appctx.isRunning());
+									}
+									// set a realm for the webapp if one is specified
+									if (appctx.containsBean("realm")) {
+										log.debug("Realm specified in context configuration");
+										Realm contextRealm = (Realm) appctx.getBean("realm");
+										if (contextRealm != null) {
+											log.debug("Realm class: {}", contextRealm.getClass().getName());
+											contextRealm.setContainer(cont);
+											ctx.setRealm(contextRealm);
+											if (contextRealm instanceof JAASRealm) {
+												log.debug("Realm is JAAS type");
+												System.setProperty("java.security.auth.login.config", prefix + "WEB-INF/jaas.config");
+											}
+											log.debug("Realm info: {} path: {}", contextRealm.getInfo(), ((RealmBase) contextRealm).getRealmPath());
+										}
+									}
+									appctx.start();
+								} catch (Throwable e) {
+									throw new RuntimeException("Failed to load webapplication context class", e);
 								}
 							}
 						};
