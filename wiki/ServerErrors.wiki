@@ -1,0 +1,30 @@
+#summary Various solutions for common server issues
+#labels Errors
+
+= Introduction =
+
+Below are some issues that you may encounter along with their fixes.
+
+== Error connecting - expected single bean ==
+
+{{{
+[ERROR] [NioProcessor-2] org.red5.server.net.rtmp.RTMPHandler - Error connecting {}
+org.springframework.beans.factory.NoSuchBeanDefinitionException: No unique bean of type [org.red5.server.net.rtmp.RTMPConnManager] is defined: expected single bean but found 2: rtmpMinaConnManager,rtmptConnManager
+}}}
+
+This occurs after revision 4563 if you are using older configuration files. To fix this, follow these steps:
+
+ # Open your conf/red5-core.xml file
+ # Remove this node
+{{{
+<bean id="rtmptConnManager" class="org.red5.server.net.rtmp.RTMPConnManager" />
+}}}
+ # Locate the rtmptServlet bean and change this node from
+{{{
+<property name="rtmpConnManager" ref="rtmptConnManager" />
+}}}
+ to 
+{{{
+<property name="rtmpConnManager" ref="rtmpMinaConnManager" />
+}}}
+Save and close the file, then restart red5
