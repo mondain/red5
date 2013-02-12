@@ -1,4 +1,5 @@
 #summary What to look for when Red5 wont start.
+#labels Error
 
 = Introduction =
 
@@ -110,3 +111,16 @@ To fix this, perform the following steps:
   </property>
 }}}
 6. Save the file and restart the server
+
+== Could not find or load main class org.red5.server.Bootstrap ==
+
+Since we now use Maven, our output jars are named following their conventions and this leads to this error. The simple fix is to rename the two jars, removing the _.2-SNAPSHOT_ part.
+{{{
+red5-server-1.0.2-SNAPSHOT.jar
+red5-server-1.0.2-SNAPSHOT-bootstrap.jar
+}}}
+renamed
+{{{
+red5-server-1.0.jar
+red5-server-1.0-bootstrap.jar
+}}}
