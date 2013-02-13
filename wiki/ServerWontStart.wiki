@@ -1,5 +1,5 @@
 #summary What to look for when Red5 wont start.
-#labels Error
+#labels Errors,Eclipse
 
 = Introduction =
 
@@ -123,4 +123,17 @@ renamed
 {{{
 red5-server-1.0.jar
 red5-server-1.0-bootstrap.jar
+}}}
+
+== Eclipse red5 plugin will not start ==
+
+Since we now use Maven, our output jars are named following their conventions and this leads to this error when using the red5 plugin for Eclipse. The simple fix is to rename the two jars.
+{{{
+red5-server-1.0.2-SNAPSHOT.jar
+red5-server-1.0.2-SNAPSHOT-bootstrap.jar
+}}}
+renamed
+{{{
+red5.jar
+boot.jar
 }}}
