@@ -38,10 +38,30 @@ package {
 		 */
 		public var syncEventsRecieved:int;
 
+		public function SOUser(_doc:Object):void {
+			this.parent = _doc;
+		}
+		
 		public function toString():String {
 			return '[SOUser id='+sid+']';			
 		}
 	
+		public function start():void {       	
+			log('Start');	
+			//  create the netConnection
+			nc = new NetConnection();
+			nc.objectEncoding = encoding;
+			//  set it's client/focus to this
+			nc.client = this;
+			// add listeners for netstatus and security issues
+			nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+			nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+			nc.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+			nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);		
+			
+			nc.connect(path, null);   
+		}
+		
 		public function stop():void {
 			log('Stop');
 			if (updateTimer) {
@@ -63,26 +83,9 @@ package {
 				nc.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 				nc.removeEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);					
 			}
-		}
-				
-		public function start():void {       	
-	    	log('Start');	
-			//  create the netConnection
-			nc = new NetConnection();
-			nc.objectEncoding = encoding;
-			//  set it's client/focus to this
-			nc.client = this;
-			// add listeners for netstatus and security issues
-			nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-			nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-			nc.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-			nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);		
-
-			nc.connect(path, null);   
-	    }	
+		}	
 		
 		public function onBWDone(... obj):void {
-			
 		}
 	
 		public function onBWCheck(... rest):uint {
@@ -101,6 +104,7 @@ package {
 			trace('Net status: '+event.info.code);
 	        switch (event.info.code) {
 	            case "NetConnection.Connect.Success":
+					parent.soUserList.addItem(this);
 					startSO();              
 	                break;
 	            case "NetConnection.Connect.Failed":					
@@ -108,6 +112,7 @@ package {
 					stop();
 	            case "NetConnection.Connect.Closed":	                
 	            	log("Failed / Rejected / Closed");
+					parent.soUserList.removeItem(this);
 					break;                
 	        }				
 		}	
