@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalAlign="center" verticalAlign="top" layout="absolute"
+	width="460" height="430"
+	applicationComplete="init()"	
+	xmlns:ns1="*">
+	<!--
+	Versus main application
+	
+ 	@author Paul Gregoire (mondain@gmail.com)
+	-->
+	<mx:Script source="functions.as"/>
+	<mx:Label x="10" y="5" text="Versus" fontWeight="bold" fontSize="16"/>
+	<mx:Button label="Start Test" click="startTest()" x="10" y="130"/>
+	<mx:Button label="Stop Test" click="stopTest()" x="88" y="130"/>
+	<mx:TextArea wordWrap="true" editable="false" width="439" height="261" id="messages" verticalScrollPolicy="auto" x="10" y="159"/>
+	<mx:Canvas width="10" height="10" cornerRadius="20" id="indicatorOn" backgroundColor="#00FF00" x="402" y="10" visible="false"/>
+	<mx:Canvas width="10" height="10" cornerRadius="20" id="indicatorOff" backgroundColor="#FF0000" x="426" y="43"/>
+	<mx:TextInput id="givenPath" text="rtmp://{hostString}/oflaDemo" width="402" x="10" y="37"/>
+	<mx:HBox x="10" y="68" width="440">
+		<mx:CheckBox id="useAMF3" label="AMF3" color="#000000" fontWeight="bold" selected="true"/>
+		<mx:Label fontWeight="bold" text="Target Users"/>
+		<mx:TextInput id="targetUsers" width="56" maxChars="4" text="10" textAlign="right"/>
+		<mx:Label fontWeight="bold" text="Target Sync"/>
+		<mx:TextInput id="targetSync" width="60" editable="true" maxChars="6" text="2000"
+					  textAlign="right"/>
+	</mx:HBox>
+	<mx:HBox x="10" y="99" width="440">
+		<mx:Label text="Users" fontWeight="bold"/>
+		<mx:TextInput width="56" editable="false" text="{soUserList.length}" textAlign="right"/>
+		<mx:Label text="Sync" fontWeight="bold"/>
+		<mx:TextInput id="totalSyncEvents" width="110" editable="false" text="0" textAlign="right"/>
+		<mx:Label fontWeight="bold" text="Props"/>
+		<mx:TextInput id="totalChanges" width="110" editable="false" text="0" textAlign="right"/>
+	</mx:HBox>
+	<mx:Label x="172" y="131" fontWeight="bold" text="Seconds"/>
+	<mx:TextInput id="testTime" x="238" y="129" width="158" editable="false" text="{totalTime}"
+				  textAlign="right"/>
+	
+</mx:Application>
