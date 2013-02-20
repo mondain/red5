@@ -47,11 +47,10 @@
 	}	
 	        
     public function startTest():void {
-    	log('Start test');
+    	log('Start test');		
     	var delay:int = 0.1;
     	//convert to seconds
     	delay = (delay * 1000);
-    	log('Delay: '+delay+(delay >= 1000?'ms':'s'));
     	//create the timer only once
     	if (timer == null) {
 	    	timer = new Timer(delay);
@@ -59,6 +58,17 @@
     	}
 		timer.start();
 		startTime = getTimer();
+		var maxSOUsers:int = int(targetUsers.text);
+		for (var i:int = 0; i < maxSOUsers; i += 1) {
+			//start a new view
+			log('Creating a new SO user');
+			var souser:SOUser = new SOUser(this);
+			souser.sid = String(i);
+			souser.setEncoding(useAMF3 ? (useAMF3.selected === true ? 3 : 0) : 0);
+			souser.setUpdateInterval(1);
+			souser.path = givenPath.text;
+			souser.start();
+		}
     }
     
     public function stopTest():void { 
@@ -81,32 +91,19 @@
     
 	public function timerHandler(event:TimerEvent):void {
 		//trace("Timer fired");
-		var maxSync:int = int(targetSync.text);
-		var maxSOUsers:int = int(targetUsers.text);
-		if (soUserList.length < maxSOUsers) {
-			//start a new view
-			log('Creating a new SO user');
-			var souser:SOUser = new SOUser();
-			souser.sid = String(soUserList.length);
-			souser.setEncoding(useAMF3 ? (useAMF3.selected === true ? 3 : 0) : 0);
-			souser.setUpdateInterval(1);
-			souser.path = givenPath.text;
-			souser.start();
-			soUserList.addItem(souser);
-		} else {
-			var syncCount:int = 0;
-			var changes:int = 0;
-			for each (var souser:SOUser in soUserList) {
-				syncCount += souser.syncEventsRecieved;
-				changes += souser.changesMade;
-				if (syncCount >= maxSync) {
-					log("Sync count reached");
-					stopTest();
-				}				
-			}	
-			totalSyncEvents.text = String(syncCount);
-			totalChanges.text = String(changes);
-		}
+		var maxSync:int = int(targetSync.text);	
+		var syncCount:int = 0;
+		var changes:int = 0;
+		for each (var souser:SOUser in soUserList) {
+			syncCount += souser.syncEventsRecieved;
+			changes += souser.changesMade;
+			if (syncCount >= maxSync) {
+				log("Sync count reached");
+				stopTest();
+			}				
+		}	
+		totalSyncEvents.text = String(syncCount);
+		totalChanges.text = String(changes);
 	}           
 	    
 	private function securityErrorHandler(e:SecurityErrorEvent):void {
