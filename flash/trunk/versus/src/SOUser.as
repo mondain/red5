@@ -65,6 +65,7 @@ package {
 		public function stop():void {
 			log('Stop');
 			if (updateTimer) {
+				updateTimer.removeEventListener(TimerEvent.TIMER, updateSO);
 				updateTimer.stop();
 				updateTimer = null;
 			}
@@ -172,7 +173,7 @@ package {
 			if (useDirty) {							
 				so.setDirty("randomInteger");	
 			}
-			so.send();
+			//so.send();
 			changesMade++;
 		}
 				

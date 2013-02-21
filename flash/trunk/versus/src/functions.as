@@ -65,7 +65,9 @@
 			var souser:SOUser = new SOUser(this);
 			souser.sid = String(i);
 			souser.setEncoding(useAMF3 ? (useAMF3.selected === true ? 3 : 0) : 0);
-			souser.setUpdateInterval(1);
+			// dirty doesnt need to be forced for a primative type
+			souser.setUseDirtyFlag(false);
+			souser.setUpdateInterval(int(updateInterval.text));
 			souser.path = givenPath.text;
 			souser.start();
 		}
