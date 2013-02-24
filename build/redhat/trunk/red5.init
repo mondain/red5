@@ -6,7 +6,9 @@
 # processname: red5
 
 PROG=red5
-RED5_HOME=/home/red5
+if [ -z "$RED5_HOME" ]; then
+    export RED5_HOME=/usr/lib/red5
+fi
 DAEMON=$RED5_HOME/$PROG.sh
 PIDFILE=/var/run/$PROG.pid
 
