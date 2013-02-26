@@ -32,6 +32,7 @@ install -m 0755 -d $RPM_BUILD_ROOT%{red5_lib}/plugins
 install -m 0755 plugins/* $RPM_BUILD_ROOT%{red5_lib}/plugins
 install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
 install -m 0755 %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/red5
+install -d $RPM_BUILD_ROOT%{red5_log}
 %clean
 rm -rf $RPM_BUILD_ROOT
 %files
