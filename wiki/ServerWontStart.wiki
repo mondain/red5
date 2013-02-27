@@ -27,6 +27,23 @@ Major  Minor      Java version
 51       0           1.7
 }}}
 
+== Wrong Java Version and Mina ==
+
+Consider this a "part 2" for the above issue. This may occur and misidentify Mina as the culprit if you have a red5 client jar which was compiled with the "wrong" version. Below are two the error messages you might see that will indicate this:
+
+{{{
+2013-02-27 10:16:44,697 [main] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Ignoring bean class loading failure for bean 'minaEncoder'
+org.springframework.beans.factory.CannotLoadBeanClassException: Error loading class [org.red5.server.net.rtmp.codec.RTMPMinaProtocolEncoder] for bean with name 'minaEncoder' defined in class path resource [red5-common.xml]: problem with class file or dependent class; nested exception is java.lang.UnsupportedClassVersionError: org/apache/mina/filter/codec/ProtocolEncoderAdapter : Unsupported major.minor version 51.0
+}}}
+
+and / or
+
+{{{
+Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.common' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'statusObjectService' defined in class path resource [red5-common.xml]: Initialization of bean failed; nested exception is java.lang.UnsupportedClassVersionError: org/apache/mina/core/buffer/IoBuffer : Unsupported major.minor version 51.0
+}}}
+
+The simple fix is to remove the red5 client jar from the red5/lib directory; a better fix is to change our pom file.
+
 == Invalid Property ==
 
 This happens when a spring configuration doesn't match the code. In many cases, its a simple fix. Your error will look something like this:
