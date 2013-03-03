@@ -1,0 +1,18 @@
+#summary Project Roadmap.
+#labels Roadmap,Features
+
+= Introduction =
+
+Think of this as a living document; we will add features as they come up. You can consider this the source for what's next with Red5.
+
+
+== Future Features ==
+
+ * HLS
+ * WebRTC
+ * Recording to F4V / MP4
+
+== Previous Features ==
+
+ * Clustering
+ * WAR
