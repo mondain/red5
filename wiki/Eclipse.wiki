@@ -1,0 +1,16 @@
+#summary Eclipse related items
+#labels Eclipse
+
+= Eclipse =
+
+This section contains Eclipse related entries or fixes.
+
+== Error - A cycle was detected ==
+
+When working in Eclipse you may see an "Error" such as this:
+
+{{{
+A cycle was detected in the build path of project 'red5_client'. The cycle consists of projects {red5_client, red5_server}	red5_client		
+}}}
+
+To remove this blocking item go to *Properties > Java Compiler > Building*. Under *Build path problems* change the "Circular dependencies" option to "Warning"; then click "OK"
