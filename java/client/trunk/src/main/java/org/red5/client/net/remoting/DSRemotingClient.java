@@ -113,8 +113,7 @@ public class DSRemotingClient extends RemotingClient {
 			IoBuffer tmp = IoBuffer.allocate(1024);
 			tmp.setAutoExpand(true);
 			Output tmpOut = new Output(tmp);
-			Serializer tmpSer = new Serializer();
-			tmpSer.serialize(tmpOut, header.getValue());
+			Serializer.serialize(tmpOut, header.getValue());
 			tmp.flip();
 			// Size of header data
 			result.putInt(tmp.limit());
@@ -140,7 +139,7 @@ public class DSRemotingClient extends RemotingClient {
 		if (params == null) {
 			tmpOut.writeNull();
 		} else {
-			tmpOut.writeArray(params, new Serializer());
+			tmpOut.writeArray(params);
 		}
 		tmp.flip();
 		// Store size and parameters
@@ -168,7 +167,6 @@ public class DSRemotingClient extends RemotingClient {
 		// the version by now, AMF3 is not yet implemented
 		int count = in.getUnsignedShort();
 		log.debug("Count: {}", count);
-		Deserializer deserializer = new Deserializer();
 		Input input = new Input(in);
 		for (int i = 0; i < count; i++) {
 			String name = input.getString(in);
@@ -185,7 +183,7 @@ public class DSRemotingClient extends RemotingClient {
 				log.debug("Corrected length: {}", len);
 				value = input.readString(len);
 			} else {
-				value = deserializer.deserialize(input, Object.class);
+				value = Deserializer.deserialize(input, Object.class);
 			}
 			log.debug("Value: {}", value);
 			// XXX: this is pretty much untested!!!
@@ -223,7 +221,6 @@ public class DSRemotingClient extends RemotingClient {
 		log.debug("decodeResult - data limit: {}", (data != null ? data.limit() : 0));
 		processHeaders(data);
 
-		Deserializer deserializer = new Deserializer();
 		Input input = new Input(data);
 		String target = null;
 
@@ -266,13 +263,13 @@ public class DSRemotingClient extends RemotingClient {
 		log.debug("Target: {}", target);
 		if ("onResult".equals(target)) {
 			//read return value
-			return input.readObject(deserializer, Message.class);
+			return input.readObject(Message.class);
 		} else if ("onStatus".equals(target)) {
 			//read return value
-			return input.readObject(deserializer, ErrorMessage.class);
+			return input.readObject(ErrorMessage.class);
 		}
 		//read return value
-		return deserializer.deserialize(input, Object.class);
+		return Deserializer.deserialize(input, Object.class);
 	}
 
 	/**

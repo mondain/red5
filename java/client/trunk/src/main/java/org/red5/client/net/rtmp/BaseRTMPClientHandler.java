@@ -962,8 +962,8 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 				conn.addClientStream(stream);
 				NetStreamPrivateData streamData = new NetStreamPrivateData();
 				streamData.outputStream = conn.createOutputStream(streamIdInt);
-				streamData.connConsumer = new ConnectionConsumer(conn, streamData.outputStream.getVideo().getId(), streamData.outputStream.getAudio().getId(),
-						streamData.outputStream.getData().getId());
+				streamData.connConsumer = new ConnectionConsumer(conn, streamData.outputStream.getVideo(), streamData.outputStream.getAudio(),
+						streamData.outputStream.getData());
 				streamDataMap.put(streamIdInt, streamData);
 				log.debug("streamDataMap: {}", streamDataMap);
 			}

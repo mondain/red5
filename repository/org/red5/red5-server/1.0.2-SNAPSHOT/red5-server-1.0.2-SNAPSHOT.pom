@@ -496,63 +496,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-<!-- 		
-        <dependency>
-            <groupId>org.apache.mina</groupId>
-            <artifactId>mina-core</artifactId>
-            <version>2.0.4</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/mina-core-2.0.4.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.mina</groupId>
-            <artifactId>mina-integration-beans</artifactId>
-            <version>2.0.4</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/mina-integration-beans-2.0.4.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.mina</groupId>
-            <artifactId>mina-integration-jmx</artifactId>
-            <version>2.0.4</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/mina-integration-jmx-2.0.4.jar</systemPath>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.mina</groupId>
-                    <artifactId>mina-integration-ognl</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency> 
-		
-        <dependency>
-            <groupId>org.apache.mina</groupId>
-            <artifactId>mina-core</artifactId>
-            <version>2.0.8-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/mina-core-2.0.8-SNAPSHOT.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.mina</groupId>
-            <artifactId>mina-integration-beans</artifactId>
-            <version>2.0.8-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/mina-integration-beans-2.0.8-SNAPSHOT.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.mina</groupId>
-            <artifactId>mina-integration-jmx</artifactId>
-            <version>2.0.8-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/mina-integration-jmx-2.0.8-SNAPSHOT.jar</systemPath>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.mina</groupId>
-                    <artifactId>mina-integration-ognl</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency> 
---> 
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
@@ -714,10 +657,6 @@
             <groupId>com.googlecode.mp4parser</groupId>
             <artifactId>isoparser</artifactId>
             <version>1.0-RC-19-SNAPSHOT</version>
-<!-- 
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/isoparser-1.0-RC-19-SNAPSHOT.jar</systemPath>
- -->
         </dependency>
         <dependency>
             <groupId>org.red5</groupId>
@@ -725,10 +664,6 @@
             <version>${red5-client.version}</version>
             <type>jar</type>
             <scope>test</scope>
-<!-- 
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/red5-client-1.0.2-SNAPSHOT.jar</systemPath>
- -->           
         </dependency>       
 	</dependencies>
 </project>

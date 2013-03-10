@@ -260,12 +260,7 @@
             <groupId>org.red5</groupId>
             <artifactId>red5-server</artifactId>
             <version>${red5-server.version}</version>
-<!--
-            <version>1.0.2-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/red5-server-1.0.2-SNAPSHOT.jar</systemPath>
--->
-        </dependency>       
+		</dependency>
      	<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
