@@ -26,7 +26,6 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.logging.LoggingFilter;
-import org.red5.io.object.Deserializer;
 import org.red5.io.object.Output;
 import org.red5.io.object.Serializer;
 import org.red5.io.utils.BufferUtils;
@@ -248,11 +247,9 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 			// RTMP Decoding
 			decoder = new RTMPMinaProtocolDecoder();
 			decoder.setDecoder(new RTMPClientProtocolDecoder());
-			decoder.setDeserializer(new Deserializer());
 			// RTMP Encoding
 			encoder = new RTMPMinaProtocolEncoder();
 			encoder.setEncoder(new RTMPClientProtocolEncoder());
-			encoder.setSerializer(new Serializer());
 			// two other config options are available
 			//encoder.setBaseTolerance(baseTolerance);
 			//encoder.setDropLiveFuture(dropLiveFuture);
@@ -336,7 +333,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 			log.debug("Call: {} pending: {}", call, isPending);
 			if (!isPending) {
 				log.debug("Call has been executed, send result");
-				serializer.serialize(output, call.isSuccess() ? "_result" : "_error");
+				Serializer.serialize(output, call.isSuccess() ? "_result" : "_error");
 			} else {
 				log.debug("This is a pending call, send request");
 				// for request we need to use AMF3 for client mode if the connection is AMF3
@@ -344,11 +341,11 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 					output = new org.red5.io.amf3.Output(out);
 				}
 				final String action = (call.getServiceName() == null) ? call.getServiceMethodName() : call.getServiceName() + '.' + call.getServiceMethodName();
-				serializer.serialize(output, action);
+				Serializer.serialize(output, action);
 			}
 			if (invoke instanceof Invoke) {
-				serializer.serialize(output, Integer.valueOf(invoke.getInvokeId()));
-				serializer.serialize(output, invoke.getConnectionParams());
+				Serializer.serialize(output, Integer.valueOf(invoke.getInvokeId()));
+				Serializer.serialize(output, invoke.getConnectionParams());
 			}
 			if (call.getServiceName() == null && "connect".equals(call.getServiceMethodName())) {
 				// response to initial connect, always use AMF0
@@ -369,13 +366,13 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 				}
 				Object res = pendingCall.getResult();
 				log.debug("Writing result: {}", res);
-				serializer.serialize(output, res);
+				Serializer.serialize(output, res);
 			} else {
 				log.debug("Writing params");
 				final Object[] args = call.getArguments();
 				if (args != null) {
 					for (Object element : args) {
-						serializer.serialize(output, element);
+						Serializer.serialize(output, element);
 					}
 				}
 			}

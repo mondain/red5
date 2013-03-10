@@ -23,8 +23,6 @@ import java.util.Map;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.red5.client.net.rtmp.BaseRTMPClientHandler;
-import org.red5.io.object.Deserializer;
-import org.red5.io.object.Serializer;
 import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.codec.RTMP;
@@ -51,8 +49,6 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 	
 	public RTMPTClient() {
 		codecFactory = new RTMPTCodecFactory();
-		codecFactory.setDeserializer(new Deserializer());
-		codecFactory.setSerializer(new Serializer());
 		codecFactory.init();
 	}
 

@@ -21,7 +21,6 @@ package org.red5.client.net.rtmp;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.red5.server.BaseConnection;
 import org.red5.server.net.rtmp.IRTMPConnManager;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.slf4j.Logger;
@@ -89,8 +88,6 @@ public class RTMPClientConnManager implements IRTMPConnManager {
 		}
 		try {
 			RTMPConnection conn = (RTMPConnection) connCls.newInstance();
-			// the id may become confused with the Object/String client id
-			conn.setId(BaseConnection.getNextClientId());
 			log.debug("Connection id set {}", conn.getId());
 			rtmpConnections.add(conn);
 			log.debug("Connection added to the map");

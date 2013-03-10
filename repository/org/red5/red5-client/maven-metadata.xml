@@ -3,7 +3,7 @@
   <groupId>org.red5</groupId>
   <artifactId>red5-client</artifactId>
   <versioning>
-    <latest>1.0-java6</latest>
+    <latest>1.0.2-SNAPSHOT</latest>
     <release>1.0-java6</release>
     <versions>
       <version>1.0-RC2</version>
@@ -15,7 +15,8 @@
       <version>1.0-RC3-r4439-java6</version>
       <version>1.0</version>
       <version>1.0-java6</version>
+	  <version>1.0.2-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20121204193901</lastUpdated>
+    <lastUpdated>20130310091501</lastUpdated>
   </versioning>
 </metadata>
