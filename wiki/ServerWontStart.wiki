@@ -154,3 +154,20 @@ renamed
 red5.jar
 boot.jar
 }}}
+
+== ClassNotFoundException FilePersistenceThread ==
+
+Revisions after 4585 may not start due to the file persistence being switched over to using the scheduler. You may see this on your console or in your logs if you don't first remove the bean noted below.
+
+{{{
+[INFO] [main] org.springframework.beans.factory.support.DefaultListableBeanFacto
+ry - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@8a0cbbe: defining beans [placeholderConfig,red5.common,red5.core,context.loader,pluginLauncher,tomcat.server]; root of factory hierarchy
+Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.common' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.CannotLoadBeanClassException: Cannot find class [org.red5.server.persistence.FilePersistenceThread] for bean with name 'filePersistenceThread' defined in class path resource [red5-common.xml]; nested exception is java.lang.ClassNotFoundException: org.red5.server.persistence.FilePersistenceThread
+}}}
+
+To resolve this, remove this node from your _conf/red5-common.xml_
+
+{{{
+<!-- Thread that writes modified objects to disk periodically -->
+<bean id="filePersistenceThread" class="org.red5.server.persistence.FilePersistenceThread"/>
+}}}
