@@ -142,6 +142,12 @@ red5-server-1.0.jar
 red5-server-1.0-bootstrap.jar
 }}}
 
+As of revision 4591 the server artifacts have been renamed as follows
+{{{
+red5-server.jar
+red5-server-bootstrap.jar
+}}}
+
 == Eclipse red5 plugin will not start ==
 
 Since we now use Maven, our output jars are named following their conventions and this leads to this error when using the red5 plugin for Eclipse. The simple fix is to rename the two jars.
