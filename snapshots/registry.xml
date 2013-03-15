@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<registry lastupdate="2013-01-09T19:11">
+<registry lastupdate="2013-03-14T20:11">
 	<applications>
-		<application name="oflaDemo">
+		<application name="Admin Demo">
 			<author>Red5 Team, Martin M, Dan Rossi</author>
 			<desc>Admin demo</desc>
 			<filename>admin-r4506-java6.war</filename>
 		</application>
-		<application name="oflaDemo">
+		<application name="OFLA Demo">
 			<author>Red5 Team</author>
 			<desc>Demo originally created for the OFLA conference</desc>
 			<filename>oflaDemo-r4472-java6.war</filename>
 		</application>
-		<application name="SOSample">
+		<application name="Shared Object Sample">
 			<author>Red5 Team</author>
 			<desc>Shared object demo</desc>
 			<filename>SOSample-r4326-java6.war</filename>
 		</application>
-		<application name="SystemUtils">
+		<application name="System Utility">
 			<author>DZS|All-In-One (coolest2guy@gmail.com)</author>
 			<desc>System utility</desc>
 			<filename>SystemUtils-1.0-r4418.war</filename>

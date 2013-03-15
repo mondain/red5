@@ -11,12 +11,13 @@ RequestExecutionLevel admin
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 1.0.0
+!define VERSION 1.0.2
 !define COMPANY "Red5 Server"
 !define DESCRIPTION "Red5 is an Open Source Flash Media Server written in Java"
 !define URL http://red5.googlecode.com
 !define DocumentRoot "..\..\..\doc\trunk"
 !define BuildRoot "..\..\..\java\server\trunk"
+!define DemoRoot "..\..\..\flash\trunk"
 
 # MUI defines
 !define MUI_ICON images\red5.ico
@@ -79,8 +80,14 @@ Section -Main SEC0000
     SetOverwrite on
     ; copy wrapper files
     File /r /x .svn bin\*
-    ; copy the java6 files
-    File /r /x war /x *.sh /x Makefile /x *.gz /x *.zip ${BuildRoot}\dist.java7\*
+    ; copy the java files
+    File /r /x war /x *.sh /x Makefile /x *.gz /x *.zip ${BuildRoot}\target\dist.java7\*
+    ; cd to webapps root dir
+    SetOutPath $INSTDIR\webapps\root
+	; copy demos
+    File /r /x .svn ${DemoRoot}\deploy	
+    ; rename deploy dir
+    Rename $INSTDIR\webapps\root\deploy $INSTDIR\webapps\root\demos
     ; cd to conf dir
     SetOutPath $INSTDIR\conf
     ; copy wrapper conf
@@ -91,6 +98,10 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\lib
     ; copy wrapper libs
     File /r /x .svn lib\*
+    ; cd and copy the docs
+    SetOutPath $INSTDIR\doc
+	File /r /x .svn ${DocumentRoot}\api
+	File /r /x .svn ${DocumentRoot}\api-client
     ; create the log dir
     SetOutPath $INSTDIR\log
     ; create the temp dir

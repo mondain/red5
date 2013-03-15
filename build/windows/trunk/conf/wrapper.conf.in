@@ -14,7 +14,7 @@ wrapper.java.mainclass=org.tanukisoftware.wrapper.WrapperSimpleApp
 #  needed starting from 1
 wrapper.java.classpath.1=lib/wrapper.jar
 wrapper.java.classpath.2=conf
-wrapper.java.classpath.3=red5-server-1.0-bootstrap.jar
+wrapper.java.classpath.3=red5-server-bootstrap.jar
 
 # Java Library Path (location of Wrapper.DLL or libwrapper.so)
 wrapper.java.library.path.1=lib
