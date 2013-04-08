@@ -1,5 +1,5 @@
+#summary Techniques for speeding up startup
 #labels Bootup
-#Techniques for speeding up startup
 
 = Introduction =
 
