@@ -1,5 +1,5 @@
 #labels Client,Flash
-#Errors that happen on the client and what they might mean
+#errors that happen on the client and what they might mean
 
 = Introduction =
 
