@@ -1,0 +1,16 @@
+#labels Client,Flash
+#Errors that happen on the client and what they might mean
+
+= Introduction =
+
+Here we cover some errors that may show up on a client application and how to go about resolving them or whether or not they should simply be ignored.
+
+== Reference errors after connect ==
+
+This is often seen on our publisher demo and all it means is that the swf source was not compiled with the means to understand bandwidth testing initiated by the server. You can safely ignore these errors.
+
+{{{
+Asynchronous code error - ReferenceError: Error #1069
+Asynchronous code error - ReferenceError: Error #1069
+Asynchronous code error - ArgumentError: Error #1063
+}}}
