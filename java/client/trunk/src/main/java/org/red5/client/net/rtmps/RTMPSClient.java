@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 /**
  * RTMPS client object
  * 
- * @author The Red5 Project (red5@osflash.org)
+ * @author The Red5 Project 
  * @author Paul Gregoire (mondain@gmail.com)
  * @author Kevin Green (kevygreen@gmail.com)
  */

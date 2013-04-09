@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * RTMP client implementation supporting "rtmp" and "rtmpe" protocols.
  * 
- * @author The Red5 Project (red5@osflash.org)
+ * @author The Red5 Project 
  * @author Christian Eckerle (ce@publishing-etc.de)
  * @author Joachim Bauch (jojo@struktur.de)
  * @author Paul Gregoire (mondain@gmail.com)
