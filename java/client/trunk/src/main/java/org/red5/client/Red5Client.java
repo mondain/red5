@@ -21,7 +21,7 @@ package org.red5.client;
 /**
  * Utility class for accessing Red5 "client" objects.
  *   
- * @author The Red5 Project (red5@osflash.org)
+ * @author The Red5 Project 
  * @author Paul Gregoire (mondain@gmail.com) 
  */
 public final class Red5Client {

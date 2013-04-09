@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * Client interface for remoting calls directed at an LCDS or BlazeDS style
  * service.
  * 
- * @author The Red5 Project (red5@osflash.org)
+ * @author The Red5 Project 
  * @author Paul Gregoire (mondain@gmail.com)
  */
 public class DSRemotingClient extends RemotingClient {
