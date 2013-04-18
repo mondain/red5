@@ -13,7 +13,7 @@ RequestExecutionLevel admin
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION 1.0.2
 !define COMPANY "Red5 Server"
-!define DESCRIPTION "Red5 is an Open Source Flash Media Server written in Java"
+!define DESCRIPTION "Red5 is an Open Source Media Server written in Java"
 !define URL http://red5.googlecode.com
 !define DocumentRoot "..\..\..\doc\trunk"
 !define BuildRoot "..\..\..\java\server\trunk"
