@@ -177,3 +177,11 @@ To resolve this, remove this node from your _conf/red5-common.xml_
 <!-- Thread that writes modified objects to disk periodically -->
 <bean id="filePersistenceThread" class="org.red5.server.persistence.FilePersistenceThread"/>
 }}}
+
+== BindException: Address already in use ==
+
+One of the oldest server issues on the books. Your server has bound to on of the IP address or ports that Red5 is trying to bind to. This is usually a case where Red5 is already running in another process, but often it may be another unrelated service that is bound to the port being requested. Do a netstat and figure out which port is the problem; all the ports that Red5 uses are in the _conf/red5.properties_ file.
+
+{{{
+[org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'rtmpTransport' defined in class path resource [red5-core.xml]: Invocation of init method failed; nested exception is java.net.BindException: Address already in use
+}}}
