@@ -1,5 +1,5 @@
 #summary How to do some given task with Red5.
-#labels Phase-Deploy
+#labels Phase-Deploy,Phase-Implementation
 
 = Introduction =
 
@@ -19,3 +19,25 @@ Video tutorials:
 
 * [http://www.technogumbo.com/tutorials/Recording-Decent-Quality-Video-And-Audio-With-Flash-and-Red5/index.php Recording] 
  
+== Turning on the LogFilter in Mina ==
+
+The logging filter gives more insight into what I/O operations are occurring within the Mina layer.
+
+1. Add this node to the rtmpTransport bean entry in the conf/red5-core.xml file
+{{{
+    <property name="enableMinaLogFilter" value="${mina.logfilter.enable}" />
+}}}
+2. Add this to your conf/red5.properties file
+{{{
+    mina.logfilter.enable=true
+}}}
+3. Add this to your conf/logback.xml
+{{{
+    <logger name="org.red5.server.net.rtmp.RTMPMinaTransport">
+        <level value="INFO"/>
+    </logger>
+}}}
+You'll see entries from the logger like this:
+{{{
+2013-04-24 09:40:35,285 [NioProcessor-2] INFO  o.r.s.net.rtmp.RTMPMinaTransport - CREATED
+}}}
