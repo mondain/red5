@@ -28,3 +28,35 @@ This occurs after revision 4563 if you are using older configuration files. To f
 <property name="rtmpConnManager" ref="rtmpMinaConnManager" />
 }}}
 Save and close the file, then restart red5
+
+== Exception caught on session ==
+
+Starting at revision 4643 we added an executor to each connection to prevent thread deadlocks when a message is received. If you have not updated your red5-core.xml to match the jars, you may see this error:
+
+{{{
+[WARN] [NioProcessor-5] org.red5.server.net.rtmp.RTMPMinaIoHandler - Exception caught on session: 4
+java.lang.NullPointerException: null  
+at org.red5.server.net.rtmp.RTMPConnection.handleMessageReceived(RTMPCon
+nection.java:994) ~[red5-server.jar:na]
+at org.red5.server.net.rtmp.RTMPMinaIoHandler.messageReceived(RTMPMinaIo
+Handler.java:167) ~[red5-server.jar:na]
+}}}
+
+To fix it just added the following node to your red5-core.xml:
+
+{{{
+<bean id="messageExecutor" scope="prototype" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">  
+  <property name="corePoolSize" value="1" />  
+  <property name="maxPoolSize" value="3" />  
+  <property name="queueCapacity" value="32" /> 
+  <property name="waitForTasksToCompleteOnShutdown" value="true"/>
+  <property name="daemon" value="true"/>
+  <property name="threadNamePrefix" value="RTMPMessageExecutor-"/>
+</bean>	
+}}}
+
+Also add this property to your _rtmpMinaConnection_ bean:
+
+{{{
+<property name="executor" ref="messageExecutor" />
+}}}
