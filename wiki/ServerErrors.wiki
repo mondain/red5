@@ -31,7 +31,7 @@ Save and close the file, then restart red5
 
 == Exception caught on session ==
 
-Starting at revision 4643 we added an executor to each connection to prevent thread deadlocks when a message is received. If you have not updated your red5-core.xml to match the jars, you may see this error:
+Starting at revision 4643 we added an executor to each connection to prevent thread deadlocks when a message is received. (*Deprecated in revision 4645*) If you have not updated your red5-core.xml to match the jars, you may see this error:
 
 {{{
 [WARN] [NioProcessor-5] org.red5.server.net.rtmp.RTMPMinaIoHandler - Exception caught on session: 4
