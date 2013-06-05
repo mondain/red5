@@ -60,3 +60,52 @@ Also add this property to your _rtmpMinaConnection_ bean:
 {{{
 <property name="executor" ref="messageExecutor" />
 }}}
+
+== Scheduler / Executor Modification ==
+
+Quartz has been replaced in the RTMP/T connection classes as well as in the SharedObjectService from revision 4658 on. The modifications to your configurations are as follows:
+
+Add a pool size for the RTMP connection scheduler in red5.properties
+{{{
+rtmp.scheduler.pool_size=2
+}}}
+Add a pool size for the Shared Object scheduler in red5.properties
+{{{
+so.scheduler.pool_size=4
+}}}
+Add the scheduler bean to the red5-core.xml
+{{{
+<bean id="rtmpScheduler" scope="prototype" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+  <property name="poolSize" value="${rtmp.scheduler.pool_size}" />  
+  <property name="waitForTasksToCompleteOnShutdown" value="false"/>
+  <property name="daemon" value="true"/>
+  <property name="threadNamePrefix" value="RTMPScheduler-"/>
+</bean>  
+}}}
+Add the "scheduler" to the RTMPMinaConnection in red5-core.xml
+{{{
+<bean id="rtmpMinaConnection" scope="prototype"	class="org.red5.server.net.rtmp.RTMPMinaConnection">
+  <property name="scheduler" ref="rtmpScheduler" />
+}}}
+Add the "scheduler" to the RTMPTConnection in red5-core.xml
+{{{
+<bean id="rtmptConnection" scope="prototype" class="org.red5.server.net.rtmpt.RTMPTConnection">
+  <property name="scheduler" ref="rtmpScheduler" />
+}}}
+Add the "scheduler" to the Shared Object service in red5-common.xml
+{{{
+<bean id="sharedObjectService" class="org.red5.server.so.SharedObjectService">
+  <property name="maximumEventsPerUpdate" value="${so.max.events.per.update}"/>
+  <property name="persistenceClassName">
+    <value>org.red5.server.persistence.FilePersistence</value>
+  </property>
+  <property name="scheduler">
+    <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+      <property name="poolSize" value="${so.scheduler.pool_size}" />
+      <property name="waitForTasksToCompleteOnShutdown" value="false"/>
+      <property name="daemon" value="true"/>
+      <property name="threadNamePrefix" value="SharedObjectScheduler-"/>
+    </bean>
+  </property>		
+</bean>
+}}}
