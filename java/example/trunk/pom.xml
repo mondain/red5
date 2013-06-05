@@ -40,13 +40,13 @@
 			<url>http://repo1.maven.org/maven2</url>
 		</repository>
 		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
+		<repository>
 			<id>springsource-repo</id>
 			<name>SpringSource Repository</name>
 			<url>http://repo.springsource.org/release</url>
-		</repository>
-		<repository>
-			<id>maven2-repository.dev.java.net</id>
-			<url>http://download.java.net/maven/2</url>
 		</repository>
 		<repository>
 			<id>opensymphony-releases</id>
