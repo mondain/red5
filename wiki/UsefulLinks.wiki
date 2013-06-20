@@ -1,1 +1,11 @@
+#labels Links,HowTo,Tutorial
+== General / HowTo ==
+
+=== Recording with Decent Quality ===
+http://www.technogumbo.com/tutorials/Recording-Decent-Quality-Video-And-Audio-With-Flash-and-Red5/index.php
+
+
+== Maven ==
+
+=== Dependency plugin ===
 http://stackoverflow.com/questions/8706017/maven-dependency-plugin-goals-copy-dependencies-unpack-is-not-supported-b
