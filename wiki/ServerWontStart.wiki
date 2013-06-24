@@ -185,3 +185,26 @@ One of the oldest server issues on the books. Your server has bound to on of the
 {{{
 [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'rtmpTransport' defined in class path resource [red5-core.xml]: Invocation of init method failed; nested exception is java.net.BindException: Address already in use
 }}}
+
+== Socket Options Failure ==
+
+Although not verified, the fix for this should be to disable the setting of socket options in the TCP stack. Open your red5.properties file and make the following modification:
+{{{
+rtmp.traffic_class=-1
+}}}
+
+This is what the error looks like:
+
+{{{
+INFO   | jvm 1    | 2013/06/24 15:47:26 | [ERROR] [http-127.0.0.1-5080-Acceptor-0] org.apache.tomcat.util.net.NioEndpoint - 
+INFO   | jvm 1    | 2013/06/24 15:47:26 | java.net.SocketException: Invalid argument: no further information
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at sun.nio.ch.Net.setIntOption0(Native Method) ~[na:1.7.0_21]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at sun.nio.ch.Net.setSocketOption(Unknown Source) ~[na:1.7.0_21]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at sun.nio.ch.SocketChannelImpl.setOption(Unknown Source) ~[na:1.7.0_21]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at sun.nio.ch.SocketAdaptor.setIntOption(Unknown Source) ~[na:1.7.0_21]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at sun.nio.ch.SocketAdaptor.setTrafficClass(Unknown Source) ~[na:1.7.0_21]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at org.apache.tomcat.util.net.SocketProperties.setProperties(SocketProperties.java:184) ~[tomcat-coyote-6.0.36.jar:6.0.36]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at org.apache.tomcat.util.net.NioEndpoint.setSocketOptions(NioEndpoint.java:1089) ~[tomcat-coyote-6.0.36.jar:6.0.36]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at org.apache.tomcat.util.net.NioEndpoint$Acceptor.run(NioEndpoint.java:1314) [tomcat-coyote-6.0.36.jar:6.0.36]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at java.lang.Thread.run(Unknown Source) [na:1.7.0_21]
+}}}
