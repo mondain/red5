@@ -34,6 +34,7 @@ import org.red5.server.api.service.IServiceInvoker;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.api.stream.IClientStream;
 import org.red5.server.messaging.IMessage;
+import org.red5.server.net.ICommand;
 import org.red5.server.net.rtmp.BaseRTMPHandler;
 import org.red5.server.net.rtmp.Channel;
 import org.red5.server.net.rtmp.DeferredResult;
@@ -196,7 +197,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	 * @param port the port for the protocol
 	 * @param application the application name at the given server
 	 * @return connection parameters map
-	 */	
+	 */
 	public Map<String, Object> makeDefaultConnectionParams(String server, int port, String application) {
 		Map<String, Object> params = new ObjectMap<String, Object>();
 		params.put("app", application);
@@ -370,11 +371,11 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 				break;
 			case Ping.BUFFER_EMPTY:
 				log.debug("Buffer empty ping");
-				
+
 				break;
 			case Ping.BUFFER_FULL:
 				log.debug("Buffer full ping");
-				
+
 				break;
 			default:
 				log.warn("Unhandled ping: {}", ping);
@@ -411,9 +412,9 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 		log.trace("onSharedObject");
 		ClientSharedObject so = sharedObjects.get(object.getName());
 		if (so != null) {
-			if (so.isPersistent() == object.isPersistent()) {				
+			if (so.isPersistent() == object.isPersistent()) {
 				log.debug("Received SO request: {}", object);
-				so.dispatchEvent(object);			
+				so.dispatchEvent(object);
 			} else {
 				log.error("Ignoring request for wrong-persistent SO: {}", object);
 			}
@@ -428,7 +429,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	public void onBWCheck() {
 		log.debug("onBWCheck");
 	}
-	
+
 	/**
 	 * Called when negotiating bandwidth.
 	 * 
@@ -674,27 +675,27 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 
 	/** {@inheritDoc} */
 	@Override
-	public void connectionOpened(RTMPConnection conn, RTMP state) {
-		log.trace("connectionOpened - conn: {} state: {}", conn, state);
+	public void connectionOpened(RTMPConnection conn) {
+		log.trace("connectionOpened - conn: {}", conn);
 		// Send "connect" call to the server
 		Channel channel = conn.getChannel((byte) 3);
 		PendingCall pendingCall = new PendingCall("connect");
 		pendingCall.setArguments(connectArguments);
 		Invoke invoke = new Invoke(pendingCall);
 		invoke.setConnectionParams(connectionParams);
-		invoke.setInvokeId(1);
+		invoke.setTransactionId(1);
 		if (connectCallback != null) {
 			pendingCall.registerCallback(connectCallback);
 		}
-		conn.registerPendingCall(invoke.getInvokeId(), pendingCall);
-		log.debug("Writing 'connect' invoke: {}, invokeId: {}", invoke, invoke.getInvokeId());
+		conn.registerPendingCall(invoke.getTransactionId(), pendingCall);
+		log.debug("Writing 'connect' invoke: {}, invokeId: {}", invoke, invoke.getTransactionId());
 		channel.write(invoke);
 	}
 
 	@Override
-	public void connectionClosed(RTMPConnection conn, RTMP state) {
+	public void connectionClosed(RTMPConnection conn) {
 		log.debug("connectionClosed");
-		super.connectionClosed(conn, state);
+		super.connectionClosed(conn);
 		if (connectionClosedHandler != null) {
 			Thread t = new Thread(connectionClosedHandler);
 			t.setDaemon(true);
@@ -704,98 +705,93 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 
 	/** {@inheritDoc} */
 	@Override
-	protected void onInvoke(RTMPConnection conn, Channel channel, Header source, Notify invoke, RTMP rtmp) {
-		// we're not handling invoke / notify on stream data
-		if (invoke.getType() != IEvent.Type.STREAM_DATA) {
-			log.trace("onInvoke: {}, invokeId: {}", invoke, invoke.getInvokeId());
-			final IServiceCall call = invoke.getCall();
-			final String methodName = call.getServiceMethodName();
-			log.debug("Service name: {} args[0]: {}", methodName, (call.getArguments().length != 0 ? call.getArguments()[0] : ""));
-			if ("_result".equals(methodName) || "_error".equals(methodName)) {
-				final IPendingServiceCall pendingCall = conn.getPendingCall(invoke.getInvokeId());
-				log.debug("Received result for pending call - {}", pendingCall);
-				if (pendingCall != null) {
-					if ("connect".equals(methodName)) {
-						Integer encoding = (Integer) connectionParams.get("objectEncoding");
-						if (encoding != null && encoding.intValue() == 3) {
-							log.debug("Setting encoding to AMF3");
-							rtmp.setEncoding(IConnection.Encoding.AMF3);
-						}
-					}
-				}
-				handlePendingCallResult(conn, invoke);
-				return;
-			}
-			// potentially used twice so get the value once
-			boolean onStatus = "onStatus".equals(methodName);
-			log.debug("onStatus {}", onStatus);
-			if (onStatus) {
-				Integer streamId = source.getStreamId();
-				if (log.isDebugEnabled()) {
-					log.debug("Stream id from header: {}", streamId);
-					// XXX create better to serialize ObjectMap to Status object
-					ObjectMap<?, ?> objMap = (ObjectMap<?, ?>) call.getArguments()[0];
-					// should keep this as an Object to stay compatible with FMS3 etc
-					log.debug("Client id from status: {}", objMap.get("clientid"));
-				}
-				if (streamId != null) {
-					// try lookup by stream id
-					NetStreamPrivateData streamData = streamDataMap.get(streamId);
-					// if null return the first one in the map
-					if (streamData == null) {
-						log.debug("Stream data was not found by id. Map contents: {}", streamDataMap);
-						if (!streamDataMap.isEmpty()) {
-							streamData = streamDataMap.values().iterator().next();
-						}
-					}
-					if (streamData == null) {
-						log.warn("Stream data was null for id: {}", streamId);
-					}
-					if (streamData != null && streamData.handler != null) {
-						log.debug("Got stream data and handler");
-						streamData.handler.onStreamEvent(invoke);
+	protected void onCommand(RTMPConnection conn, Channel channel, Header source, ICommand command) {
+		log.trace("onCommand: {}, id: {}", command, command.getTransactionId());
+		final IServiceCall call = command.getCall();
+		final String methodName = call.getServiceMethodName();
+		log.debug("Service name: {} args[0]: {}", methodName, (call.getArguments().length != 0 ? call.getArguments()[0] : ""));
+		if ("_result".equals(methodName) || "_error".equals(methodName)) {
+			final IPendingServiceCall pendingCall = conn.getPendingCall(command.getTransactionId());
+			log.debug("Received result for pending call - {}", pendingCall);
+			if (pendingCall != null) {
+				if ("connect".equals(methodName)) {
+					Integer encoding = (Integer) connectionParams.get("objectEncoding");
+					if (encoding != null && encoding.intValue() == 3) {
+						log.debug("Setting encoding to AMF3");
+						conn.getState().setEncoding(IConnection.Encoding.AMF3);
 					}
 				}
 			}
-			// if this client supports service methods, forward the call
-			if (serviceProvider == null) {
-				// client doesn't support calling methods on him
-				call.setStatus(Call.STATUS_METHOD_NOT_FOUND);
-				call.setException(new MethodNotFoundException(methodName));
-				log.info("No service provider / method not found; to handle calls like onBWCheck, add a service provider");
-			} else {
-				serviceInvoker.invoke(call, serviceProvider);
+			handlePendingCallResult(conn, (Invoke) command);
+			return;
+		}
+		// potentially used twice so get the value once
+		boolean onStatus = "onStatus".equals(methodName);
+		log.debug("onStatus {}", onStatus);
+		if (onStatus) {
+			Integer streamId = source.getStreamId();
+			if (log.isDebugEnabled()) {
+				log.debug("Stream id from header: {}", streamId);
+				// XXX create better to serialize ObjectMap to Status object
+				ObjectMap<?, ?> objMap = (ObjectMap<?, ?>) call.getArguments()[0];
+				// should keep this as an Object to stay compatible with FMS3 etc
+				log.debug("Client id from status: {}", objMap.get("clientid"));
 			}
-			if (call instanceof IPendingServiceCall) {
-				IPendingServiceCall psc = (IPendingServiceCall) call;
-				Object result = psc.getResult();
-				log.debug("Pending call result is: {}", result);
-				if (result instanceof DeferredResult) {
-					DeferredResult dr = (DeferredResult) result;
-					dr.setInvokeId(invoke.getInvokeId());
-					dr.setServiceCall(psc);
-					dr.setChannel(channel);
-					conn.registerDeferredResult(dr);
-				} else if (!onStatus) {
-					if ("onBWCheck".equals(methodName)) {
-						onBWCheck(call.getArguments().length > 0 ? call.getArguments()[0] : null);
-						Invoke reply = new Invoke();
-						reply.setCall(call);
-						reply.setInvokeId(invoke.getInvokeId());
-						channel.write(reply);
-					} else if ("onBWDone".equals(methodName)) {
-						onBWDone(call.getArguments().length > 0 ? call.getArguments()[0] : null);
-					} else {
-						Invoke reply = new Invoke();
-						reply.setCall(call);
-						reply.setInvokeId(invoke.getInvokeId());
-						log.debug("Sending empty call reply: {}", reply);
-						channel.write(reply);
+			if (streamId != null) {
+				// try lookup by stream id
+				NetStreamPrivateData streamData = streamDataMap.get(streamId);
+				// if null return the first one in the map
+				if (streamData == null) {
+					log.debug("Stream data was not found by id. Map contents: {}", streamDataMap);
+					if (!streamDataMap.isEmpty()) {
+						streamData = streamDataMap.values().iterator().next();
 					}
 				}
+				if (streamData == null) {
+					log.warn("Stream data was null for id: {}", streamId);
+				}
+				if (streamData != null && streamData.handler != null) {
+					log.debug("Got stream data and handler");
+					streamData.handler.onStreamEvent((Notify) command);
+				}
 			}
+		}
+		// if this client supports service methods, forward the call
+		if (serviceProvider == null) {
+			// client doesn't support calling methods on him
+			call.setStatus(Call.STATUS_METHOD_NOT_FOUND);
+			call.setException(new MethodNotFoundException(methodName));
+			log.info("No service provider / method not found; to handle calls like onBWCheck, add a service provider");
 		} else {
-			log.debug("Ignoring stream data notify with header: {}", source);
+			serviceInvoker.invoke(call, serviceProvider);
+		}
+		if (call instanceof IPendingServiceCall) {
+			IPendingServiceCall psc = (IPendingServiceCall) call;
+			Object result = psc.getResult();
+			log.debug("Pending call result is: {}", result);
+			if (result instanceof DeferredResult) {
+				DeferredResult dr = (DeferredResult) result;
+				dr.setTransactionId(command.getTransactionId());
+				dr.setServiceCall(psc);
+				dr.setChannel(channel);
+				conn.registerDeferredResult(dr);
+			} else if (!onStatus) {
+				if ("onBWCheck".equals(methodName)) {
+					onBWCheck(call.getArguments().length > 0 ? call.getArguments()[0] : null);
+					Invoke reply = new Invoke();
+					reply.setCall(call);
+					reply.setTransactionId(command.getTransactionId());
+					channel.write(reply);
+				} else if ("onBWDone".equals(methodName)) {
+					onBWDone(call.getArguments().length > 0 ? call.getArguments()[0] : null);
+				} else {
+					Invoke reply = new Invoke();
+					reply.setCall(call);
+					reply.setTransactionId(command.getTransactionId());
+					log.debug("Sending empty call reply: {}", reply);
+					channel.write(reply);
+				}
+			}
 		}
 	}
 
@@ -962,8 +958,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 				conn.addClientStream(stream);
 				NetStreamPrivateData streamData = new NetStreamPrivateData();
 				streamData.outputStream = conn.createOutputStream(streamIdInt);
-				streamData.connConsumer = new ConnectionConsumer(conn, streamData.outputStream.getVideo(), streamData.outputStream.getAudio(),
-						streamData.outputStream.getData());
+				streamData.connConsumer = new ConnectionConsumer(conn, streamData.outputStream.getVideo(), streamData.outputStream.getAudio(), streamData.outputStream.getData());
 				streamDataMap.put(streamIdInt, streamData);
 				log.debug("streamDataMap: {}", streamDataMap);
 			}

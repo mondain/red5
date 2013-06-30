@@ -37,9 +37,7 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.DummySession;
 import org.apache.mina.core.session.IoSession;
 import org.red5.client.net.rtmp.RTMPClientConnManager;
-import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.RTMPConnection;
-import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.util.HttpConnectionUtil;
 import org.slf4j.Logger;
@@ -126,7 +124,6 @@ class RTMPTClientConnector extends Thread {
 				}
 				IoSession session = new DummySession();
 				session.setAttribute(RTMPConnection.RTMP_CONNECTION_KEY, connection);
-				session.setAttribute(ProtocolState.SESSION_KEY, connection.getState());
 				for (Object message : messages) {
 					try {
 						client.messageReceived(message, session);
@@ -136,7 +133,7 @@ class RTMPTClientConnector extends Thread {
 				}
 			}
 			finalizeConnection();
-			client.connectionClosed(connection, connection.getState());
+			client.connectionClosed(connection);
 		} catch (Throwable e) {
 			log.debug("RTMPT handling exception", e);
 			client.handleException(e);
@@ -163,8 +160,6 @@ class RTMPTClientConnector extends Thread {
 			// create a new connection
 			connection = (RTMPTClientConnection) connManager.createConnection(RTMPTClientConnection.class);
 			// client state
-			RTMP state = new RTMP();
-			connection.setState(state);
 			connection.setHandler(client);
 			connection.setDecoder(client.getDecoder());
 			connection.setEncoder(client.getEncoder());

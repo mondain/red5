@@ -11,7 +11,6 @@ import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IPendingServiceCallback;
 import org.red5.server.net.rtmp.Channel;
 import org.red5.server.net.rtmp.RTMPConnection;
-import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.event.Notify;
 import org.red5.server.net.rtmp.event.Ping;
 import org.red5.server.net.rtmp.message.Header;
@@ -131,24 +130,19 @@ public class ClientTest extends RTMPClient {
 	};
 
 	@SuppressWarnings("unchecked")
-	protected void onInvoke(RTMPConnection conn, Channel channel, Header header, Notify notify, RTMP rtmp) {
-		super.onInvoke(conn, channel, header, notify, rtmp);
-
+	protected void onCommand(RTMPConnection conn, Channel channel, Header header, Notify notify) {
+		super.onCommand(conn, channel, header, notify);
 		System.out.println("onInvoke, header = " + header.toString());
 		System.out.println("onInvoke, notify = " + notify.toString());
-		System.out.println("onInvoke, rtmp = " + rtmp.toString());
-
 		Object obj = notify.getCall().getArguments().length > 0 ? notify.getCall().getArguments()[0] : null;
 		if (obj instanceof Map) {
 			Map<String, String> map = (Map<String, String>) obj;
 			String code = map.get("code");
 			if (StatusCodes.NS_PLAY_STOP.equals(code)) {
-
 				synchronized (ClientTest.class) {
 					finished = true;
 					ClientTest.class.notifyAll();
 				}
-
 				disconnect();
 				System.out.println("Disconnected");
 			}
@@ -168,6 +162,6 @@ public class ClientTest extends RTMPClient {
 	 */
 	public void setLive(boolean live) {
 		this.live = live;
-	};
+	}
 
 }
