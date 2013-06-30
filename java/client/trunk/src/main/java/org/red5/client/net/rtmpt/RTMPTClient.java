@@ -23,9 +23,7 @@ import java.util.Map;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.red5.client.net.rtmp.BaseRTMPClientHandler;
-import org.red5.server.net.protocol.ProtocolState;
 import org.red5.server.net.rtmp.RTMPConnection;
-import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.codec.RTMPProtocolDecoder;
 import org.red5.server.net.rtmp.codec.RTMPProtocolEncoder;
 import org.red5.server.net.rtmp.message.Constants;
@@ -69,10 +67,8 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 	/** {@inheritDoc} */
 	@Override
 	public void messageReceived(Object in, IoSession session) throws Exception {
-		RTMPConnection conn = (RTMPTClientConnection) session.getAttribute(RTMPConnection.RTMP_CONNECTION_KEY);
-		RTMP state = (RTMP) session.getAttribute(ProtocolState.SESSION_KEY);
 		if (in instanceof IoBuffer) {
-			rawBufferRecieved(conn, state, (IoBuffer) in);
+			rawBufferRecieved((RTMPTClientConnection) session.getAttribute(RTMPConnection.RTMP_CONNECTION_KEY), (IoBuffer) in);
 		} else {
 			super.messageReceived(in, session);
 		}
@@ -81,14 +77,10 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 	/**
 	 * Handle raw buffer receipt
 	 * 
-	 * @param conn
-	 *            RTMP connection
-	 * @param state
-	 *            Protocol state
-	 * @param in
-	 *            IoBuffer with input raw data
+	 * @param conn RTMP connection
+	 * @param in IoBuffer with input raw data
 	 */
-	private void rawBufferRecieved(RTMPConnection conn, ProtocolState state, IoBuffer in) {
+	private void rawBufferRecieved(RTMPConnection conn, IoBuffer in) {
 		log.debug("Handshake 3d phase - size: {}", in.remaining());
 		IoBuffer out = IoBuffer.allocate(Constants.HANDSHAKE_SIZE);
 		IoBuffer tmp = in;
@@ -102,7 +94,7 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 		out.put(tmp);
 		out.flip();
 		conn.writeRaw(out);
-		connectionOpened(conn, conn.getState());
+		connectionOpened(conn);
 	}
 
 	public synchronized void disconnect() {

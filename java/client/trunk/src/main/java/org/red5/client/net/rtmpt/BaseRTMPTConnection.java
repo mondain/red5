@@ -197,7 +197,7 @@ public abstract class BaseRTMPTConnection extends RTMPConnection {
 		readBytes.addAndGet(data.limit());
 		buffer.put(data);
 		buffer.flip();
-		return decoder.decodeBuffer(state, buffer);
+		return decoder.decodeBuffer(buffer);
 	}
 
 	/**
@@ -214,7 +214,7 @@ public abstract class BaseRTMPTConnection extends RTMPConnection {
 		}
 		IoBuffer data;
 		try {
-			data = encoder.encode(state, packet);
+			data = encoder.encode(packet);
 		} catch (Exception e) {
 			log.error("Could not encode message {}", packet, e);
 			return;

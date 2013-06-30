@@ -34,7 +34,8 @@ import org.red5.server.api.IConnection.Encoding;
 import org.red5.server.api.Red5;
 import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IServiceCall;
-import org.red5.server.net.protocol.ProtocolState;
+import org.red5.server.net.ICommand;
+import org.red5.server.net.protocol.RTMPDecodeState;
 import org.red5.server.net.rtmp.IRTMPConnManager;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.RTMPHandshake;
@@ -45,7 +46,6 @@ import org.red5.server.net.rtmp.codec.RTMPMinaProtocolEncoder;
 import org.red5.server.net.rtmp.codec.RTMPProtocolDecoder;
 import org.red5.server.net.rtmp.codec.RTMPProtocolEncoder;
 import org.red5.server.net.rtmp.event.Invoke;
-import org.red5.server.net.rtmp.event.Notify;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.net.rtmp.status.StatusObject;
@@ -72,9 +72,6 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionCreated(IoSession session) throws Exception {
 		log.debug("Session created");
-		// moved protocol state from connection object to RTMP object
-		RTMP rtmp = new RTMP();
-		session.setAttribute(ProtocolState.SESSION_KEY, rtmp);
 		//add rtmpe filter
 		session.getFilterChain().addFirst("rtmpeFilter", new RTMPEIoFilter());
 		//add protocol filter next
@@ -85,7 +82,6 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		//create a connection
 		RTMPMinaConnection conn = createRTMPMinaConnection();
 		conn.setIoSession(session);
-		conn.setState(rtmp);
 		//add the connection
 		session.setAttribute(RTMPConnection.RTMP_CONNECTION_KEY, conn);
 		// create an outbound handshake
@@ -124,13 +120,11 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionClosed(IoSession session) throws Exception {
 		log.debug("Session closed");
-		RTMP rtmp = (RTMP) session.removeAttribute(ProtocolState.SESSION_KEY);
-		log.debug("RTMP state: {}", rtmp);
 		RTMPMinaConnection conn = (RTMPMinaConnection) session.removeAttribute(RTMPConnection.RTMP_CONNECTION_KEY);
 		try {
 			conn.sendPendingServiceCallsCloseError();
 			// fire-off closed event
-			handler.connectionClosed(conn, rtmp);
+			handler.connectionClosed(conn);
 			// clear any session attributes we may have previously set
 			// TODO: verify this cleanup code is necessary. The session is over and will be garbage collected surely?
 			session.removeAttribute(RTMPConnection.RTMP_HANDSHAKE);
@@ -153,8 +147,6 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	 */
 	protected void rawBufferRecieved(IoBuffer in, IoSession session) {
 		log.debug("rawBufferRecieved: {}", in);
-		final RTMP rtmp = (RTMP) session.getAttribute(ProtocolState.SESSION_KEY);
-		log.debug("state: {}", rtmp);
 		final RTMPMinaConnection conn = (RTMPMinaConnection) session.getAttribute(RTMPConnection.RTMP_CONNECTION_KEY);
 		RTMPHandshake handshake = (RTMPHandshake) session.getAttribute(RTMPConnection.RTMP_HANDSHAKE);
 		if (handshake != null) {
@@ -170,11 +162,10 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 					session.setAttribute(RTMPConnection.RTMPE_CIPHER_OUT, handshake.getCipherOut());
 				}
 				// update the state to connected
-				rtmp.setState(RTMP.STATE_CONNECTED);
+				conn.setStateCode(RTMP.STATE_CONNECTED);
 			}
 		} else {
 			log.warn("Handshake was not found for this connection: {}", conn);
-			log.debug("RTMP state: {} Session: {}", rtmp, session);
 		}
 	}
 
@@ -201,8 +192,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		handler.messageSent(conn, message);
 		if (message instanceof IoBuffer) {
 			if (((IoBuffer) message).limit() == Constants.HANDSHAKE_SIZE) {
-				RTMP rtmp = (RTMP) session.getAttribute(ProtocolState.SESSION_KEY);
-				handler.connectionOpened(conn, rtmp);
+				handler.connectionOpened(conn);
 			}
 		}
 	}
@@ -277,35 +267,36 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		/**
 		 * Decodes server handshake message.
 		 * 
-		 * @param rtmp RTMP protocol state
 		 * @param in IoBuffer
 		 * @return IoBuffer
 		 */
-		public IoBuffer decodeHandshake(RTMP rtmp, IoBuffer in) {
-			log.debug("decodeServerHandshake - rtmp: {} buffer: {}", rtmp.states[rtmp.getState()], in);
-			log.trace("RTMP: {}", rtmp);
+		public IoBuffer decodeHandshake(IoBuffer in) {
+			log.debug("decodeServerHandshake - buffer: {}", in);
+			RTMPConnection conn = (RTMPConnection) Red5.getConnectionLocal();
+			// get the local decode state
+			RTMPDecodeState state = decoderState.get();
 			final int remaining = in.remaining();
-			if (rtmp.getState() == RTMP.STATE_CONNECT) {
+			if (conn.getStateCode() == RTMP.STATE_CONNECT) {
 				if (remaining < HANDSHAKE_SERVER_SIZE + 1) {
 					log.debug("Handshake init too small, buffering. remaining: {}", remaining);
-					rtmp.bufferDecoding(HANDSHAKE_SERVER_SIZE + 1);
+					state.bufferDecoding(HANDSHAKE_SERVER_SIZE + 1);
 				} else {
 					final IoBuffer hs = IoBuffer.allocate(HANDSHAKE_SERVER_SIZE);
 					in.get(); // skip the header byte
 					BufferUtils.put(hs, in, HANDSHAKE_SERVER_SIZE);
 					hs.flip();
-					rtmp.setState(RTMP.STATE_HANDSHAKE);
+					conn.getState().setState(RTMP.STATE_HANDSHAKE);
 					return hs;
 				}
-			} else if (rtmp.getState() == RTMP.STATE_HANDSHAKE) {
+			} else if (conn.getStateCode() == RTMP.STATE_HANDSHAKE) {
 				log.debug("Handshake reply");
 				if (remaining < HANDSHAKE_SERVER_SIZE) {
 					log.debug("Handshake reply too small, buffering. remaining: {}", remaining);
-					rtmp.bufferDecoding(HANDSHAKE_SERVER_SIZE);
+					state.bufferDecoding(HANDSHAKE_SERVER_SIZE);
 				} else {
 					in.skip(HANDSHAKE_SERVER_SIZE);
-					rtmp.setState(RTMP.STATE_CONNECTED);
-					rtmp.continueDecoding();
+					conn.getState().setState(RTMP.STATE_CONNECTED);
+					state.continueDecoding();
 				}
 			}
 			return null;
@@ -324,11 +315,11 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		 * @param invoke            Notification event
 		 */
 		@Override
-		protected void encodeNotifyOrInvoke(IoBuffer out, Notify invoke, RTMP rtmp) {
-			log.debug("encodeNotifyOrInvoke - rtmp: {} invoke: {}", rtmp.states[rtmp.getState()], invoke);
-			log.trace("RTMP: {}", rtmp);
+		protected void encodeCommand(IoBuffer out, ICommand command) {
+			log.debug("encodeCommand - command: {}", command);
+			RTMPConnection conn = (RTMPConnection) Red5.getConnectionLocal();
 			Output output = new org.red5.io.amf.Output(out);
-			final IServiceCall call = invoke.getCall();
+			final IServiceCall call = command.getCall();
 			final boolean isPending = (call.getStatus() == Call.STATUS_PENDING);
 			log.debug("Call: {} pending: {}", call, isPending);
 			if (!isPending) {
@@ -337,27 +328,27 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 			} else {
 				log.debug("This is a pending call, send request");
 				// for request we need to use AMF3 for client mode if the connection is AMF3
-				if (rtmp.getEncoding() == Encoding.AMF3) {
+				if (conn.getEncoding() == Encoding.AMF3) {
 					output = new org.red5.io.amf3.Output(out);
 				}
 				final String action = (call.getServiceName() == null) ? call.getServiceMethodName() : call.getServiceName() + '.' + call.getServiceMethodName();
 				Serializer.serialize(output, action);
 			}
-			if (invoke instanceof Invoke) {
-				Serializer.serialize(output, Integer.valueOf(invoke.getInvokeId()));
-				Serializer.serialize(output, invoke.getConnectionParams());
+			if (command instanceof Invoke) {
+				Serializer.serialize(output, Integer.valueOf(command.getTransactionId()));
+				Serializer.serialize(output, command.getConnectionParams());
 			}
 			if (call.getServiceName() == null && "connect".equals(call.getServiceMethodName())) {
 				// response to initial connect, always use AMF0
 				output = new org.red5.io.amf.Output(out);
 			} else {
-				if (rtmp.getEncoding() == Encoding.AMF3) {
+				if (conn.getEncoding() == Encoding.AMF3) {
 					output = new org.red5.io.amf3.Output(out);
 				} else {
 					output = new org.red5.io.amf.Output(out);
 				}
 			}
-			if (!isPending && (invoke instanceof Invoke)) {
+			if (!isPending && (command instanceof Invoke)) {
 				IPendingServiceCall pendingCall = (IPendingServiceCall) call;
 				if (!call.isSuccess()) {
 					log.debug("Call was not successful");
@@ -376,9 +367,9 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 					}
 				}
 			}
-			if (invoke.getData() != null) {
+			if (command.getData() != null) {
 				out.setAutoExpand(true);
-				out.put(invoke.getData());
+				out.put(command.getData());
 			}
 		}		
 	}
