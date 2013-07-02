@@ -109,3 +109,19 @@ Add the "scheduler" to the Shared Object service in red5-common.xml
   </property>		
 </bean>
 }}}
+
+== Null component ==
+
+If your server shuts down after adding new code, you may see this error:
+{{{
+[ERROR] [main] org.apache.tomcat.util.modeler.Registry - Null component red5Engine:type=JspMonitor,name=jsp,WebModule=//0.0.0.0/myapp,J2EEApplication=none,J2EEServer=none
+}}}
+or this one:
+{{{
+[WARN] [main] org.red5.server.ContextLoader - Context destroy failed for: default.context
+org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'default.context' is defined
+}}}
+
+This is often a JVM mismatch; meaning that your code was compiled with one version of the JVM, but your server runs different version. The fix is to compile with your target JVM.
+
+Covered in answer 1 at stackoverflow http://stackoverflow.com/questions/4350006/tomcat-6-server-was-running-but-now-it-wont-start-error-in-log-file-sever
