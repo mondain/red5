@@ -87,7 +87,6 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 	@SuppressWarnings("cast")
 	public void init() {
 		log.info("Loading tomcat virtual host");
-
 		if (webappFolder != null) {
 			//check for match with base webapp root
 			if (webappFolder.equals(webappRoot)) {
@@ -95,27 +94,20 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 				return;
 			}
 		}
-		
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		
 		//ensure we have a host
 		if (host == null) {
 			host = createHost();
 		}
-		
 		host.setParentClassLoader(classloader);
-		
 		String propertyPrefix = name;
 		if (domain != null) {
 			propertyPrefix += '_' + domain.replace('.', '_');
 		}
 		log.debug("Generating name (for props) {}", propertyPrefix);
 		System.setProperty(propertyPrefix + ".webapp.root", webappRoot);
-		
 		log.info("Virtual host root: {}", webappRoot);
-
 		log.info("Virtual host context id: {}", defaultApplicationContextId);
-
 		// Root applications directory
 		File appDirBase = new File(webappRoot);
 		// Subdirs of root apps dir
@@ -140,36 +132,27 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 		}
         appDirBase = null;
         dirs = null;
-
 		// Dump context list
 		if (log.isDebugEnabled()) {
 			for (Container cont : host.findChildren()) {
 				log.debug("Context child name: {}", cont.getName());
 			}
 		}
-
 		engine.addChild(host);
-
 		// Start server
 		try {
-			log.info("Starting Tomcat virtual host");	
-
+			log.info("Starting Tomcat virtual host");
 			//may not have to do this step for every host
 			LoaderBase.setApplicationLoader(new TomcatApplicationLoader(embedded, host, applicationContext));
-			
 			for (Container cont : host.findChildren()) {
 				if (cont instanceof StandardContext) {
 					StandardContext ctx = (StandardContext) cont;			
-						
             		ServletContext servletContext = ctx.getServletContext();
             		log.debug("Context initialized: {}", servletContext.getContextPath());
-            		
 					//set the hosts id
 					servletContext.setAttribute("red5.host.id", getHostId());
-            		
             		String prefix = servletContext.getRealPath("/");
             		log.debug("Path: {}", prefix);
-            
             		try {
             			Loader cldr = ctx.getLoader();
             			log.debug("Loader type: {}", cldr.getClass().getName());
@@ -181,8 +164,8 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
             			appctx.setConfigLocations(new String[]{"/WEB-INF/red5-*.xml"});
             			//check for red5 context bean
             			if (applicationContext.containsBean(defaultApplicationContextId)) {
-                			appctx.setParent((ApplicationContext) applicationContext.getBean(defaultApplicationContextId));					            				
-            			} else {
+                			appctx.setParent((ApplicationContext) applicationContext.getBean(defaultApplicationContextId));
+						} else {
             				log.warn("{} bean was not found in context: {}", defaultApplicationContextId, applicationContext.getDisplayName());
             				//lookup context loader and attempt to get what we need from it
             				if (applicationContext.containsBean("context.loader")) {
@@ -276,16 +259,11 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 	public boolean startWebApplication(String applicationName) {
 		boolean result = false;
 		log.info("Starting Tomcat virtual host - Web application");	
-		
 		log.info("Virtual host root: {}", webappRoot);
-
 		log.info("Virtual host context id: {}", defaultApplicationContextId);
-		
 		// application directory
 		String contextName = '/' + applicationName;
-
 		Container cont = null;
-		
 		//check if the context already exists for the host
 		if ((cont = host.findChild(contextName)) == null) {
 			log.debug("Context did not exist in host");
@@ -297,14 +275,11 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 		} else {
 			log.debug("Context already exists in host");
 		}
-
 		try {
     		ServletContext servletContext = ((Context) cont).getServletContext();
     		log.debug("Context initialized: {}", servletContext.getContextPath());
-    		
     		String prefix = servletContext.getRealPath("/");
     		log.debug("Path: {}", prefix);
-    
 			Loader cldr = cont.getLoader();
 			log.debug("Loader type: {}", cldr.getClass().getName());
 			ClassLoader webClassLoader = cldr.getClassLoader();
@@ -351,8 +326,7 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 			appctx.setServletContext(servletContext);
 			//set the root webapp ctx attr on the each servlet context so spring can find it later					
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appctx);
-			appctx.refresh();
-			
+			appctx.refresh();			
 			result = true;
 		} catch (Throwable t) {
 			log.error("Error setting up context: {}", applicationName, t);
@@ -381,14 +355,10 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 			//seems to require that the domain be appended to the name
 			stdHost.setName(name + '.' + domain);
 		}
-		stdHost.setLiveDeploy(liveDeploy);
-		//stdHost.setParent(container);
 		stdHost.setStartChildren(startChildren);
 		stdHost.setUnpackWARs(unpackWARs);
-		//stdHost.setWorkDir(workDir);
-		stdHost.setXmlNamespaceAware(false);
-		stdHost.setXmlValidation(false);
-		
+		// See http://tomcat.apache.org/migration-7.html#Deployment
+		stdHost.setCopyXML(true);	
 		return stdHost;
 	}
 	
@@ -452,14 +422,7 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 			}
 		} catch (Exception e) {
 			log.error("", e);
-		}
-
-		Valve[] valves = ((StandardHost) host).getValves();
-		for (Valve v : valves) {
-			log.debug("Valve: {}", v);
-			log.debug("Valve info: {}", v.getInfo());
 		}		
-		
 		//TODO: fix removing valves
 		//((StandardHost) host).removeValve(valve);	
 	}

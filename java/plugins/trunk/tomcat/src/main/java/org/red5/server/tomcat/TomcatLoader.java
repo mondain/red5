@@ -53,6 +53,7 @@ import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.realm.JAASRealm;
 import org.apache.catalina.realm.RealmBase;
+import org.apache.catalina.realm.NullRealm;
 import org.apache.catalina.startup.Embedded;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.Http11NioProtocol;
@@ -63,7 +64,6 @@ import org.red5.server.LoaderBase;
 import org.red5.server.api.IApplicationContext;
 import org.red5.server.jmx.mxbeans.ContextLoaderMXBean;
 import org.red5.server.jmx.mxbeans.LoaderMXBean;
-import org.red5.server.security.realm.NoRealm;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -322,6 +322,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		engine = embedded.createEngine();
 		engine.setDefaultHost(host.getName());
 		engine.setName(serviceEngineName);
+		engine.setService(embedded);
 
 		if (webappFolder == null) {
 			// Use default webapps directory
@@ -428,7 +429,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 			realm = new MemoryRealm();
 			((MemoryRealm) realm).setPathname(confRoot + "/tomcat-users.xml");
 			*/
-			realm = new NoRealm();
+			realm = new NullRealm();
 			embedded.setRealm(realm);
 		}
 		// use Tomcat jndi or not
@@ -521,7 +522,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 				if (cont instanceof StandardContext) {
 					if (log.isDebugEnabled()) {
 						ContainerBase cb = (ContainerBase) cont;
-						log.debug("Oname - domain: {} container suffix: {}", new Object[] { cb.getDomain(), cb.getContainerSuffix() });
+						log.debug("Oname - domain: {}", cb.getDomain());
 					}
 					final StandardContext ctx = (StandardContext) cont;
 					final ServletContext servletContext = ctx.getServletContext();

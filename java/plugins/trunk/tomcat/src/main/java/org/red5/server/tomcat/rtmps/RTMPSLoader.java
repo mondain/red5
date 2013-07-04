@@ -72,6 +72,7 @@ public class RTMPSLoader extends RTMPTLoader {
 		rtmpsEngine = embedded.createEngine();
 		rtmpsEngine.setDefaultHost(host.getName());
 		rtmpsEngine.setName("red5RTMPSEngine");
+		rtmpsEngine.setService(embedded);
 
 		// add the valves to the host
 		for (Valve valve : valves) {

@@ -41,24 +41,9 @@
 	           <property name="name" value="${http.host}" />
 	           <property name="unpackWARs" value="true" />
 	           <property name="autoDeploy" value="true" />
-	           <property name="xmlValidation" value="false" />
-	           <property name="xmlNamespaceAware" value="false" />
 	       </bean>	   
 	    </property>		
-
-		<property name="valves">
-      		<list>
-	    		<bean id="valve.access" class="org.apache.catalina.valves.AccessLogValve">
-	                <property name="directory" value="log" />
-	                <property name="prefix" value="${http.host}_access." />
-	                <property name="suffix" value=".log" />
-	                <property name="pattern" value="common" />
-	                <property name="resolveHosts" value="false" />
-	                <property name="rotatable" value="true" />
-	        	</bean>
-        	</list>
-        </property>
-	    
+    
 	</bean>
  
 	<!-- Tomcat with SSL enabled -->
@@ -90,8 +75,6 @@
                <property name="name" value="${http.host}" />
                <property name="unpackWARs" value="true" />
                <property name="autoDeploy" value="true" />
-               <property name="xmlValidation" value="false" />
-               <property name="xmlNamespaceAware" value="false" />
            </bean>     
         </property>     
 
@@ -136,19 +119,6 @@
                 <entry key="processorCache" value="${http.processor_cache}"/>
             </map>
         </property> 
-
-        <property name="valves">
-            <list>
-                <bean id="valve.access" class="org.apache.catalina.valves.AccessLogValve">
-                    <property name="directory" value="log" />
-                    <property name="prefix" value="${http.host}_access." />
-                    <property name="suffix" value=".log" />
-                    <property name="pattern" value="common" />
-                    <property name="resolveHosts" value="false" />
-                    <property name="rotatable" value="true" />
-                </bean>
-            </list>
-        </property>
         
     </bean>	
  -->
@@ -180,8 +150,6 @@
 				<property name="name" value="${rtmpt.host}" />
 				<property name="unpackWARs" value="false" />
 				<property name="autoDeploy" value="false" />
-				<property name="xmlValidation" value="false" />
-				<property name="xmlNamespaceAware" value="false" />
 			</bean>	   
 		</property>		
 
@@ -225,8 +193,6 @@
 				<property name="name" value="${rtmps.host}" />
 				<property name="unpackWARs" value="false" />
 				<property name="autoDeploy" value="false" />
-				<property name="xmlValidation" value="false" />
-				<property name="xmlNamespaceAware" value="false" />
 			</bean>	   
 		</property>		
 	
@@ -271,19 +237,6 @@
 				<entry key="processorCache" value="${rtmps.processor_cache}"/>
 			</map>
 		</property>	
-
-		<property name="valves">
-      		<list>
-	    		<bean id="valve.access" class="org.apache.catalina.valves.AccessLogValve">
-	                <property name="directory" value="log" />
-	                <property name="prefix" value="${rtmps.host}_rtmps_access." />
-	                <property name="suffix" value=".log" />
-	                <property name="pattern" value="common" />
-	                <property name="resolveHosts" value="false" />
-	                <property name="rotatable" value="true" />
-	        	</bean>
-        	</list>
-        </property>			
 	
 	</bean>		
 -->
