@@ -90,6 +90,7 @@ public class RTMPTLoader extends TomcatLoader {
 		rtmptEngine = embedded.createEngine();
 		rtmptEngine.setDefaultHost(host.getName());
 		rtmptEngine.setName("red5RTMPTEngine");
+		rtmptEngine.setService(embedded);
 		
 		// add the valves to the host
 		for (Valve valve : valves) {
