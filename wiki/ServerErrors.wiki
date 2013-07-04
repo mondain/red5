@@ -125,3 +125,14 @@ org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named '
 This is often a JVM mismatch; meaning that your code was compiled with one version of the JVM, but your server runs different version. The fix is to compile with your target JVM.
 
 Covered in answer 1 at stackoverflow http://stackoverflow.com/questions/4350006/tomcat-6-server-was-running-but-now-it-wont-start-error-in-log-file-sever
+
+== NoSuchMethodError getSessionCookieConfig ==
+
+If you see this error, it means you have to remove the old servlet and jee jars from red5/lib.
+{{{
+NoSuchMethodError: javax.servlet.ServletContext.getSessionCookieConfig()
+}}}
+Delete _javaee-api-5.1.2.jar_ and _servlet-api-2.5.jar_ then restart red5.
+
+More information here: 
+http://stackoverflow.com/questions/5642753/catalina-bat-start-not-working
