@@ -3,7 +3,6 @@
 	<name>red5_client</name>
 	<comment></comment>
 	<projects>
-		<project>red5_server</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
