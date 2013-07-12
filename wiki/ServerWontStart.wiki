@@ -210,7 +210,7 @@ INFO   | jvm 1    | 2013/06/24 15:47:26 | at java.lang.Thread.run(Unknown Source
 }}}
 
 == RTMP Connection Manager ==
-Starting at revision xxxx the static instance of the RTMPConnManager is used in lieu of local references. In your red5-core.xml you will need to remove
+Starting at revision 4684 the static instance of the RTMPConnManager is used in lieu of local references. In your red5-core.xml you will need to remove
 the entry as shown below:
 
 Old
