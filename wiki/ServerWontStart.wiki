@@ -208,3 +208,29 @@ INFO   | jvm 1    | 2013/06/24 15:47:26 | at org.apache.tomcat.util.net.NioEndpo
 INFO   | jvm 1    | 2013/06/24 15:47:26 | at org.apache.tomcat.util.net.NioEndpoint$Acceptor.run(NioEndpoint.java:1314) [tomcat-coyote-6.0.36.jar:6.0.36]
 INFO   | jvm 1    | 2013/06/24 15:47:26 | at java.lang.Thread.run(Unknown Source) [na:1.7.0_21]
 }}}
+
+== RTMP Connection Manager ==
+Starting at revision xxxx the static instance of the RTMPConnManager is used in lieu of local references. In your red5-core.xml you will need to remove
+the entry as shown below:
+
+Old
+{{{
+<bean id="rtmpMinaIoHandler" class="org.red5.server.net.rtmp.RTMPMinaIoHandler">
+    <property name="handler" ref="rtmpHandler" />
+    <property name="codecFactory" ref="rtmpCodecFactory" />
+    <property name="rtmpConnManager" ref="rtmpConnManager" />
+</bean>
+}}}
+
+New
+{{{
+<bean id="rtmpMinaIoHandler" class="org.red5.server.net.rtmp.RTMPMinaIoHandler">
+    <property name="handler" ref="rtmpHandler" />
+    <property name="codecFactory" ref="rtmpCodecFactory" />
+</bean>
+}}}
+
+Related startup error:
+{{{
+Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.core' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'rtmpMinaIoHandler' defined in class path resource [red5-core.xml]: Error setting property values; nested exception is org.springframework.beans.NotWritablePropertyException: Invalid property 'rtmpConnManager' of bean class[org.red5.server.net.rtmp.RTMPMinaIoHandler]: Bean property 'rtmpConnManager' is not writable or has an invalid setter method. Does the parameter type of the setter match the return type of the getter?
+}}}
