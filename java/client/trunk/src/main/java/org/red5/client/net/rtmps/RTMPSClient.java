@@ -44,7 +44,6 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.ssl.SslFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.red5.client.net.rtmp.RTMPClient;
-import org.red5.client.net.rtmp.RTMPClientConnManager;
 import org.red5.client.net.rtmp.RTMPMinaIoHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +81,6 @@ public class RTMPSClient extends RTMPClient {
 	public RTMPSClient() {
 		ioHandler = new RTMPSClientIoHandler();
 		ioHandler.setHandler(this);
-		ioHandler.setRtmpConnManager(RTMPClientConnManager.getInstance());
 	}
 
 	public Map<String, Object> makeDefaultConnectionParams(String server, int port, String application) {
