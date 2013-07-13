@@ -8,9 +8,12 @@
 	<root>
 		<appender-ref ref="CONSOLE" />
 	</root>
-	<logger name="org.red5">
-		<level value="DEBUG" />
-	</logger>
+    <logger name="org.red5">
+        <level value="DEBUG" />
+    </logger>
+    <logger name="org.red5.client">
+        <level value="TRACE" />
+    </logger>
     <logger name="org.red5.io">
         <level value="INFO" />
     </logger>
@@ -18,7 +21,7 @@
         <level value="INFO" />
     </logger>   
     <logger name="org.red5.server.net.rtmp">
-        <level value="INFO" />
+        <level value="TRACE" />
     </logger>
 <!-- 
     <logger name="org.red5.io">

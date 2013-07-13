@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Gregoire (mondain@gmail.com)
  */
 class RTMPTClientConnector extends Thread {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(RTMPTClientConnector.class);
 
 	private static final String CONTENT_TYPE = "application/x-fcs";
@@ -66,7 +66,7 @@ class RTMPTClientConnector extends Thread {
 	private final DefaultHttpClient httpClient = HttpConnectionUtil.getClient();
 
 	private final HttpHost targetHost;
-	
+
 	private final RTMPTClient client;
 
 	private final RTMPClientConnManager connManager;
@@ -85,11 +85,11 @@ class RTMPTClientConnector extends Thread {
 	}
 
 	public void run() {
-		HttpPost post = null;	
+		HttpPost post = null;
 		try {
 			RTMPTClientConnection connection = openConnection();
 			while (!connection.isClosing() && !stopRequested) {
-				IoBuffer toSend = connection.getPendingMessages(SEND_TARGET_SIZE);			
+				IoBuffer toSend = connection.getPendingMessages(SEND_TARGET_SIZE);
 				int limit = toSend != null ? toSend.limit() : 0;
 				if (limit > 0) {
 					post = makePost("send");
@@ -123,7 +123,7 @@ class RTMPTClientConnector extends Thread {
 					continue;
 				}
 				IoSession session = new DummySession();
-				session.setAttribute(RTMPConnection.RTMP_CONNECTION_KEY, connection);
+				session.setAttribute(RTMPConnection.RTMP_SESSION_ID, connection.getSessionId());
 				for (Object message : messages) {
 					try {
 						client.messageReceived(message, session);
@@ -170,7 +170,7 @@ class RTMPTClientConnector extends Thread {
 			handshake.flip();
 			connection.writeRaw(handshake);
 		}
-		return connection;			
+		return connection;
 	}
 
 	private void finalizeConnection() throws IOException {

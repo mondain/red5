@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.red5.client.net.rtmp.BaseRTMPClientHandler;
+import org.red5.client.net.rtmp.RTMPClientConnManager;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.codec.RTMPProtocolDecoder;
 import org.red5.server.net.rtmp.codec.RTMPProtocolEncoder;
@@ -42,9 +43,9 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 
 	// guarded by this
 	private RTMPTClientConnector connector;
-	
+
 	private RTMPTCodecFactory codecFactory;
-	
+
 	public RTMPTClient() {
 		codecFactory = new RTMPTCodecFactory();
 		codecFactory.init();
@@ -68,7 +69,10 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 	@Override
 	public void messageReceived(Object in, IoSession session) throws Exception {
 		if (in instanceof IoBuffer) {
-			rawBufferRecieved((RTMPTClientConnection) session.getAttribute(RTMPConnection.RTMP_CONNECTION_KEY), (IoBuffer) in);
+			String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
+			log.trace("Session id: {}", sessionId);
+			RTMPTClientConnection conn = (RTMPTClientConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
+			rawBufferRecieved(conn, (IoBuffer) in);
 		} else {
 			super.messageReceived(in, session);
 		}
@@ -112,6 +116,5 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 	public RTMPProtocolEncoder getEncoder() {
 		return codecFactory.getRTMPEncoder();
 	}
-	
-	
+
 }

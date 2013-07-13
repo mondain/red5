@@ -59,7 +59,6 @@ public class RTMPClient extends BaseRTMPClientHandler {
 	public RTMPClient() {
 		ioHandler = new RTMPMinaIoHandler();
 		ioHandler.setHandler(this);
-		ioHandler.setRtmpConnManager(RTMPClientConnManager.getInstance());
 	}
 
 	/** {@inheritDoc} */

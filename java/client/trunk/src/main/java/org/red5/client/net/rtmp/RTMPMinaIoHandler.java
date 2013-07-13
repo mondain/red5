@@ -18,25 +18,29 @@
 
 package org.red5.client.net.rtmp;
 
+import java.util.List;
+import java.util.concurrent.Semaphore;
+
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.ProtocolCodecException;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.ProtocolDecoder;
+import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.apache.mina.filter.codec.ProtocolEncoder;
-import org.apache.mina.filter.logging.LoggingFilter;
+import org.apache.mina.filter.codec.ProtocolEncoderOutput;
+import org.red5.client.net.rtmpe.RTMPEIoFilter;
 import org.red5.io.object.Output;
 import org.red5.io.object.Serializer;
 import org.red5.io.utils.BufferUtils;
-import org.red5.server.api.IConnection;
 import org.red5.server.api.IConnection.Encoding;
 import org.red5.server.api.Red5;
 import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IServiceCall;
 import org.red5.server.net.ICommand;
 import org.red5.server.net.protocol.RTMPDecodeState;
-import org.red5.server.net.rtmp.IRTMPConnManager;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.RTMPHandshake;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
@@ -49,7 +53,6 @@ import org.red5.server.net.rtmp.event.Invoke;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.net.rtmp.status.StatusObject;
-import org.red5.server.net.rtmpe.RTMPEIoFilter;
 import org.red5.server.service.Call;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,8 +69,6 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	 */
 	protected BaseRTMPClientHandler handler;
 
-	protected IRTMPConnManager rtmpConnManager;
-
 	/** {@inheritDoc} */
 	@Override
 	public void sessionCreated(IoSession session) throws Exception {
@@ -76,14 +77,11 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		session.getFilterChain().addFirst("rtmpeFilter", new RTMPEIoFilter());
 		//add protocol filter next
 		session.getFilterChain().addLast("protocolFilter", new ProtocolCodecFilter(new RTMPMinaCodecFactory()));
-		if (log.isTraceEnabled()) {
-			session.getFilterChain().addLast("logger", new LoggingFilter());
-		}
 		//create a connection
 		RTMPMinaConnection conn = createRTMPMinaConnection();
 		conn.setIoSession(session);
 		//add the connection
-		session.setAttribute(RTMPConnection.RTMP_CONNECTION_KEY, conn);
+		session.setAttribute(RTMPConnection.RTMP_SESSION_ID, conn.getSessionId());
 		// create an outbound handshake
 		OutboundHandshake outgoingHandshake = new OutboundHandshake();
 		// set the handshake type
@@ -120,20 +118,24 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionClosed(IoSession session) throws Exception {
 		log.debug("Session closed");
-		RTMPMinaConnection conn = (RTMPMinaConnection) session.removeAttribute(RTMPConnection.RTMP_CONNECTION_KEY);
-		try {
-			conn.sendPendingServiceCallsCloseError();
-			// fire-off closed event
-			handler.connectionClosed(conn);
-			// clear any session attributes we may have previously set
-			// TODO: verify this cleanup code is necessary. The session is over and will be garbage collected surely?
-			session.removeAttribute(RTMPConnection.RTMP_HANDSHAKE);
-			session.removeAttribute(RTMPConnection.RTMPE_CIPHER_IN);
-			session.removeAttribute(RTMPConnection.RTMPE_CIPHER_OUT);
-		} finally {
-			// DW we *always* remove the connection from the RTMP manager even if unexpected exception gets thrown e.g. by handler.connectionClosed
-			// Otherwise connection stays around forever, and everything it references e.g. Client, ...
-			rtmpConnManager.removeConnection(conn.getId());
+		String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
+		if (sessionId != null) {
+			log.trace("Session id: {}", sessionId);
+			RTMPMinaConnection conn = (RTMPMinaConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
+			if (conn != null) {
+				conn.sendPendingServiceCallsCloseError();
+				// fire-off closed event
+				handler.connectionClosed(conn);
+				// clear any session attributes we may have previously set
+				// TODO: verify this cleanup code is necessary. The session is over and will be garbage collected surely?
+				session.removeAttribute(RTMPConnection.RTMP_HANDSHAKE);
+				session.removeAttribute(RTMPConnection.RTMPE_CIPHER_IN);
+				session.removeAttribute(RTMPConnection.RTMPE_CIPHER_OUT);
+			} else {
+				log.warn("Connection was null in session");
+			}
+		} else {
+			log.debug("Connections session id was null in session, may already be closed");
 		}
 	}
 
@@ -147,7 +149,9 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	 */
 	protected void rawBufferRecieved(IoBuffer in, IoSession session) {
 		log.debug("rawBufferRecieved: {}", in);
-		final RTMPMinaConnection conn = (RTMPMinaConnection) session.getAttribute(RTMPConnection.RTMP_CONNECTION_KEY);
+		String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
+		log.trace("Session id: {}", sessionId);
+		RTMPMinaConnection conn = (RTMPMinaConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
 		RTMPHandshake handshake = (RTMPHandshake) session.getAttribute(RTMPConnection.RTMP_HANDSHAKE);
 		if (handshake != null) {
 			log.debug("Handshake - client phase 2 - size: {}", in.remaining());
@@ -176,11 +180,10 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		if (message instanceof IoBuffer) {
 			rawBufferRecieved((IoBuffer) message, session);
 		} else {
-			log.trace("Setting connection local");
-			Red5.setConnectionLocal((IConnection) session.getAttribute(RTMPConnection.RTMP_CONNECTION_KEY));
-			handler.messageReceived(message, session);
-			log.trace("Removing connection local");
-			Red5.setConnectionLocal(null);
+			String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
+			log.trace("Session id: {}", sessionId);
+			RTMPMinaConnection conn = (RTMPMinaConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
+			conn.handleMessageReceived(message);
 		}
 	}
 
@@ -188,7 +191,9 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	@Override
 	public void messageSent(IoSession session, Object message) throws Exception {
 		log.debug("messageSent");
-		final RTMPMinaConnection conn = (RTMPMinaConnection) session.getAttribute(RTMPConnection.RTMP_CONNECTION_KEY);
+		String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
+		log.trace("Session id: {}", sessionId);
+		RTMPMinaConnection conn = (RTMPMinaConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
 		handler.messageSent(conn, message);
 		if (message instanceof IoBuffer) {
 			if (((IoBuffer) message).limit() == Constants.HANDSHAKE_SIZE) {
@@ -215,44 +220,119 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		this.handler = handler;
 	}
 
-	public void setRtmpConnManager(IRTMPConnManager rtmpConnManager) {
-		this.rtmpConnManager = rtmpConnManager;
-	}
-
-	protected IRTMPConnManager getRtmpConnManager() {
-		return rtmpConnManager;
-	}
-
 	protected RTMPMinaConnection createRTMPMinaConnection() {
-		return (RTMPMinaConnection) rtmpConnManager.createConnection(RTMPMinaConnection.class);
+		return (RTMPMinaConnection) RTMPClientConnManager.getInstance().createConnection(RTMPMinaConnection.class);
 	}
 
 	public class RTMPMinaCodecFactory implements ProtocolCodecFactory {
 
-		private RTMPMinaProtocolDecoder decoder = new RTMPMinaProtocolDecoder();
+		private RTMPMinaProtocolDecoder clientDecoder = new RTMPMinaProtocolDecoder();
 
-		private RTMPMinaProtocolEncoder encoder = new RTMPMinaProtocolEncoder();
+		private RTMPMinaProtocolEncoder clientEncoder = new RTMPMinaProtocolEncoder();
 
 		{
 			// RTMP Decoding
-			decoder = new RTMPMinaProtocolDecoder();
-			decoder.setDecoder(new RTMPClientProtocolDecoder());
+			clientDecoder = new RTMPMinaProtocolDecoder() {
+				/** {@inheritDoc} */
+				@Override
+				public void decode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws ProtocolCodecException {
+					// create a buffer and store it on the session
+					IoBuffer buf = (IoBuffer) session.getAttribute("buffer");
+					if (buf == null) {
+						buf = IoBuffer.allocate(Constants.HANDSHAKE_SIZE);
+						buf.setAutoExpand(true);
+						session.setAttribute("buffer", buf);
+					}
+					buf.put(in);
+					buf.flip();
+					// get the connection from the session
+					String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
+					log.trace("Session id: {}", sessionId);
+					RTMPConnection conn = (RTMPConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
+					log.trace("Connections:\n{}\n{}", conn, Red5.getConnectionLocal());
+					RTMPConnection connLocal = (RTMPConnection) Red5.getConnectionLocal();
+					if (connLocal == null || !conn.equals(connLocal)) {
+						if (log.isDebugEnabled() && connLocal != null) {
+							log.debug("Connection local didn't match session");
+						}
+						Red5.setConnectionLocal(conn);
+					}
+					final Semaphore lock = conn.getDecoderLock();
+					try {
+						// acquire the decoder lock
+						log.trace("Decoder lock acquiring.. {}", conn.getId());
+						lock.acquire();
+						log.trace("Decoder lock acquired {}", conn.getId());
+						// construct any objects from the decoded bugger
+						List<?> objects = getDecoder().decodeBuffer(buf);
+						if (objects != null) {
+							for (Object object : objects) {
+								out.write(object);
+							}
+						}
+					} catch (Exception e) {
+						log.error("Error during decode", e);
+					} finally {
+						log.trace("Decoder lock releasing.. {}", conn.getId());
+						lock.release();
+					}
+				}
+			};
+			clientDecoder.setDecoder(new RTMPClientProtocolDecoder());
 			// RTMP Encoding
-			encoder = new RTMPMinaProtocolEncoder();
-			encoder.setEncoder(new RTMPClientProtocolEncoder());
+			clientEncoder = new RTMPMinaProtocolEncoder() {
+				/** {@inheritDoc} */
+				@Override
+				public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws ProtocolCodecException {
+					// get the connection from the session
+					String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
+					log.trace("Session id: {}", sessionId);
+					RTMPConnection conn = (RTMPConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
+					if (conn != null) {
+						// look for and compare the connection local; set it from the session
+						if (!conn.equals((RTMPConnection) Red5.getConnectionLocal())) {
+							log.debug("Connection local didn't match session");
+							Red5.setConnectionLocal(conn);
+						}
+						final Semaphore lock = conn.getEncoderLock();
+						try {
+							// acquire the decoder lock
+							log.trace("Encoder lock acquiring.. {}", conn.getId());
+							lock.acquire();
+							log.trace("Encoder lock acquired {}", conn.getId());
+							// get the buffer
+							final IoBuffer buf = message instanceof IoBuffer ? (IoBuffer) message : getEncoder().encode(message);
+							if (buf != null) {
+								log.trace("Writing output data");
+								out.write(buf);
+							} else {
+								log.trace("Response buffer was null after encoding");
+							}
+						} catch (Exception ex) {
+							log.error("Exception during encode", ex);
+						} finally {
+							log.trace("Encoder lock releasing.. {}", conn.getId());
+							lock.release();
+						}
+					} else {
+						log.debug("Connection is no longer available for encoding, may have been closed already");
+					}
+				}
+			};
+			clientEncoder.setEncoder(new RTMPClientProtocolEncoder());
 			// two other config options are available
-			//encoder.setBaseTolerance(baseTolerance);
-			//encoder.setDropLiveFuture(dropLiveFuture);
+			//clientEncoder.setBaseTolerance(baseTolerance);
+			//clientEncoder.setDropLiveFuture(dropLiveFuture);
 		}
 
 		/** {@inheritDoc} */
 		public ProtocolDecoder getDecoder(IoSession session) {
-			return decoder;
+			return clientDecoder;
 		}
 
 		/** {@inheritDoc} */
 		public ProtocolEncoder getEncoder(IoSession session) {
-			return encoder;
+			return clientEncoder;
 		}
 
 	}
@@ -371,7 +451,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 				out.setAutoExpand(true);
 				out.put(command.getData());
 			}
-		}		
+		}
 	}
-	
+
 }
