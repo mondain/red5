@@ -79,6 +79,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		session.getFilterChain().addLast("protocolFilter", new ProtocolCodecFilter(new RTMPMinaCodecFactory()));
 		//create a connection
 		RTMPMinaConnection conn = createRTMPMinaConnection();
+		// set the session on the connection
 		conn.setIoSession(session);
 		//add the connection
 		session.setAttribute(RTMPConnection.RTMP_SESSION_ID, conn.getSessionId());
@@ -217,6 +218,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	 * @param handler RTMP events handler
 	 */
 	public void setHandler(BaseRTMPClientHandler handler) {
+		log.debug("Set handler: {}", handler);
 		this.handler = handler;
 	}
 

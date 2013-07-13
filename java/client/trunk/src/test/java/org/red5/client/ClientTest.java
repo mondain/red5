@@ -44,8 +44,9 @@ public class ClientTest extends RTMPClient {
 		player.connect();
 
 		synchronized (ClientTest.class) {
-			if (!finished)
+			if (!finished) {
 				ClientTest.class.wait();
+			}
 		}
 
 		System.out.println("Ended");
