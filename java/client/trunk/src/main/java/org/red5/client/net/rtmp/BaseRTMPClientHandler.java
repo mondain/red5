@@ -837,6 +837,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 	 */
 	public void setConnection(RTMPConnection conn) {
 		this.conn = conn;
+		this.conn.setHandler(this);
 	}
 
 	/**

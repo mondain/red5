@@ -2,7 +2,7 @@
 <configuration>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%p] [%thread] %logger - %msg%n</pattern>
+            <pattern>%d{ISO8601} [%p] %logger - %msg%n</pattern>
         </encoder>      
     </appender>
 	<root>

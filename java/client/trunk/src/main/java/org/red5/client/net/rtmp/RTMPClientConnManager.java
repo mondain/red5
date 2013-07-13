@@ -18,12 +18,14 @@
 
 package org.red5.client.net.rtmp;
 
+import org.red5.client.net.rtmpt.RTMPTClientConnection;
 import org.red5.server.net.rtmp.RTMPConnManager;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.RTMPMinaConnection;
 import org.red5.server.net.rtmpt.RTMPTConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class RTMPClientConnManager extends RTMPConnManager {
 
@@ -81,13 +83,21 @@ public class RTMPClientConnManager extends RTMPConnManager {
 		if (cls == RTMPMinaConnection.class) {
 			conn = (RTMPMinaConnection) cls.newInstance();
 		} else if (cls == RTMPTConnection.class) {
-			conn = (RTMPTConnection) cls.newInstance();
+			conn = (RTMPTClientConnection) cls.newInstance();
 		} else {
 			conn = (RTMPConnection) cls.newInstance();
 		}
 		conn.setMaxHandshakeTimeout(7000);
 		conn.setMaxInactivity(60000);
 		conn.setPingInterval(0);
+		// setup executor
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(1);
+		executor.setDaemon(true);
+		executor.setMaxPoolSize(1);
+		executor.setQueueCapacity(16);
+		executor.initialize();
+		conn.setExecutor(executor);
 		return conn;
 	}
 //	
