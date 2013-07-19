@@ -3,7 +3,7 @@ package org.red5.client;
 import java.util.Map;
 
 import org.red5.client.net.rtmp.ClientExceptionHandler;
-import org.red5.client.net.rtmp.RTMPClient;
+import org.red5.client.net.rtmpt.RTMPTClient;
 import org.red5.io.utils.ObjectMap;
 import org.red5.server.api.event.IEvent;
 import org.red5.server.api.event.IEventDispatcher;
@@ -16,19 +16,20 @@ import org.red5.server.net.rtmp.event.Ping;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.status.StatusCodes;
 
-public class ClientTest extends RTMPClient {
+public class ClientTest extends RTMPTClient {
 
 	private String server = "localhost";
 
-	private int port = 1935;
+	//private int port = 1935;
+	private int port = 5080;
 
-	//private String application = "oflaDemo";
-	private String application = "live";
+	private String application = "oflaDemo";
+	//private String application = "live";
 
-	//private String filename = "prometheus.flv";
+	private String filename = "prometheus.flv";
 	//private String filename = "NAPNAP.flv";
 	//private String filename = "cameraFeed";
-	private String filename = "stream";
+	//private String filename = "stream";
 
 	// live stream (true) or vod stream (false)
 	private boolean live;

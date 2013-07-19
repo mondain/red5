@@ -31,12 +31,6 @@ public class RTMPClientConnManager extends RTMPConnManager {
 
 	private static final Logger log = LoggerFactory.getLogger(RTMPClientConnManager.class);
 
-//	private static final RTMPClientConnManager instance = new RTMPClientConnManager();
-//
-//	private ConcurrentMap<String, RTMPConnection> connMap = new ConcurrentHashMap<String, RTMPConnection>();
-//
-//	private AtomicInteger conns = new AtomicInteger();
-
 	private RTMPClientConnManager() {
 	}
 
@@ -69,6 +63,33 @@ public class RTMPClientConnManager extends RTMPConnManager {
 		}
 		return conn;
 	}
+	
+	/**
+	 * Creates a connection of the type specified with associated session id.
+	 * 
+	 * @param connCls
+	 * @param sessionId
+	 */	
+	public RTMPConnection createConnection(Class<?> connCls, String sessionId) {
+		RTMPConnection conn = null;
+		if (RTMPConnection.class.isAssignableFrom(connCls)) {
+			try {
+				// create connection
+				conn = createConnectionInstance(connCls);
+				// set the session id
+				if (conn instanceof RTMPTClientConnection) {
+					((RTMPTClientConnection) conn).setSessionId(sessionId);
+				}
+				// add to local map
+				connMap.put(conn.getSessionId(), conn);
+				log.trace("Connections: {}", conns.incrementAndGet());
+				log.trace("Connection created: {}", conn);
+			} catch (Exception ex) {
+				log.warn("Exception creating connection", ex);
+			}
+		}
+		return conn;
+	}		
 
 	/**
 	 * Creates a connection instance based on the supplied type.
@@ -100,35 +121,5 @@ public class RTMPClientConnManager extends RTMPConnManager {
 		conn.setExecutor(executor);
 		return conn;
 	}
-//	
-//	/**
-//	 * Returns a connection for a given session id.
-//	 * 
-//	 * @param sessionId
-//	 * @return connection if found and null otherwise
-//	 */
-//	@Override
-//	public RTMPConnection getConnectionBySessionId(String sessionId) {
-//		log.debug("Getting connection by session id: {}", sessionId);
-//		if (connMap.containsKey(sessionId)) {
-//			return connMap.get(sessionId);
-//		}
-//		return null;
-//	}
-//
-//	/** {@inheritDoc} */
-//	@Override
-//	public RTMPConnection removeConnection(String sessionId) {
-//		log.debug("Removing connection with session id: {}", sessionId);
-//		if (log.isTraceEnabled()) {
-//			log.trace("Connections ({}) at pre-remove: {}", connMap.size(), connMap.values());
-//		}
-//		// remove from map
-//		RTMPConnection conn = connMap.remove(sessionId);
-//		if (conn != null) {
-//			log.trace("Connections: {}", conns.decrementAndGet());	
-//		}
-//		return conn;
-//	}		
 
 }

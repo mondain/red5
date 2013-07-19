@@ -264,7 +264,9 @@
                     <groupId>org.red5</groupId>
                     <artifactId>red5-client</artifactId>
                 </exclusion>
-            </exclusions> 
+            </exclusions>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/red5-server-1.0.2-RC1.jar</systemPath>
         </dependency>       
      	<dependency>
 			<groupId>org.slf4j</groupId>

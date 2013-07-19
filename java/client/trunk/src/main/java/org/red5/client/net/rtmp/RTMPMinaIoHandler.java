@@ -356,7 +356,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 			log.debug("decodeServerHandshake - buffer: {}", in);
 			RTMPConnection conn = (RTMPConnection) Red5.getConnectionLocal();
 			// get the local decode state
-			RTMPDecodeState state = decoderState.get();
+			RTMPDecodeState state = conn.getDecoderState();
 			final int remaining = in.remaining();
 			if (conn.getStateCode() == RTMP.STATE_CONNECT) {
 				if (remaining < HANDSHAKE_SERVER_SIZE + 1) {
