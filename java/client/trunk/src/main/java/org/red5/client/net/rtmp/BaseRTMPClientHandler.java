@@ -949,7 +949,7 @@ public abstract class BaseRTMPClientHandler extends BaseRTMPHandler implements I
 
 		public void resultReceived(IPendingServiceCall call) {
 			Integer streamIdInt = (Integer) call.getResult();
-			log.debug("CreateStreamCallBack resultReceived - stream id: {}", streamIdInt);
+			log.debug("CreateStreamCallBack resultReceived - stream id: {} call: {}", streamIdInt, call);
 			log.debug("Connection: {}", conn);
 			if (conn != null && streamIdInt != null) {
 				log.debug("Setting new net stream");

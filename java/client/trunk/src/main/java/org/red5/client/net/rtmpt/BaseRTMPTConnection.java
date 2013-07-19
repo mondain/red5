@@ -101,6 +101,11 @@ public abstract class BaseRTMPTConnection extends RTMPConnection {
 	 * Byte buffer
 	 */
 	private IoBuffer buffer;
+	
+	/**
+	 * Clients session id, used to override the BaseConnection.sessionId for client implementations.
+	 */
+	protected String clientSessionId;
 
 	/**
 	 * RTMP events handler
@@ -182,6 +187,24 @@ public abstract class BaseRTMPTConnection extends RTMPConnection {
 		return pendingMessages.size();
 	}
 
+	public void setSessionId(String sessionId) {
+		log.debug("Overriding generated session id {} with {}", this.sessionId, sessionId);
+		this.clientSessionId = sessionId;
+		// reset the session id on the decoder state to prevent confusing log messages
+//		RTMPDecodeState state = this.decoderState.get();
+//		if (state != null) {
+//			state.setSessionId(sessionId);
+//		}
+	}
+	
+	@Override
+	public String getSessionId() {
+		if (clientSessionId == null) {
+			return sessionId;
+		}
+		return clientSessionId;
+	}
+	
 	/**
 	 * Decode data sent by the client.
 	 *

@@ -20,7 +20,7 @@
     <logger name="org.red5.server.util">
         <level value="INFO" />
     </logger>   
-    <logger name="org.red5.server.net.rtmp">
+    <logger name="org.red5.server.net">
         <level value="TRACE" />
     </logger>
 <!-- 

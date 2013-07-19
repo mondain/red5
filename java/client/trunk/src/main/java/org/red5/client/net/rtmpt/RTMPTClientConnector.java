@@ -37,6 +37,7 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.DummySession;
 import org.apache.mina.core.session.IoSession;
 import org.red5.client.net.rtmp.RTMPClientConnManager;
+import org.red5.server.api.Red5;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.util.HttpConnectionUtil;
@@ -69,10 +70,8 @@ class RTMPTClientConnector extends Thread {
 
 	private final RTMPTClient client;
 
-	private final RTMPClientConnManager connManager;
-
-	private int clientId;
-
+	private String sessionId;
+	
 	private long messageCount = 1;
 
 	private volatile boolean stopRequested = false;
@@ -81,15 +80,18 @@ class RTMPTClientConnector extends Thread {
 		targetHost = new HttpHost(server, port, "http");
 		httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 		this.client = client;
-		this.connManager = RTMPClientConnManager.getInstance();
 	}
 
 	public void run() {
 		HttpPost post = null;
 		try {
-			RTMPTClientConnection connection = openConnection();
-			while (!connection.isClosing() && !stopRequested) {
-				IoBuffer toSend = connection.getPendingMessages(SEND_TARGET_SIZE);
+			RTMPTClientConnection conn = openConnection();
+			// set a reference to the connection on the client
+			client.setConnection((RTMPConnection) conn);
+			// set thread local
+			Red5.setConnectionLocal(conn);
+			while (!conn.isClosing() && !stopRequested) {
+				IoBuffer toSend = conn.getPendingMessages(SEND_TARGET_SIZE);
 				int limit = toSend != null ? toSend.limit() : 0;
 				if (limit > 0) {
 					post = makePost("send");
@@ -109,7 +111,7 @@ class RTMPTClientConnector extends Thread {
 				if (data.limit() > 0) {
 					data.skip(1); // XXX: polling interval lies in this byte
 				}
-				List<?> messages = connection.decode(data);
+				List<?> messages = conn.decode(data);
 				if (messages == null || messages.isEmpty()) {
 					try {
 						// XXX handle polling delay
@@ -123,28 +125,37 @@ class RTMPTClientConnector extends Thread {
 					continue;
 				}
 				IoSession session = new DummySession();
-				session.setAttribute(RTMPConnection.RTMP_SESSION_ID, connection.getSessionId());
+				session.setAttribute(RTMPConnection.RTMP_SESSION_ID, conn.getSessionId());
 				for (Object message : messages) {
 					try {
-						client.messageReceived(message, session);
+						client.messageReceived(message);
 					} catch (Exception e) {
 						log.error("Could not process message.", e);
 					}
 				}
 			}
 			finalizeConnection();
-			client.connectionClosed(connection);
+			client.connectionClosed(conn);
 		} catch (Throwable e) {
 			log.debug("RTMPT handling exception", e);
 			client.handleException(e);
 			if (post != null) {
 				post.abort();
 			}
+		} finally {
+			Red5.setConnectionLocal(null);
 		}
 	}
 
+	/**
+	 * @return the sessionId
+	 */
+	public String getSessionId() {
+		return sessionId;
+	}
+
 	private RTMPTClientConnection openConnection() throws IOException {
-		RTMPTClientConnection connection = null;
+		RTMPTClientConnection conn = null;
 		HttpPost openPost = new HttpPost("/open/1");
 		setCommonHeaders(openPost);
 		openPost.setEntity(ZERO_REQUEST_ENTITY);
@@ -155,22 +166,23 @@ class RTMPTClientConnector extends Thread {
 		HttpEntity entity = response.getEntity();
 		if (entity != null) {
 			String responseStr = EntityUtils.toString(entity);
-			clientId = Integer.parseInt(responseStr.substring(0, responseStr.length() - 1));
-			log.debug("Got client id {}", clientId);
+			sessionId = responseStr.substring(0, responseStr.length() - 1);
+			log.debug("Got an id {}", sessionId);		
 			// create a new connection
-			connection = (RTMPTClientConnection) connManager.createConnection(RTMPTClientConnection.class);
+			conn = (RTMPTClientConnection) RTMPClientConnManager.getInstance().createConnection(RTMPTClientConnection.class, sessionId);
+			log.debug("Got session id {} from connection", conn.getSessionId());			
 			// client state
-			connection.setHandler(client);
-			connection.setDecoder(client.getDecoder());
-			connection.setEncoder(client.getEncoder());
+			conn.setHandler(client);
+			conn.setDecoder(client.getDecoder());
+			conn.setEncoder(client.getEncoder());
 			log.debug("Handshake 1st phase");
 			IoBuffer handshake = IoBuffer.allocate(Constants.HANDSHAKE_SIZE + 1);
 			handshake.put((byte) 0x03);
 			handshake.fill((byte) 0x01, Constants.HANDSHAKE_SIZE);
 			handshake.flip();
-			connection.writeRaw(handshake);
+			conn.writeRaw(handshake);
 		}
-		return connection;
+		return conn;
 	}
 
 	private void finalizeConnection() throws IOException {
@@ -189,7 +201,7 @@ class RTMPTClientConnector extends Thread {
 
 	private String makeUrl(String command) {
 		// use message count from connection
-		return String.format("/%s/%s/%s", command, clientId, messageCount++);
+		return String.format("/%s/%s/%s", command, sessionId, messageCount++);
 	}
 
 	private void setCommonHeaders(HttpPost post) {
