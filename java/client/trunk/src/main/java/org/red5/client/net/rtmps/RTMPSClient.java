@@ -111,11 +111,11 @@ public class RTMPSClient extends RTMPClient {
 		});
 		// Do the close requesting that the pending messages are sent before
 		// the session is closed
-		future.getSession().close(false);
+		//future.getSession().close(false);
 		// Now wait for the close to be completed
 		future.awaitUninterruptibly(CONNECTOR_WORKER_TIMEOUT);
 		// We can now dispose the connector
-		socketConnector.dispose();
+		//socketConnector.dispose();
 	}
 
 	/**
