@@ -22,11 +22,10 @@ import java.util.Map;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.red5.client.net.rtmp.BaseRTMPClientHandler;
-import org.red5.client.net.rtmp.RTMPClientConnManager;
-import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.codec.RTMPProtocolDecoder;
 import org.red5.server.net.rtmp.codec.RTMPProtocolEncoder;
 import org.red5.server.net.rtmp.message.Constants;
+import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.net.rtmpt.codec.RTMPTCodecFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +45,7 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 	private RTMPTCodecFactory codecFactory;
 
 	public RTMPTClient() {
+		protocol = "rtmpt";
 		codecFactory = new RTMPTCodecFactory();
 		codecFactory.init();
 	}
@@ -53,7 +53,7 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 	public Map<String, Object> makeDefaultConnectionParams(String server, int port, String application) {
 		Map<String, Object> params = super.makeDefaultConnectionParams(server, port, application);
 		if (!params.containsKey("tcUrl")) {
-			params.put("tcUrl", "rtmpt://" + server + ':' + port + '/' + application);
+			params.put("tcUrl", protocol + "://" + server + ':' + port + '/' + application);
 		}
 		return params;
 	}
@@ -64,41 +64,30 @@ public class RTMPTClient extends BaseRTMPClientHandler {
 		connector.start();
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public void messageReceived(Object in) throws Exception {
-		if (in instanceof IoBuffer) {
-			String sessionId = connector.getSessionId();
-			log.trace("Session id: {}", sessionId);
-			RTMPTClientConnection conn = (RTMPTClientConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
-			rawBufferRecieved(conn, (IoBuffer) in);
-		} else {
-			super.messageReceived(in);
-		}
-	}
-
 	/**
-	 * Handle raw buffer receipt
+	 * Received message object router.
 	 * 
-	 * @param conn RTMP connection
-	 * @param in IoBuffer with input raw data
+	 * @param message an IoBuffer or Packet
 	 */
-	private void rawBufferRecieved(RTMPConnection conn, IoBuffer in) {
-		log.debug("Handshake 3d phase - size: {}", in.remaining());
-		IoBuffer out = IoBuffer.allocate(Constants.HANDSHAKE_SIZE);
-		IoBuffer tmp = in;
-		if (!tmp.isAutoExpand()) {
-			tmp = IoBuffer.allocate(tmp.position() + Constants.HANDSHAKE_SIZE);
-			tmp.setAutoExpand(true);
-			tmp.put(tmp);
+	public void messageReceived(Object message) {
+		if (message instanceof Packet) {
+			try {
+				messageReceived(conn, (Packet) message);
+			} catch (Exception e) {
+				log.warn("Exception on packet receive", e);
+			}
+		} else {
+			IoBuffer in = (IoBuffer) message;
+			log.debug("Handshake 3d phase - size: {}", in.remaining());
+			IoBuffer out = IoBuffer.allocate(Constants.HANDSHAKE_SIZE);
+			out.setAutoExpand(true);
+			log.debug("Skip first byte: {}", in.get());
+			out.put(in);
+			out.flip();
+			conn.writeRaw(out);
+			connectionOpened(conn);	
 		}
-		tmp.skip(1);
-		tmp.limit(tmp.position() + Constants.HANDSHAKE_SIZE);
-		out.put(tmp);
-		out.flip();
-		conn.writeRaw(out);
-		connectionOpened(conn);
-	}
+	}		
 
 	public synchronized void disconnect() {
 		if (connector != null) {

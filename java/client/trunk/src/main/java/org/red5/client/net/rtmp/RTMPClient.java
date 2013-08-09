@@ -88,7 +88,7 @@ public class RTMPClient extends BaseRTMPClientHandler {
 				}
 			}
 		});
-		// Now wait for the close to be completed
+		// Now wait for the connect to be completed
 		future.awaitUninterruptibly(CONNECTOR_WORKER_TIMEOUT);
 	}
 

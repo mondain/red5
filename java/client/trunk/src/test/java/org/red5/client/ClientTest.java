@@ -3,6 +3,7 @@ package org.red5.client;
 import java.util.Map;
 
 import org.red5.client.net.rtmp.ClientExceptionHandler;
+import org.red5.client.net.rtmp.RTMPClient;
 import org.red5.client.net.rtmpt.RTMPTClient;
 import org.red5.io.utils.ObjectMap;
 import org.red5.server.api.event.IEvent;
@@ -16,12 +17,12 @@ import org.red5.server.net.rtmp.event.Ping;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.status.StatusCodes;
 
-public class ClientTest extends RTMPTClient {
+public class ClientTest extends RTMPClient {
 
 	private String server = "localhost";
 
-	//private int port = 1935;
-	private int port = 5080;
+	private int port = 1935;
+	//private int port = 5080;
 
 	private String application = "oflaDemo";
 	//private String application = "live";
@@ -40,7 +41,7 @@ public class ClientTest extends RTMPTClient {
 
 		final ClientTest player = new ClientTest();
 		// decide whether or not the source is live or vod
-		player.setLive(true);
+		//player.setLive(true);
 		// connect
 		player.connect();
 
@@ -75,6 +76,7 @@ public class ClientTest extends RTMPTClient {
 			System.out.println("connectCallback");
 			ObjectMap<?, ?> map = (ObjectMap<?, ?>) call.getResult();
 			String code = (String) map.get("code");
+			System.out.printf("Response code: %s\n", code);
 			if ("NetConnection.Connect.Rejected".equals(code)) {
 				System.out.printf("Rejected: %s\n", map.get("description"));
 				disconnect();
@@ -84,8 +86,6 @@ public class ClientTest extends RTMPTClient {
 				}
 			} else if ("NetConnection.Connect.Success".equals(code)) {
 				createStream(createStreamCallback);
-			} else {
-				System.out.printf("Unhandled response code: %s\n", code);
 			}			
 		}
 	};
