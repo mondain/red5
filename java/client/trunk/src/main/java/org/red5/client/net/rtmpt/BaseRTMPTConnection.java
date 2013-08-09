@@ -220,7 +220,7 @@ public abstract class BaseRTMPTConnection extends RTMPConnection {
 		readBytes.addAndGet(data.limit());
 		buffer.put(data);
 		buffer.flip();
-		return decoder.decodeBuffer(buffer);
+		return decoder.decodeBuffer(this, buffer);
 	}
 
 	/**

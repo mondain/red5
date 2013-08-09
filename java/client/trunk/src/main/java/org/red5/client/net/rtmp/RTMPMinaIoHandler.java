@@ -251,14 +251,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 					String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
 					log.trace("Session id: {}", sessionId);
 					RTMPConnection conn = (RTMPConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
-					log.trace("Connections:\n{}\n{}", conn, Red5.getConnectionLocal());
-					RTMPConnection connLocal = (RTMPConnection) Red5.getConnectionLocal();
-					if (connLocal == null || !conn.equals(connLocal)) {
-						if (log.isDebugEnabled() && connLocal != null) {
-							log.debug("Connection local didn't match session");
-						}
-						Red5.setConnectionLocal(conn);
-					}
+					Red5.setConnectionLocal(conn);
 					final Semaphore lock = conn.getDecoderLock();
 					try {
 						// acquire the decoder lock
@@ -266,7 +259,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 						lock.acquire();
 						log.trace("Decoder lock acquired {}", conn.getId());
 						// construct any objects from the decoded bugger
-						List<?> objects = getDecoder().decodeBuffer(buf);
+						List<?> objects = getDecoder().decodeBuffer(conn, buf);
 						if (objects != null) {
 							for (Object object : objects) {
 								out.write(object);
@@ -277,6 +270,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 					} finally {
 						log.trace("Decoder lock releasing.. {}", conn.getId());
 						lock.release();
+						Red5.setConnectionLocal(null);
 					}
 				}
 			};
@@ -291,11 +285,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 					log.trace("Session id: {}", sessionId);
 					RTMPConnection conn = (RTMPConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
 					if (conn != null) {
-						// look for and compare the connection local; set it from the session
-						if (!conn.equals((RTMPConnection) Red5.getConnectionLocal())) {
-							log.debug("Connection local didn't match session");
-							Red5.setConnectionLocal(conn);
-						}
+						Red5.setConnectionLocal(conn);
 						final Semaphore lock = conn.getEncoderLock();
 						try {
 							// acquire the decoder lock
@@ -315,6 +305,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 						} finally {
 							log.trace("Encoder lock releasing.. {}", conn.getId());
 							lock.release();
+							Red5.setConnectionLocal(null);
 						}
 					} else {
 						log.debug("Connection is no longer available for encoding, may have been closed already");
