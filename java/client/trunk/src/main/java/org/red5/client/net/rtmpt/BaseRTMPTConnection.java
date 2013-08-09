@@ -259,7 +259,7 @@ public abstract class BaseRTMPTConnection extends RTMPConnection {
 		IoBuffer result = IoBuffer.allocate(2048);
 		result.setAutoExpand(true);
 		// We'll have to create a copy here to avoid endless recursion
-		List<Object> toNotify = new LinkedList<Object>();
+		List<Packet> toNotify = new LinkedList<Packet>();
 		while (!pendingMessages.isEmpty()) {
 			PendingData pendingMessage = pendingMessages.remove();
 			result.put(pendingMessage.getBuffer());
@@ -270,11 +270,11 @@ public abstract class BaseRTMPTConnection extends RTMPConnection {
 				break;
 			}
 		}
-		for (Object message : toNotify) {
+		for (Packet message : toNotify) {
 			try {
 				handler.messageSent(this, message);
 			} catch (Exception e) {
-				log.error("Could not notify stream subsystem about sent message.", e);
+				log.error("Could not notify stream subsystem about sent message", e);
 			}
 		}
 		result.flip();

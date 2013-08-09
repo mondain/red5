@@ -51,6 +51,7 @@ import org.red5.server.net.rtmp.codec.RTMPProtocolDecoder;
 import org.red5.server.net.rtmp.codec.RTMPProtocolEncoder;
 import org.red5.server.net.rtmp.event.Invoke;
 import org.red5.server.net.rtmp.message.Constants;
+import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.net.rtmp.status.StatusObject;
 import org.red5.server.service.Call;
@@ -184,7 +185,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 			String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
 			log.trace("Session id: {}", sessionId);
 			RTMPMinaConnection conn = (RTMPMinaConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
-			conn.handleMessageReceived(message);
+			conn.handleMessageReceived((Packet) message);
 		}
 	}
 
@@ -195,11 +196,12 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
 		log.trace("Session id: {}", sessionId);
 		RTMPMinaConnection conn = (RTMPMinaConnection) RTMPClientConnManager.getInstance().getConnectionBySessionId(sessionId);
-		handler.messageSent(conn, message);
 		if (message instanceof IoBuffer) {
 			if (((IoBuffer) message).limit() == Constants.HANDSHAKE_SIZE) {
 				handler.connectionOpened(conn);
 			}
+		} else {
+			handler.messageSent(conn, (Packet) message);			
 		}
 	}
 
@@ -255,9 +257,9 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 					final Semaphore lock = conn.getDecoderLock();
 					try {
 						// acquire the decoder lock
-						log.trace("Decoder lock acquiring.. {}", conn.getId());
+						log.trace("Decoder lock acquiring.. {}", sessionId);
 						lock.acquire();
-						log.trace("Decoder lock acquired {}", conn.getId());
+						log.trace("Decoder lock acquired {}", sessionId);
 						// construct any objects from the decoded bugger
 						List<?> objects = getDecoder().decodeBuffer(conn, buf);
 						if (objects != null) {
@@ -268,7 +270,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 					} catch (Exception e) {
 						log.error("Error during decode", e);
 					} finally {
-						log.trace("Decoder lock releasing.. {}", conn.getId());
+						log.trace("Decoder lock releasing.. {}", sessionId);
 						lock.release();
 						Red5.setConnectionLocal(null);
 					}
@@ -289,9 +291,9 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 						final Semaphore lock = conn.getEncoderLock();
 						try {
 							// acquire the decoder lock
-							log.trace("Encoder lock acquiring.. {}", conn.getId());
+							log.trace("Encoder lock acquiring.. {}", sessionId);
 							lock.acquire();
-							log.trace("Encoder lock acquired {}", conn.getId());
+							log.trace("Encoder lock acquired {}", sessionId);
 							// get the buffer
 							final IoBuffer buf = message instanceof IoBuffer ? (IoBuffer) message : getEncoder().encode(message);
 							if (buf != null) {
@@ -303,7 +305,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 						} catch (Exception ex) {
 							log.error("Exception during encode", ex);
 						} finally {
-							log.trace("Encoder lock releasing.. {}", conn.getId());
+							log.trace("Encoder lock releasing.. {}", sessionId);
 							lock.release();
 							Red5.setConnectionLocal(null);
 						}
