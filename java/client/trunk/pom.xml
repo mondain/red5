@@ -225,7 +225,7 @@
 	</repositories>
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
+		    <dependency>
 				<groupId>org.red5</groupId>
 				<artifactId>red5-server</artifactId>
 				<version>${red5-server.version}</version>
@@ -255,7 +255,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<dependencies>
+	<dependencies>	 
         <dependency>
             <groupId>org.red5</groupId>
             <artifactId>red5-server</artifactId>
