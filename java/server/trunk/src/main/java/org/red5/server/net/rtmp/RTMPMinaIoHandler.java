@@ -20,12 +20,13 @@ package org.red5.server.net.rtmp;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.future.CloseFuture;
+import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.service.IoHandlerAdapter;
+import org.apache.mina.core.service.IoProcessor;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequestQueue;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.transport.socket.nio.NioSession;
 import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.message.Packet;
 import org.red5.server.net.rtmpe.RTMPEIoFilter;
@@ -187,7 +188,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	 * 
 	 * @param session
 	 */
-	private void forceClose(IoSession session) {
+	private void forceClose(final IoSession session) {
 		log.warn("Force close - session: {}", session.getId());
 		if (session.containsAttribute("FORCED_CLOSE")) {
 			log.warn("Close already forced on this session: {}", session.getId());
@@ -195,7 +196,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 			// set flag
 			session.setAttribute("FORCED_CLOSE", Boolean.TRUE);
 			// clean up
-			String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
+			final String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
 			log.debug("Forcing close on session: {} id: {}", session.getId(), sessionId);
 			log.debug("Session closing: {}", session.isClosing());
 			session.suspendRead();
@@ -205,19 +206,29 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 				writeQueue.clear(session);
 			}
 			// force close the session
-			CloseFuture future = session.close(true);
-			// wait until the connection is closed
-			log.debug("Awaiting close on {}", sessionId);
-			future.awaitUninterruptibly();
-			// now connection should be closed
-			log.debug("Closed on {}: {}", sessionId, future.isClosed());
-			if (session instanceof NioSession) {
-				NioSession nio = (NioSession) session;
-				log.trace("Removing session from processor");
-				nio.getProcessor().remove(nio);
-			} else {
-				log.debug("Session was not of NioSession type: {}", session.getClass().getName());
-			}
+			final CloseFuture future = session.close(false);
+			IoFutureListener<CloseFuture> listener = new IoFutureListener<CloseFuture>() {
+				@SuppressWarnings({ "unchecked", "rawtypes" })
+				public void operationComplete(CloseFuture future) {
+					// now connection should be closed
+					log.debug("Close operation completed {}: {}", sessionId, future.isClosed());
+					future.removeListener(this);
+					for (Object key : session.getAttributeKeys()) {
+						Object obj = session.getAttribute(key);
+						if (obj instanceof IoProcessor) {
+							log.debug("Flushing session in processor");
+							((IoProcessor) obj).flush(session);
+							log.debug("Removing session from processor");
+							((IoProcessor) obj).remove(session);
+						} else if (obj instanceof IoBuffer) {
+							log.debug("Clearing session buffer");
+							((IoBuffer) obj).clear();
+							((IoBuffer) obj).free();							
+						}
+					}
+				}
+			};
+			future.addListener(listener);
 		}
 	}
 
