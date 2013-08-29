@@ -18,6 +18,8 @@
 
 package org.red5.server.net.rtmp;
 
+import java.io.IOException;
+
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.future.CloseFuture;
 import org.apache.mina.core.future.IoFutureListener;
@@ -180,7 +182,14 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
 		log.warn("Exception caught on session: {}", session.getId(), cause.getCause());
-		forceClose(session);
+		String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
+		if (cause instanceof IOException) {
+			// Mina states that the connection will be automatically closed when an IOException is caught
+			log.debug("IOException caught on {}", sessionId);
+		} else {
+			log.debug("Non-IOException caught on {}", sessionId);
+			forceClose(session);
+		}
 	}
 
 	/**
@@ -215,6 +224,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 					future.removeListener(this);
 					for (Object key : session.getAttributeKeys()) {
 						Object obj = session.getAttribute(key);
+						log.debug("Attribute: {}", obj.getClass().getName());
 						if (obj instanceof IoProcessor) {
 							log.debug("Flushing session in processor");
 							((IoProcessor) obj).flush(session);
@@ -223,7 +233,7 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 						} else if (obj instanceof IoBuffer) {
 							log.debug("Clearing session buffer");
 							((IoBuffer) obj).clear();
-							((IoBuffer) obj).free();							
+							((IoBuffer) obj).free();
 						}
 					}
 				}

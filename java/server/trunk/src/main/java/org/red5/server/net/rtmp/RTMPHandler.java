@@ -549,7 +549,9 @@ public class RTMPHandler extends BaseRTMPHandler {
 	/** {@inheritDoc} */
 	@Override
 	protected void onSharedObject(RTMPConnection conn, Channel channel, Header source, SharedObjectMessage message) {
-		log.debug("onSharedObject - conn: {} so message: {}", conn, message);
+		if (log.isDebugEnabled()) {
+			log.debug("onSharedObject - conn: {} channel: {} so message: {}", new Object[] { conn.getSessionId(), channel.getId(), message });
+		}
 		final IScope scope = conn.getScope();
 		if (scope != null) {
 			// so name
@@ -580,6 +582,7 @@ public class RTMPHandler extends BaseRTMPHandler {
 			ISharedObject so = sharedObjectService.getSharedObject(scope, name);
 			if (so != null) {
 				if (so.isPersistent() == persistent) {
+					log.debug("Dispatch persistent shared object");
 					so.dispatchEvent(message);
 				} else {
 					log.warn("Shared object persistence mismatch - current: {} incoming: {}", so.isPersistent(), persistent);

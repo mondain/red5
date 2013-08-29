@@ -76,9 +76,7 @@ public class Invoke extends Notify {
 	/** {@inheritDoc} */
     @Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Invoke #").append(transactionId).append(": ").append(call);
-		return sb.toString();
+		return String.format("Invoke #%d: %s", transactionId, (call != null ? call.toString() : "null"));
 	}
 
 	/** {@inheritDoc} */
