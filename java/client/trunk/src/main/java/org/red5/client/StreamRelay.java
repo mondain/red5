@@ -27,6 +27,7 @@ import org.red5.client.net.rtmp.ClientExceptionHandler;
 import org.red5.client.net.rtmp.INetStreamEventHandler;
 import org.red5.client.net.rtmp.RTMPClient;
 import org.red5.io.utils.ObjectMap;
+import org.red5.proxy.StreamingProxy;
 import org.red5.server.api.event.IEvent;
 import org.red5.server.api.event.IEventDispatcher;
 import org.red5.server.api.service.IPendingServiceCall;
@@ -34,7 +35,6 @@ import org.red5.server.api.service.IPendingServiceCallback;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.event.Notify;
 import org.red5.server.net.rtmp.status.StatusCodes;
-import org.red5.server.stream.StreamingProxy;
 import org.red5.server.stream.message.RTMPMessage;
 
 /**

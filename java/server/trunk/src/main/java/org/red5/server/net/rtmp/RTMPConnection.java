@@ -720,6 +720,8 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 					usedStreams.decrementAndGet();
 				}
 			}
+		} else {
+			log.debug("Stream service was not found for scope: {}", scope.getName());
 		}
 		// close the base connection - disconnect scopes and unregister client
 		super.close();
@@ -1342,7 +1344,10 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 							onInactive();
 						}
 					} catch (InterruptedException e) {
-						log.warn("Keep alive was interrupted for {}", getSessionId() + " - " + state.states[getStateCode()], e);
+						// only interested in this interrupted ex if we are debugging, otherwise its not helpful to most
+						if (log.isDebugEnabled()) {
+							log.warn("Keep alive was interrupted for {}", getSessionId() + " - " + state.states[getStateCode()], e);
+						}
 					} catch (Exception e) {
 						log.warn("Exception in keepalive for {}", getSessionId(), e);
 					} finally {

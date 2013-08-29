@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.red5.server.stream;
+package org.red5.proxy;
 
 import java.io.IOException;
 import java.util.Map;

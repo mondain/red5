@@ -561,12 +561,6 @@ public abstract class BaseConnection extends AttributeStore implements IConnecti
 	public int hashCode() {
 		final int prime = 31;
 		int result = prime * sessionId.hashCode();
-		//		if (host != null) {
-		//			result = prime * result + host.hashCode();
-		//		}
-		//		if (remoteAddress != null) {
-		//			result = prime * result + remoteAddress.hashCode();
-		//		}
 		return result;
 	}
 
@@ -584,18 +578,7 @@ public abstract class BaseConnection extends AttributeStore implements IConnecti
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		BaseConnection other = (BaseConnection) obj;
-		if (sessionId != null) {
-			return sessionId.equals(other.getSessionId());
-		} else {
-			if (host != null && !host.equals(other.getHost())) {
-				return false;
-			}
-			if (remoteAddress != null && !remoteAddress.equals(other.getRemoteAddress())) {
-				return false;
-			}
-		}
-		return true;
+		return sessionId.equals(((BaseConnection) obj).getSessionId());
 	}
 
 }

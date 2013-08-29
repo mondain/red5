@@ -1,5 +1,6 @@
 package org.red5.demos.oflaDemo;
 
+import java.util.*;
 import org.red5.server.adapter.ApplicationAdapter;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.scope.IScope;
@@ -25,8 +26,17 @@ public class Application extends ApplicationAdapter {
     @Override
 	public boolean appConnect(IConnection conn, Object[] params) {
 		log.info("oflaDemo appConnect");
-		// Trigger calling of "onBWDone", required for some FLV players
+		IScope appScope = conn.getScope();
+		log.debug("App connect called for scope: {}", appScope.getName());
+		// getting client parameters
+		Map<String, Object> properties = conn.getConnectParams();
+		if (log.isDebugEnabled()) {
+			for (Map.Entry<String, Object> e : properties.entrySet()) {
+				log.debug("Connection property: {} = {}", e.getKey(), e.getValue());
+			}
+		}
 		
+		// Trigger calling of "onBWDone", required for some FLV players	
 		// commenting out the bandwidth code as it is replaced by the mina filters
 		//measureBandwidth(conn);
 //		if (conn instanceof IStreamCapableConnection) {
