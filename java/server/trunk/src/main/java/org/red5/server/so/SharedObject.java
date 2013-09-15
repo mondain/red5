@@ -92,12 +92,12 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	/**
 	 * Version. Used on synchronization purposes.
 	 */
-	protected AtomicInteger version = new AtomicInteger(1);
+	protected volatile AtomicInteger version = new AtomicInteger(1);
 
 	/**
 	 * Number of pending update operations
 	 */
-	protected AtomicInteger updateCounter = new AtomicInteger();
+	protected volatile AtomicInteger updateCounter = new AtomicInteger();
 
 	/**
 	 * Has changes? flag
@@ -132,7 +132,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	/**
 	 * Number of times the SO has been acquired
 	 */
-	protected AtomicInteger acquireCount = new AtomicInteger();
+	protected volatile AtomicInteger acquireCount = new AtomicInteger();
 
 	/**
 	 * Timestamp the scope was created.
@@ -162,7 +162,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	/**
 	 * Whether or not this shared object is closed
 	 */
-	protected AtomicBoolean closed = new AtomicBoolean(false);
+	protected volatile AtomicBoolean closed = new AtomicBoolean(false);
 	
 	/** Constructs a new SharedObject. */
 	public SharedObject() {
@@ -437,7 +437,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 		} else {
 			result = false;
 		}
-		notifyModified();
+		notifyModified();		
 		return result;
 	}
 
@@ -497,10 +497,12 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	 * @param arguments       Arguments
 	 */
 	protected void sendMessage(String handler, List<?> arguments) {
-		// Forward
 		ownerMessage.addEvent(Type.CLIENT_SEND_MESSAGE, handler, arguments);
 		syncEvents.add(new SharedObjectEvent(Type.CLIENT_SEND_MESSAGE, handler, arguments));
 		sendStats.incrementAndGet();
+		if (log.isTraceEnabled()) {
+			log.trace("send message args: {}", arguments);
+		}
 	}
 
 	/**

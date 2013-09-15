@@ -21,8 +21,8 @@ package org.red5.server.stream;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.red5.server.stream.codec.AudioCodec;
-import org.red5.server.stream.codec.VideoCodec;
+import org.red5.codec.AudioCodec;
+import org.red5.codec.VideoCodec;
 
 public class CodecEnumTest {
 

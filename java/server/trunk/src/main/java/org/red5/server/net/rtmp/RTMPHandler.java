@@ -21,6 +21,7 @@ package org.red5.server.net.rtmp;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.red5.io.object.StreamAction;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IConnection.Encoding;
 import org.red5.server.api.IContext;
@@ -52,7 +53,6 @@ import org.red5.server.net.rtmp.event.Ping;
 import org.red5.server.net.rtmp.event.SetBuffer;
 import org.red5.server.net.rtmp.event.StreamActionEvent;
 import org.red5.server.net.rtmp.message.Header;
-import org.red5.server.net.rtmp.message.StreamAction;
 import org.red5.server.net.rtmp.status.Status;
 import org.red5.server.net.rtmp.status.StatusObject;
 import org.red5.server.net.rtmp.status.StatusObjectService;

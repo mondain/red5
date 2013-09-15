@@ -23,15 +23,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Set;
 
-import org.red5.io.IStreamableFileFactory;
-import org.red5.io.IStreamableFileService;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.scope.IBroadcastScope;
 import org.red5.server.api.scope.IScope;
 import org.red5.server.api.scope.ScopeType;
+import org.red5.server.api.service.IStreamableFileService;
 import org.red5.server.api.stream.IBroadcastStream;
 import org.red5.server.api.stream.IStreamFilenameGenerator;
 import org.red5.server.api.stream.IStreamFilenameGenerator.GenerationType;
+import org.red5.server.api.stream.IStreamableFileFactory;
 import org.red5.server.messaging.IMessageInput;
 import org.red5.server.messaging.IPipe;
 import org.red5.server.messaging.InMemoryPullPullPipe;

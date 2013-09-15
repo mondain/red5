@@ -28,7 +28,7 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.ConversionException;
 import org.junit.Test;
-import org.red5.server.util.ConversionUtils;
+import org.red5.io.utils.ConversionUtils;
 
 /**
  * @author The Red5 Project

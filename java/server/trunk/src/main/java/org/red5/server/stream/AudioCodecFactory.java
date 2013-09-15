@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.mina.core.buffer.IoBuffer;
-import org.red5.server.api.stream.IAudioStreamCodec;
+import org.red5.codec.IAudioStreamCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ public class AudioCodecFactory {
 			int codecId = (data.get() & 0xf0) >> 4;		
     		switch (codecId) {
     			case 10: //aac 
-    				result = (IAudioStreamCodec) Class.forName("org.red5.server.stream.codec.AACAudio").newInstance();
+    				result = (IAudioStreamCodec) Class.forName("org.red5.codec.AACAudio").newInstance();
     				break;
     			// TODO add SPEEX support?
     		}
