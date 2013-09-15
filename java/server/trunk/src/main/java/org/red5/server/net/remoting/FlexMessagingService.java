@@ -40,6 +40,7 @@ import org.red5.compatibility.flex.messaging.messages.Constants;
 import org.red5.compatibility.flex.messaging.messages.ErrorMessage;
 import org.red5.compatibility.flex.messaging.messages.Message;
 import org.red5.compatibility.flex.messaging.messages.RemotingMessage;
+import org.red5.io.utils.ConversionUtils;
 import org.red5.io.utils.RandomGUID;
 import org.red5.server.api.IClient;
 import org.red5.server.api.Red5;
@@ -47,7 +48,6 @@ import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IServiceInvoker;
 import org.red5.server.exception.ClientDetailsException;
 import org.red5.server.messaging.ServiceAdapter;
-import org.red5.server.util.ConversionUtils;
 import org.red5.server.service.PendingCall;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,8 +107,7 @@ public class FlexMessagingService {
 	 * @param faultDetail fault detail
 	 * @return error message
 	 */
-	public static ErrorMessage returnError(AbstractMessage request, String faultCode, String faultString,
-			String faultDetail) {
+	public static ErrorMessage returnError(AbstractMessage request, String faultCode, String faultString, String faultDetail) {
 		ErrorMessage result = new ErrorMessage();
 		result.timestamp = System.currentTimeMillis();
 		result.headers = request.headers;
@@ -129,8 +128,7 @@ public class FlexMessagingService {
 	 * @param error error
 	 * @return message
 	 */
-	public static ErrorMessage returnError(AbstractMessage request, String faultCode, String faultString,
-			Throwable error) {
+	public static ErrorMessage returnError(AbstractMessage request, String faultCode, String faultString, Throwable error) {
 		ErrorMessage result = returnError(request, faultCode, faultString, "");
 		if (error instanceof ClientDetailsException) {
 			result.extendedData = ((ClientDetailsException) error).getParameters();

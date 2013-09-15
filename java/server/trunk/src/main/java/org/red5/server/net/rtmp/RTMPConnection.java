@@ -721,7 +721,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 				}
 			}
 		} else {
-			log.debug("Stream service was not found for scope: {}", scope.getName());
+			log.debug("Stream service was not found for scope: {}", (scope != null ? scope.getName() : "null or non-existant"));
 		}
 		// close the base connection - disconnect scopes and unregister client
 		super.close();

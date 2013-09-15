@@ -18,6 +18,7 @@
 
 package org.red5.server.api.stream;
 
+import org.red5.codec.IStreamCodecInfo;
 import org.red5.server.api.scope.IScope;
 
 /**

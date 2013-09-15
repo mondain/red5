@@ -35,13 +35,13 @@ import org.apache.http.util.EntityUtils;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.red5.io.amf.Input;
 import org.red5.io.amf.Output;
+import org.red5.io.client.IRemotingClient;
 import org.red5.io.object.Deserializer;
 import org.red5.io.object.RecordSet;
 import org.red5.io.object.Serializer;
 import org.red5.server.util.HttpConnectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Client interface for remoting calls.
@@ -50,7 +50,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author Joachim Bauch (jojo@struktur.de)
  * @author Paul Gregoire (mondain@gmail.com)
  */
-public class RemotingClient implements InitializingBean {
+public class RemotingClient implements IRemotingClient {
 
 	protected static Logger log = LoggerFactory.getLogger(RemotingClient.class);
 
@@ -108,16 +108,13 @@ public class RemotingClient implements InitializingBean {
 		log.debug("RemotingClient created  - url: {} timeout: {}", url, timeout);
 	}
 
-	public void afterPropertiesSet() throws Exception {
-		executor = Executors.newFixedThreadPool(poolSize);
-	}
-
 	public int getPoolSize() {
 		return poolSize;
 	}
 
 	public void setPoolSize(int poolSize) {
 		this.poolSize = poolSize;
+		executor = Executors.newFixedThreadPool(poolSize);
 	}
 
 	/**

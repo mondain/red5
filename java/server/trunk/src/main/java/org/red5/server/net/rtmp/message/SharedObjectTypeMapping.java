@@ -26,11 +26,9 @@ import org.slf4j.LoggerFactory;
  * SO event types mapping
  */
 public class SharedObjectTypeMapping {
-    /**
-     * Logger
-     */
-	protected static Logger log = LoggerFactory.getLogger(SharedObjectTypeMapping.class
-			.getName());
+ 
+	protected static Logger log = LoggerFactory.getLogger(SharedObjectTypeMapping.class);
+	
     /**
      * Types map
      */

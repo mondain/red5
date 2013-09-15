@@ -22,8 +22,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.red5.io.utils.ConversionUtils;
 import org.red5.server.api.IConnection;
-import org.red5.server.util.ConversionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

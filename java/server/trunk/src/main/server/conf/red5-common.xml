@@ -69,15 +69,15 @@
 	<bean id="remotingCodecFactory" class="org.red5.server.net.remoting.codec.RemotingCodecFactory" autowire="byType" init-method="init"/>
 		
 	<!-- Streamable file factory -->
-	<bean id="streamableFileFactory" class="org.red5.io.StreamableFileFactory">
+	<bean id="streamableFileFactory" class="org.red5.server.stream.StreamableFileFactory">
 		<property name="services">
 			<list>
-				<bean id="flvFileService" class="org.red5.io.flv.impl.FLVService">
+				<bean id="flvFileService" class="org.red5.server.service.flv.impl.FLVService">
 					<property name="generateMetadata" value="true"/>
 				</bean>
-				<bean id="mp3FileService" class="org.red5.io.mp3.impl.MP3Service"/>
-				<bean id="mp4FileService" class="org.red5.io.mp4.impl.MP4Service"/>
-				<bean id="m4aFileService" class="org.red5.io.m4a.impl.M4AService"/>
+				<bean id="mp3FileService" class="org.red5.server.service.mp3.impl.MP3Service"/>
+				<bean id="mp4FileService" class="org.red5.server.service.mp4.impl.MP4Service"/>
+				<bean id="m4aFileService" class="org.red5.server.service.m4a.impl.M4AService"/>
 			</list>
 		</property>
 	</bean>
@@ -128,12 +128,12 @@
 	Now we can load the cache engine, only one may be enabled at a time. If no-caching is required select the
 	NoCacheImpl. Three other implementations based on EhCache, and Red5Cache are also available.
 	-->
-	<bean id="object.cache" class="org.red5.server.cache.NoCacheImpl"/>
+	<bean id="object.cache" class="org.red5.cache.impl.NoCacheImpl"/>
 	<!--
-	<bean id="object.cache" class="org.red5.server.cache.CacheImpl" init-method="init" autowire="byType">
+	<bean id="object.cache" class="org.red5.cache.impl.CacheImpl" init-method="init" autowire="byType">
 		<property name="maxEntries"><value>5</value></property>
 	</bean>
-	<bean id="object.cache" class="org.red5.server.cache.EhCacheImpl" init-method="init">
+	<bean id="object.cache" class="org.red5.cache.impl.EhCacheImpl" init-method="init">
 		<property name="diskStore" value="java.io.tmpdir" />
 		<property name="memoryStoreEvictionPolicy" value="LFU" />
 		<property name="cacheManagerEventListener"><null/></property>
@@ -164,46 +164,46 @@
 	    Represents FLV files
 	    Use injection to set the cache impl to be used with flvs
 	-->
-	<bean id="flv.impl" class="org.red5.io.flv.impl.FLV">
-		<property name="cache">
-			<ref bean="object.cache"/>
-		</property>
-	</bean>
+    <bean id="flv.impl" class="org.red5.io.flv.impl.FLV">
+        <property name="cache">
+            <ref bean="object.cache"/>
+        </property>
+    </bean>
 	
 	<!-- Use injection to set the keyframe cache for FLV files -->
-	<bean id="flvreader.impl" class="org.red5.io.flv.impl.FLVReader">
-		<property name="keyFrameCache">
-			<ref bean="keyframe.cache"/>
-		</property>
-	</bean>
+    <bean id="flvreader.impl" class="org.red5.io.flv.impl.FLVReader">
+        <property name="keyFrameCache">
+            <ref bean="keyframe.cache"/>
+        </property>
+    </bean>
 	
 	<!-- Use injection to set the keyframe cache for MP4 files -->
-	<bean id="mp4reader.impl" class="org.red5.io.mp4.impl.MP4Reader"/>
+    <bean id="mp4reader.impl" class="org.red5.io.mp4.impl.MP4Reader"/>
 	
 	<!-- Use injection to set the keyframe cache for MP3 files -->
-	<bean id="mp3reader.impl" class="org.red5.io.mp3.impl.MP3Reader">
-		<property name="frameCache">
-			<ref bean="keyframe.cache"/>
-		</property>
-	</bean>
+    <bean id="mp3reader.impl" class="org.red5.io.mp3.impl.MP3Reader">
+        <property name="frameCache">
+            <ref bean="keyframe.cache"/>
+        </property>
+    </bean> 
 	
-	<!-- Use injection to set the buffer type for reading FLV files -->
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod">
-			<value>org.red5.io.flv.impl.FLVReader.setBufferType</value>
-		</property>
-		<!-- Three buffer types are available 'auto', 'heap', and 'direct' -->
-		<property name="arguments" value="auto"/>
-	</bean>
-	
-	<!-- Use injection to set the buffer size for reading FLV files -->
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod">
-			<value>org.red5.io.flv.impl.FLVReader.setBufferSize</value>
-		</property>
-		<!-- Three buffer types are available 'auto', 'heap', and 'direct' -->
-		<property name="arguments" value="4096"/>
-	</bean>
+    <!-- Use injection to set the buffer type for reading FLV files -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod">
+            <value>org.red5.io.flv.impl.FLVReader.setBufferType</value>
+        </property>
+        <!-- Three buffer types are available 'auto', 'heap', and 'direct' -->
+        <property name="arguments" value="auto"/>
+    </bean>
+        
+    <!-- Use injection to set the buffer size for reading FLV files -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod">
+            <value>org.red5.io.flv.impl.FLVReader.setBufferSize</value>
+        </property>
+        <!-- Three buffer types are available 'auto', 'heap', and 'direct' -->
+        <property name="arguments" value="4096"/>
+    </bean>
 	
 	<!-- Low level access for recording to file -->
     <bean id="fileConsumer" scope="prototype" lazy-init="true" class="org.red5.server.stream.consumer.FileConsumer">        

@@ -21,6 +21,7 @@ package org.red5.server.net.rtmp;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.red5.io.object.StreamAction;
 import org.red5.server.api.event.IEventDispatcher;
 import org.red5.server.api.service.IPendingServiceCall;
 import org.red5.server.api.service.IPendingServiceCallback;
@@ -40,7 +41,6 @@ import org.red5.server.net.rtmp.event.Unknown;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.net.rtmp.message.Header;
 import org.red5.server.net.rtmp.message.Packet;
-import org.red5.server.net.rtmp.message.StreamAction;
 import org.red5.server.net.rtmp.status.StatusCodes;
 import org.red5.server.so.SharedObjectMessage;
 import org.slf4j.Logger;

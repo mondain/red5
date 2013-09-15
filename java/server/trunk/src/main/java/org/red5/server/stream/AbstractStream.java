@@ -20,11 +20,11 @@ package org.red5.server.stream;
 
 import java.util.concurrent.Semaphore;
 
+import org.red5.codec.IStreamCodecInfo;
 import org.red5.server.api.scope.IScope;
 import org.red5.server.api.scope.IScopeHandler;
 import org.red5.server.api.stream.IStream;
 import org.red5.server.api.stream.IStreamAwareScopeHandler;
-import org.red5.server.api.stream.IStreamCodecInfo;
 import org.red5.server.api.stream.StreamState;
 import org.red5.server.net.rtmp.event.Notify;
 

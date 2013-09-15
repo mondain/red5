@@ -1,8 +1,8 @@
 package org.red5.server.net.rtmp.event;
 
+import org.red5.io.object.StreamAction;
 import org.red5.server.api.event.IEvent;
 import org.red5.server.api.event.IEventListener;
-import org.red5.server.net.rtmp.message.StreamAction;
 
 /**
  * Represents a stream action occurring on a connection or stream. This event is used to notify an IEventHandler; it is not
