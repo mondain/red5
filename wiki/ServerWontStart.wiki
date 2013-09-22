@@ -99,6 +99,7 @@ A change was made in 1.0.2 which added static-access to the Serializer and Deser
 To fix this, perform the following steps:
 
 1. Open the conf/red5-common.xml file
+
 2. Remove these two nodes
 {{{
   <!-- Serializes objects to AMF binary -->
@@ -244,8 +245,8 @@ Exception org.springframework.beans.factory.BeanCreationException: Error creatin
 == Red5 1.0.2 RC1 to 1.0.2 RC2 ==
 Between these release candidates, the I/O classes were extracted into their own project and the following modifications must be made to allow the server to start.
 
-1. The red5-io-1.0.2.jar must be placed in your red5/lib directory
-2. The red5/conf/red5-common.xml configuration file must be modified as shown below
+  # The red5-io-1.0.2.jar must be placed in your red5/lib directory
+  # The red5/conf/red5-common.xml configuration file must be modified as shown below
 
 Object cache node:
 {{{
@@ -284,4 +285,3 @@ To
 		</property>
 	</bean>
 }}}
-
