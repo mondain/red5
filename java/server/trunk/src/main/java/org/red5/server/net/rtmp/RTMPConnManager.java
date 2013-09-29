@@ -59,7 +59,7 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 
 	protected boolean debug;
 
-	public static RTMPConnManager getInstance() {
+	public static IConnectionManager<RTMPConnection> getInstance() {
 		if (instance == null) {
 			if (applicationContext != null && applicationContext.containsBean("rtmpConnManager")) {
 				instance = (RTMPConnManager) applicationContext.getBean("rtmpConnManager");
@@ -67,14 +67,10 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 				instance = new RTMPConnManager();
 			}
 		}
-		return (RTMPConnManager) instance;
+		return instance;
 	}
 
-	/**
-	 * Creates a connection of the type specified.
-	 * 
-	 * @param connCls
-	 */
+	/** {@inheritDoc} */
 	public RTMPConnection createConnection(Class<?> connCls) {
 		RTMPConnection conn = null;
 		if (RTMPConnection.class.isAssignableFrom(connCls)) {
@@ -98,6 +94,11 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 		return conn;
 	}
 
+	/** {@inheritDoc} */
+	public RTMPConnection createConnection(Class<?> connCls, String sessionId) {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+	
 	/**
 	 * Adds a connection.
 	 * 
@@ -189,22 +190,14 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 		return conn;
 	}
 
-	/**
-	 * Returns all the current connections. It doesn't remove anything.
-	 * 
-	 * @return list of connections
-	 */
+	/** {@inheritDoc} */
 	public Collection<RTMPConnection> getAllConnections() {
 		ArrayList<RTMPConnection> list = new ArrayList<RTMPConnection>(connMap.size());
 		list.addAll(connMap.values());
 		return list;
 	}
 
-	/**
-	 * Removes all the current connections and returns them in a list.
-	 * 
-	 * @return list of connections
-	 */
+	/** {@inheritDoc} */
 	public Collection<RTMPConnection> removeConnections() {
 		ArrayList<RTMPConnection> list = new ArrayList<RTMPConnection>(connMap.size());
 		list.addAll(connMap.values());

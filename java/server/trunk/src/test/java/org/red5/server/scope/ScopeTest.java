@@ -32,7 +32,9 @@ import net.sourceforge.groboutils.junit.v1.TestRunnable;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.red5.server.ClientRegistry;
 import org.red5.server.Context;
 import org.red5.server.Server;
@@ -68,6 +70,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ContextConfiguration(locations = { "ScopeTest.xml" })
 public class ScopeTest extends AbstractJUnit4SpringContextTests {
 

@@ -7,7 +7,7 @@
 	<name>Red5 :: Server</name>
 	<description>The Red5 server</description>
 	<groupId>org.red5</groupId>
-	<version>1.0.2-RC2</version>
+	<version>1.0.2-RC3</version>
 	<url>https://code.google.com/p/red5/</url>
 	<inceptionYear>2005</inceptionYear>
 	<organization>
@@ -53,12 +53,11 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <red5-io.version>1.0.2</red5-io.version>
-        <red5-client.version>1.0.2-SNAPSHOT</red5-client.version>
 		<spring.version>3.1.4.RELEASE</spring.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<mina.version>2.0.7</mina.version>
 		<logback.version>1.0.13</logback.version>
-		<junit.version>4.10</junit.version>
+		<junit.version>4.11</junit.version>
 	</properties>
 	<scm>
 		<connection>scm:svn:http://red5.googlecode.com/svn/java/server/trunk</connection>
@@ -747,24 +746,6 @@
             <systemPath>${basedir}/lib/red5-io-1.0.2.jar</systemPath>
              -->
         </dependency>		
-		<dependency>
-			<groupId>org.red5</groupId>
-			<artifactId>red5-client</artifactId>
-			<version>${red5-client.version}</version>
-			<type>jar</type>
-			<scope>test</scope>
-			<!-- <scope>system</scope> <systemPath>${basedir}/lib/red5-client-1.0.2-SNAPSHOT.jar</systemPath> -->
-			<exclusions>
-				<exclusion>
-					<groupId>org.red5</groupId>
-					<artifactId>red5-server</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>xmlrpc</artifactId>
-					<groupId>xmlrpc</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 		<dependency>
 			<groupId>aopalliance</groupId>
 			<artifactId>aopalliance</artifactId>

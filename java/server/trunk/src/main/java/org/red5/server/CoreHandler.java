@@ -28,6 +28,7 @@ import org.red5.server.api.scope.IScope;
 import org.red5.server.api.scope.IScopeHandler;
 import org.red5.server.api.service.IServiceCall;
 import org.red5.server.jmx.mxbeans.CoreHandlerMXBean;
+import org.red5.server.net.IConnectionManager;
 import org.red5.server.net.rtmp.RTMPConnManager;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmpt.RTMPTConnection;
@@ -112,7 +113,7 @@ public class CoreHandler implements IScopeHandler, CoreHandlerMXBean {
 					conn.setClient(client);	
 				}
 				// add any rtmp connections to the manager
-				RTMPConnManager connManager = RTMPConnManager.getInstance();
+				IConnectionManager<RTMPConnection> connManager = RTMPConnManager.getInstance();
 				if (conn instanceof RTMPTConnection) {
 					connManager.setConnection((RTMPTConnection) conn);
 				} else if (conn instanceof RTMPConnection) {
