@@ -46,15 +46,12 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("unchecked")
 public class ClientSharedObject extends SharedObject implements IClientSharedObject, IEventDispatcher {
 
-	/**
-	 * Logger
-	 */
 	protected static Logger log = LoggerFactory.getLogger(ClientSharedObject.class);
 
 	/**
 	 * Initial synchronization flag
 	 */
-	private boolean initialSyncReceived;
+	private volatile boolean initialSyncReceived;
 
 	/**
 	 * Synchronization lock
@@ -147,27 +144,22 @@ public class ClientSharedObject extends SharedObject implements IClientSharedObj
 							initialSyncReceived = true;
 							notifyConnect();
 							break;
-
 						case CLIENT_CLEAR_DATA:
 							attributes.clear();
 							notifyClear();
 							break;
-
 						case CLIENT_DELETE_DATA:
 						case CLIENT_DELETE_ATTRIBUTE:
 							attributes.remove(event.getKey());
 							notifyDelete(event.getKey());
 							break;
-
 						case CLIENT_SEND_MESSAGE:
 							notifySendMessage(event.getKey(), (List<?>) event.getValue());
 							break;
-
 						case CLIENT_UPDATE_DATA:
 							attributes.putAll((Map<String, Object>) event.getValue());
 							notifyUpdate(event.getKey(), (Map<String, Object>) event.getValue());
 							break;
-
 						case CLIENT_UPDATE_ATTRIBUTE:
 							Object val = event.getValue();
 							// null values are not allowed in concurrent hash maps
@@ -177,7 +169,6 @@ public class ClientSharedObject extends SharedObject implements IClientSharedObj
 							// we will however send the null out to the subscribers
 							notifyUpdate(event.getKey(), val);
 							break;
-
 						default:
 							log.warn("Unknown SO event: {}", event.getType());
 					}

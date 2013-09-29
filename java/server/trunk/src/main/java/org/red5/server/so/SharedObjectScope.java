@@ -216,8 +216,7 @@ public class SharedObjectScope extends BasicScope implements ISharedObject, Stat
 		// Get previously registered handler for service
 		Object soHandler = getServiceHandler(serviceName);
 		if (soHandler == null && hasParent()) {
-			// No custom handler, check for service defined in the scope's
-			// context
+			// No custom handler, check for service defined in the scope's context
 			IContext context = getParent().getContext();
 			String serviceId = null;
 			try {
@@ -578,6 +577,7 @@ public class SharedObjectScope extends BasicScope implements ISharedObject, Stat
 			}
 			try {
 				for (ISharedObjectEvent event : msg.getEvents()) {
+					final String key = event.getKey();
 					switch (event.getType()) {
 						case SERVER_CONNECT:
 							if (!isConnectionAllowed()) {
@@ -602,7 +602,6 @@ public class SharedObjectScope extends BasicScope implements ISharedObject, Stat
 							}
 							break;
 						case SERVER_SET_ATTRIBUTE:
-							final String key = event.getKey();
 							final Object value = event.getValue();
 							if (!isWriteAllowed(key, value)) {
 								so.returnAttributeValue(key);
@@ -612,22 +611,20 @@ public class SharedObjectScope extends BasicScope implements ISharedObject, Stat
 							}
 							break;
 						case SERVER_DELETE_ATTRIBUTE:
-							final String property = event.getKey();
-							if (!isDeleteAllowed(property)) {
-								so.returnAttributeValue(property);
+							if (!isDeleteAllowed(key)) {
+								so.returnAttributeValue(key);
 								so.returnError(SO_NO_WRITE_ACCESS);
 							} else {
-								removeAttribute(property);
+								removeAttribute(key);
 							}
 							break;
 						case SERVER_SEND_MESSAGE:
-							final String message = event.getKey();
 							final List<?> arguments = (List<?>) event.getValue();
 							// Ignore request silently if not allowed
-							if (isSendAllowed(message, arguments)) {
-								sendMessage(message, arguments);
+							if (isSendAllowed(key, arguments)) {
+								sendMessage(key, arguments);
 							} else {
-								log.debug("Send is not allowed for {}", message);
+								log.debug("Send is not allowed for {}", key);
 							}
 							break;
 						default:
@@ -700,7 +697,7 @@ public class SharedObjectScope extends BasicScope implements ISharedObject, Stat
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {
-		return "Shared Object: " + getName();
+		return "SharedObjectScope: " + getName();
 	}
 
 	/** {@inheritDoc} */

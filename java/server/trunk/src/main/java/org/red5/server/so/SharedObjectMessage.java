@@ -27,12 +27,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.red5.server.api.event.IEventListener;
 import org.red5.server.net.rtmp.event.BaseEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Shared object event
  */
 public class SharedObjectMessage extends BaseEvent implements ISharedObjectMessage {
 
+	private static Logger log = LoggerFactory.getLogger(SharedObjectMessage.class);
+	
 	private static final long serialVersionUID = -8128704039659990049L;
 
 	/**
@@ -143,7 +147,7 @@ public class SharedObjectMessage extends BaseEvent implements ISharedObjectMessa
 	protected void setPersistent(boolean persistent) {
 		this.persistent = persistent;
 	}
-
+	
 	/** {@inheritDoc} */
 	public void addEvent(ISharedObjectEvent event) {
 		events.add(event);
@@ -163,8 +167,12 @@ public class SharedObjectMessage extends BaseEvent implements ISharedObjectMessa
 	}
 
 	/** {@inheritDoc} */
-	public void addEvent(ISharedObjectEvent.Type type, String key, Object value) {
-		events.add(new SharedObjectEvent(type, key, value));
+	public boolean addEvent(ISharedObjectEvent.Type type, String key, Object value) {
+		SharedObjectEvent event = new SharedObjectEvent(type, key, value);
+		if (!events.contains(event)) {
+			return events.add(event);
+		} 
+		return false;
 	}
 
 	/** {@inheritDoc} */
@@ -198,7 +206,7 @@ public class SharedObjectMessage extends BaseEvent implements ISharedObjectMessa
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(getClass().getSimpleName());
-		sb.append(": ").append(name).append(" v=").append(version).append(" { ");
+		sb.append(": ").append(name).append(" v=").append(version).append(" persistent=").append(persistent).append(" { ");
 		for (ISharedObjectEvent event : events) {
 			sb.append(event);
 			sb.append(' ');
@@ -216,16 +224,22 @@ public class SharedObjectMessage extends BaseEvent implements ISharedObjectMessa
 		persistent = in.readBoolean();
 		Object o = in.readObject();
 		if (o != null) {
-			System.out.println("SharedObjectMessage: events type=" + o.getClass().getName());
+			log.trace("events type: {}", o.getClass().getName());
+			if (o instanceof ConcurrentLinkedQueue) {
+				events = (ConcurrentLinkedQueue<ISharedObjectEvent>) o;
+			}
 		}
-		if (o != null && o instanceof ConcurrentLinkedQueue) {
-			events = (ConcurrentLinkedQueue<ISharedObjectEvent>) o;
+		if (log.isTraceEnabled()) {
+			log.trace("readExternal: {}", toString());
 		}
 	}
 
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		super.writeExternal(out);
+		if (log.isTraceEnabled()) {
+			log.trace("writeExternal: {}", toString());
+		}
 		out.writeObject(name);
 		out.writeInt(version);
 		out.writeBoolean(persistent);

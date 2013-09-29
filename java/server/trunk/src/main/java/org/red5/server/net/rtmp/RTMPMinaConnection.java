@@ -140,18 +140,22 @@ public class RTMPMinaConnection extends RTMPConnection implements RTMPMinaConnec
 	@Override
 	public void handleMessageReceived(Packet message) {
 		log.trace("handleMessageReceived - {}", sessionId);
-		try {
-			executor.execute(new ReceivedMessageTask(sessionId, message, handler));
-		} catch (Exception e) {
-			log.warn("Incoming message handling failed on {}", getSessionId(), e);
-			if (log.isDebugEnabled()) {
-				log.debug("Execution rejected on {} - {}", getSessionId(), state.states[getStateCode()]);
-				log.debug("Lock permits - decode: {} encode: {}", decoderLock.availablePermits(), encoderLock.availablePermits());
+		if (executor != null) {
+			try {
+				executor.execute(new ReceivedMessageTask(sessionId, message, handler));
+			} catch (Exception e) {
+				log.warn("Incoming message handling failed on {}", getSessionId(), e);
+				if (log.isDebugEnabled()) {
+					log.debug("Execution rejected on {} - {}", getSessionId(), state.states[getStateCode()]);
+					log.debug("Lock permits - decode: {} encode: {}", decoderLock.availablePermits(), encoderLock.availablePermits());
+				}
+				// ensure the connection is not closing and if it is drop the runnable
+				if (state.getState() == RTMP.STATE_CONNECTED) {
+					onInactive();
+				}
 			}
-			// ensure the connection is not closing and if it is drop the runnable
-			if (state.getState() == RTMP.STATE_CONNECTED) {
-				onInactive();
-			}
+		} else {
+			log.warn("Executor is null on {} state: {}", getSessionId(), state.states[getStateCode()]);
 		}
 	}
 

@@ -304,7 +304,7 @@ public class RTMPTServlet extends HttpServlet {
 			returnMessage((byte) 0, resp);
 			connection.close();
 		} else {
-			handleBadRequest(String.format("Close: unknown client session: %d", requestInfo.get().getSessionId()), resp);
+			handleBadRequest(String.format("Close: unknown client session: %s", requestInfo.get().getSessionId()), resp);
 		}
 	}
 

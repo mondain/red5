@@ -181,8 +181,11 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 	/** {@inheritDoc} */
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-		log.warn("Exception caught on session: {}", session.getId(), cause.getCause());
 		String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
+		log.warn("Exception caught on session: {} id: {}", session.getId(), sessionId, cause);
+		if (log.isDebugEnabled()) {
+			cause.printStackTrace();
+		}
 		if (cause instanceof IOException) {
 			// Mina states that the connection will be automatically closed when an IOException is caught
 			log.debug("IOException caught on {}", sessionId);
