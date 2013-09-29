@@ -28,8 +28,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.red5.logging.Red5LoggerFactory;
+import org.slf4j.Logger;
+
 public class ServletUtils {
 
+	private static Logger log = Red5LoggerFactory.getLogger(ServletUtils.class);
+	
 	/**
 	 * Default value is 2048.
 	 */
@@ -57,12 +62,19 @@ public class ServletUtils {
 	 * @throws java.io.IOException on error
 	 */
 	public static void copy(InputStream input, OutputStream output, int bufferSize) throws IOException {
-		byte[] buf = new byte[bufferSize];
+		int availableBytes = input.available();
+		log.debug("copy - bufferSize: {} available: {}", bufferSize, availableBytes);
+		byte[] buf = null;
+		if (availableBytes >= bufferSize) {
+			buf = new byte[bufferSize];
+		} else {
+			buf = new byte[availableBytes];
+		}
 		int bytesRead = input.read(buf);
 		while (bytesRead != -1) {
 			output.write(buf, 0, bytesRead);
 			bytesRead = input.read(buf);
-		}
+		}				
 		output.flush();
 	}
 

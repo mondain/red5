@@ -42,6 +42,8 @@ import ch.qos.logback.core.util.StatusPrinter;
  */
 public class LoggingContextSelector implements ContextSelector {
 
+	private static boolean debug = false;
+	
 	private static final ConcurrentMap<String, LoggerContext> contextMap = new ConcurrentHashMap<String, LoggerContext>(6, 0.9f, 1);
 
 	private static final Semaphore lock = new Semaphore(1, true);
@@ -53,22 +55,34 @@ public class LoggingContextSelector implements ContextSelector {
 	private volatile String contextName;
 
 	private volatile String contextConfigFile;
+	
+	static {
+		debug = System.getProperty("logback.debug") == null ? false : Boolean.valueOf(System.getProperty("logback.debug"));
+	}
 
 	public LoggingContextSelector(LoggerContext context) {
-		System.out.printf("Setting default logging context: %s\n", context.getName());
+		if (debug) {
+			System.out.printf("Setting default logging context: %s\n", context.getName());
+		}
 		defaultContext = context;
 	}
 
 	public LoggerContext getLoggerContext() {
-		//System.out.println("getLoggerContext request");		
+		if (debug) {
+			System.out.println("getLoggerContext request");		
+		}
 		// First check if ThreadLocal has been set already
 		LoggerContext lc = threadLocal.get();
 		if (lc != null) {
-			//System.out.printf("Thread local found: %s\n", lc.getName());
+			if (debug) {
+				System.out.printf("Thread local found: %s\n", lc.getName());
+			}
 			return lc;
 		}
 		if (contextName == null) {
-			//System.out.println("Context name was null, returning default");
+			if (debug) {
+				System.out.println("Context name was null, returning default");
+			}
 			// We return the default context
 			return defaultContext;
 		} else {
@@ -90,7 +104,9 @@ public class LoggingContextSelector implements ContextSelector {
 					} else {
 						contextConfigFile = String.format(overrideProperty, contextName);
 					}
-					System.out.printf("Context logger config file: %s\n", contextConfigFile);
+					if (debug) {
+						System.out.printf("Context logger config file: %s\n", contextConfigFile);
+					}
 					ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 					//System.out.printf("Thread context cl: %s\n", classloader);
 					//ClassLoader classloader2 = Loader.class.getClassLoader();
@@ -114,7 +130,9 @@ public class LoggingContextSelector implements ContextSelector {
 							StatusPrinter.print(loggerContext);
 						}
 					}
-					System.out.printf("Adding logger context: %s to map for context: %s\n", loggerContext.getName(), contextName);
+					if (debug) {
+						System.out.printf("Adding logger context: %s to map for context: %s\n", loggerContext.getName(), contextName);
+					}
 					contextMap.put(contextName, loggerContext);
 				}
 			} catch (InterruptedException e) {
@@ -127,8 +145,9 @@ public class LoggingContextSelector implements ContextSelector {
 	}
 
 	public LoggerContext getLoggerContext(String name) {
-		//System.out.printf("getLoggerContext request for %s\n", name);
-		//System.out.printf("Context is in map: %s\n", contextMap.containsKey(name));
+		if (debug) {
+			System.out.printf("getLoggerContext request for %s in context map %s\n", name, contextMap.containsKey(name));
+		}
 		return contextMap.get(name);
 	}
 

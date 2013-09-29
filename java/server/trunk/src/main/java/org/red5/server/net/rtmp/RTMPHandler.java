@@ -171,18 +171,22 @@ public class RTMPHandler extends BaseRTMPHandler {
 	 */
 	protected void invokeCall(RTMPConnection conn, IServiceCall call) {
 		final IScope scope = conn.getScope();
-		if (scope.hasHandler()) {
-			final IScopeHandler handler = scope.getHandler();
-			log.debug("Scope: {} handler: {}", scope, handler);
-			if (!handler.serviceCall(conn, call)) {
-				// XXX: What to do here? Return an error?
-				log.warn("Scope: {} handler failed on service call", scope.getName(), new Exception("Service call failed"));
-				return;
-			}
+		if (scope != null) {
+    		if (scope.hasHandler()) {
+    			final IScopeHandler handler = scope.getHandler();
+    			log.debug("Scope: {} handler: {}", scope, handler);
+    			if (!handler.serviceCall(conn, call)) {
+    				// XXX: What to do here? Return an error?
+    				log.warn("Scope: {} handler failed on service call", scope.getName(), new Exception("Service call failed"));
+    				return;
+    			}
+    		}
+    		final IContext context = scope.getContext();
+    		log.debug("Context: {}", context);
+    		context.getServiceInvoker().invoke(call, scope);
+		} else {
+			log.warn("Scope was null for invoke: {} connection state: {}", call.getServiceMethodName(), conn.getStateCode());
 		}
-		final IContext context = scope.getContext();
-		log.debug("Context: {}", context);
-		context.getServiceInvoker().invoke(call, scope);
 	}
 
 	/**
@@ -222,6 +226,7 @@ public class RTMPHandler extends BaseRTMPHandler {
 			return;
 		}
 		boolean disconnectOnReturn = false;
+		// "connected" here means that there is a scope associated with the connection (post-"connect")
 		boolean connected = conn.isConnected();
 		if (connected) {
 			// If this is not a service call then handle connection...

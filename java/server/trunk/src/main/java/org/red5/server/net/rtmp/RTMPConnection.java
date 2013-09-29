@@ -238,7 +238,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 		}
 
 	};
-	
+
 	/**
 	 * Scheduling service
 	 */
@@ -1140,14 +1140,14 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 	 * @param events
 	 */
 	public void sendSharedObjectMessage(String name, int currentVersion, boolean persistent, ConcurrentLinkedQueue<ISharedObjectEvent> events) {
-		// get the channel for so updates
-		Channel channel = getChannel((byte) 3);
-		log.trace("Send to channel: {}", channel);
 		// create a new sync message for every client to avoid concurrent access through multiple threads
 		SharedObjectMessage syncMessage = state.getEncoding() == Encoding.AMF3 ? new FlexSharedObjectMessage(null, name, currentVersion, persistent) : new SharedObjectMessage(
 				null, name, currentVersion, persistent);
 		syncMessage.addEvents(events);
 		try {
+			// get the channel for so updates
+			Channel channel = getChannel((byte) 3);
+			log.trace("Send to channel: {}", channel);
 			channel.write(syncMessage);
 		} catch (Exception e) {
 			log.warn("Exception sending shared object", e);
@@ -1278,12 +1278,11 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 	public String toString() {
 		if (log.isDebugEnabled()) {
 			String id = getClient() != null ? getClient().getId() : null;
-			return String.format("%1$s %2$s:%3$s client: %4$s session: %5$s state: %6$s", new Object[] { getClass().getSimpleName(), getRemoteAddress(), getRemotePort(), id,
+			return String.format("%1$s %2$s:%3$s to %4$s client: %5$s session: %6$s state: %7$s", new Object[] { getClass().getSimpleName(), getRemoteAddress(), getRemotePort(), getHost(), id,
 					getSessionId(), getState().states[getStateCode()] });
 		} else {
-			Object[] args = new Object[] { getClass().getSimpleName(), getRemoteAddress(), getRemotePort(), getHost(), getReadBytes(), getWrittenBytes(),
-					getState().states[getStateCode()] };
-			return String.format("%1$s from %2$s:%3$s to %4$s (in: %5$s out: %6$s) state: %7$s", args);
+			Object[] args = new Object[] { getClass().getSimpleName(), getRemoteAddress(), getReadBytes(), getWrittenBytes(), getSessionId(), getState().states[getStateCode()] };
+			return String.format("%1$s from %2$s (in: %3$s out: %4$s) session: %5$s state: %6$s", args);
 		}
 	}
 

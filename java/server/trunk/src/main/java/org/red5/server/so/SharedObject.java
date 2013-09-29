@@ -19,6 +19,7 @@
 package org.red5.server.so;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +41,7 @@ import org.red5.server.api.scope.ScopeType;
 import org.red5.server.api.statistics.ISharedObjectStatistics;
 import org.red5.server.api.statistics.support.StatisticsCounter;
 import org.red5.server.net.rtmp.RTMPConnection;
+import org.red5.server.net.rtmp.codec.RTMP;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.so.ISharedObjectEvent.Type;
 import org.slf4j.Logger;
@@ -79,8 +81,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	protected String path = "";
 
 	/**
-	 * true if the SharedObject was stored by the persistence framework (NOT in database,
-	 * just plain serialization to the disk) and can be used later on reconnection
+	 * true if the SharedObject was stored by the persistence framework and can be used later on reconnection
 	 */
 	protected boolean persistent;
 
@@ -117,12 +118,12 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	/**
 	 * Synchronization events
 	 */
-	protected ConcurrentLinkedQueue<ISharedObjectEvent> syncEvents = new ConcurrentLinkedQueue<ISharedObjectEvent>();
+	protected volatile ConcurrentLinkedQueue<ISharedObjectEvent> syncEvents = new ConcurrentLinkedQueue<ISharedObjectEvent>();
 
 	/**
 	 * Listeners
 	 */
-	protected CopyOnWriteArraySet<IEventListener> listeners = new CopyOnWriteArraySet<IEventListener>();
+	protected volatile CopyOnWriteArraySet<IEventListener> listeners = new CopyOnWriteArraySet<IEventListener>();
 
 	/**
 	 * Event listener, actually RTMP connection
@@ -288,6 +289,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 		log.debug("sendUpdates");
 		// get the current version
 		final int currentVersion = getVersion();
+		log.debug("Current version: {}", currentVersion);
 		// get the name
 		final String name = getName();
 		//get owner events
@@ -330,17 +332,24 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 			}
 			// get the listeners
 			Set<IEventListener> listeners = getListeners();
+			if (log.isDebugEnabled()) {
+				log.debug("Listeners: {}", listeners);
+			}
 			// updates all registered clients of this shared object
 			for (IEventListener listener : listeners) {
 				if (listener != source) {
 					if (listener instanceof RTMPConnection) {
 						final RTMPConnection con = (RTMPConnection) listener;
-						// create a worker
-						SharedObjectService.submitTask(new Runnable() { 
-							public void run() {
-								con.sendSharedObjectMessage(name, currentVersion, persistent, events);
-							}
-						});
+						if (con.getStateCode() == RTMP.STATE_CONNECTED) {
+    						// create a worker
+    						SharedObjectService.submitTask(new Runnable() { 
+    							public void run() {
+    								con.sendSharedObjectMessage(name, currentVersion, persistent, events);
+    							}
+    						});
+						} else {
+							log.debug("Skipping unconnected connection");
+						}
 					} else {
 						log.warn("Can't send sync message to unknown connection {}", listener);
 					}
@@ -392,7 +401,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	protected void returnAttributeValue(String name) {
 		ownerMessage.addEvent(Type.CLIENT_UPDATE_DATA, name, getAttribute(name));
 	}
-
+	
 	/**
 	 * Return attribute by name and set if it doesn't exist yet.
 	 * @param name         Attribute name
@@ -490,18 +499,19 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 		notifyModified();
 		return result;
 	}
-
+	
 	/**
 	 * Broadcast event to event handler
 	 * @param handler         Event handler
 	 * @param arguments       Arguments
 	 */
 	protected void sendMessage(String handler, List<?> arguments) {
-		ownerMessage.addEvent(Type.CLIENT_SEND_MESSAGE, handler, arguments);
-		syncEvents.add(new SharedObjectEvent(Type.CLIENT_SEND_MESSAGE, handler, arguments));
-		sendStats.incrementAndGet();
-		if (log.isTraceEnabled()) {
-			log.trace("send message args: {}", arguments);
+		if (ownerMessage.addEvent(Type.CLIENT_SEND_MESSAGE, handler, arguments)) {
+    		syncEvents.add(new SharedObjectEvent(Type.CLIENT_SEND_MESSAGE, handler, arguments));
+    		sendStats.incrementAndGet();
+    		if (log.isTraceEnabled()) {
+    			log.trace("Send message: {}", arguments);
+    		}
 		}
 	}
 
@@ -605,7 +615,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	 * @return Value for property 'listeners'.
 	 */
 	public Set<IEventListener> getListeners() {
-		return listeners;
+		return Collections.unmodifiableSet(listeners);
 	}
 
 	/**

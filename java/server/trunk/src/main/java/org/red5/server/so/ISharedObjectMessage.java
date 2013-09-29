@@ -62,8 +62,9 @@ public interface ISharedObjectMessage extends IRTMPEvent {
      * @param type           Event type
      * @param key            Handler key
      * @param value          Event value (like arguments)
+     * @return true if event is added and false if it is not added
      */
-    public void addEvent(ISharedObjectEvent.Type type, String key, Object value);
+    public boolean addEvent(ISharedObjectEvent.Type type, String key, Object value);
 
     /**
      * Add event handler
