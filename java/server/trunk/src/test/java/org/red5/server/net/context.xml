@@ -33,10 +33,24 @@
 	<bean id="statusObjectService" autowire="byType" class="org.red5.server.net.rtmp.status.StatusObjectService" />
 		
     <!-- RTMP -->
-        
+    <bean id="rtmpScheduler" scope="prototype" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="poolSize" value="2" />  
+        <property name="waitForTasksToCompleteOnShutdown" value="true"/>
+        <property name="daemon" value="true"/>
+    </bean>        
+            
+    <bean id="messageExecutor" scope="prototype" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">  
+      <property name="corePoolSize" value="1" />  
+      <property name="maxPoolSize" value="2" />  
+      <property name="queueCapacity" value="4" /> 
+      <property name="waitForTasksToCompleteOnShutdown" value="true"/>
+      <property name="daemon" value="true"/>
+    </bean>       
+    
+    <bean id="rtmpConnManager" class="org.red5.server.net.rtmp.RTMPConnManager" />
+
     <bean id="rtmpCodecFactory" class="org.red5.server.net.rtmp.codec.RTMPMinaCodecFactory"/>
-        
-    <bean id="rtmpMinaConnManager" class="org.red5.server.net.rtmp.RTMPConnManager" />        
+             
         
     <!-- RTMP Handler -->
     <bean id="rtmpHandler" class="org.red5.server.net.rtmp.RTMPHandler">
@@ -58,6 +72,10 @@
 
     <!-- RTMP Mina Connection -->
     <bean id="rtmpMinaConnection" scope="prototype" class="org.red5.server.net.rtmp.RTMPMinaConnection">
+        <!-- Executor for scheduled tasks -->
+        <property name="scheduler" ref="rtmpScheduler" />
+        <!-- Executor for incoming messages -->
+        <property name="executor" ref="messageExecutor" />
         <property name="pingInterval" value="1000" />
         <property name="maxInactivity" value="60000" />
         <property name="maxHandshakeTimeout" value="5000" />
@@ -65,26 +83,37 @@
         <property name="bandwidthDetection" value="false" />
     </bean>
     
-    <!-- Streamable file factory -->
-    <bean id="streamableFileFactory" class="org.red5.io.StreamableFileFactory">
+    <bean id="streamableFileFactory" class="org.red5.server.stream.StreamableFileFactory">
         <property name="services">
             <list>
-                <bean id="flvFileService" class="org.red5.io.flv.impl.FLVService">
+                <bean id="flvFileService" class="org.red5.server.service.flv.impl.FLVService">
                     <property name="generateMetadata" value="true"/>
                 </bean>
-                <bean id="mp3FileService" class="org.red5.io.mp3.impl.MP3Service"/>
-                <bean id="mp4FileService" class="org.red5.io.mp4.impl.MP4Service"/>
-                <bean id="m4aFileService" class="org.red5.io.m4a.impl.M4AService"/>
+                <bean id="mp3FileService" class="org.red5.server.service.mp3.impl.MP3Service"/>
+                <bean id="mp4FileService" class="org.red5.server.service.mp4.impl.MP4Service"/>
+                <bean id="m4aFileService" class="org.red5.server.service.m4a.impl.M4AService"/>
             </list>
         </property>
+    </bean>
+
+    <bean id="streamFilenameGenerator" class="org.red5.server.FilenameGenerator" >
+        <property name="playbackPath" value="/target/test-classes/fixtures" />
+        <property name="recordPath" value="/target/test-classes/fixtures" />
     </bean>
     
     <!-- Handles creation / lookup of shared objects -->
     <bean id="sharedObjectService" class="org.red5.server.so.SharedObjectService">
+        <property name="maximumEventsPerUpdate" value="8"/>
         <property name="persistenceClassName">
-            <value>
-                org.red5.server.persistence.FilePersistence
-            </value>
+            <value>org.red5.server.persistence.FilePersistence</value>
+        </property>
+        <property name="scheduler">
+            <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+                <property name="poolSize" value="4" />  
+                <property name="waitForTasksToCompleteOnShutdown" value="false"/>
+                <property name="daemon" value="true"/>
+                <property name="threadNamePrefix" value="SharedObjectScheduler-"/>
+            </bean>
         </property>
     </bean>
     
@@ -158,10 +187,5 @@
     <bean id="web.handler" class="org.red5.server.adapter.MultiThreadedApplicationAdapter" />
      -->
     <bean id="web.handler" class="org.red5.server.so.SOApplication" />
-
-    <bean id="streamFilenameGenerator" class="org.red5.server.FilenameGenerator" >
-        <property name="playbackPath" value="/target/test-classes/fixtures" />
-        <property name="recordPath" value="/target/test-classes/fixtures" />
-    </bean>
     
 </beans>

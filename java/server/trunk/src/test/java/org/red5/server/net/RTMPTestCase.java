@@ -22,6 +22,8 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
 import org.red5.server.net.rtmp.codec.RTMPProtocolDecoder;
 import org.red5.server.net.rtmp.codec.RTMPProtocolEncoder;
 import org.red5.server.net.rtmp.event.Invoke;
@@ -30,6 +32,8 @@ import org.red5.server.net.rtmp.message.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("deprecation")
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RTMPTestCase extends TestCase implements Constants {
 
 	protected static Logger log = LoggerFactory.getLogger(RTMPTestCase.class);

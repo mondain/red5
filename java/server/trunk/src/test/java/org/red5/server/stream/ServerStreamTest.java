@@ -5,7 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.red5.server.api.scope.IScope;
 import org.red5.server.api.stream.IServerStream;
 import org.red5.server.api.stream.support.SimplePlayItem;
@@ -14,6 +16,7 @@ import org.red5.server.scope.WebScope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ContextConfiguration(locations = { "../service/testcontext.xml" })
 public class ServerStreamTest extends AbstractJUnit4SpringContextTests {
 
@@ -63,7 +66,7 @@ public class ServerStreamTest extends AbstractJUnit4SpringContextTests {
 	}
 
 	@Test
-	public void testRemoveItem() {
+	public void zzremoveItem() {
 		SimplePlayItem item = SimplePlayItem.build("f1");
 		serverStream.addItem(item);
 		SimplePlayItem item2 = SimplePlayItem.build("f2");
@@ -74,7 +77,7 @@ public class ServerStreamTest extends AbstractJUnit4SpringContextTests {
 	}
 
 	@Test
-	public void testRemoveAllItems() {
+	public void zzzremoveAllItems() {
 		SimplePlayItem item = SimplePlayItem.build("f1");
 		serverStream.addItem(item);
 		assertTrue(serverStream.getItemSize() == 1);
@@ -100,16 +103,18 @@ public class ServerStreamTest extends AbstractJUnit4SpringContextTests {
 
 	@Test
 	public void testNextItem() {
-		SimplePlayItem item = SimplePlayItem.build("f1");
+		SimplePlayItem item = SimplePlayItem.build("h264_aac");
 		serverStream.addItem(item);
-		SimplePlayItem item2 = SimplePlayItem.build("f2");
+		SimplePlayItem item2 = SimplePlayItem.build("h264_speex");
 		serverStream.addItem(item2);
 		//serverStream.start();
-		System.out.printf("#1 %s #2 %s\n", serverStream.getItem(0).getName(), serverStream.getItem(1).getName());
+		System.out.printf("Play items: #1 %s #2 %s\n", serverStream.getItem(0).getName(), serverStream.getItem(1).getName());
 		serverStream.nextItem();
-		System.out.printf("#1 %s #2 %s\n", serverStream.getItem(0).getName(), serverStream.getItem(1).getName());
+		System.out.printf("Play items: #1 %s #2 %s\n", serverStream.getItem(0).getName(), serverStream.getItem(1).getName());
 		assertEquals(1, serverStream.getCurrentItemIndex());
-		assertEquals("f2", serverStream.getCurrentItem().getName());
+		serverStream.start();
+		System.out.printf("Item name: %s", serverStream.getCurrentItem().getName());
+		assertEquals("h264_speex", serverStream.getCurrentItem().getName());
 	}
 
 }

@@ -27,6 +27,7 @@ import java.util.Set;
 import net.sourceforge.groboutils.junit.v1.MultiThreadedTestRunner;
 import net.sourceforge.groboutils.junit.v1.TestRunnable;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.red5.server.api.scope.IScope;
 import org.red5.server.api.so.ISharedObject;
@@ -45,6 +46,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
+@FixMethodOrder
 @ContextConfiguration(locations = { "SharedObjectTest.xml" })
 public class SharedObjectTest extends AbstractJUnit4SpringContextTests {
 

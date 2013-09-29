@@ -44,6 +44,13 @@ public interface IConnectionManager<T> {
 	 * @return connection
 	 */	
 	T getConnectionBySessionId(String sessionId);
+	
+	/**
+	 * Returns all the current connections. It doesn't remove anything.
+	 * 
+	 * @return list of connections
+	 */
+	Collection<T> getAllConnections();	
 
 	/**
 	 * Creates a connection based on the given type class.
@@ -52,6 +59,14 @@ public interface IConnectionManager<T> {
 	 * @return connection
 	 */
 	T createConnection(Class<?> connCls);
+	
+	/**
+	 * Creates a connection of the type specified with associated session id.
+	 * 
+	 * @param connCls
+	 * @param sessionId
+	 */	
+	T createConnection(Class<?> connCls, String sessionId);
 
 	/**
 	 * Removes a connection matching the client id specified. If found, the connection
