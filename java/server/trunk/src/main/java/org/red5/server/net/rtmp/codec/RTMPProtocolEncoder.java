@@ -406,7 +406,10 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
 				}
 				header.setTimerBase(timer);
 				header.setTimerDelta(0);
-				((RTMPConnection) Red5.getConnectionLocal()).getState().setLastFullTimestampWritten(header.getChannelId(), timer);
+				RTMPConnection conn = (RTMPConnection) Red5.getConnectionLocal();
+				if (conn != null) {
+					conn.getState().setLastFullTimestampWritten(header.getChannelId(), timer);
+				}
 				break;
 			case HEADER_SAME_SOURCE:
 				timer = (int) RTMPUtils.diffTimestamps(header.getTimer(), lastHeader.getTimer());
