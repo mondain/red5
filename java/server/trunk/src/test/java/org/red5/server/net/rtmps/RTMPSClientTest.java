@@ -18,8 +18,9 @@
 
 package org.red5.server.net.rtmps;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -61,7 +62,7 @@ public class RTMPSClientTest extends AbstractJUnit4SpringContextTests {
 
 	@Test
 	public void testStartup() {
-		Assert.assertTrue(true);
+		assertTrue(true);
 	}
 	
 }
