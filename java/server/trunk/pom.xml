@@ -314,6 +314,12 @@
 		</resources>
 		<testResources>
 			<testResource>
+				<directory>src/test/java</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</testResource>
+			<testResource>
 				<directory>src/test/resources</directory>
 			</testResource>
 			<testResource>
@@ -322,6 +328,9 @@
 					<include>**/*.xml</include>
 					<include>**/*.properties</include>
 					<include>**/*.flv</include>
+					<include>**/*.mp3</include>
+					<include>**/*.mp4</include>
+					<include>**/*.m4a</include>
 				</includes>
 			</testResource>
 		</testResources>
