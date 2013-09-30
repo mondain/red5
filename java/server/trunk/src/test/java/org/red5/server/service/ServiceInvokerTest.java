@@ -18,7 +18,10 @@
 
 package org.red5.server.service;
 
+
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -27,7 +30,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import junit.framework.Assert;
 import net.sourceforge.groboutils.junit.v1.MultiThreadedTestRunner;
 import net.sourceforge.groboutils.junit.v1.TestRunnable;
 
@@ -83,9 +85,9 @@ public class ServiceInvokerTest extends AbstractJUnit4SpringContextTests {
 
 	@Test
 	public void testAppContextLoaded() {
-		Assert.assertNotNull(applicationContext);
-		//Assert.assertNotNull(applicationContext.getBean("serviceInvoker"));
-		Assert.assertNotNull(applicationContext.getBean("echoService"));
+		assertNotNull(applicationContext);
+		//assertNotNull(applicationContext.getBean("serviceInvoker"));
+		assertNotNull(applicationContext.getBean("echoService"));
 	}
 
 	@Test
@@ -100,13 +102,13 @@ public class ServiceInvokerTest extends AbstractJUnit4SpringContextTests {
 		Object[] params = new Object[] { "Woot this is cool" };
 		Call call = new Call("echoService", "doesntExist", params);
 		invoker.invoke(call, service);
-		Assert.assertEquals(false, call.isSuccess());
-		Assert.assertEquals(Call.STATUS_METHOD_NOT_FOUND, call.getStatus());
+		assertEquals(false, call.isSuccess());
+		assertEquals(Call.STATUS_METHOD_NOT_FOUND, call.getStatus());
 		params = new Object[] { "too", "many", "params" };
 		call = new Call("echoService", "echoNumber", params);
 		invoker.invoke(call, service);
-		Assert.assertEquals(false, call.isSuccess());
-		Assert.assertEquals(Call.STATUS_METHOD_NOT_FOUND, call.getStatus());
+		assertEquals(false, call.isSuccess());
+		assertEquals(Call.STATUS_METHOD_NOT_FOUND, call.getStatus());
 	}
 
 	@Test
@@ -121,8 +123,8 @@ public class ServiceInvokerTest extends AbstractJUnit4SpringContextTests {
 		Object service = applicationContext.getBean("echoService");
 		PendingCall call = new PendingCall("echoService", "echoString", params);
 		invoker.invoke(call, service);
-		Assert.assertEquals(true, call.isSuccess());
-		Assert.assertEquals(params[0], call.getResult());
+		assertEquals(true, call.isSuccess());
+		assertEquals(params[0], call.getResult());
 	}
 
 	/**
@@ -203,7 +205,7 @@ public class ServiceInvokerTest extends AbstractJUnit4SpringContextTests {
 			fail("Recipient not found");
 		}
 
-		Assert.assertTrue(((SvcCapableTestConnection) recipient).getPrivateMessageCount() == 1);
+		assertTrue(((SvcCapableTestConnection) recipient).getPrivateMessageCount() == 1);
 		
 	}
 
@@ -236,17 +238,17 @@ public class ServiceInvokerTest extends AbstractJUnit4SpringContextTests {
 		for (TestRunnable r : trs) {
 			ConnectionWorker wkr = (ConnectionWorker) r;
 			String name = (wkr.getName());
-			Assert.assertNotNull(name);
+			assertNotNull(name);
 			//close them all down
 			wkr.close();
 			//
 			int msgCount = wkr.getServiceCapableConnection().getPrivateMessageCount();
 			log.debug("Message count: {}", msgCount);
-			Assert.assertTrue(msgCount > threadCount);
+			assertTrue(msgCount > threadCount);
 		}
 
 		//make sure all threads finished
-		Assert.assertEquals(threadCount, finishedCount.get());
+		assertEquals(threadCount, finishedCount.get());
 
 	}
 

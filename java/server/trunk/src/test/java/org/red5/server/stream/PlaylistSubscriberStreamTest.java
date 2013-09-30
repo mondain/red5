@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-@FixMethodOrder(MethodSorters.JVM)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ContextConfiguration(locations = { "PlaylistSubscriberStreamTest.xml" })
 public class PlaylistSubscriberStreamTest extends AbstractJUnit4SpringContextTests {
 
@@ -151,13 +151,13 @@ public class PlaylistSubscriberStreamTest extends AbstractJUnit4SpringContextTes
 	}
 
 	@Test
-	public void testZZStop() {
+	public void zzStop() {
 		System.out.println("testStop");
 		pss.stop();
 	}
 
 	@Test
-	public void testZZZClose() {
+	public void zzzClose() {
 		System.out.println("testClose");
 		pss.close();
 	}
