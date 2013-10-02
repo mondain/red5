@@ -110,16 +110,18 @@ public class RTMPMinaConnection extends RTMPConnection implements RTMPMinaConnec
 	@Override
 	public void close() {
 		super.close();
-		if (ioSession != null) {
+		log.debug("IO Session closing: {}", (ioSession != null ? ioSession.isClosing() : null));
+		if (ioSession != null && !ioSession.isClosing()) {
 			// accept no further incoming data
 			//ioSession.suspendRead();
 			// close now, no flushing, no waiting
-			final CloseFuture future = ioSession.close(false);
+			final CloseFuture future = ioSession.close(true);
+			log.debug("Connection close future: {}", future);
 			IoFutureListener<CloseFuture> listener = new IoFutureListener<CloseFuture>() {
 				public void operationComplete(CloseFuture future) {
 					if (future.isClosed()) {
 						log.debug("Connection is closed");
-						log.trace("Session id - local: {} session: {}", sessionId, (String) ioSession.removeAttribute(RTMPConnection.RTMP_SESSION_ID));
+						log.trace("Session id - local: {} session: {}", getSessionId(), (String) ioSession.removeAttribute(RTMPConnection.RTMP_SESSION_ID));
 						RTMPMinaConnection conn = (RTMPMinaConnection) RTMPConnManager.getInstance().getConnectionBySessionId(sessionId);
 						if (conn != null) {
 							handler.connectionClosed(conn);
@@ -131,6 +133,10 @@ public class RTMPMinaConnection extends RTMPConnection implements RTMPMinaConnec
 				}
 			};
 			future.addListener(listener);
+		}
+		log.debug("Connection state: {}", getState());
+		if (getStateCode() != RTMP.STATE_DISCONNECTED) {
+			handler.connectionClosed(this);
 		}
 		//de-register with JMX
 		unregisterJMX();

@@ -21,14 +21,20 @@ package org.red5.server.net.rtmp;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.JMX;
 import javax.management.ObjectName;
 
+import org.apache.mina.core.session.IoSession;
 import org.red5.server.api.Red5;
+import org.red5.server.api.scope.IBasicScope;
 import org.red5.server.jmx.mxbeans.RTMPMinaTransportMXBean;
 import org.red5.server.net.IConnectionManager;
 import org.red5.server.net.rtmpt.RTMPTConnection;
@@ -38,6 +44,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 /**
@@ -51,6 +58,8 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 
 	private static ApplicationContext applicationContext;
 
+	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1, new CustomizableThreadFactory("ConnectionChecker-"));
+
 	protected ConcurrentMap<String, RTMPConnection> connMap = new ConcurrentHashMap<String, RTMPConnection>();
 
 	protected AtomicInteger conns = new AtomicInteger();
@@ -58,6 +67,59 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 	protected static IConnectionManager<RTMPConnection> instance;
 
 	protected boolean debug;
+	
+	{
+		// create a scheduled job to check for dead or hung connections
+		executor.scheduleAtFixedRate(new Runnable() {
+			public void run() {				
+				// count the connections that need closing
+				int closedConnections = 0;
+				// get all the current connections
+				Collection<RTMPConnection> allConns = getAllConnections();
+				log.debug("Checking {} connections", allConns.size());
+				for (RTMPConnection conn : allConns) {
+					if (log.isTraceEnabled()) {
+						log.trace("{} session: {} state: {} keep-alive running: {}", new Object[] { conn.getClass().getSimpleName(), conn.getSessionId(), conn.getState().states[conn.getStateCode()], conn.running });
+						log.trace("Decoder lock - permits: {} queue length: {}", conn.decoderLock.availablePermits(), conn.decoderLock.getQueueLength());
+						log.trace("Encoder lock - permits: {} queue length: {}", conn.encoderLock.availablePermits(), conn.encoderLock.getQueueLength());
+						log.trace("Client streams: {} used: {}", conn.getStreams().size(), conn.getUsedStreamCount());
+						log.trace("Attributes: {}", conn.getAttributes());
+						Iterator<IBasicScope> scopes = conn.getBasicScopes();
+						while (scopes.hasNext()) {
+							IBasicScope scope = scopes.next();
+							log.trace("Scope: {}", scope);
+						}
+					}
+					long ioTime = 0L;
+					if (conn instanceof RTMPMinaConnection) {
+						IoSession session = ((RTMPMinaConnection) conn).getIoSession();
+						ioTime = System.currentTimeMillis() - session.getLastIoTime();
+						if (log.isTraceEnabled()) {
+							log.trace("Session - write queue: {} last io time: {} ms", session.getWriteRequestQueue().size(), ioTime);
+							log.trace("Managed session count: {}", session.getService().getManagedSessionCount());
+						}
+						// clear the write queue
+						session.getWriteRequestQueue().clear(session);
+					} else if (conn instanceof RTMPTConnection) {
+						ioTime = System.currentTimeMillis() - ((RTMPTConnection) conn).getLastDataReceived();			
+					}
+					// if exceeds max inactivity kill and clean up
+					if (ioTime >= conn.maxInactivity) {
+						log.warn("Connection {} has exceeded the max inactivity threshold", conn.getSessionId());
+						conn.onInactive();
+						if (!conn.isClosed()) {
+							log.debug("Connection {} is not closed", conn.getSessionId());
+						}
+						closedConnections++;
+					}
+				}
+				// if there is more than one connection that needed to be closed, request a GC to clean up memory.
+				if (closedConnections > 0) {
+					System.gc();
+				}
+			}
+		}, 7000, 30000, TimeUnit.MILLISECONDS);
+	}
 
 	public static IConnectionManager<RTMPConnection> getInstance() {
 		if (instance == null) {
@@ -98,14 +160,14 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 	public RTMPConnection createConnection(Class<?> connCls, String sessionId) {
 		throw new UnsupportedOperationException("Not implemented");
 	}
-	
+
 	/**
 	 * Adds a connection.
 	 * 
 	 * @param conn
 	 */
 	public void setConnection(RTMPConnection conn) {
-		log.debug("Adding connection: {}", conn);
+		log.trace("Adding connection: {}", conn);
 		int id = conn.getId();
 		if (id == -1) {
 			log.debug("Connection has unsupported id, using session id hash");
@@ -133,7 +195,7 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 	 * @return connection if found and null otherwise
 	 */
 	public RTMPConnection getConnection(int clientId) {
-		log.debug("Getting connection by client id: {}", clientId);
+		log.trace("Getting connection by client id: {}", clientId);
 		for (RTMPConnection conn : connMap.values()) {
 			if (conn.getId() == clientId) {
 				return connMap.get(conn.getSessionId());
@@ -149,7 +211,7 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 	 * @return connection if found and null otherwise
 	 */
 	public RTMPConnection getConnectionBySessionId(String sessionId) {
-		log.debug("Getting connection by session id: {}", sessionId);
+		log.trace("Getting connection by session id: {}", sessionId);
 		if (connMap.containsKey(sessionId)) {
 			return connMap.get(sessionId);
 		} else {
@@ -163,7 +225,7 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 
 	/** {@inheritDoc} */
 	public RTMPConnection removeConnection(int clientId) {
-		log.debug("Removing connection with id: {}", clientId);
+		log.trace("Removing connection with id: {}", clientId);
 		// remove from map
 		for (RTMPConnection conn : connMap.values()) {
 			if (conn.getId() == clientId) {
@@ -177,7 +239,7 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 
 	/** {@inheritDoc} */
 	public RTMPConnection removeConnection(String sessionId) {
-		log.debug("Removing connection with session id: {}", sessionId);
+		log.trace("Removing connection with session id: {}", sessionId);
 		if (log.isTraceEnabled()) {
 			log.trace("Connections ({}) at pre-remove: {}", connMap.size(), connMap.values());
 		}
@@ -202,6 +264,7 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 		ArrayList<RTMPConnection> list = new ArrayList<RTMPConnection>(connMap.size());
 		list.addAll(connMap.values());
 		connMap.clear();
+		conns.set(0);
 		return list;
 	}
 
@@ -236,6 +299,7 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 	}
 
 	public void destroy() throws Exception {
+		executor.shutdownNow();
 	}
 
 }
