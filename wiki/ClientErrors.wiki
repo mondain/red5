@@ -14,3 +14,43 @@ Asynchronous code error - ReferenceError: Error #1069
 Asynchronous code error - ReferenceError: Error #1069
 Asynchronous code error - ArgumentError: Error #1063
 }}}
+
+== StartTransmit / StopTransmit method missing ==
+
+These methods were added to the FlashPlayer by Adobe. Their accompanying server-side methods were added to Red5 once we became aware of them. They do not exist in older versions of Red5, so the fix in that case is to add them to your application adapter; use the MultiThreadedApplicationAdapter as your guide for the correct signature.
+
+This is the error message you may see or a similar version:
+{{{
+Method StartTransmit with parameter [false ,133] not found in MyApplication
+}}}
+
+For reference, these are the current signatures:
+{{{
+/**
+ * Start transmission notification from Flash Player 11.1+. This command asks the server to transmit more data because the buffer is running low.
+ * 
+ * http://help.adobe.com/en_US/flashmediaserver/devguide/WSd391de4d9c7bd609-569139412a3743e78e-8000.html
+ * 
+ * @param bool
+ * @param num
+ */
+public void startTransmit(Boolean bool, int num) {              
+}
+
+/**
+ * Stop transmission notification from Flash Player 11.1+. This command asks the server to suspend transmission until the client sends a 
+ * startTransmit event because there is enough data in the buffer.
+ */
+public void stopTransmit() {            
+}
+
+/**
+ * Stop transmission notification from Flash Player 11.1+. This command asks the server to suspend transmission until the client sends a 
+ * startTransmit event because there is enough data in the buffer.
+ * 
+ * @param bool
+ * @param num
+ */
+public void stopTransmit(Boolean bool, int num) {               
+}  
+}}}
