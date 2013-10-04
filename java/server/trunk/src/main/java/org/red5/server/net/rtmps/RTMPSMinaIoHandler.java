@@ -35,8 +35,13 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.ssl.SslFilter;
+import org.red5.server.net.rtmp.InboundHandshake;
+import org.red5.server.net.rtmp.RTMPConnection;
+import org.red5.server.net.rtmp.RTMPMinaConnection;
 import org.red5.server.net.rtmp.RTMPMinaIoHandler;
+import org.red5.server.net.rtmpe.RTMPEIoFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +83,8 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 
 	/** {@inheritDoc} */
 	@Override
-	public void sessionOpened(IoSession session) throws Exception {
+	public void sessionCreated(IoSession session) throws Exception {
+		log.debug("Session created");
 		if (password == null || keystore == null) {
 			throw new NotActiveException("Keystore or password are null");
 		}
@@ -92,13 +98,24 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 		context.init(kmf.getKeyManagers(), null, null);
 		//create the ssl filter using server mode
 		SslFilter sslFilter = new SslFilter(context);
-		if (sslFilter != null) {
-			session.getFilterChain().addFirst("sslFilter", sslFilter);
-		}
-		// END OF NATIVE SSL STUFF
-		super.sessionOpened(session);
-	}
-
+		session.getFilterChain().addFirst("sslFilter", sslFilter);
+		// END OF NATIVE SSL STUFF	
+		// add rtmpe filter
+		session.getFilterChain().addAfter("sslFilter", "rtmpeFilter", new RTMPEIoFilter());
+		// add protocol filter next
+		session.getFilterChain().addLast("protocolFilter", new ProtocolCodecFilter(codecFactory));
+		// create a connection
+		RTMPMinaConnection conn = createRTMPMinaConnection();
+		// add session to the connection
+		conn.setIoSession(session);
+		// add the handler
+		conn.setHandler(handler);
+		// add the connections session id for look up using the connection manager
+		session.setAttribute(RTMPConnection.RTMP_SESSION_ID, conn.getSessionId());
+		// add the in-bound handshake
+		session.setAttribute(RTMPConnection.RTMP_HANDSHAKE, new InboundHandshake());
+	}	
+	
 	/**
 	 * Returns a KeyStore.
 	 * @return KeyStore
@@ -110,14 +127,10 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 	private KeyStore getKeyStore() throws NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException {
 		// Sun's default kind of key store
 		KeyStore ks = KeyStore.getInstance(keyStoreType);
-		// For security, every key store is encrypted with a
-		// pass phrase that must be provided before we can load
-		// it from disk. The pass phrase is stored as a char[] array
-		// so it can be wiped from memory quickly rather than
-		// waiting for a garbage collector. Of course using a string
-		// literal here completely defeats that purpose.
+		// For security, every key store is encrypted with a pass phrase that must be provided before we can load
+		// it from disk. The pass phrase is stored as a char[] array so it can be wiped from memory quickly rather than
+		// waiting for a garbage collector. Of course using a string literal here completely defeats that purpose.
 		ks.load(new ByteArrayInputStream(keystore), password);
-
 		return ks;
 	}
 
