@@ -173,8 +173,17 @@ public class RTMPMinaIoHandler extends IoHandlerAdapter {
 		String sessionId = (String) session.getAttribute(RTMPConnection.RTMP_SESSION_ID);
 		log.trace("Message sent on session: {} id: {}", session.getId(), sessionId);
 		RTMPMinaConnection conn = (RTMPMinaConnection) RTMPConnManager.getInstance().getConnectionBySessionId(sessionId);
-		if (message instanceof Packet) {
-			handler.messageSent(conn, (Packet) message);
+		if (conn != null) {
+			byte state = conn.getStateCode();
+			if (state != RTMP.STATE_DISCONNECTING && state != RTMP.STATE_DISCONNECTED) {
+				if (message instanceof Packet) {
+					handler.messageSent(conn, (Packet) message);
+				} else {
+					log.debug("Message was not of Packet type; its type: {}", message != null ? message.getClass().getName() : "null");
+				}
+			}
+		} else {
+			log.warn("Destination connection was null, it is already disposed. Session id: {}", sessionId);
 		}
 	}
 

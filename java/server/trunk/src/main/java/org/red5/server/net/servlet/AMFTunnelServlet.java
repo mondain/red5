@@ -96,7 +96,7 @@ public class AMFTunnelServlet extends HttpServlet {
 			if (reqContentLength > 0) {
 				log.debug("Request content length: {}", reqContentLength);
 				IoBuffer reqBuffer = IoBuffer.allocate(reqContentLength);
-				ServletUtils.copy(req.getInputStream(), reqBuffer.asOutputStream());
+				ServletUtils.copy(req, reqBuffer.asOutputStream());
 				reqBuffer.flip();
 				post.setEntity(new InputStreamEntity(reqBuffer.asInputStream(), reqContentLength));
 				post.addHeader("Content-Type", REQUEST_TYPE);

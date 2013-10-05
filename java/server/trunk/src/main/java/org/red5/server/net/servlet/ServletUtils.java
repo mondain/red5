@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 public class ServletUtils {
 
 	private static Logger log = Red5LoggerFactory.getLogger(ServletUtils.class);
-	
+
 	/**
 	 * Default value is 2048.
 	 */
@@ -65,22 +65,60 @@ public class ServletUtils {
 		int availableBytes = input.available();
 		log.debug("copy - bufferSize: {} available: {}", bufferSize, availableBytes);
 		byte[] buf = null;
-		if (availableBytes >= bufferSize) {
-			buf = new byte[bufferSize];
+		if (availableBytes > 0) {
+			if (availableBytes >= bufferSize) {
+				buf = new byte[bufferSize];
+			} else {
+				buf = new byte[availableBytes];
+			}
+			int bytesRead = input.read(buf);
+			while (bytesRead != -1) {
+				output.write(buf, 0, bytesRead);
+				bytesRead = input.read(buf);
+				log.trace("Bytes read: {}", bytesRead);
+			}
+			output.flush();
 		} else {
-			buf = new byte[availableBytes];
+			log.debug("Available is 0, attempting to read anyway");
+			buf = new byte[bufferSize];
+			int bytesRead = input.read(buf);
+			while (bytesRead != -1) {
+				output.write(buf, 0, bytesRead);
+				bytesRead = input.read(buf);
+				log.trace("Bytes read: {}", bytesRead);
+			}
+			output.flush();
 		}
-		int bytesRead = input.read(buf);
-		while (bytesRead != -1) {
-			output.write(buf, 0, bytesRead);
-			bytesRead = input.read(buf);
-		}				
-		output.flush();
 	}
 
 	/**
-	 * Copies information between specified streams and then closes both of the
-	 * streams.
+	 * Copies information from the input stream to the output stream using the
+	 * specified content length
+	 * 
+	 * @param input input
+	 * @param output output 
+	 * @throws java.io.IOException on error
+	 */
+	public static void copy(HttpServletRequest req, OutputStream output) throws IOException {
+		InputStream input = req.getInputStream();
+		int availableBytes = req.getContentLength();
+		log.debug("copy - available: {}", availableBytes);
+		if (availableBytes > 0) {
+			byte[] buf = new byte[availableBytes];
+			int bytesRead = input.read(buf);
+			while (bytesRead != -1) {
+				output.write(buf, 0, bytesRead);
+				bytesRead = input.read(buf);
+				log.trace("Bytes read: {}", bytesRead);
+			}
+			output.flush();
+		} else {
+			log.debug("Nothing to available to copy");
+		}
+	}
+
+	/**
+	 * Copies information between specified streams and then closes both of the streams.
 	 * 
 	 * @param output output
 	 * @param input input
@@ -94,8 +132,7 @@ public class ServletUtils {
 
 	/**
 	 * @param input input stream
-	 * @return a byte[] containing the information contained in the specified
-	 *          InputStream.
+	 * @return a byte[] containing the information contained in the specified InputStream.
 	 * @throws java.io.IOException on error
 	 */
 	public static byte[] getBytes(InputStream input) throws IOException {

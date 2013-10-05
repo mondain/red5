@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.Red5;
+import org.red5.server.net.IConnectionManager;
 import org.red5.server.net.rtmp.RTMPConnManager;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.servlet.ServletUtils;
@@ -48,9 +49,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class RTMPTServlet extends HttpServlet {
 
-	/**
-	 * Serialization UID
-	 */
 	private static final long serialVersionUID = 5925399677454936613L;
 
 	protected static Logger log = Red5LoggerFactory.getLogger(RTMPTServlet.class);
@@ -197,11 +195,14 @@ public class RTMPTServlet extends HttpServlet {
 	 */
 	protected void skipData(HttpServletRequest req) throws IOException {
 		log.trace("skipData {}", req);
-		IoBuffer data = IoBuffer.allocate(req.getContentLength());
-		ServletUtils.copy(req.getInputStream(), data.asOutputStream());
+		int length = req.getContentLength();
+		log.trace("Skipping {} bytes", length);
+		IoBuffer data = IoBuffer.allocate(length);
+		ServletUtils.copy(req, data.asOutputStream());
 		data.flip();
 		data.free();
 		data = null;
+		log.trace("Skipped {} bytes", length);
 	}
 
 	/**
@@ -255,13 +256,22 @@ public class RTMPTServlet extends HttpServlet {
 		// skip sent data
 		skipData(req);
 		// TODO: should we evaluate the pathinfo?
-		RTMPTConnection conn = (RTMPTConnection) RTMPConnManager.getInstance().createConnection(RTMPTConnection.class);
+		IConnectionManager<RTMPConnection> manager = RTMPConnManager.getInstance();
+		if (manager == null) {
+			log.warn("Connection manager was null");
+			manager = (RTMPConnManager) applicationContext.getBean("rtmpConnManager");
+			if (manager == null) {
+				log.warn("Connection manager was null in application context as well");
+			}
+		}
+		RTMPTConnection conn = (RTMPTConnection) manager.createConnection(RTMPTConnection.class);
+		log.trace("{}", conn);
 		if (conn != null) {
 			// set properties
 			conn.setServlet(this);
 			conn.setServletRequest(req);
 			// add the connection to the manager
-			RTMPConnManager.getInstance().setConnection(conn);
+			manager.setConnection(conn);
 			// set handler 
 			conn.setHandler(handler);
 			conn.setDecoder(handler.getCodecFactory().getRTMPDecoder());
@@ -323,7 +333,7 @@ public class RTMPTServlet extends HttpServlet {
 			int length = req.getContentLength();
 			log.trace("Request content length: {}", length);
 			final IoBuffer data = IoBuffer.allocate(length);
-			ServletUtils.copy(req.getInputStream(), data.asOutputStream());
+			ServletUtils.copy(req, data.asOutputStream());
 			data.flip();
 			// decode the objects in the data
 			final List<?> messages = conn.decode(data);
@@ -501,6 +511,7 @@ public class RTMPTServlet extends HttpServlet {
 	 * @param handler handler
 	 */
 	public void setHandler(RTMPTHandler handler) {
+		log.trace("Set handler: {}", handler);
 		RTMPTServlet.handler = handler;
 	}
 

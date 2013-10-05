@@ -213,7 +213,7 @@ public class AMFGatewayServlet extends HttpServlet {
 	protected RemotingPacket decodeRequest(HttpServletRequest req) throws Exception {
 		log.debug("Decoding request");
 		IoBuffer reqBuffer = IoBuffer.allocate(req.getContentLength());
-		ServletUtils.copy(req.getInputStream(), reqBuffer.asOutputStream());
+		ServletUtils.copy(req, reqBuffer.asOutputStream());
 		reqBuffer.flip();
 		RemotingPacket packet = (RemotingPacket) codecFactory.getRemotingDecoder().decode(reqBuffer);
 		String path = req.getContextPath();
