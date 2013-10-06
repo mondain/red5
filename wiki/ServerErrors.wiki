@@ -136,3 +136,14 @@ Delete _javaee-api-5.1.2.jar_ and _servlet-api-2.5.jar_ then restart red5.
 
 More information here: 
 http://stackoverflow.com/questions/5642753/catalina-bat-start-not-working
+
+== NPE in RTMPTServlet ==
+
+In later versions of 1.0.2, you need to add a manager property to the rtmptServlet bean in your red5-core.xml like so:
+
+{{{
+	<bean id="rtmptServlet"	class="org.red5.server.net.rtmpt.RTMPTServlet">
+        <property name="manager" ref="rtmpConnManager" />
+		<property name="handler" ref="rtmptHandler" />
+}}}
+

@@ -122,6 +122,7 @@
 	
 	<!-- Use injection to store RTMPT handler in servlet -->
 	<bean id="rtmptServlet"	class="org.red5.server.net.rtmpt.RTMPTServlet">
+        <property name="manager" ref="rtmpConnManager" />
 		<property name="handler" ref="rtmptHandler" />
 		<!-- Increasing this value results in better stream performance, but also increases the latency -->
 		<property name="targetResponseSize" value="${rtmpt.target_reponse_size}" />
