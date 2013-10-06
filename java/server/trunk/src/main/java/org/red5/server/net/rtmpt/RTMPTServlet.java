@@ -62,6 +62,11 @@ public class RTMPTServlet extends HttpServlet {
 	 * Content-Type to use for RTMPT requests / responses.
 	 */
 	private static final String CONTENT_TYPE = "application/x-fcs";
+	
+	/**
+	 * Connection manager.
+	 */
+	private static IConnectionManager<RTMPConnection> manager;
 
 	/**
 	 * Try to generate responses that contain at least 32768 bytes data.
@@ -256,14 +261,6 @@ public class RTMPTServlet extends HttpServlet {
 		// skip sent data
 		skipData(req);
 		// TODO: should we evaluate the pathinfo?
-		IConnectionManager<RTMPConnection> manager = RTMPConnManager.getInstance();
-		if (manager == null) {
-			log.warn("Connection manager was null");
-			manager = (RTMPConnManager) applicationContext.getBean("rtmpConnManager");
-			if (manager == null) {
-				log.warn("Connection manager was null in application context as well");
-			}
-		}
 		RTMPTConnection conn = (RTMPTConnection) manager.createConnection(RTMPTConnection.class);
 		log.trace("{}", conn);
 		if (conn != null) {
@@ -392,6 +389,18 @@ public class RTMPTServlet extends HttpServlet {
 				applicationContext = (WebApplicationContext) ctx.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 			}
 			log.debug("Application context: {}", applicationContext);
+			// ensure we have a connection manager
+			if (manager == null) {
+				log.warn("Class instance connection manager was null, looking up in application context");
+				manager = (RTMPConnManager) applicationContext.getBean("rtmpConnManager");
+    			if (manager == null) {
+    				log.warn("Connection manager was null in context, getting class instance");
+        			manager = RTMPConnManager.getInstance();
+    				if (manager == null) {
+    					log.error("Connection manager is still null, this is bad");
+    				}
+    			}			
+			}
 		}
 		log.debug("Request - method: {} content type: {} path: {}", new Object[] { req.getMethod(), req.getContentType(), req.getServletPath() });
 		// allow only POST requests with valid content length
@@ -469,7 +478,7 @@ public class RTMPTServlet extends HttpServlet {
 	@Override
 	public void destroy() {
 		// Cleanup connections
-		Collection<RTMPConnection> conns = RTMPConnManager.getInstance().getAllConnections();
+		Collection<RTMPConnection> conns = manager.getAllConnections();
 		for (RTMPConnection conn : conns) {
 			if (conn instanceof RTMPTConnection) {
 				log.debug("Connection scope on destroy: {}", conn.getScope());
@@ -486,7 +495,7 @@ public class RTMPTServlet extends HttpServlet {
 	 */
 	protected RTMPTConnection getConnection() {
 		String sessionId = requestInfo.get().getSessionId();
-		RTMPTConnection conn = (RTMPTConnection) RTMPConnManager.getInstance().getConnectionBySessionId(sessionId);
+		RTMPTConnection conn = (RTMPTConnection) manager.getConnectionBySessionId(sessionId);
 		if (conn != null) {
 			// clear thread local reference
 			Red5.setConnectionLocal(conn);
@@ -497,12 +506,20 @@ public class RTMPTServlet extends HttpServlet {
 	}
 
 	protected void removeConnection(String sessionId) {
-		RTMPTConnection conn = (RTMPTConnection) RTMPConnManager.getInstance().getConnectionBySessionId(sessionId);
+		RTMPTConnection conn = (RTMPTConnection) manager.getConnectionBySessionId(sessionId);
 		if (conn != null) {
-			RTMPConnManager.getInstance().removeConnection(conn.getSessionId());
+			manager.removeConnection(conn.getSessionId());
 		} else {
 			log.warn("Remove failed, null connection for session id: {}", sessionId);
 		}
+	}
+
+	/**
+	 * @param manager the manager to set
+	 */
+	public void setManager(IConnectionManager<RTMPConnection> manager) {
+		log.trace("Set connection manager: {}", manager);
+		RTMPTServlet.manager = manager;
 	}
 
 	/**
