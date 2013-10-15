@@ -34,6 +34,7 @@ import org.red5.io.object.Output;
 import org.red5.io.object.Serializer;
 import org.red5.server.AttributeStore;
 import org.red5.server.api.IAttributeStore;
+import org.red5.server.api.Red5;
 import org.red5.server.api.event.IEventListener;
 import org.red5.server.api.persistence.IPersistable;
 import org.red5.server.api.persistence.IPersistenceStore;
@@ -312,7 +313,9 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 				// create a worker
 				SharedObjectService.submitTask(new Runnable() { 
 					public void run() {
+						Red5.setConnectionLocal(con);
 						con.sendSharedObjectMessage(name, currentVersion, persistent, events);
+						Red5.setConnectionLocal(null);
 					}
 				});
 			}
@@ -344,7 +347,9 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
     						// create a worker
     						SharedObjectService.submitTask(new Runnable() { 
     							public void run() {
+    								Red5.setConnectionLocal(con);
     								con.sendSharedObjectMessage(name, currentVersion, persistent, events);
+    								Red5.setConnectionLocal(null);
     							}
     						});
 						} else {
