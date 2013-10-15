@@ -52,7 +52,7 @@ public class RTMPMinaProtocolEncoder extends ProtocolEncoderAdapter {
 		if (conn != null) {
 			// look for and compare the connection local; set it from the session
 			if (!conn.equals((RTMPConnection) Red5.getConnectionLocal())) {
-				log.debug("Connection local didn't match session");
+				log.debug("Connection local ({}) didn't match io session ({})", (Red5.getConnectionLocal() != null ? Red5.getConnectionLocal().getSessionId() : "null"), sessionId);
 				Red5.setConnectionLocal(conn);
 			}
 			final Semaphore lock = conn.getEncoderLock();

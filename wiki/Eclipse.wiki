@@ -1,5 +1,4 @@
 #summary Eclipse related items
-#labels Eclipse
 
 = Eclipse =
 
@@ -14,6 +13,15 @@ A cycle was detected in the build path of project 'red5_client'. The cycle consi
 }}}
 
 To remove this blocking item go to *Properties > Java Compiler > Building*. Under *Build path problems* change the "Circular dependencies" option to "Warning"; then click "OK"
+
+== M2e goal is not supported ==
+
+With some older versions of the codebase you may see this error in Eclipse: 
+{{{
+maven-dependency-plugin (goals “copy-dependencies”, “unpack”) is not supported by m2e
+}}}
+The fix has been on trunk for some time now, but some users still see it. You can find more detail here: 
+http://stackoverflow.com/questions/8706017/maven-dependency-plugin-goals-copy-dependencies-unpack-is-not-supported-b
 
 == Eclipse plugins ==
 

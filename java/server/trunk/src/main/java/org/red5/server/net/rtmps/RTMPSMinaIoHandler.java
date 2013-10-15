@@ -100,7 +100,7 @@ public class RTMPSMinaIoHandler extends RTMPMinaIoHandler {
 		SslFilter sslFilter = new SslFilter(context);
 		session.getFilterChain().addFirst("sslFilter", sslFilter);
 		// END OF NATIVE SSL STUFF	
-		// add rtmpe filter
+		// add rtmpe filter after ssl
 		session.getFilterChain().addAfter("sslFilter", "rtmpeFilter", new RTMPEIoFilter());
 		// add protocol filter next
 		session.getFilterChain().addLast("protocolFilter", new ProtocolCodecFilter(codecFactory));
