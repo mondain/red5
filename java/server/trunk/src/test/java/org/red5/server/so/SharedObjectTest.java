@@ -369,6 +369,7 @@ public class SharedObjectTest extends AbstractJUnit4SpringContextTests {
 			so.addSharedObjectListener(listener);
 		}
 
+		@SuppressWarnings("deprecation")
 		public void runTest() throws Throwable {
 			log.debug("runTest#{}", id);
 			Thread.sleep(50);
@@ -407,6 +408,7 @@ public class SharedObjectTest extends AbstractJUnit4SpringContextTests {
 			so.addSharedObjectListener(listener);
 		}
 
+		@SuppressWarnings("deprecation")
 		public void runTest() throws Throwable {
 			log.debug("runTest#{}", id);
 			Thread.sleep(50);

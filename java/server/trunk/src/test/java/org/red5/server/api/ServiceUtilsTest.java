@@ -155,7 +155,8 @@ public class ServiceUtilsTest extends BaseTest {
 		TestConnection conn;
 
 		boolean active;
-		
+
+		@SuppressWarnings("deprecation")
 		public void runTest() throws Exception {
 			try {
 				// create a few connections

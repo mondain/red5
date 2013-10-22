@@ -18,8 +18,7 @@
 
 package org.red5.server;
 
-import static org.junit.Assert.fail;
-import junit.framework.Assert;
+import junit.framework.TestCase;
 import net.sourceforge.groboutils.junit.v1.MultiThreadedTestRunner;
 import net.sourceforge.groboutils.junit.v1.TestRunnable;
 
@@ -28,7 +27,7 @@ import org.junit.Test;
 import org.red5.server.api.IClient;
 import org.red5.server.exception.ClientNotFoundException;
 
-public class ClientRegistryTest {
+public class ClientRegistryTest extends TestCase {
 
 	private static ClientRegistry reg = new ClientRegistry();
 
@@ -39,75 +38,75 @@ public class ClientRegistryTest {
 			reg.addClient(new Client(reg.nextId(), reg));
 		}
 	}
-	
+
 	@Test
 	public void testNewClient() {
 		IClient client = reg.newClient(null);
-		Assert.assertNotNull(client);
-		Assert.assertTrue(client.getId() != null);
-		Assert.assertTrue(Integer.valueOf(client.getId()) >= 0);
+		assertNotNull(client);
+		assertTrue(client.getId() != null);
+		assertTrue(Integer.valueOf(client.getId()) >= 0);
 	}
 
 	@Test
 	public void testAddClient() {
 		reg.addClient(new Client(reg.nextId(), reg));
-		Assert.assertNotNull(reg.getClient("1"));
-		Assert.assertTrue(reg.getClients().size() >= 1);
+		assertNotNull(reg.getClient("1"));
+		assertTrue(reg.getClients().size() >= 1);
 	}
 
 	@Test
 	public void testLookupClient() {
 		IClient client = reg.lookupClient("0");
-		Assert.assertNotNull(client);
+		assertNotNull(client);
 	}
 
 	@Test
 	public void testGetClient() {
 		IClient client = reg.getClient("0");
-		Assert.assertNotNull(client);
+		assertNotNull(client);
 		IClient client2 = null;
 		try {
 			client2 = reg.getClient("999999");
 			fail("An exception should occur here");
 		} catch (ClientNotFoundException e) {
-			Assert.assertTrue(true);
+			assertTrue(true);
 		}
-		Assert.assertNull(client2);
+		assertNull(client2);
 	}
 
 	@Test
 	public void testGetClientList() {
 		ClientList<Client> clients = reg.getClientList();
 		int listSize = clients.size();
-		Assert.assertTrue(listSize > 0);
+		assertTrue(listSize > 0);
 		System.out.println("List size: " + listSize);
 		for (int c = 0; c < listSize; c++) {
 			Client client = clients.get(c);
 			System.out.println(client);
-			Assert.assertTrue(client.getId() != null);
+			assertTrue(client.getId() != null);
 		}
 	}
 
 	@Test
 	public void testGetClients() {
-		Assert.assertNotNull(reg.getClient("2"));
+		assertNotNull(reg.getClient("2"));
 		System.gc();
-		Assert.assertTrue(reg.getClients().size() >= 10);
+		assertTrue(reg.getClients().size() >= 10);
 	}
 
 	@Test
 	public void testRemoveClient() {
 		IClient client = reg.lookupClient("5");
-		Assert.assertNotNull(client);
+		assertNotNull(client);
 		reg.removeClient(client);
 		IClient client2 = null;
 		try {
 			client2 = reg.getClient("5");
 			fail("An exception should occur here");
 		} catch (ClientNotFoundException e) {
-			Assert.assertTrue(true);
+			assertTrue(true);
 		}
-		Assert.assertNull(client2);
+		assertNull(client2);
 	}
 
 	// this should run last or it may affect the other tests
@@ -127,12 +126,12 @@ public class ClientRegistryTest {
 		System.out.printf("Runtime: %s ns\n", (System.nanoTime() - start));
 		for (TestRunnable r : trs) {
 			IClient cli = ((ClientCreatorWorker) r).getClient();
-			Assert.assertTrue(cli == null);
+			assertTrue(cli == null);
 		}
 		System.gc();
 		System.out.printf("Free mem diff at end: %s\n", Math.abs(startFreeMem - rt.freeMemory()));
-	}	
-	
+	}
+
 	private class ClientCreatorWorker extends TestRunnable {
 		IClient client;
 

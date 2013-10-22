@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.TreeSet;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.apache.mina.core.buffer.IoBuffer;
@@ -221,7 +220,7 @@ public class CuePointInjectionTest extends TestCase {
 
 		System.out.println("ts: " + ts);
 
-		Assert.assertEquals(true, true);
+		assertEquals(true, true);
 	}
 
 }

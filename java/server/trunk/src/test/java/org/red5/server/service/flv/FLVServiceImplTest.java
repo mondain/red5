@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.red5.cache.impl.NoCacheImpl;
@@ -98,7 +97,7 @@ public class FLVServiceImplTest extends TestCase {
 		// simply tests to see if the last tag of the flv file
 		// has a timestamp of 2500
 		// Assert.assertEquals(4166,tag.getTimestamp());
-		Assert.assertEquals(true, true);
+		assertEquals(true, true);
 	}
 
 	/**

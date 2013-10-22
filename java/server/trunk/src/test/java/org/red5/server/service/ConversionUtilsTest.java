@@ -18,13 +18,11 @@
 
 package org.red5.server.service;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import junit.framework.TestCase;
 
 import org.apache.commons.beanutils.ConversionException;
 import org.junit.Test;
@@ -34,7 +32,7 @@ import org.red5.io.utils.ConversionUtils;
  * @author The Red5 Project
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
-public class ConversionUtilsTest {
+public class ConversionUtilsTest extends TestCase {
 
 	class TestJavaBean {
 
