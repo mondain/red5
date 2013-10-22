@@ -18,24 +18,24 @@
 
 package org.red5.server.stream;
 
-import junit.framework.Assert;
+import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.red5.codec.AudioCodec;
 import org.red5.codec.VideoCodec;
 
-public class CodecEnumTest {
+public class CodecEnumTest extends TestCase {
 
 	@Test
 	public void testAudio() {
-		Assert.assertTrue(AudioCodec.MP3.getId() == 2);
-		Assert.assertTrue(AudioCodec.SPEEX.getId() == 11);
-		Assert.assertTrue(AudioCodec.MP3_8K.getId() == 14);
+		assertTrue(AudioCodec.MP3.getId() == 2);
+		assertTrue(AudioCodec.SPEEX.getId() == 11);
+		assertTrue(AudioCodec.MP3_8K.getId() == 14);
 	}
 
 	@Test
 	public void testVideo() {
-		Assert.assertTrue(VideoCodec.AVC.getId() == 7);
+		assertTrue(VideoCodec.AVC.getId() == 7);
 	}
 	
 }

@@ -18,7 +18,6 @@
 
 package org.red5.server.service;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.red5.io.flv.meta.MetaData;
@@ -58,31 +57,31 @@ public class MetaDataTest extends TestCase {
 	}
 
 	public void testCanSeekToEnd() {
-		Assert.assertEquals(true, data.getCanSeekToEnd());
+		assertEquals(true, data.getCanSeekToEnd());
 	}
 
 	public void testDuration() {
-		Assert.assertEquals(7.347, data.getDuration(), 0);
+		assertEquals(7.347, data.getDuration(), 0);
 	}
 
 	public void testFrameRate() {
-		Assert.assertEquals(15.0, data.getFrameRate());
+		assertEquals(15.0, data.getFrameRate());
 	}
 
 	public void testHeight() {
-		Assert.assertEquals(333, data.getHeight());
+		assertEquals(333, data.getHeight());
 	}
 
 	public void testVideoCodecId() {
-		Assert.assertEquals(4, data.getVideoCodecId());
+		assertEquals(4, data.getVideoCodecId());
 	}
 
 	public void testVideoDataRate() {
-		Assert.assertEquals(400, data.getVideoDataRate());
+		assertEquals(400, data.getVideoDataRate());
 	}
 
 	public void testWidth() {
-		Assert.assertEquals(400, data.getVideoDataRate());
+		assertEquals(400, data.getVideoDataRate());
 	}
 
 }

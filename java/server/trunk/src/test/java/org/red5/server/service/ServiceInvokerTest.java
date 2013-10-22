@@ -279,6 +279,7 @@ public class ServiceInvokerTest extends AbstractJUnit4SpringContextTests {
 			this.name = "client-" + index;
 		}
 
+		@SuppressWarnings("deprecation")
 		public void runTest() throws Throwable {
 			Red5.setConnectionLocal(conn);
 

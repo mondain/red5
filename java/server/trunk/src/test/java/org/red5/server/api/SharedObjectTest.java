@@ -42,6 +42,7 @@ public class SharedObjectTest extends BaseTest implements IEventListener {
 		log.debug("Event: {}", event);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void sharedObjectService() {
 		IScope scope = context.resolveScope(path_app);

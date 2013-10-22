@@ -162,8 +162,8 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 	 * @throws Exception on error
 	 */
 	public Object decode(RTMPConnection conn, RTMPDecodeState state, IoBuffer in) throws ProtocolException {
-		if (log.isDebugEnabled()) {
-			log.debug("Decoding for {}", conn.getSessionId());
+		if (log.isTraceEnabled()) {
+			log.trace("Decoding for {}", conn.getSessionId());
 		}
 		try {
 			final byte connectionState = conn.getStateCode();
@@ -188,6 +188,10 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 			throw pe;
 		} catch (RuntimeException e) {
 			throw new ProtocolException("Error during decoding", e);
+		} finally {
+			if (log.isTraceEnabled()) {
+				log.trace("Decoding finished for {}", conn.getSessionId());
+			}
 		}
 	}
 
@@ -518,12 +522,6 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 		IRTMPEvent message;
 		byte dataType = header.getDataType();
 		switch (dataType) {
-			case TYPE_CHUNK_SIZE:
-				message = decodeChunkSize(in);
-				break;
-			case TYPE_ABORT:
-				message = decodeAbort(in);
-				break;
 			case TYPE_INVOKE:
 				message = decodeInvoke(conn.getEncoding(), in);
 				break;
@@ -534,12 +532,6 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 					message = decodeStreamMetadata(in);
 				}
 				break;
-			case TYPE_PING:
-				message = decodePing(in);
-				break;
-			case TYPE_BYTES_READ:
-				message = decodeBytesRead(in);
-				break;
 			case TYPE_AUDIO_DATA:
 				message = decodeAudioData(in);
 				message.setSourceType(Constants.SOURCE_TYPE_LIVE);
@@ -548,17 +540,14 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 				message = decodeVideoData(in);
 				message.setSourceType(Constants.SOURCE_TYPE_LIVE);
 				break;
+			case TYPE_AGGREGATE:
+				message = decodeAggregate(in);
+				break;
 			case TYPE_FLEX_SHARED_OBJECT: // represents an SO in an AMF3 container
 				message = decodeFlexSharedObject(in);
 				break;
 			case TYPE_SHARED_OBJECT:
 				message = decodeSharedObject(in);
-				break;
-			case TYPE_SERVER_BANDWIDTH:
-				message = decodeServerBW(in);
-				break;
-			case TYPE_CLIENT_BANDWIDTH:
-				message = decodeClientBW(in);
 				break;
 			case TYPE_FLEX_MESSAGE:
 				message = decodeFlexMessage(in);
@@ -566,8 +555,23 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 			case TYPE_FLEX_STREAM_SEND:
 				message = decodeFlexStreamSend(in);
 				break;
-			case TYPE_AGGREGATE:
-				message = decodeAggregate(in);
+			case TYPE_PING:
+				message = decodePing(in);
+				break;
+			case TYPE_BYTES_READ:
+				message = decodeBytesRead(in);
+				break;
+			case TYPE_CHUNK_SIZE:
+				message = decodeChunkSize(in);
+				break;
+			case TYPE_SERVER_BANDWIDTH:
+				message = decodeServerBW(in);
+				break;
+			case TYPE_CLIENT_BANDWIDTH:
+				message = decodeClientBW(in);
+				break;
+			case TYPE_ABORT:
+				message = decodeAbort(in);
 				break;
 			default:
 				log.warn("Unknown object type: {}", dataType);
@@ -718,8 +722,7 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 				}
 			} else {
 				final int start = in.position();
-				// the "send" event seems to encode the handler name
-				// as complete AMF string including the string type byte
+				// the "send" event seems to encode the handler name as complete AMF string including the string type byte
 				key = Deserializer.deserialize(input, String.class);
 				// read parameters
 				final List<Object> list = new LinkedList<Object>();
@@ -802,12 +805,12 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 			// determine service information
 			final int dotIndex = action.lastIndexOf('.');
 			String serviceName = (dotIndex == -1) ? null : action.substring(0, dotIndex);
-			//pull off the prefixes since java doesnt allow this on a method name
+			// pull off the prefixes since java doesn't allow this on a method name
 			if (serviceName != null && (serviceName.startsWith("@") || serviceName.startsWith("|"))) {
 				serviceName = serviceName.substring(1);
 			}
 			String serviceMethod = (dotIndex == -1) ? action : action.substring(dotIndex + 1, action.length());
-			//pull off the prefixes since java doesnt allow this on a method name
+			// pull off the prefixes since java doesnt allow this on a method name
 			if (serviceMethod.startsWith("@") || serviceMethod.startsWith("|")) {
 				serviceMethod = serviceMethod.substring(1);
 			}
@@ -1135,7 +1138,7 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 			if (log.isDebugEnabled()) {
 				log.debug("Num params: {}", paramList.size());
 				for (int i = 0; i < params.length; i++) {
-					log.info(" > {}: {}", i, params[i]);
+					log.debug(" > {}: {}", i, params[i]);
 				}
 			}
 		}

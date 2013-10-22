@@ -18,7 +18,7 @@
 
 package org.red5.server.scope;
 
-import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -646,6 +646,7 @@ public class ScopeTest extends AbstractJUnit4SpringContextTests {
 			conn.setClient(registry.newClient(null));
 		}
 
+		@SuppressWarnings("deprecation")
 		public void runTest() throws Throwable {
 			log.debug("runTest#{}", id);
 			Red5.setConnectionLocal(conn);
@@ -689,6 +690,7 @@ public class ScopeTest extends AbstractJUnit4SpringContextTests {
 			conn.setClient(registry.newClient(null));
 		}
 
+		@SuppressWarnings("deprecation")
 		public void runTest() throws Throwable {
 			log.debug("runTest#{}", id);
 			Red5.setConnectionLocal(conn);

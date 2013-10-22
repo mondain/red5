@@ -24,7 +24,9 @@ import java.util.Map;
 
 import javax.management.openmbean.CompositeData;
 
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.scope.IScope;
+import org.slf4j.Logger;
 
 /**
  * Utility class for accessing Red5 API objects.
@@ -44,18 +46,17 @@ import org.red5.server.api.scope.IScope;
  *   
  * @author The Red5 Project
  * @author Luke Hubbard (luke@codegent.com)
- * @author Paul Gregoire (mondain@gmail.com)  
+ * @author Paul Gregoire (mondain@gmail.com)   
  * @author Tiago Daniel Jacobs (os@tdj.cc)  
  */
 public final class Red5 {
 
-	//private static Logger log = LoggerFactory.getLogger(Red5.class);
+	private static Logger log = Red5LoggerFactory.getLogger(Red5.class);
 
 	/**
-	 * Current connection thread. Each connection of Red5 application runs in a
-	 * separate thread. This is thread object associated with the current connection.
+	 * Connection associated with the current thread. Each connection runs in a separate thread.
 	 */
-	private static ThreadLocal<WeakReference<IConnection>> connThreadLocal = new ThreadLocal<WeakReference<IConnection>>();
+	private static final ThreadLocal<WeakReference<IConnection>> connThreadLocal = new ThreadLocal<WeakReference<IConnection>>();
 
 	/**
 	 * Connection local to the current thread 
@@ -111,7 +112,7 @@ public final class Red5 {
 	 * @param connection     Thread local connection
 	 */
 	public static void setConnectionLocal(IConnection connection) {
-		//log.info("Set connection: {}", connection);
+		log.info("Set connection: {} with thread: {}", (connection != null ? connection.getSessionId() : null), Thread.currentThread().getName());
 		if (connection != null) {
 			connThreadLocal.set(new WeakReference<IConnection>(connection));
 			IScope scope = connection.getScope();
@@ -133,6 +134,7 @@ public final class Red5 {
 	 * @return Connection object
 	 */
 	public static IConnection getConnectionLocal() {
+		log.info("Get connection on thread: {}", Thread.currentThread().getName());
 		WeakReference<IConnection> ref = connThreadLocal.get();
 		if (ref != null) {
 			return ref.get();

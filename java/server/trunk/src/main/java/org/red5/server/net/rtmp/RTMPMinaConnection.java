@@ -148,7 +148,7 @@ public class RTMPMinaConnection extends RTMPConnection implements RTMPMinaConnec
 		log.trace("handleMessageReceived - {}", sessionId);
 		if (executor != null) {
 			try {
-				executor.execute(new ReceivedMessageTask(sessionId, message, handler));
+				executor.execute(new ReceivedMessageTask(sessionId, message, handler, this));
 			} catch (Exception e) {
 				log.warn("Incoming message handling failed on {}", getSessionId(), e);
 				if (log.isDebugEnabled()) {
