@@ -100,12 +100,11 @@ public class Channel {
 		if (connection != null) {
 			final IClientStream stream = connection.getStreamByChannelId(id);
 			if (id > 3 && stream == null) {
-				log.warn("Non-existant stream for channel id: {}, connection id: {} discarding: {}", id, connection.getId(), event);
-				discard(event);
-			} else {
-				final int streamId = (stream == null) ? 0 : stream.getStreamId();
-				write(event, streamId);
+				log.warn("Non-existant stream for channel id: {}, connection id: {} discarding: {}", id, connection.getSessionId());
 			}
+			// if the stream is non-existant, the event will go out with stream id == 0
+			final int streamId = (stream == null) ? 0 : stream.getStreamId();
+			write(event, streamId);
 		} else {
 			log.trace("Connection is null for channel: {}", id);
 		}
@@ -143,6 +142,7 @@ public class Channel {
 	 * 
 	 * @param event
 	 */
+	@SuppressWarnings("unused")
 	private void discard(IRTMPEvent event) {
 		if (event instanceof IStreamData<?>) {
 			log.debug("Discarding: {}", ((IStreamData<?>) event).toString());
