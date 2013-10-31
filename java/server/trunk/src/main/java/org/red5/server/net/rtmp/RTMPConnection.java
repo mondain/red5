@@ -181,12 +181,12 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 	/**
 	 * Data read interval
 	 */
-	protected int bytesReadInterval = 120 * 1024;
+	protected long bytesReadInterval = 1024 * 1024;
 
 	/**
 	 * Number of bytes to read next.
 	 */
-	protected int nextBytesRead = 120 * 1024;
+	protected long nextBytesRead = 1024 * 1024;
 
 	/**
 	 * Number of bytes the client reported to have received.
@@ -893,7 +893,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 		log.trace("updateBytesRead");
 		long bytesRead = getReadBytes();
 		if (bytesRead >= nextBytesRead) {
-			BytesRead sbr = new BytesRead((int) bytesRead);
+			BytesRead sbr = new BytesRead((int) (bytesRead % Integer.MAX_VALUE));
 			getChannel(2).write(sbr);
 			nextBytesRead += bytesReadInterval;
 		}
