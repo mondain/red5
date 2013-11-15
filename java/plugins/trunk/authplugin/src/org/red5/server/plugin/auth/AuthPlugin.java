@@ -22,10 +22,8 @@ package org.red5.server.plugin.auth;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.red5.io.amf.AMF;
 import org.red5.io.amf.Output;
-import org.red5.io.object.Serializer;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IConnection;
-import org.red5.server.net.rtmp.BaseRTMPHandler;
 import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.event.IRTMPEvent;
 import org.red5.server.net.rtmp.event.Notify;
@@ -43,8 +41,6 @@ import org.slf4j.Logger;
 public class AuthPlugin extends Red5Plugin {
 
 	private static Logger log = Red5LoggerFactory.getLogger(AuthPlugin.class, "plugins");
-	
-	private static Serializer serializer = new Serializer();
 	
 	public void doStart() throws Exception {
 		log.debug("Start");
@@ -107,7 +103,7 @@ public class AuthPlugin extends Red5Plugin {
 		//mark it as an amf object
 		buf.put(AMF.TYPE_OBJECT);
 		//serialize our status
-    	status.serialize(out, serializer);
+    	status.serialize(out);
     	//write trailer
 		buf.put((byte) 0x00);
 		buf.put((byte) 0x00);
@@ -123,7 +119,7 @@ public class AuthPlugin extends Red5Plugin {
 		Packet packet = new Packet(header, event);
 
 		//get our stream id
-		int streamId = BaseRTMPHandler.getStreamId();
+		int streamId = conn.getStreamId();
 		//set channel to "data" which im pretty sure is 3
 		header.setChannelId(3);
 		header.setTimer(event.getTimestamp()); //0
