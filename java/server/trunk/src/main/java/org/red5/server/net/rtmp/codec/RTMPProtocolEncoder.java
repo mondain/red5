@@ -272,7 +272,8 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
 
 			//TODO: if we are VOD do we "pause" the provider when we are consistently late?
 
-			log.trace("Packet timestamp: {}; tardiness: {}; now: {}; message clock time: {}, dropLiveFuture: {}", new Object[] { timestamp, tardiness, now, clockTimeOfMessage,
+			if(log.isTraceEnabled())
+				log.trace("Packet timestamp: {}; tardiness: {}; now: {}; message clock time: {}, dropLiveFuture: {}", new Object[] { timestamp, tardiness, now, clockTimeOfMessage,
 					dropLiveFuture });
 			//anything coming in less than the base will be allowed to pass, it will not be
 			//dropped or manipulated
