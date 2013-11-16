@@ -197,6 +197,13 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
 	 * @return true to drop; false to send
 	 */
 	protected boolean dropMessage(int channelId, IRTMPEvent message) {
+		boolean isLive = message.getSourceType() == Constants.SOURCE_TYPE_LIVE;
+		
+		if(!isLive) return false;
+		
+		log.trace("Connection type: {}", (isLive ? "Live" : "VOD"));
+		
+		
 		//whether or not the packet will be dropped
 		boolean drop = false;
 		//whether or not the packet is video data
@@ -224,8 +231,6 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
 			// get state
 			RTMP rtmp = conn.getState();
 			// determine working type
-			boolean isLive = message.getSourceType() == Constants.SOURCE_TYPE_LIVE;
-			log.trace("Connection type: {}", (isLive ? "Live" : "VOD"));
 			long timestamp = (message.getTimestamp() & 0xFFFFFFFFL);
 			LiveTimestampMapping mapping = rtmp.getLastTimestampMapping(channelId);
 			// just get the current time ONCE per packet
