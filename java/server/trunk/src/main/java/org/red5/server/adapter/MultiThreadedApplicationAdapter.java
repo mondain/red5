@@ -351,7 +351,8 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
 				log.debug("Plugin: {}", desc);
 				try {
 					//ensure plug-in class can be resolved
-					Class<?> clazz = Class.forName(desc.getPluginType());
+					ClassLoader classLoader = scope.getClassLoader();
+					Class<?> clazz = Class.forName(desc.getPluginType(), true, classLoader);
 					log.trace("Class: {}", clazz);
 					//get the plug-in from the registry
 					IRed5Plugin plugin = PluginRegistry.getPlugin(desc.getPluginName());
