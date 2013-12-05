@@ -349,11 +349,10 @@ public class Client extends AttributeStore implements IClient {
 
 	@Override
 	public int hashCode() {
-		if (StringUtils.isNumeric(id)) {
-			return Integer.valueOf(id);
-		} else {
-			return id.hashCode();
+		if (id == null) {
+			return -1;
 		}
+		return id.hashCode();
 	}
 
 	/**
