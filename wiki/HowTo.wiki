@@ -1,5 +1,5 @@
 #summary How to do some given task with Red5.
-#labels Phase-Deploy,Phase-Implementation
+#labels applicationadapter,php,servlet,application
 
 = Introduction =
 
@@ -41,3 +41,40 @@ You'll see entries from the logger like this:
 {{{
 2013-04-24 09:40:35,285 [NioProcessor-2] INFO  o.r.s.net.rtmp.RTMPMinaTransport - CREATED
 }}}
+
+== Access the ApplicationAdapter ==
+
+These are the various ways to access the application adapter.
+
+ 1. Via Spring [http://www.newviewnetworks.com/nvnhome/blog/client/uploads/Red5_Services.swf]
+
+ 2. Through an ApplicationContext
+{{{
+IContext context = scope.getContext(); 
+ApplicationContext appCtx = context.getApplicationContext(); 
+Application app = (Application) appCtx.getBean("web.handler");
+}}}
+
+ 3. In a Servlet or JSP
+{{{
+ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+}}}
+
+ 4. Using the ApplicationContextAware interface
+{{{
+this.application = (Application) appCtx.getBean("web.handler"); 
+}}}
+
+ 5. Via PHP running within Red5
+{{{
+<?
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
+
+$session = $request->getSession(true);
+$ctx = $session->getServletContext();
+$appCtx = $ctx->getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
+?>
+}}}
+This option uses [http://www.caucho.com/resin-3.0/quercus/ Quercus]. Blog post: 
+[http://gregoire.org/2009/06/06/php-support-in-red5/ PHP in Red5]
