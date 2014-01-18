@@ -7,7 +7,7 @@ Help and Reference for Red5
 
 == Details ==
 
-|| [http://red5.googlecode.com/svn/doc/trunk/reference/html/index.html Official Reference] || [http://red5.googlecode.com/svn/doc/tags/1_0/api/index.html Server Javadocs] || [http://red5.googlecode.com/svn/doc/tags/1_0/api-client/index.html Client Javadocs] ||
+|| [http://red5.googlecode.com/svn/doc/trunk/reference/html/index.html Official Reference] || [http://red5.googlecode.com/svn/doc/tags/1_0/api/index.html Server Javadocs] || [http://red5.googlecode.com/svn/doc/tags/1_0/api-client/index.html Client Javadocs] || [http://oss.infoscience.co.jp/red5/trac.red5.org/index.html 日本のウィキ] ||
 
 == How to build trunk ==
 
