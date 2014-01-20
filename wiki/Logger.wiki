@@ -70,13 +70,12 @@ Add the following to the web.xml
 }}}
 
 You should also:
-
-Remove any "log4j" listeners from the web.xml
-Remove any log4j.properties or log4j.xml files
-Create a logback-myApp.xml where myApp is the name for your webapp and place it on your webapp classpath (WEB-INF/classes or in your application jar within WEB-INF/lib)
-Set your display-name in the web application to match the context name you will be using (Use the example oflaDemo as a guide).
-Ensure that the contextName and jmxConfigurator have the correct context name, this is the name of your web application
-Sample webapp logback config file (logback-myApp.xml), not to be confused with the red5 log config file located in /conf
+ *Remove any "log4j" listeners from the web.xml
+ *Remove any log4j.properties or log4j.xml files
+ *Create a logback-myApp.xml where myApp is the name for your webapp and  place it on your webapp classpath (WEB-INF/classes or in your application jar within WEB-INF/lib)
+ *Set your display-name in the web application to match the context name you will be using (Use the example oflaDemo as a guide).
+ *Ensure that the contextName and jmxConfigurator have the correct context name, this is the name of your web application
+ *Sample webapp logback config file (logback-myApp.xml), not to be confused with the red5 log config file located in /conf
 {{{
 <configuration> 
     <contextName>myApp</contextName>
