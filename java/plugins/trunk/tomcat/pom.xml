@@ -5,7 +5,7 @@
 	<artifactId>tomcatplugin</artifactId>
 	<packaging>jar</packaging>
 	<name>tomcatplugin</name>
-	<version>1.5</version>
+	<version>1.6</version>
 	<url>http://red5.googlecode.com/svn/java/plugins/trunk/tomcat</url>
 	<description>Tomcat web container plugin.</description>
 	<parent>
