@@ -52,8 +52,9 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.realm.JAASRealm;
-import org.apache.catalina.realm.RealmBase;
+import org.apache.catalina.realm.MemoryRealm;
 import org.apache.catalina.realm.NullRealm;
+import org.apache.catalina.realm.RealmBase;
 import org.apache.catalina.startup.Embedded;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.Http11NioProtocol;
@@ -571,7 +572,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 								// create a spring web application context
 								final String contextClass = servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONTEXT_CLASS_PARAM) == null ? XmlWebApplicationContext.class
 										.getName() : servletContext.getInitParameter(org.springframework.web.context.ContextLoader.CONTEXT_CLASS_PARAM);
-								//web app context (spring)
+								// web app context (spring)
 								ConfigurableWebApplicationContext appctx = null;
 								try {
 									Class<?> clazz = Class.forName(contextClass, true, webClassLoader);
@@ -580,13 +581,13 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 									servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appctx);
 									appctx.setConfigLocations(new String[] { contextConfigLocation });
 									appctx.setServletContext(servletContext);
-									//set parent context or use current app context
+									// set parent context or use current app context
 									if (parentContext != null) {
 										appctx.setParent(parentContext);
 									} else {
 										appctx.setParent(applicationContext);
 									}
-									//refresh the factory
+									// refresh the factory
 									log.trace("Classloader prior to refresh: {}", appctx.getClassLoader());
 									appctx.refresh();
 									if (log.isDebugEnabled()) {
