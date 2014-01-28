@@ -15,8 +15,8 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<properties>
-		<tomcat.version>7.0.41</tomcat.version>
-		<ecj.version>4.2.2</ecj.version>
+		<tomcat.version>7.0.50</tomcat.version>
+		<ecj.version>4.3.1</ecj.version>
 	</properties>
 	<build>
 		<defaultGoal>install</defaultGoal>

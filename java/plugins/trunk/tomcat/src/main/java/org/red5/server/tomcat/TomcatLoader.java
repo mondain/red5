@@ -23,10 +23,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.management.ManagementFactory;
 import java.net.BindException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,30 +42,26 @@ import org.apache.catalina.Loader;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
-import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.realm.JAASRealm;
-import org.apache.catalina.realm.MemoryRealm;
 import org.apache.catalina.realm.NullRealm;
 import org.apache.catalina.realm.RealmBase;
 import org.apache.catalina.startup.Embedded;
-import org.apache.coyote.ProtocolHandler;
-import org.apache.coyote.http11.Http11NioProtocol;
-import org.apache.coyote.http11.Http11Protocol;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.ContextLoader;
 import org.red5.server.LoaderBase;
 import org.red5.server.api.IApplicationContext;
 import org.red5.server.jmx.mxbeans.ContextLoaderMXBean;
 import org.red5.server.jmx.mxbeans.LoaderMXBean;
+import org.red5.server.security.IRed5Realm;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -84,8 +77,9 @@ import org.w3c.dom.NodeList;
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
+@SuppressWarnings("deprecation")
 @ManagedResource(objectName = "org.red5.server:type=TomcatLoader", description = "TomcatLoader")
-public class TomcatLoader extends LoaderBase implements ApplicationContextAware, LoaderMXBean {
+public class TomcatLoader extends LoaderBase implements DisposableBean, LoaderMXBean {
 
 	/*
 	 * http://blog.springsource.com/2007/06/11/using-a-shared-parent-application-context-in-a-multi-war-spring-application/
@@ -137,11 +131,6 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 	protected Host host;
 
 	/**
-	 * Tomcat connector.
-	 */
-	protected Connector connector;
-
-	/**
 	 * Embedded Tomcat service (like Catalina).
 	 */
 	protected static Embedded embedded;
@@ -164,22 +153,12 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 	/**
 	 * Connectors
 	 */
-	protected List<Connector> connectors;
+	protected List<TomcatConnector> connectors;
 
 	/**
 	 * Valves
 	 */
 	protected List<Valve> valves = new ArrayList<Valve>();
-
-	/**
-	 * Additional connection properties to be set at init.
-	 */
-	protected Map<String, String> connectionProperties = new HashMap<String, String>();
-
-	/**
-	 * IP Address to bind to.
-	 */
-	protected InetAddress address;
 
 	/**
 	 * Add context for path and docbase to current host.
@@ -252,59 +231,12 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 	}
 
 	/**
-	 * Get base host.
-	 * 
-	 * @return Base host
-	 */
-	public Host getBaseHost() {
-		return host;
-	}
-
-	/**
-	 * Return connector.
-	 * 
-	 * @return Connector
-	 */
-	public Connector getConnector() {
-		return connector;
-	}
-
-	/**
-	 * Getter for embedded object.
-	 * 
-	 * @return Embedded object
-	 */
-	public Embedded getEmbedded() {
-		return embedded;
-	}
-
-	/**
-	 * Return Tomcat engine.
-	 * 
-	 * @return Tomcat engine
-	 */
-	public Engine getEngine() {
-		return engine;
-	}
-
-	/**
-	 * Getter for realm.
-	 * 
-	 * @return Realm
-	 */
-	public Realm getRealm() {
-		return realm;
-	}
-
-	/**
 	 * Initialization.
 	 */
-	public void init() {
+	public void start() {
 		log.info("Loading tomcat context");
-
 		//get a reference to the current threads classloader
 		final ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-
 		// root location for servlet container
 		String serverRoot = System.getProperty("red5.root");
 		log.info("Server root: {}", serverRoot);
@@ -460,61 +392,21 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 				engine.addChild(h);
 			}
 		}
-		// Add new Engine to set of Engine for embedded server
-		embedded.addEngine(engine);
-		// whether or not ssl is enabled
-		boolean useSSL = false;
-		// set connection properties
-		for (String key : connectionProperties.keySet()) {
-			log.debug("Setting connection property: {} = {}", key, connectionProperties.get(key));
-			if ("SSLEnabled".equals(key)) {
-				useSSL = Boolean.valueOf(connectionProperties.get(key));
-			}
-			if (connectors == null || connectors.isEmpty()) {
-				connector.setProperty(key, connectionProperties.get(key));
-			} else {
-				for (Connector ctr : connectors) {
-					ctr.setProperty(key, connectionProperties.get(key));
-				}
-			}
-		}
-		// determine if https support is requested
-		if (useSSL) {
-			// turn off native apr support
-			AprLifecycleListener listener = new AprLifecycleListener();
-			listener.setSSLEngine("off");
-			connector.addLifecycleListener(listener);
-			// set connection properties
-			connector.setSecure(true);
-			connector.setScheme("https");
-		}
-		// set the bind address
-		if (address == null) {
-			//bind locally
-			address = InetSocketAddress.createUnresolved("127.0.0.1", connector.getPort()).getAddress();
-		}
-		// apply the bind address
-		ProtocolHandler handler = connector.getProtocolHandler();
-		if (handler instanceof Http11Protocol) {
-			((Http11Protocol) handler).setAddress(address);
-		} else if (handler instanceof Http11NioProtocol) {
-			((Http11NioProtocol) handler).setAddress(address);
-		} else {
-			log.warn("Unknown handler type: {}", handler.getClass().getName());
-		}
-		// Start server
 		try {
-			// Add new Connector to set of Connectors for embedded server,
-			// associated with Engine
-			if (connectors == null || connectors.isEmpty()) {
-				embedded.addConnector(connector);
-				log.trace("Connector oName: {}", connector.getObjectName());
-			} else {
-				for (Connector ctr : connectors) {
-					embedded.addConnector(ctr);
-					log.trace("Connector oName: {}", ctr.getObjectName());
-				}
+			// add new Engine to set of Engine for embedded server
+			embedded.addEngine(engine);
+			// loop through connectors and apply methods / props
+			for (TomcatConnector tomcatConnector : connectors) {
+				// get the connector
+				Connector connector = tomcatConnector.getConnector();
+        		// add new Connector to set of Connectors for embedded server, associated with Engine
+       			embedded.addConnector(connector);
+       			log.trace("Connector oName: {}", connector.getObjectName());
 			}
+		} catch (Exception ex) {
+			log.warn("An exception occurred during network configuration", ex);
+		}
+		try {
 			log.info("Starting Tomcat servlet engine");
 			embedded.start();
 			// create references for later lookup
@@ -601,8 +493,15 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 											log.debug("Realm class: {}", contextRealm.getClass().getName());
 											contextRealm.setContainer(cont);
 											ctx.setRealm(contextRealm);
+											// when a realm implements our red5 realm, add the app and servlet contexts
+											if (contextRealm instanceof IRed5Realm) {
+												((IRed5Realm) contextRealm).setApplicationContext(appctx);
+												((IRed5Realm) contextRealm).setServletContext(servletContext);
+											}
+											// set the system property to allow the config to be located
 											if (contextRealm instanceof JAASRealm) {
 												log.debug("Realm is JAAS type");
+												// this may interfere with other concurrently loaded jaas realms
 												System.setProperty("java.security.auth.login.config", prefix + "WEB-INF/jaas.config");
 											}
 											log.debug("Realm info: {} path: {}", contextRealm.getInfo(), ((RealmBase) contextRealm).getRealmPath());
@@ -625,8 +524,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 					}
 				}
 			}
-			// if everything is ok at this point then call the rtmpt and rtmps
-			// beans so they will init
+			// if everything is ok at this point then call the rtmpt and rtmps beans so they will init
 			if (applicationContext.containsBean("rtmpt.server")) {
 				log.debug("Initializing RTMPT");
 				applicationContext.getBean("rtmpt.server");
@@ -650,7 +548,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		} finally {
 			registerJMX();
 		}
-
+		log.debug("Tomcat init exit");
 	}
 
 	/**
@@ -662,29 +560,23 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 	public boolean startWebApplication(String applicationName) {
 		log.info("Starting Tomcat - Web application");
 		boolean result = false;
-
 		//get a reference to the current threads classloader
 		final ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-
 		log.debug("Webapp root: {}", webappFolder);
-
-		// application directory
-		String contextName = '/' + applicationName;
-
-		Container ctx = null;
-
 		if (webappFolder == null) {
 			// Use default webapps directory
 			webappFolder = System.getProperty("red5.root") + "/webapps";
 		}
 		System.setProperty("red5.webapp.root", webappFolder);
 		log.info("Application root: {}", webappFolder);
-
+	
+		// application directory
+		String contextName = '/' + applicationName;
+		Container ctx = null;
 		// scan for additional webapp contexts
 
 		// Root applications directory
 		File appDirBase = new File(webappFolder);
-
 		// check if the context already exists for the host
 		if ((ctx = host.findChild(contextName)) == null) {
 			log.debug("Context did not exist in host");
@@ -776,8 +668,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 					}
 					// add the servlet context
 					appctx.setServletContext(servletContext);
-					// set the root webapp ctx attr on the each
-					// servlet context so spring can find it later
+					// set the root webapp ctx attr on the each servlet context so spring can find it later
 					servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appctx);
 					appctx.refresh();
 				}
@@ -795,17 +686,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 
 		return result;
 	}
-
-	/**
-	 * The address to which we will bind.
-	 * 
-	 * @param address
-	 */
-	public void setAddress(InetSocketAddress address) {
-		log.info("Address to bind: {}", address);
-		this.address = address.getAddress();
-	}
-
+	
 	/**
 	 * Set base host.
 	 * 
@@ -815,23 +696,32 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		log.debug("setBaseHost");
 		this.host = baseHost;
 	}
-
+	
 	/**
-	 * Set connector.
+	 * Get base host.
 	 * 
-	 * @param connector Connector
+	 * @return Base host
 	 */
-	public void setConnector(Connector connector) {
-		log.info("Setting connector: {}", connector.getClass().getName());
-		this.connector = connector;
+	public Host getBaseHost() {
+		return host;
 	}
 
 	/**
-	 * Set additional connectors.
+	 * Return Tomcat engine.
 	 * 
-	 * @param connectors Additional connectors
+	 * @return Tomcat engine
 	 */
-	public void setConnectors(List<Connector> connectors) {
+	public Engine getEngine() {
+		return engine;
+	}
+
+	
+	/**
+	 * Set connectors.
+	 * 
+	 * @param connectors 
+	 */
+	public void setConnectors(List<TomcatConnector> connectors) {
 		log.debug("setConnectors: {}", connectors.size());
 		this.connectors = connectors;
 	}
@@ -856,6 +746,15 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 	public void setEmbedded(Embedded embedded) {
 		log.info("Setting embedded: {}", embedded.getClass().getName());
 		TomcatLoader.embedded = embedded;
+	}
+
+	/**
+	 * Getter for embedded object.
+	 * 
+	 * @return Embedded object
+	 */
+	public Embedded getEmbedded() {
+		return embedded;
 	}
 
 	/**
@@ -898,6 +797,15 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 	}
 
 	/**
+	 * Getter for realm.
+	 * 
+	 * @return Realm
+	 */
+	public Realm getRealm() {
+		return realm;
+	}
+	
+	/**
 	 * Set additional valves.
 	 * 
 	 * @param valves List of valves
@@ -905,16 +813,6 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 	public void setValves(List<Valve> valves) {
 		log.debug("setValves: {}", valves.size());
 		this.valves.addAll(valves);
-	}
-
-	/**
-	 * Set connection properties for the connector
-	 * 
-	 * @param props additional properties to set
-	 */
-	public void setConnectionProperties(Map<String, String> props) {
-		log.debug("Connection props: {}", props.size());
-		this.connectionProperties.putAll(props);
 	}
 
 	/**
@@ -927,7 +825,7 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 		log.debug("Host id: {}", hostId);
 		return hostId;
 	}
-
+	
 	protected void registerJMX() {
 		// register with jmx
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -957,7 +855,8 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 	/**
 	 * Shut server down.
 	 */
-	public void shutdown() {
+	@Override
+	public void destroy() throws Exception {
 		log.info("Shutting down Tomcat context");
 		//run through the applications and ensure that spring is told
 		//to commence shutdown / disposal
@@ -990,6 +889,14 @@ public class TomcatLoader extends LoaderBase implements ApplicationContextAware,
 			log.warn("Tomcat could not be stopped", e);
 			throw new RuntimeException("Tomcat could not be stopped");
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "TomcatLoader [serviceEngineName=" + serviceEngineName + "]";
 	}
 
 }

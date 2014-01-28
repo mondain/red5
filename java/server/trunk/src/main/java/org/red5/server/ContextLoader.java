@@ -32,10 +32,10 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.jmx.mxbeans.ContextLoaderMXBean;
 import org.red5.server.plugin.PluginRegistry;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.DisposableBean;
@@ -61,7 +61,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 @ManagedResource(objectName = "org.red5.server:name=contextLoader,type=ContextLoader", description = "ContextLoader")
 public class ContextLoader implements ApplicationContextAware, InitializingBean, DisposableBean, ContextLoaderMXBean {
 
-	protected static Logger log = LoggerFactory.getLogger(ContextLoader.class);
+	protected static Logger log = Red5LoggerFactory.getLogger(ContextLoader.class);
 
 	/**
 	 * Spring Application context
@@ -93,7 +93,7 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 	 * the Spring application context.
 	 */
 	private boolean useShutdownHook;
-	
+
 	/**
 	 * Registers with JMX and registers a shutdown hook.
 	 * 
@@ -103,13 +103,20 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 		log.info("ContextLoader init");
 		// register in jmx
 		registerJMX();
-		//check to see if we should add a shutdown hook
-		if (useShutdownHook) {
-			//register a jvm shutdown hook
-			((AbstractApplicationContext) applicationContext).registerShutdownHook();
-		}
 		// initialize
 		init();
+		// check to see if we should add a shutdown hook
+		if (useShutdownHook) {
+			// register a jvm shutdown hook
+			((AbstractApplicationContext) applicationContext).registerShutdownHook();
+		}
+		LoaderBase jeeServer = applicationContext.getBean(LoaderBase.class);
+		// lookup the jee container
+		if (jeeServer == null) {
+			log.info("JEE server was not found");
+		} else {
+			log.info("JEE server was found: {}", jeeServer.toString());			
+		}
 	}
 
 	/**
@@ -118,12 +125,11 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 	public void destroy() throws Exception {
 		log.info("ContextLoader un-init");
 		shutdown();
-		//if theres no jee loader then exit
 		System.exit(0);
 	}
-		
+
 	/**
- 	 * Loads context settings from ResourceBundle (.properties file)
+	 * Loads context settings from ResourceBundle (.properties file)
 	 */
 	public void init() throws IOException {
 		// Load properties bundle
@@ -152,13 +158,13 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 					}
 					configReplaced = configReplaced.replace(String.format("${%s}", sysProp), systemPropValue);
 				}
-				log.info("Loading: {} = {}", name, config + " => " + configReplaced);
+				log.info("Loading: {} = {} => {}", new Object[] { name, config, configReplaced });
 				matcher.reset();
 				// Load context
 				loadContext(name, configReplaced);
 			}
 			patt = null;
-			matcher = null;			
+			matcher = null;
 		} else {
 			log.error("Contexts config must be set");
 		}
@@ -244,16 +250,17 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 			if (ctx.isActive()) {
 				log.debug("Context is active, attempting to close");
 				ctx.close();
-			}
-			try {
-				factory.destroyBean(name, ctx);
-			} catch (Exception e) {
-				log.warn("Context destroy failed for: {}", name, e);
-				ctx.destroy();
-			} finally {
-				if (factory.containsSingleton(name)) {
-					log.debug("Singleton still exists, trying another destroy method");
-					((DefaultListableBeanFactory) factory).destroySingleton(name);
+			} else {
+				try {
+					factory.destroyBean(name, ctx);
+				} catch (Exception e) {
+					log.warn("Context destroy failed for: {}", name, e);
+					ctx.destroy();
+				} finally {
+					if (factory.containsSingleton(name)) {
+						log.debug("Singleton still exists, trying another destroy method");
+						((DefaultListableBeanFactory) factory).destroySingleton(name);
+					}
 				}
 			}
 		} else {
@@ -288,17 +295,6 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 				log.warn("Exception shutting down contexts", e);
 			}
 		}
-		try {
-			// look up any shutdown enabled beans
-			LoaderBase loader = BeanFactoryUtils.beanOfTypeIncludingAncestors(applicationContext, LoaderBase.class);
-			if (loader != null) {
-				loader.shutdown();
-			} else {
-				log.debug("Loader was not found");
-			}
-		} catch (Exception e) {
-			log.warn("Exception looking for loader", e);
-		}		
 	}
 
 	/**
@@ -335,7 +331,7 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 			log.debug("Parent context not found");
 		}
 	}
-	
+
 	protected void registerJMX() {
 		// register with jmx
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -360,8 +356,8 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 			log.warn("Exception unregistering: {}", oName, e);
 		}
 		oName = null;
-	}	
-	
+	}
+
 	/**
 	 * @param applicationContext Spring application context
 	 * @throws BeansException Top level exception for app context (that is, in fact, beans
@@ -379,7 +375,7 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 	public void setParentContext(ApplicationContext parentContext) {
 		this.parentContext = parentContext;
 	}
-	
+
 	/**
 	 * Return parent context
 	 * 
@@ -397,7 +393,7 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 	public void setContextsConfig(String contextsConfig) {
 		this.contextsConfig = contextsConfig;
 	}
-	
+
 	public String getContextsConfig() {
 		return contextsConfig;
 	}
@@ -418,6 +414,6 @@ public class ContextLoader implements ApplicationContextAware, InitializingBean,
 	 */
 	public void setUseShutdownHook(boolean useShutdownHook) {
 		this.useShutdownHook = useShutdownHook;
-	}	
-	
+	}
+
 }

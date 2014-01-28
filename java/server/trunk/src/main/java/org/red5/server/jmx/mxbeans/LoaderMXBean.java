@@ -21,8 +21,7 @@ package org.red5.server.jmx.mxbeans;
 import javax.management.MXBean;
 
 /**
- * Simple mbean interface for J2EE container loaders. Allows for
- * init and shutdown.
+ * Simple mbean interface for J2EE container loaders.  
  *
  * @author The Red5 Project
  * @author Paul Gregoire (mondain@gmail.com)
@@ -30,10 +29,10 @@ import javax.management.MXBean;
 @MXBean
 public interface LoaderMXBean extends ShutdownMXBean {
 
-	public void init();
-
-	public void removeContext(String path);
-
 	public boolean startWebApplication(String application);
 
+	public void removeContext(String path);
+	
+	public void destroy() throws Exception;
+	
 }

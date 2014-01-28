@@ -12,7 +12,7 @@ REM  build the jar version
 REM mvn compile jar:jar
 
 REM resume a build after modifying project files
-mvn install -rf :tomcatplugin
+mvn clean install -rf :tomcatplugin
 
 REM to skip tests add -DskipTests
 REM mvn install -DskipTests

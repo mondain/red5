@@ -2,8 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:lang="http://www.springframework.org/schema/lang"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd                            
-	http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd                            
+	http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.1.xsd">
 
 	<!-- DO NOT FORMAT THIS FILE IN ECLIPSE -->
 	
@@ -57,17 +57,11 @@
 	<!-- RTMP Mina Transport -->
 	<bean id="rtmpTransport" class="org.red5.server.net.rtmp.RTMPMinaTransport" init-method="start" destroy-method="stop">
 		<property name="ioHandler" ref="rtmpMinaIoHandler" />
-        <property name="connectors">
+        <property name="addresses">
             <list>
-                <bean class="java.net.InetSocketAddress">
-                    <constructor-arg index="0" type="java.lang.String" value="${rtmp.host}" />  
-                    <constructor-arg index="1" type="int" value="${rtmp.port}" />  
-                </bean>
+				<value>${rtmp.host}:${rtmp.port}</value>
                 <!-- You can now add additional ports and ip addresses
-                <bean class="java.net.InetSocketAddress">
-                    <constructor-arg index="0" type="java.lang.String" value="${rtmp.host}" />  
-                    <constructor-arg index="1" type="int" value="1936" />  
-                </bean>
+				<value>${rtmp.host}:1936</value>
                  -->
             </list>
         </property>
@@ -77,7 +71,7 @@
         <property name="trafficClass" value="${rtmp.traffic_class}" />
         <property name="backlog" value="${rtmp.backlog}" />
         <property name="tcpNoDelay" value="${rtmp.tcp_nodelay}" />
-        <property name="keepAlive" value="${rtmp.tcp_keepalive}" />
+		<property name="keepAlive" value="${rtmp.tcp_keepalive}" />
         <property name="thoughputCalcInterval" value="${rtmp.thoughput_calc_interval}" />
         <property name="enableDefaultAcceptor" value="${rtmp.default_acceptor}" />
         <!-- Pool settings are used when the default acceptor is disabled -->
@@ -88,7 +82,7 @@
 		<!-- This is the interval at which the sessions are polled for stats. If mina monitoring is not enabled, polling will not occur. -->
 		<property name="minaPollInterval" value="${jmx.mina.poll.interval}" />
 		<property name="enableMinaMonitor" value="${jmx.mina.monitor.enable}" />
-        <property name="enableMinaLogFilter" value="${mina.logfilter.enable}" />
+		<property name="enableMinaLogFilter" value="${mina.logfilter.enable}" />
 	</bean>
 	
 	<!-- RTMP Mina Connection -->
@@ -114,7 +108,7 @@
 	</bean>
 	
 	<!-- RTMPT -->
-		
+	
 	<!-- RTMPT Handler -->
 	<bean id="rtmptHandler" class="org.red5.server.net.rtmpt.RTMPTHandler" autowire="byType">
 		<property name="codecFactory" ref="rtmptCodecFactory" />
@@ -137,7 +131,7 @@
         <!-- Executor for scheduled tasks -->
         <property name="scheduler" ref="rtmpScheduler" />
         <!-- Executor for incoming messages -->
-        <property name="executor" ref="messageExecutor" />        
+        <property name="executor" ref="messageExecutor" /> 
 		<!-- Ping clients every X ms. Set to 0 to disable ghost detection code. -->
 		<property name="pingInterval" value="${rtmpt.ping_interval}" />
 		<!-- Disconnect client after X ms of not responding. -->

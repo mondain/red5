@@ -83,9 +83,9 @@ public class Shutdown {
 			}
 			jmxc = JMXConnectorFactory.connect(url, env);
 			MBeanServerConnection mbs = jmxc.getMBeanServerConnection();
-			//class supporting shutdown
+			// class supporting shutdown
 			ShutdownMXBean proxy = null;
-			//check for loader registration
+			// check for loader registration
 			ObjectName tomcatObjectName = new ObjectName("org.red5.server:type=TomcatLoader");
 			ObjectName jettyObjectName = new ObjectName("org.red5.server:type=JettyLoader");
 			ObjectName winstoneObjectName = new ObjectName("org.red5.server:type=WinstoneLoader");
@@ -107,7 +107,7 @@ public class Shutdown {
 			}
 			if (proxy != null) {
 				System.out.println("Calling shutdown");
-				proxy.shutdown();
+				proxy.destroy();
 			}
 			jmxc.close();
 		} catch (UndeclaredThrowableException e) {

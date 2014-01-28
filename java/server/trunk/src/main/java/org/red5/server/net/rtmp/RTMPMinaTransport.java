@@ -20,7 +20,6 @@ package org.red5.server.net.rtmp;
 
 import java.lang.management.ManagementFactory;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,7 +65,7 @@ public class RTMPMinaTransport implements RTMPMinaTransportMXBean {
 
 	protected SocketAcceptor acceptor;
 
-	protected Set<SocketAddress> addresses = new HashSet<SocketAddress>();
+	protected Set<String> addresses = new HashSet<String>();
 
 	protected IoHandlerAdapter ioHandler;
 
@@ -191,28 +190,40 @@ public class RTMPMinaTransport implements RTMPMinaTransportMXBean {
 				sessionConf.getSoLinger(), sessionConf.getTrafficClass() });
 		// set reuse address on the socket acceptor as well
 		acceptor.setReuseAddress(true);
-		String addrStr = addresses.toString();
-		log.debug("Binding to {}", addrStr);
-		acceptor.bind(addresses);
-		//create a new mbean for this instance
-		// RTMPMinaTransport
-		String cName = this.getClass().getName();
-		if (cName.indexOf('.') != -1) {
-			cName = cName.substring(cName.lastIndexOf('.')).replaceFirst("[\\.]", "");
-		}
-		//enable only if user wants it
-		if (enableMinaMonitor) {
-			//add a stats to allow for more introspection into the workings of mina
-			stats = new IoServiceStatistics((AbstractIoService) acceptor);
-			//poll every second
-			stats.setThroughputCalculationInterval(minaPollInterval);
-			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-			try {
-				serviceManagerObjectName = new ObjectName("org.red5.server:type=RTMPMinaTransport");
-				mbs.registerMBean(new StandardMBean(this, RTMPMinaTransportMXBean.class, true), serviceManagerObjectName);
-			} catch (Exception e) {
-				log.warn("Error on jmx registration", e);
+		try {
+			// loop through the addresses and bind
+			Set<InetSocketAddress> socketAddresses = new HashSet<InetSocketAddress>();
+			for (String addr : addresses) {
+				if (addr.indexOf(':') != -1) {
+					String[] parts = addr.split(":");
+					socketAddresses.add(new InetSocketAddress(parts[0], Integer.valueOf(parts[1])));
+				} else {
+					socketAddresses.add(new InetSocketAddress(addr, 1935));
+				}
 			}
+			log.debug("Binding to {}", socketAddresses.toString());
+			acceptor.bind(socketAddresses);
+    		// create a new mbean for this instance RTMPMinaTransport
+    		String cName = this.getClass().getName();
+    		if (cName.indexOf('.') != -1) {
+    			cName = cName.substring(cName.lastIndexOf('.')).replaceFirst("[\\.]", "");
+    		}
+    		//enable only if user wants it
+    		if (enableMinaMonitor) {
+    			//add a stats to allow for more introspection into the workings of mina
+    			stats = new IoServiceStatistics((AbstractIoService) acceptor);
+    			//poll every second
+    			stats.setThroughputCalculationInterval(minaPollInterval);
+    			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+    			try {
+    				serviceManagerObjectName = new ObjectName("org.red5.server:type=RTMPMinaTransport");
+    				mbs.registerMBean(new StandardMBean(this, RTMPMinaTransportMXBean.class, true), serviceManagerObjectName);
+    			} catch (Exception e) {
+    				log.warn("Error on jmx registration", e);
+    			}
+    		}
+		} catch (Exception e) {
+			log.error("Exception occurred during resolve / bind", e);
 		}
 	}
 
@@ -230,16 +241,16 @@ public class RTMPMinaTransport implements RTMPMinaTransportMXBean {
 		}
 	}
 
-	public void setConnector(InetSocketAddress connector) {
-		addresses.add(connector);
-		log.info("RTMP Mina Transport bound to {}", connector.toString());
+	public void setAddress(String address) {
+		addresses.add(address);
+		log.info("RTMP will be bound to {}", address);
 	}
 
-	public void setConnectors(List<InetSocketAddress> connectors) {
-		for (InetSocketAddress addr : connectors) {
+	public void setAddresses(List<String> addrs) {
+		for (String addr : addrs) {
 			addresses.add(addr);
-			log.info("RTMP Mina Transport bound to {}", addr.toString());
 		}
+		log.info("RTMP will be bound to {}", addresses);
 	}
 
 	public void setIoHandler(IoHandlerAdapter rtmpIOHandler) {
@@ -363,20 +374,8 @@ public class RTMPMinaTransport implements RTMPMinaTransportMXBean {
 	 * 
 	 * @return addresses
 	 */
-	public String getAddresses() {
-		//construct a object containing all the host and port combos
-		StringBuilder addressAndPorts = new StringBuilder();
-		for (SocketAddress sa : addresses) {
-			InetSocketAddress isa = ((InetSocketAddress) sa);
-			if (!isa.isUnresolved()) {
-				addressAndPorts.append(isa.getHostName());
-				addressAndPorts.append('|');
-				addressAndPorts.append(isa.getPort());
-				addressAndPorts.append(';');
-			}
-		}
-		addressAndPorts.deleteCharAt(addressAndPorts.length() - 1);
-		return addressAndPorts.toString();
+	public String getAddress() {
+		return addresses.toString();
 	}
 
 	/**
