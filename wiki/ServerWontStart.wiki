@@ -285,3 +285,62 @@ To
 		</property>
 	</bean>
 }}}
+
+== Red5 1.0.2 RC3 to 1.0.2 RC4 ==
+Between these release candidates, the network address handling was overhauled. The tomcat plugin was also updated to version 1.6 and its configuration was simplified. If you want to use your existing configuration files, the following changes will needed.
+
+1. Modify the red5 common and core spring context beans in conf/red5.xml.
+
+{{{
+	<bean id="red5.common" class="org.red5.spring.Red5ApplicationContext">
+    	<property name="configLocation" value="classpath:/red5-common.xml" />
+	</bean>
+	
+	<bean id="red5.core" class="org.red5.spring.Red5ApplicationContext">
+    	<property name="configLocation" value="classpath:/red5-core.xml" />
+    	<property name="parent" ref="red5.common" />
+	</bean>
+}}}
+
+2. Modify the rtmpTransport bean in the red5 core context configuration file at conf/red5-core.xml. The _addresses_ property now uses the simplified host / port entry style implemented for the tomcat plugin.
+
+{{{
+	<bean id="rtmpTransport" class="org.red5.server.net.rtmp.RTMPMinaTransport" init-method="start" destroy-method="stop">
+		<property name="ioHandler" ref="rtmpMinaIoHandler" />
+        <property name="addresses">
+            <list>
+				<value>${rtmp.host}:${rtmp.port}</value>
+                <!-- You can now add additional ports and ip addresses
+				<value>${rtmp.host}:1936</value>
+                 -->
+            </list>
+        </property>
+}}}
+
+3. Modify the tomcat server bean in conf/jee-container.xml. The _init-method_ attribute is changed to "start" and _lazy-init_ has been added. The _connectors_ and _baseHost_ properties have been simplified; the _valves_ property remains unchanged, but is not shown or required.
+
+{{{
+    <bean id="tomcat.server" class="org.red5.server.tomcat.TomcatLoader" depends-on="context.loader" init-method="start" lazy-init="true">
+
+        <property name="webappFolder" value="${red5.root}/webapps" />
+        
+        <property name="connectors">
+            <list>
+                <bean name="httpConnector" class="org.red5.server.tomcat.TomcatConnector">
+					<property name="protocol" value="org.apache.coyote.http11.Http11NioProtocol" />
+					<property name="address" value="${http.host}:${http.port}" />
+                    <property name="redirectPort" value="${https.port}" />  
+                </bean>     
+            </list>
+        </property>
+        
+        <property name="baseHost">
+           <bean class="org.apache.catalina.core.StandardHost">
+               <property name="name" value="${http.host}" />
+           </bean>     
+        </property>     
+        
+    </bean>
+
+}}}
+
