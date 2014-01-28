@@ -116,6 +116,12 @@
       <version>1.0.2-RC3</version>
       <description>Red5 core server</description>
     </archetype>	
+    <archetype>
+      <groupId>org.red5</groupId>
+      <artifactId>red5-server</artifactId>
+      <version>1.0.2-RC4</version>
+      <description>Red5 core server</description>
+    </archetype>	
     <!-- Client -->
     <archetype>
       <groupId>org.red5</groupId>
