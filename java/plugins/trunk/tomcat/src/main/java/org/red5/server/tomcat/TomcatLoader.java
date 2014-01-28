@@ -358,10 +358,6 @@ public class TomcatLoader extends LoaderBase implements DisposableBean, LoaderMX
 		if (realm != null) {
 			embedded.setRealm(realm);
 		} else {
-			/*
-			realm = new MemoryRealm();
-			((MemoryRealm) realm).setPathname(confRoot + "/tomcat-users.xml");
-			*/
 			realm = new NullRealm();
 			embedded.setRealm(realm);
 		}
@@ -858,18 +854,17 @@ public class TomcatLoader extends LoaderBase implements DisposableBean, LoaderMX
 	@Override
 	public void destroy() throws Exception {
 		log.info("Shutting down Tomcat context");
-		//run through the applications and ensure that spring is told
-		//to commence shutdown / disposal
+		// run through the applications and ensure that spring is told to commence shutdown / disposal
 		AbstractApplicationContext absCtx = (AbstractApplicationContext) LoaderBase.getApplicationContext();
 		if (absCtx != null) {
 			log.debug("Using loader base application context for shutdown");
-			//get all the app (web) contexts and shut them down first
+			// get all the app (web) contexts and shut them down first
 			Map<String, IApplicationContext> contexts = LoaderBase.getRed5ApplicationContexts();
 			if (contexts.isEmpty()) {
 				log.info("No contexts were found to shutdown");
 			}
 			for (Map.Entry<String, IApplicationContext> entry : contexts.entrySet()) {
-				//stop the context
+				// stop the context
 				log.debug("Calling stop on context: {}", entry.getKey());
 				entry.getValue().stop();
 			}
@@ -881,10 +876,8 @@ public class TomcatLoader extends LoaderBase implements DisposableBean, LoaderMX
 			log.error("Error getting Spring bean factory for shutdown");
 		}
 		try {
-			//stop tomcat
+			// stop tomcat
 			embedded.stop();
-			//kill the jvm
-			System.exit(0);
 		} catch (Exception e) {
 			log.warn("Tomcat could not be stopped", e);
 			throw new RuntimeException("Tomcat could not be stopped");

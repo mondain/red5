@@ -35,12 +35,10 @@ import org.springframework.web.context.WebApplicationContext;
  * 
  * @author The Red5 Project (red5@osflash.org)
  * @author Joachim Bauch (jojo@struktur.de)
+ * @author Paul Gregoire
  */
 public class TomcatApplicationContext implements IApplicationContext {
 
-    /**
-     * Logger
-     */
 	protected static Logger log = Red5LoggerFactory.getLogger(TomcatApplicationContext.class);
 
 	/** Store a reference to the Tomcat webapp context. */
@@ -56,6 +54,9 @@ public class TomcatApplicationContext implements IApplicationContext {
 		this.context = context;
 	}
 	
+	/**
+	 * Stop the application and servlet contexts.
+	 */
 	public void stop() {
 		log.debug("stop");
 		try {
@@ -83,9 +84,9 @@ public class TomcatApplicationContext implements IApplicationContext {
 		if (context instanceof StandardContext) {
 			StandardContext ctx = (StandardContext) context;
 			LifecycleState state = ctx.getState();
-			if (state != LifecycleState.DESTROYED || state != LifecycleState.DESTROYING) {
+			if (state != LifecycleState.DESTROYED && state != LifecycleState.DESTROYING) {
     			try {
-    				if (state != LifecycleState.STOPPED || state != LifecycleState.STOPPING) {
+    				if (state != LifecycleState.STOPPED && state != LifecycleState.STOPPING) {
         				// stop the tomcat context
         				ctx.stop();
     				}
