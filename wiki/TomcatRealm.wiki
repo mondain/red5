@@ -9,6 +9,16 @@ If you want to add a layer of security to your JEE apps within Red5, this will h
 
 *A* - A Realm is a "database" of usernames and passwords that identify valid users of a web application (or set of web applications), plus an enumeration of the list of roles associated with each valid user. You can think of roles as similar to groups in Unix-like operating systems, because access to specific web application resources is granted to all users possessing a particular role (rather than enumerating the list of associated usernames). A particular user can have any number of roles associated with their username.
 
+A realm in Red5 and Tomcat can be server-wide or constrained to an individual application. To enable a server-wide realm, add the realm property to your tomcat.server bean. If you want it in a individual application, add a realm bean to your red5-web.xml file.
+
+{{{
+<bean id="realm" class="org.apache.catalina.realm.MemoryRealm" />
+}}}
+
+== IRed5Realm ==
+
+Implementing this interface in your custom Realm class will allow you to access both the Spring application context and servlet context via injection by the TomcatLoader on startup of your application. The source may be found [https://code.google.com/p/red5/source/browse/java/plugins/trunk/tomcat/src/main/java/org/red5/server/security/IRed5Realm.java here]
+
 == [http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html#MemoryRealm  MemoryRealm] ==
 
 This property should work in most versions of Red5 from around version 0.9; it may work in early versions, but your mileage could vary. Place this property within the tomcat.server bean. The format of the tomcat-users.xml follows the tomcat standard.
