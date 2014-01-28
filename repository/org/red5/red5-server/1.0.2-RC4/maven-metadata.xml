@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.red5</groupId>
+  <artifactId>red5-server</artifactId>
+  <versioning>
+    <latest>1.0.2-RC4</latest>
+    <release>1.0.1</release>
+    <lastUpdated>20140127170101</lastUpdated>
+  </versioning>
+</metadata>
