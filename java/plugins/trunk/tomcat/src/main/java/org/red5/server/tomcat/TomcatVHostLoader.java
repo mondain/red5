@@ -85,7 +85,8 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 	 * Initialization.
 	 */
 	@SuppressWarnings("cast")
-	public void init() {
+	@Override
+	public void start() {
 		log.info("Loading tomcat virtual host");
 		if (webappFolder != null) {
 			//check for match with base webapp root
@@ -218,7 +219,8 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 	/**
 	 * Un-initialization.
 	 */	
-	public void uninit() {
+	@Override
+	public void destroy() throws Exception {
 		log.debug("TomcatVHostLoader un-init");		
 		Container[] children = host.findChildren();
 		for (Container c : children) {
@@ -432,6 +434,7 @@ public class TomcatVHostLoader extends TomcatLoader implements TomcatVHostLoader
 	 * 
 	 * @param contexts Map of contexts
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	public void setContexts(Map<String, String> contexts) {
 		log.debug("setContexts: {}", contexts.size());

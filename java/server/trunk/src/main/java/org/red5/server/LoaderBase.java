@@ -22,10 +22,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IApplicationContext;
 import org.red5.server.api.IApplicationLoader;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -39,7 +39,7 @@ import org.springframework.context.ApplicationContextAware;
  */
 public abstract class LoaderBase implements ApplicationContextAware {
 
-	private static Logger log = LoggerFactory.getLogger(LoaderBase.class);
+	private static Logger log = Red5LoggerFactory.getLogger(LoaderBase.class);
 	
 	/**
 	 * We store the application context so we can access it later.
@@ -177,10 +177,5 @@ public abstract class LoaderBase implements ApplicationContextAware {
 	public void removeContext(String path) {
 		throw new UnsupportedOperationException();
 	}
-	
-	/**
-	 * Entry point to shutdown this loader.
-	 */
-	public abstract void shutdown();
 
 }

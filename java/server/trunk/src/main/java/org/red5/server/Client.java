@@ -32,7 +32,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.management.openmbean.CompositeData;
 
-import org.apache.commons.lang3.StringUtils;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.Red5;

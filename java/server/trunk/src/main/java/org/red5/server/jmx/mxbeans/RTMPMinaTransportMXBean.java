@@ -31,7 +31,7 @@ public interface RTMPMinaTransportMXBean {
 
 	public void setUseHeapBuffers(boolean useHeapBuffers);
 
-	public String getAddresses();
+	public String getAddress();
 	
 	public String getStatistics();
 	

@@ -33,10 +33,6 @@ import org.apache.catalina.Valve;
 @MXBean
 public interface TomcatVHostLoaderMXBean {
 
-	public void init();
-
-	public void uninit();
-
 	public boolean startWebApplication(String applicationName);	
 	
 	public boolean getAutoDeploy();
@@ -80,7 +76,5 @@ public interface TomcatVHostLoaderMXBean {
 	public String getWebappRoot();
 
 	public void setWebappRoot(String webappRoot);
-
-	public void shutdown();
 
 }

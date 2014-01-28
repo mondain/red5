@@ -54,20 +54,16 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
  * @author Michael Guymon (michael.guymon@gmail.com)
  * 
  */
-public class ExtendedPropertyPlaceholderConfigurer extends
-		PropertyPlaceholderConfigurer {
+public class ExtendedPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 
-	private static Logger logger = LoggerFactory
-			.getLogger(ExtendedPropertyPlaceholderConfigurer.class);
+	private static Logger logger = LoggerFactory.getLogger(ExtendedPropertyPlaceholderConfigurer.class);
 
 	private static Properties globalPlaceholderProperties = new Properties();
 
 	private Properties mergedProperties;
 
 	@Override
-	protected void processProperties(
-			ConfigurableListableBeanFactory beanFactoryToProcess,
-			Properties props) throws BeansException {
+	protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess, Properties props) throws BeansException {
 
 		props.putAll(copyOfGlobalProperties());
 		logger.debug("Placeholder props: {}", props.toString());
@@ -97,8 +93,7 @@ public class ExtendedPropertyPlaceholderConfigurer extends
 	public void setWildcardLocations(String[] locations) throws IOException {
 
 		List<Resource> resources = new ArrayList<Resource>();
-		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
-				this.getClass().getClassLoader());
+		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(this.getClass().getClassLoader());
 
 		for (String location : locations) {
 			logger.debug("Loading location {}", location);
@@ -108,28 +103,23 @@ public class ExtendedPropertyPlaceholderConfigurer extends
 				if (configs != null && configs.length > 0) {
 					List<Resource> resourceGroup = new ArrayList<Resource>();
 					for (Resource resource : configs) {
-						logger.debug("Loading {} for location {}", resource
-								.getFilename(), location);
+						logger.debug("Loading {} for location {}", resource.getFilename(), location);
 						resourceGroup.add(resource);
 					}
 					// Sort all Resources for a wildcard location by filename
-					Collections.sort(resourceGroup,
-							new ResourceFilenameComparator());
+					Collections.sort(resourceGroup, new ResourceFilenameComparator());
 
 					// Add to master List
 					resources.addAll(resourceGroup);
 
 				} else {
-					logger.info("Wildcard location does not exist: {}",
-							location);
+					logger.info("Wildcard location does not exist: {}", location);
 				}
 			} catch (IOException ioException) {
-				logger.error("Failed to resolve location: {} - {}", location,
-						ioException);
+				logger.error("Failed to resolve location: {} - {}", location, ioException);
 			}
 		}
-		this.setLocations(resources.toArray(new Resource[resources
-				.size()]));
+		this.setLocations(resources.toArray(new Resource[resources.size()]));
 	}
 
 	/**
@@ -165,8 +155,7 @@ public class ExtendedPropertyPlaceholderConfigurer extends
 		public int compare(Resource resource1, Resource resource2) {
 			if (resource1 != null) {
 				if (resource2 != null) {
-					return resource1.getFilename().compareTo(
-							resource2.getFilename());
+					return resource1.getFilename().compareTo(resource2.getFilename());
 				} else {
 					return 1;
 				}

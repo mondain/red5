@@ -18,22 +18,19 @@ package org.red5.server.tomcat.rtmps;
  * with this library; if not, write to the Free Software Foundation, Inc., 
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
- 
+
 import java.io.File;
-import java.net.InetSocketAddress;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Valve;
-import org.apache.catalina.core.AprLifecycleListener;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.coyote.ProtocolHandler;
-import org.apache.coyote.http11.Http11NioProtocol;
-import org.apache.coyote.http11.Http11Protocol;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IServer;
+import org.red5.server.tomcat.TomcatConnector;
 import org.red5.server.tomcat.rtmpt.RTMPTLoader;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
@@ -48,12 +45,12 @@ public class RTMPSLoader extends RTMPTLoader {
 
 	// Initialize Logging
 	private Logger log = Red5LoggerFactory.getLogger(RTMPSLoader.class);
-	
+
 	/**
 	 * RTMPS Tomcat engine.
 	 */
-	protected Engine rtmpsEngine;	
-	
+	protected Engine rtmpsEngine;
+
 	/**
 	 * Setter for server
 	 * 
@@ -65,21 +62,20 @@ public class RTMPSLoader extends RTMPTLoader {
 	}
 
 	/** {@inheritDoc} */
+	@SuppressWarnings("deprecation")
 	@Override
-	public void init() {
+	public void start() {
 		log.info("Loading RTMPS context");
-		
 		rtmpsEngine = embedded.createEngine();
 		rtmpsEngine.setDefaultHost(host.getName());
 		rtmpsEngine.setName("red5RTMPSEngine");
 		rtmpsEngine.setService(embedded);
-
 		// add the valves to the host
 		for (Valve valve : valves) {
 			log.debug("Adding host valve: {}", valve);
 			((StandardHost) host).addValve(valve);
-		}				
-		
+		}
+
 		// create and add root context
 		File appDirBase = new File(webappFolder);
 		String webappContextDir = FileUtil.formatPath(appDirBase.getAbsolutePath(), "/root");
@@ -97,77 +93,44 @@ public class RTMPSLoader extends RTMPTLoader {
 			WebappLoader wldr = new WebappLoader(classLoader);
 			//add the Loader to the context
 			ctx.setLoader(wldr);
-		}  		
+		}
 		appDirBase = null;
 		webappContextDir = null;
-		
+
 		host.addChild(ctx);
 		// add servlet wrapper
 		StandardWrapper wrapper = new StandardWrapper();
 		wrapper.setServletName("RTMPTServlet");
 		wrapper.setServletClass("org.red5.server.net.rtmpt.RTMPTServlet");
 		ctx.addChild(wrapper);
-		
+
 		// add servlet mappings
 		ctx.addServletMapping("/open/*", "RTMPTServlet");
 		ctx.addServletMapping("/close/*", "RTMPTServlet");
 		ctx.addServletMapping("/send/*", "RTMPTServlet");
 		ctx.addServletMapping("/idle/*", "RTMPTServlet");
-				
 		// add the host
 		rtmpsEngine.addChild(host);
-
 		// add new Engine to set of Engine for embedded server
 		embedded.addEngine(rtmpsEngine);
-
-		//turn off native apr support
-		AprLifecycleListener listener = new AprLifecycleListener();
-		listener.setSSLEngine("off");
-		connector.addLifecycleListener(listener);
-		
-		log.debug("Protocol handler: {}", connector.getProtocolHandlerClassName());
-
-		// set connection properties
-		connector.setSecure(true);
-        connector.setScheme("https");
-        
-		// set the bind address
-		if (address == null) {
-			//bind locally
-			address = InetSocketAddress.createUnresolved("127.0.0.1", connector.getPort()).getAddress();
-		}
-		// apply the bind address
-		ProtocolHandler handler = connector.getProtocolHandler();
-		if (handler instanceof Http11Protocol) {
-			((Http11Protocol) handler).setAddress(address);
-		} else if (handler instanceof Http11NioProtocol) {
-			((Http11NioProtocol) handler).setAddress(address);
-		} else {
-			log.warn("Unknown handler type: {}", handler.getClass().getName());
-		}	        
-
-		// set other connection / protocol handler properties
-		for (String key : connectionProperties.keySet()) {
-			log.debug("Setting connection property: {} = {}", key, connectionProperties.get(key));
-			connector.setProperty(key, connectionProperties.get(key));
-		}		
-		
-		log.info("Connector info: {}", connector.getInfo());
-		
-		// start server
 		try {
-    		// add new Connector to set of Connectors for embedded server,
-    		// associated with Engine
-    		embedded.addConnector(connector);
-
-			log.info("Starting RTMPS engine");
-			connector.start();
+			// loop through connectors and apply methods / props
+			for (TomcatConnector tomcatConnector : connectors) {
+				// get the connector
+				Connector connector = tomcatConnector.getConnector();
+        		// add new Connector to set of Connectors for embedded server, associated with Engine
+       			embedded.addConnector(connector);
+       			log.trace("Connector oName: {}", connector.getObjectName());
+				log.info("Starting RTMPS engine");
+				// start connector
+				connector.start();
+			}
 		} catch (Exception e) {
 			log.error("Error initializing RTMPS server instance", e);
 		} finally {
-			registerJMX();		
+			registerJMX();
 		}
 
 	}
-	
+
 }

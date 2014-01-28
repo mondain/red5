@@ -20,21 +20,19 @@ package org.red5.server.tomcat.rtmpt;
  */
 
 import java.io.File;
-import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Valve;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.coyote.ProtocolHandler;
-import org.apache.coyote.http11.Http11NioProtocol;
-import org.apache.coyote.http11.Http11Protocol;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IServer;
+import org.red5.server.tomcat.TomcatConnector;
 import org.red5.server.tomcat.TomcatLoader;
 import org.red5.server.util.FileUtil;
 import org.slf4j.Logger;
@@ -48,7 +46,7 @@ import org.slf4j.Logger;
 public class RTMPTLoader extends TomcatLoader {
 
 	// Initialize Logging
-	private static Logger log = Red5LoggerFactory.getLogger(RTMPTLoader.class);
+	private Logger log = Red5LoggerFactory.getLogger(RTMPTLoader.class);
 
 	/**
 	 * RTMPT Tomcat engine.
@@ -83,8 +81,9 @@ public class RTMPTLoader extends TomcatLoader {
 	}
 
 	/** {@inheritDoc} */
+	@SuppressWarnings("deprecation")
 	@Override
-	public void init() {
+	public void start() {
 		log.info("Loading RTMPT context");
 
 		rtmptEngine = embedded.createEngine();
@@ -134,42 +133,22 @@ public class RTMPTLoader extends TomcatLoader {
 		// add any additional mappings
 		for (String key : servletMappings.keySet()) {
 			context.addServletMapping(servletMappings.get(key), key);
-		}		
-		
+		}				
 		rtmptEngine.addChild(host);
-
 		// add new Engine to set of Engine for embedded server
 		embedded.addEngine(rtmptEngine);
-
-		// set the bind address
-		if (address == null) {
-			//bind locally
-			address = InetSocketAddress.createUnresolved("127.0.0.1", connector.getPort()).getAddress();
-		}
-		// apply the bind address
-		ProtocolHandler handler = connector.getProtocolHandler();
-		if (handler instanceof Http11Protocol) {
-			((Http11Protocol) handler).setAddress(address);
-		} else if (handler instanceof Http11NioProtocol) {
-			((Http11NioProtocol) handler).setAddress(address);
-		} else {
-			log.warn("Unknown handler type: {}", handler.getClass().getName());
-		}		
-		
-		// set connection properties
-		for (String key : connectionProperties.keySet()) {
-			log.debug("Setting connection property: {} = {}", key, connectionProperties.get(key));
-			connector.setProperty(key, connectionProperties.get(key));
-		}		
-		
-		// start server
 		try {
-    		// add new Connector to set of Connectors for embedded server,
-    		// associated with Engine
-    		embedded.addConnector(connector);
-
-			log.info("Starting RTMPT engine");
-			connector.start();
+			// loop through connectors and apply methods / props
+			for (TomcatConnector tomcatConnector : connectors) {
+				// get the connector
+				Connector connector = tomcatConnector.getConnector();
+        		// add new Connector to set of Connectors for embedded server, associated with Engine
+       			embedded.addConnector(connector);
+       			log.trace("Connector oName: {}", connector.getObjectName());
+				log.info("Starting RTMPT engine");
+				// start connector
+				connector.start();
+			}
 		} catch (Exception e) {
 			log.error("Error initializing RTMPT server instance", e);
 		} finally {

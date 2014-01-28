@@ -22,6 +22,7 @@ package org.red5.server.tomcat;
 import javax.servlet.ServletContext;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.LifecycleState;
 import org.apache.catalina.core.StandardContext;
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.api.IApplicationContext;
@@ -63,7 +64,7 @@ public class TomcatApplicationContext implements IApplicationContext {
 			if (o != null) {
 				log.debug("Spring context for {} was found", context.getName());
 				ConfigurableWebApplicationContext appCtx = (ConfigurableWebApplicationContext) o;
-				//close the red5 app
+				// close the red5 app
 				if (appCtx.isRunning()) {
 					log.debug("Context was running, attempting to stop");
 					appCtx.stop();
@@ -81,17 +82,22 @@ public class TomcatApplicationContext implements IApplicationContext {
 		context.getParent().removeChild(context);
 		if (context instanceof StandardContext) {
 			StandardContext ctx = (StandardContext) context;
-			try {
-				//stop the tomcat context
-				ctx.stop();
-			} catch (Exception e) {
-				log.error("Could not stop context", e);
-			} finally {
-        		try {
-        			ctx.destroy();
-        		} catch (Exception e) {
-        			log.error("Could not destroy context", e);
-        		}
+			LifecycleState state = ctx.getState();
+			if (state != LifecycleState.DESTROYED || state != LifecycleState.DESTROYING) {
+    			try {
+    				if (state != LifecycleState.STOPPED || state != LifecycleState.STOPPING) {
+        				// stop the tomcat context
+        				ctx.stop();
+    				}
+    			} catch (Exception e) {
+    				log.error("Could not stop context", e);
+    			} finally {
+            		try {
+            			ctx.destroy();
+            		} catch (Exception e) {
+            			log.error("Could not destroy context", e);
+            		}
+    			}
 			}
 		}
 	}

@@ -41,12 +41,18 @@ public class Bootstrap {
 	 * @throws Exception if error occurs
 	 */
 	public static void main(String[] args) throws Exception {
-		//retrieve path elements from system properties
-		String root = getRed5Root();
-		getConfigurationRoot(root);
-		//bootstrap dependencies and start red5
-		bootStrap();
-		System.out.println("Bootstrap complete");
+		try {
+    		String root = getRed5Root();
+    		getConfigurationRoot(root);
+    		//bootstrap dependencies and start red5
+    		bootStrap();
+    		System.out.println("Bootstrap complete");
+		} catch (Throwable t) {
+    		System.out.printf("Bootstrap exception: %s\n", t.getMessage());
+    		t.printStackTrace();
+		} finally {
+    		System.out.println("Bootstrap exit");
+		}
 	}
 
 	/**
