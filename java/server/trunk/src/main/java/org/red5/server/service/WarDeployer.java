@@ -85,11 +85,10 @@ public final class WarDeployer {
 	}
 
 	public void init() {
-		//create the job and schedule it
-		jobName = scheduler.addScheduledJobAfterDelay(checkInterval, new DeployJob(), 20000);
-		//
+		// create the job and schedule it
+		jobName = scheduler.addScheduledJobAfterDelay(checkInterval, new DeployJob(), 60000);
+		// check the deploy from directory
 		log.debug("Source directory: {}", deploymentDirectory);
-		//check the deploy from directory
 		File dir = new File(deploymentDirectory);
 		if (!dir.exists()) {
 			log.warn("Source directory not found");
@@ -116,6 +115,7 @@ public final class WarDeployer {
 		LoaderMXBean proxy = null;
 		ObjectName oName;
 		try {
+			// TODO support all loaders
 			oName = new ObjectName("org.red5.server:type=TomcatLoader");
 			if (mbs.isRegistered(oName)) {
 				proxy = JMX.newMXBeanProxy(mbs, oName, LoaderMXBean.class, true);
