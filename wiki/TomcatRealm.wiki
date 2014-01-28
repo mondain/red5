@@ -1,0 +1,22 @@
+#summary Covers Realms in our embedded tomcat
+#labels tomcat,realm,security,auth
+
+= Realms =
+
+If you want to add a layer of security to your JEE apps within Red5, this will help guide you. Additional info and background may be found [http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html here].
+
+*Q* - What is a Realm?
+
+*A* - A Realm is a "database" of usernames and passwords that identify valid users of a web application (or set of web applications), plus an enumeration of the list of roles associated with each valid user. You can think of roles as similar to groups in Unix-like operating systems, because access to specific web application resources is granted to all users possessing a particular role (rather than enumerating the list of associated usernames). A particular user can have any number of roles associated with their username.
+
+== [http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html#MemoryRealm  MemoryRealm] ==
+
+This property should work in most versions of Red5 from around version 0.9; it may work in early versions, but your mileage could vary. Place this property within the tomcat.server bean. The format of the tomcat-users.xml follows the tomcat standard.
+
+{{{
+<property name="realm">
+  <bean class="org.apache.catalina.realm.MemoryRealm" lazy-init="true">
+    <property name="pathname" value="conf/tomcat-users.xml" />
+  </bean>
+</property>
+}}}
