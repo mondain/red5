@@ -56,7 +56,7 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection>, Appl
 
 	private static final Logger log = LoggerFactory.getLogger(RTMPConnManager.class);
 
-	private static ApplicationContext applicationContext;
+	protected static ApplicationContext applicationContext;
 
 	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1, new CustomizableThreadFactory("ConnectionChecker-"));
 
