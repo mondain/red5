@@ -938,9 +938,22 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 	public Notify decodeStreamMetadata(IoBuffer in) {
 		Encoding encoding = ((RTMPConnection) Red5.getConnectionLocal()).getEncoding();
 		Input input = null;
+
+		// check to see if the encoding is set to AMF3. 
+		// if it is then check to see if first byte is set to AMF0
+		byte amfVersion = 0x00;
+		if (encoding == Encoding.AMF3) {
+			amfVersion = in.get();
+		}
+		
+		// reset the position back to 0
+		in.position(0);
+		
 		//make a pre-emptive copy of the incoming buffer here to prevent issues that occur fairly often
 		IoBuffer copy = in.duplicate();
-		if (encoding == Encoding.AMF0) {
+		
+		
+		if (encoding == Encoding.AMF0 || amfVersion != AMF.TYPE_AMF3_OBJECT ) {
 			input = new org.red5.io.amf.Input(copy);
 		} else {
 			org.red5.io.amf3.Input.RefStorage refStorage = new org.red5.io.amf3.Input.RefStorage();
@@ -1076,7 +1089,19 @@ public class RTMPProtocolDecoder implements Constants, IEventDecoder {
 		return msg;
 	}
 
-	public FlexStreamSend decodeFlexStreamSend(IoBuffer in) {
+	public Notify decodeFlexStreamSend(IoBuffer in) {
+		// grab the initial limit
+		int limit = in.limit();
+		
+		// remove the first byte
+		in.position(1);
+		in.compact();
+		in.rewind();
+		
+		// set the limit back to the original minus the one
+		// byte that we removed from the buffer
+		in.limit(limit-1);
+		
 		return new FlexStreamSend(in.asReadOnlyBuffer());
 	}
 

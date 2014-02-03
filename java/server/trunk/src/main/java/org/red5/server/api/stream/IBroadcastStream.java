@@ -25,9 +25,9 @@ import org.red5.server.messaging.IProvider;
 import org.red5.server.net.rtmp.event.Notify;
 
 /**
- * A broadcast stream is a stream source to be subscribed by clients. To
- * subscribe a stream from your client Flash application use NetStream.play
- * method. Broadcast stream can be saved at server-side.
+ * A broadcast stream is a stream source to be subscribed to by clients. To
+ * subscribe to a stream from your client Flash application use NetStream.play
+ * method. Broadcast stream can be saved at the server-side.
  *  
  * 
  * @author The Red5 Project
