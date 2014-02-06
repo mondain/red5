@@ -1,4 +1,4 @@
-package org.red5.server.tomcat;
+package org.red5.server.undertow;
 
 /*
  * RED5 Open Source Flash Server - http://www.osflash.org/red5
@@ -19,46 +19,55 @@ package org.red5.server.tomcat;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-import org.apache.catalina.Context;
-import org.apache.catalina.Host;
-import org.apache.catalina.startup.Embedded;
+import io.undertow.servlet.api.ServletContainer;
+
 import org.red5.logging.Red5LoggerFactory;
-import org.red5.server.LoaderBase;
 import org.red5.server.api.IApplicationLoader;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Class that can load new applications in Tomcat.
+ * Class that can load new applications in Undertow.
  * 
- * @author The Red5 Project (red5@osflash.org)
- * @author Joachim Bauch (jojo@struktur.de)
+ * @author The Red5 Project 
+ * @author Paul Gregoire (mondain@gmail.com)
  */
-@SuppressWarnings("deprecation")
-public class TomcatApplicationLoader implements IApplicationLoader {
+public class UndertowApplicationLoader implements IApplicationLoader {
 
 	// Initialize Logging
-	protected static Logger log = Red5LoggerFactory.getLogger(TomcatApplicationLoader.class);	
-	
-	/** Store reference to embedded Tomcat engine. */
-	private Embedded embedded;
-	
-	/** Store reference to host Tomcat is running on. */
-	private Host host;
+	protected static Logger log = Red5LoggerFactory.getLogger(UndertowApplicationLoader.class);	
 	
 	/** Stores reference to the root ApplicationContext. */
 	private ApplicationContext rootCtx;
 	
+	@SuppressWarnings("unused")
+	private ServletContainer container;
+	
+	@SuppressWarnings("unused")
+	private String defaultEncoding = "UTF-8";
+
 	/**
-	 * Wrap Tomcat engine and host.
+	 * Wrap Undertow container and root context.
 	 * 
-	 * @param embedded
-	 * @param host
+	 * @param container
+	 * @param rootCtx
 	 */
-	protected TomcatApplicationLoader(Embedded embedded, Host host, ApplicationContext rootCtx) {
-		this.embedded = embedded;
-		this.host = host;
+	protected UndertowApplicationLoader(ServletContainer container, ApplicationContext rootCtx) {
+		this.container = container;
 		this.rootCtx = rootCtx;
+	}
+	
+	/**
+	 * Wrap Undertow container and root context.
+	 * 
+	 * @param container
+	 * @param rootCtx
+	 * @param defaultEncoding
+	 */
+	protected UndertowApplicationLoader(ServletContainer container, ApplicationContext rootCtx, String defaultEncoding) {
+		this.container = container;
+		this.rootCtx = rootCtx;
+		this.defaultEncoding = defaultEncoding;
 	}
 
 	/** {@inheritDoc} */
@@ -70,30 +79,6 @@ public class TomcatApplicationLoader implements IApplicationLoader {
 	/** {@inheritDoc} */
 	public void loadApplication(String contextPath, String virtualHosts, String directory) throws Exception {
 		log.debug("Load application - context path: {} directory: {} virtual hosts: {}", new Object[]{contextPath, directory, virtualHosts});
-		if (directory.startsWith("file:")) {
-			directory = directory.substring(5);
-		}
-		if (host.findChild(contextPath) == null) {
-			Context c = embedded.createContext(contextPath, directory);
-			LoaderBase.setRed5ApplicationContext(contextPath, new TomcatApplicationContext(c));
-			host.addChild(c);
-			//add virtual hosts / aliases
-			String[] vhosts = virtualHosts.split(",");
-			for (String s : vhosts) {
-				if (!"*".equals(s)) {
-					//if theres a port, strip it
-					if (s.indexOf(':') == -1) {
-						host.addAlias(s);						
-					} else {
-						host.addAlias(s.split(":")[0]);
-					}
-				} else {
-					log.warn("\"*\" based virtual hosts not supported");
-				}
-			}
-		} else {
-			log.warn("Context path already exists with host");
-		}
 	}
 
 }

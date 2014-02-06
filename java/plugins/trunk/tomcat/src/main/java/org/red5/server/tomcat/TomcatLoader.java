@@ -100,8 +100,7 @@ public class TomcatLoader extends LoaderBase implements DisposableBean, LoaderMX
 			File f = new File(dir, name);
 			log.trace("Filtering: {} name: {}", dir.getName(), name);
 			log.trace("Constructed dir: {}", f.getAbsolutePath());
-			// filter out all non-directories that are hidden and/or not
-			// readable
+			// filter out all non-directories that are hidden and/or not readable
 			boolean result = f.isDirectory() && f.canRead() && !f.isHidden();
 			// nullify
 			f = null;
@@ -234,7 +233,7 @@ public class TomcatLoader extends LoaderBase implements DisposableBean, LoaderMX
 	 * Initialization.
 	 */
 	public void start() {
-		log.info("Loading tomcat context");
+		log.info("Loading tomcat");
 		//get a reference to the current threads classloader
 		final ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
 		// root location for servlet container
@@ -549,7 +548,7 @@ public class TomcatLoader extends LoaderBase implements DisposableBean, LoaderMX
 
 	/**
 	 * Starts a web application and its red5 (spring) component. This is
-	 * basically a stripped down version of init().
+	 * basically a stripped down version of start().
 	 * 
 	 * @return true on success
 	 */
