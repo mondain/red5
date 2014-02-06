@@ -65,7 +65,7 @@ import winstone.WebAppConfiguration;
  * @author Paul Gregoire (mondain@gmail.com)
  */
 @ManagedResource(objectName = "org.red5.server:type=WinstoneLoader", description = "WinstoneLoader")
-public class WinstoneLoader extends LoaderBase implements ApplicationContextAware, LoaderMXBean {
+public class WinstoneLoader extends LoaderBase implements DisposableBean, LoaderMXBean {
 
 	// Initialize Logging
 	private static Logger log = Red5LoggerFactory.getLogger(WinstoneLoader.class);
@@ -134,7 +134,7 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 	 * Initialization.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void init() {
+	public void start() {
 		log.info("Loading Winstone context");
 		//get a reference to the current threads classloader
 		final ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
@@ -259,7 +259,7 @@ public class WinstoneLoader extends LoaderBase implements ApplicationContextAwar
 	
 	/**
 	 * Starts a web application and its red5 (spring) component. This is
-	 * basically a stripped down version of init().
+	 * basically a stripped down version of start().
 	 * 
 	 * @return true on success
 	 */
