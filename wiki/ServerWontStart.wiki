@@ -388,7 +388,11 @@ Bootstrap exit
 }}}
 
 1. Get the dependencies (see https://code.google.com/p/red5/wiki/Help#Get_Red5_Source)
+
 2. Create a "lib" directory in your red5 home location
+
 3. Copy the dependencies into the lib directory
+
 4. Delete the jboss api jar
+
 5. Start red5
