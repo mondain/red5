@@ -366,3 +366,29 @@ Caused by: org.apache.catalina.LifecycleException: Failed to start component [St
 Caused by: java.lang.NoSuchMethodError: javax.servlet.ServletContext.getSessionCookieConfig()Ljavax/servlet/SessionCookieConfig;
 	at org.apache.catalina.deploy.WebXml.configureContext(WebXml.java:1331) ~[tomcat-embed-core-7.0.50.jar:7.0.50]
 }}}
+
+== Bootstrap exception ==
+
+If your server will not start and you see a message similar to the one below, it means you are missing the dependencies. 
+
+{{{
+Running on  Linux
+Starting Red5
+Red5 root: /home/mondain/dev/tmp/red5-server-1.0.2-RC4
+Configuation root: /home/mondain/dev/tmp/red5-server-1.0.2-RC4/conf
+Red5 server jar was found
+URL list: [file:/home/mondain/dev/tmp/red5-server-1.0.2-RC4/red5-server.jar]
+Bootstrap exception: null
+java.lang.NullPointerException
+	at org.red5.classloading.ClassLoaderBuilder.build(ClassLoaderBuilder.java:172)
+	at org.red5.classloading.ClassLoaderBuilder.build(ClassLoaderBuilder.java:96)
+	at org.red5.server.Bootstrap.bootStrap(Bootstrap.java:117)
+	at org.red5.server.Bootstrap.main(Bootstrap.java:48)
+Bootstrap exit
+}}}
+
+1. Get the dependencies (see https://code.google.com/p/red5/wiki/Help#Get_Red5_Source)
+2. Create a "lib" directory in your red5 home location
+3. Copy the dependencies into the lib directory
+4. Delete the jboss api jar
+5. Start red5
