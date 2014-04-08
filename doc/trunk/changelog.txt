@@ -1,8 +1,25 @@
 Red5 Changelog
 ==============
 
-This file contains informations about the changes between the different
-versions of Red5.
+This file contains informations about the changes between the different versions of Red5.
+
+Red5 1.0.2 (2014-04-07)
+-----------------------
+Major release; improvements in threading, faster more efficient message handling, and fixes to a few memory leaks.
+Bugfixes / Enhancements: 46
+https://code.google.com/p/red5/issues/list?can=1&q=status%3AFixed+closed-after%3A2013%2F1%2F14&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&cells=tiles
+
+- Relicensed projects under Apache License 2.0
+- Project separted into modular parts
+- Moved to github (flash/flex still needs to be moved)
+- Implemented Apache commons daemon
+- Upgraded Spring and Tomcat
+- Fixed NetStream.send
+- Fixes for RTMPT and RTMPS
+- Fixes to stream recording and simpler listener impl
+- Fixes to ThreadLocal usage to prevent overlap during encoding / decoding processes
+- Fixed SharedObject null entry handling
+- Fixed Scope creation / destruction and added better differentiation between Scope types
 
 Red5 1.0.1 (2013-01-14)
 -----------------------
