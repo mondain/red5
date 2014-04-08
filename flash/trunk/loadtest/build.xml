@@ -8,8 +8,11 @@
 	default="build"
 	basedir=".">
 	
+    <!-- project properties -->
+    <property environment="env"/>
+
 	<!-- Flex SDK settings -->
-	<property file="../flex.properties" />
+	<property file="./flex.properties" />
 
 	<!-- Project settings -->
 	<property file="./build.properties" />
