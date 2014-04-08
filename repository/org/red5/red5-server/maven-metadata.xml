@@ -3,8 +3,8 @@
   <groupId>org.red5</groupId>
   <artifactId>red5-server</artifactId>
   <versioning>
-    <latest>1.0.2-M1</latest>
-    <release>1.0.1-java6</release>
+    <latest>1.0.2-RELEASE</latest>
+    <release>1.0.2-RELEASE</release>
     <versions>
       <version>1.0-RC2</version>
       <version>1.0-RC3-r4371</version>
@@ -21,13 +21,14 @@
       <version>1.0-java6</version>
       <version>1.0.1</version>
       <version>1.0.1-java6</version>
-	  <version>1.0.2-SNAPSHOT</version>
-	  <version>1.0.2-RC1</version>
-	  <version>1.0.2-RC2</version>
-	  <version>1.0.2-RC3</version>
-	  <version>1.0.2-RC4</version>
-	  <version>1.0.2-M1</version>
+	    <version>1.0.2-SNAPSHOT</version>
+	    <version>1.0.2-RC1</version>
+	    <version>1.0.2-RC2</version>
+	    <version>1.0.2-RC3</version>
+	    <version>1.0.2-RC4</version>
+      <version>1.0.2-M1</version>
+      <version>1.0.2-RELEASE</version>
     </versions>
-    <lastUpdated>20140312170201</lastUpdated>
+    <lastUpdated>20140407184201</lastUpdated>
   </versioning>
 </metadata>
