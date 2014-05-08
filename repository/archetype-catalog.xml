@@ -133,7 +133,13 @@
       <artifactId>red5-server</artifactId>
       <version>1.0.2-RELEASE</version>
       <description>Red5 core server</description>
-    </archetype>  
+    </archetype>
+    <archetype>
+      <groupId>org.red5</groupId>
+      <artifactId>red5-server</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <description>Red5 core server</description>
+    </archetype>    
     <!-- Client -->
     <archetype>
       <groupId>org.red5</groupId>
@@ -213,7 +219,13 @@
       <artifactId>red5-io</artifactId>
       <version>1.0.3</version>
       <description>Red5 IO Library</description>
-    </archetype>	
+    </archetype>  
+    <archetype>
+      <groupId>org.red5</groupId>
+      <artifactId>red5-io</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <description>Red5 IO Library</description>
+    </archetype>  
     <!-- Service-->
     <archetype>
       <groupId>org.red5</groupId>
