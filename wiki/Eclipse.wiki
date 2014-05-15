@@ -18,10 +18,20 @@ To remove this blocking item go to *Properties > Java Compiler > Building*. Unde
 
 With some older versions of the codebase you may see this error in Eclipse: 
 {{{
-maven-dependency-plugin (goals “copy-dependencies”, “unpack”) is not supported by m2e
+maven-dependency-plugin (goals ï¿½copy-dependenciesï¿½, ï¿½unpackï¿½) is not supported by m2e
 }}}
 The fix has been on trunk for some time now, but some users still see it. You can find more detail here: 
 http://stackoverflow.com/questions/8706017/maven-dependency-plugin-goals-copy-dependencies-unpack-is-not-supported-b
+
+== Unsupported Classpath Entry ==
+
+If you get this error:
+{{{
+An internal error occurred during: "Enabling Maven Dependency Management". Unsupported IClasspathEntry kind=4
+}}}
+
+You can find fix details on it here: 
+http://stackoverflow.com/questions/10564684/how-to-fix-error-updating-maven-project-unsupported-iclasspathentry-kind-4
 
 == Eclipse plugins ==
 
