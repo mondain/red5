@@ -19,6 +19,7 @@ https://github.com/Red5/red5-plugins
 ===Other plugins===
 
 [https://github.com/Red5/red5-hls-plugin HLS]
+
 [https://github.com/Red5/red5-websocket WebSocket]
 
 ==Plug-in downloads==
@@ -72,6 +73,7 @@ grant codeBase "file:plugins/derby-10.5.3.0.jar" {
 
 This page will allow you to add or modify users, make sure you remove it when you are done since it allows anyone to add users to your admin. 
 Instructions:
+
  
 1. Get the "helper" page here:  http://red5.googlecode.com/files/admin.jsp 
 
