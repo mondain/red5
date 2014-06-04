@@ -7,12 +7,10 @@ Think of this as a living document; we will add features as they come up. You ca
 
 == Future Features ==
 
- * HLS
- * HDS
- * MPEG-DASH
+ * HLS / HDS / DASH
  * WebRTC
- * Recording to F4V / MP4
- * WebSocket (JSR 356)
+ * Recording to MKV (F4V & MP4 format dropped)
+ * ~~WebSocket~~ https://github.com/Red5/red5-websocket
 
 == Previous Features ==
 
