@@ -3,7 +3,7 @@
   <groupId>org.red5</groupId>
   <artifactId>red5-server</artifactId>
   <versioning>
-    <latest>1.0.3-RELEASE</latest>
+    <latest>1.0.4-RELEASE</latest>
     <release>1.0.3-RELEASE</release>
     <versions>
       <version>1.0-RC2</version>
@@ -30,7 +30,8 @@
       <version>1.0.2-RELEASE</version>
       <version>1.0.3-SNAPSHOT</version>
       <version>1.0.3-RELEASE</version>
+      <version>1.0.4-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20140720152201</lastUpdated>
+    <lastUpdated>20141104084301</lastUpdated>
   </versioning>
 </metadata>

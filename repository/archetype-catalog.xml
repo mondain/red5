@@ -145,6 +145,11 @@
       <artifactId>red5-server</artifactId>
       <version>1.0.3-RELEASE</version>
       <description>Red5 core server</description>
+    </archetype>
+    <archetype>
+      <groupId>org.red5</groupId>
+      <artifactId>red5-server</artifactId>
+      <version>1.0.4-SNAPSHOT</version>
     </archetype>    
     <!-- Client -->
     <archetype>
