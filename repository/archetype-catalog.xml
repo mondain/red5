@@ -230,7 +230,7 @@
       <version>1.0.3-RELEASE</version>
       <description>Red5 client</description>
     </archetype>
-	<!-- IO -->
+    <!-- IO -->
     <archetype>
       <groupId>org.red5</groupId>
       <artifactId>red5-io</artifactId>
@@ -255,7 +255,7 @@
       <version>1.0.4-SNAPSHOT</version>
       <description>Red5 IO Library</description>
     </archetype> 
-    <!-- Service-->
+    <!-- Service -->
     <archetype>
       <groupId>org.red5</groupId>
       <artifactId>red5-service</artifactId>
@@ -267,6 +267,13 @@
       <artifactId>red5-service</artifactId>
       <version>1.0.3-RELEASE</version>
       <description>Red5 service</description>
+    </archetype>
+    <!-- Common -->
+    <archetype>
+      <groupId>org.red5</groupId>
+      <artifactId>red5-server-common</artifactId>
+      <version>1.0.4-SNAPSHOT</version>
+      <description>Red5 server common</description>
     </archetype> 
   </archetypes>
 </archetype-catalog>
