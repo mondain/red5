@@ -2,7 +2,7 @@
 #labels Build,RPM,CentOS,RedHat,Fedora
 
 <font color="red">
-= *_Attention: Originally, this tutorial was created for Red5-1.0.0, and the contents is old since recent Red5's packaging structure was changed._* =
+= *_Attention: Originally, this tutorial was created for Red5-1.0.0, and the contents is old since recent Red5's packaging structure have changed._* =
 </font>
 
 = How to build RPM package for Red5-1.0.0 (1.0.1) =
