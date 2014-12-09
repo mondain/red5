@@ -31,9 +31,9 @@
 		<bc.version>1.51</bc.version>
 	</properties>
 	<scm>
-		<url>https://github.com/Red5/red5-server-common</url>
-		<connection>scm:git:git://github.com/Red5/red5-server-common.git</connection>
-		<developerConnection>scm:git:git@github.com:Red5/red5-server-common.git</developerConnection>
+		<url>https://github.com/solomax/red5-server-common</url>
+		<connection>scm:git:git://github.com/solomax/red5-server-common.git</connection>
+		<developerConnection>scm:git:git@github.com:solomax/red5-server-common.git</developerConnection>
 	</scm>
 	<build>
 		<defaultGoal>install</defaultGoal>
@@ -111,7 +111,6 @@
 						<link>http://docs.spring.io/spring/docs/4.0.x/javadoc-api</link>
 						<link>http://www.slf4j.org/api</link>
 						<link>http://logging.apache.org/log4j/1.2/apidocs</link>
-						<link>http://groovy.codehaus.org/api</link>
 						<link>http://tomcat.apache.org/tomcat-6.0-doc/api</link>
 					</links>
 					<tags>
