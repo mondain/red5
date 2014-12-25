@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<registry lastupdate="2013-03-14T20:11">
+<registry lastupdate="2014-12-24T19:26">
 	<applications>
 		<application name="Admin Demo">
 			<author>Red5 Team, Martin M, Dan Rossi</author>
@@ -9,7 +9,7 @@
 		<application name="OFLA Demo">
 			<author>Red5 Team</author>
 			<desc>Demo originally created for the OFLA conference</desc>
-			<filename>oflaDemo-r4472-java6.war</filename>
+			<filename>oflaDemo.war</filename>
 		</application>
 		<application name="Shared Object Sample">
 			<author>Red5 Team</author>
