@@ -9,7 +9,7 @@
 		<application name="OFLA Demo">
 			<author>Red5 Team</author>
 			<desc>Demo originally created for the OFLA conference</desc>
-			<filename>oflaDemo.war</filename>
+			<filename>oflaDemo-java6.war</filename>
 		</application>
 		<application name="Shared Object Sample">
 			<author>Red5 Team</author>
@@ -19,7 +19,7 @@
 		<application name="System Utility">
 			<author>DZS|All-In-One (coolest2guy@gmail.com)</author>
 			<desc>System utility</desc>
-			<filename>SystemUtils-1.0-r4418.war</filename>
+			<filename>SystemUtils-1.0-r4418-java6.war</filename>
 		</application>
 	</applications>
 </registry>
