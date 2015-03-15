@@ -1,0 +1,154 @@
+# Logging #
+
+The logging system uses Simple Logging Facade for Java ([SLF4J](http://www.slf4j.org/)). This framework supports many of the logging systems available for Java and also provides simple implementations. The logging used by our dependencies are mainly Log4j and Apache commons logging and SLF4J allows us to combine them into one system. SLF4J gives you the ability to select a logging implementation and provides proxies for you dependencies if their maintainers did not select the same framework.
+
+We prefer the [logback](http://logback.qos.ch/) log implementation, but you may use whatever you like. There are some hoops you will have to jump through to get [Log4j](http://logging.apache.org/) or [Commons logging](http://commons.apache.org/logging/) to work. Blog post about using other loggers [here](http://gregoire.org/2009/05/05/support-for-other-slf4j-loggers/).
+
+After you chose an implementation framework, some of the SLF4J jars must NOT be in your applications classpath or they will cause conflicts. The default case it to use Logback, so the following jars must be included:
+```
+slf4j-api - The core API
+logback-core - Current Logback core library
+logback-classic - Logback support library
+log4j-over-slf4j - Log4j proxy/bridge
+jcl-over-slf4j - Apache commons logging proxy/bridge
+jul-to-slf4j - java.util.logging proxy/bridge
+```
+The items denoted as "proxy/bridge" listen for the logging calls to those implementations and pass them through to SLF4J.
+
+The following two strategies are to be consider untested.
+
+If you prefer to use Log4j instead, the following jars are required:
+```
+slf4j-api - The core API
+log4j - Current Log4j library (1.2+)
+slf4j-log4j12 - Log4j adapter
+jcl-over-slf4j - Apache commons logging proxy/bridge
+jul-to-slf4j - java.util.logging proxy/bridge
+```
+
+If you prefer to use Commons logging the following jars are required:
+```
+slf4j-api - The core API
+commons-logging - Apache commons logging library
+slf4j-jcl - Commons logging adapter
+log4j-over-slf4j - Log4j proxy/bridge
+jul-to-slf4j - java.util.logging proxy/bridge
+```
+
+If you want to use another implementation not shown here, simply check out the faq [SLF4J FAQ](http://www.slf4j.org/faq.html)
+
+Logback is the successor of Log4j and was created by the creator of Log4j and SLF4J. A conversion tool has been created for your log4j properties files [configuration converter](http://logback.qos.ch/translator/Welcome.do) There is also an [Eclipse console plugin](http://logback.qos.ch/consolePlugin.html).
+
+## Web Applications ##
+
+In your web applications remove the following entry from your web.xml
+```
+<context-param>
+  <param-name>log4jConfigLocation</param-name>
+  <param-value>/WEB-INF/log4j.properties</param-value>
+</context-param>
+```
+
+Add the following to the web.xml
+```
+<listener>
+    <listener-class>org.red5.logging.ContextLoggingListener</listener-class>
+</listener>
+
+<filter>
+    <filter-name>LoggerContextFilter</filter-name>
+    <filter-class>org.red5.logging.LoggerContextFilter</filter-class>
+</filter>
+
+<filter-mapping>
+    <filter-name>LoggerContextFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+You should also:
+  * Remove any "log4j" listeners from the web.xml
+  * Remove any log4j.properties or log4j.xml files
+  * Create a logback-myApp.xml where myApp is the name for your webapp and  place it on your webapp classpath (WEB-INF/classes or in your application jar within WEB-INF/lib)
+  * Set your display-name in the web application to match the context name you will be using (Use the example oflaDemo as a guide).
+  * Ensure that the contextName and jmxConfigurator have the correct context name, this is the name of your web application
+  * Sample webapp logback config file (logback-myApp.xml), not to be confused with the red5 log config file located in /conf
+```
+<configuration> 
+    <contextName>myApp</contextName>
+    <jmxConfigurator contextName="myApp" />    
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <File>log/example.log</File>
+        <Append>false</Append>
+        <BufferedIO>false</BufferedIO>
+        <ImmediateFlush>true</ImmediateFlush>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</Pattern>
+        </layout>
+    </appender>
+    <root>
+        <level value="DEBUG" />
+        <appender-ref ref="FILE" />
+    </root>
+    <logger name="com.example">
+        <level value="DEBUG" />
+    </logger>
+</configuration>
+```
+
+Reminder replace everything that says "myApp" with your application name. Reminder make sure that the directory where your logs are is writable red5 user account.
+
+**Note:** To turn a logger off, simply set the "level" to "OFF".
+
+## Imports ##
+
+When using logback and slf4j, your imports should consist only of the following for a non webapp class:
+```
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+```
+It is suggested that you use Red5LoggerFactory in-place of LoggerFactory to ensure that your application gets the correct logger.
+
+For loggers inside your webapp imports should be:
+```
+import org.slf4j.Logger;
+import org.red5.logging.Red5LoggerFactory;
+```
+
+## Logger Instantiation ##
+
+For non webapp classes:
+
+To log to a "root" logger, change all your logger instantiation statements to:
+```
+private static Logger log = Red5LoggerFactory.getLogger(MyClassName.class);
+```
+Reminder replace "MyClassName" with the name of the class itself.
+
+To log to a "context" logger, change all your logger instantiation statements to:
+```
+private static Logger log = Red5LoggerFactory.getLogger(MyClassName.class, "myApp");
+```
+Reminder replace "myApp" with the name of the context; "myApp" would become "oflaDemo" for the oflaDemo application.
+
+Your old instantiations probably resemble this:
+```
+private static Logger log = Logger.getLogger(MyClassName.class.getName());
+```
+Your applications logging configuration file must contain the name of your application context in its file name; For instance the "oflaDemo" uses the configuration logback-oflaDemo.xml.
+
+Lastly, as an optimization change your log statements to:
+```
+log.debug("Here is a log message for an object {}", myobject);
+```
+You no longer need to concatenate strings when logging, if you need more than one variable do the following:
+```
+log.debug("Here is a log message with a couple vars {} or {} or {}", new Object[] {object1, myobject, object3});
+```
+
+## Further Information ##
+
+[Ceki Gülcü presentation for Jazoon09](http://jazoon.com/en/conference/presentationdetails.html?type=sid&detail=6080)
+
+[SLF4J Presentation (video)](http://beta.parleys.com/share/parleysshare2.swf?pageId=357)

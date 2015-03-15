@@ -1,0 +1,72 @@
+# Introduction #
+
+Help and Reference for Red5
+
+## Details ##
+
+| [Official Reference](http://red5.googlecode.com/svn/doc/trunk/reference/html/index.html) | [Server Javadocs](http://red5.googlecode.com/svn/doc/tags/1_0/api/index.html) | [Client Javadocs](http://red5.googlecode.com/svn/doc/tags/1_0/api-client/index.html) | [日本のウィキ](http://oss.infoscience.co.jp/red5/trac.red5.org/index.html) |
+|:-----------------------------------------------------------------------------------------|:------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------|
+
+## How to build trunk ##
+
+To build the trunk you will first need to download and install [Maven](http://maven.apache.org/download.cgi) and have a Subversion client available.
+
+### Maven Installation Instructions ###
+
+Maven is a Java tool, so you must have Java installed in order to proceed. More precisely, you need a Java Development Kit (JDK), the Java Runtime Environment (JRE) is not sufficient. Additional optional installation steps are listed after the platform specific instructions.
+
+**Windows 2000/XP**
+
+Unzip the distribution archive, i.e. apache-maven-3.0.4-bin.zip to the directory you wish to install Maven 3.0.4. These instructions assume you chose C:\Program Files\Apache Software Foundation. The subdirectory apache-maven-3.0.4 will be created from the archive.
+Add the M2\_HOME environment variable by opening up the system properties (WinKey + Pause), selecting the "Advanced" tab, and the "Environment Variables" button, then adding the M2\_HOME variable in the user variables with the value C:\Program Files\Apache Software Foundation\apache-maven-3.0.4. Be sure to omit any quotation marks around the path even if it contains spaces. Note: For Maven   2.0.9, also be sure that the M2\_HOME doesn't have a '\' as last character.
+In the same dialog, add the M2 environment variable in the user variables with the value %M2\_HOME%\bin.
+Optional: In the same dialog, add the MAVEN\_OPTS environment variable in the user variables to specify JVM properties, e.g. the value -Xms256m -Xmx512m. This environment variable can be used to supply extra options to Maven.
+In the same dialog, update/create the Path environment variable in the user variables and prepend the value %M2% to add Maven available in the command line.
+In the same dialog, make sure that JAVA\_HOME exists in your user variables or in the system variables and it is set to the location of your JDK, e.g. C:\Program Files\Java\jdk1.5.0\_02 and that %JAVA\_HOME%\bin is in your Path environment variable.
+Open a new command prompt (Winkey + R then type cmd) and run mvn --version to verify that it is correctly installed.
+
+**Unix-based Operating Systems (Linux, Solaris and Mac OS X)**
+
+Extract the distribution archive, i.e. apache-maven-3.0.4-bin.tar.gz to the directory you wish to install Maven 3.0.4. These instructions assume you chose /usr/local/apache-maven. The subdirectory apache-maven-3.0.4 will be created from the archive.
+In a command terminal, add the M2\_HOME environment variable, e.g. export M2\_HOME=/usr/local/apache-maven/apache-maven-3.0.4.
+Add the M2 environment variable, e.g. export M2=$M2\_HOME/bin.
+Optional: Add the MAVEN\_OPTS environment variable to specify JVM properties, e.g. export MAVEN\_OPTS="-Xms256m -Xmx512m". This environment variable can be used to supply extra options to Maven.
+Add M2 environment variable to your path, e.g. export PATH=$M2:$PATH.
+Make sure that JAVA\_HOME is set to the location of your JDK, e.g. export JAVA\_HOME=/usr/java/jdk1.5.0\_02 and that $JAVA\_HOME/bin is in your PATH environment variable.
+Run mvn --version to verify that it is correctly installed.
+
+### Subversion ###
+
+A [Subversion client](http://en.wikipedia.org/wiki/Comparison_of_Subversion_clients) is required to pull the source from this repository for later compilation.
+
+### Get Red5 Source ###
+
+The source repository uri's may be found [here](https://code.google.com/p/red5/source/checkout)
+
+**Build the source**
+
+To build the red5 jars, execute the following on the command line:
+```
+mvn -Dmaven.test.skip=true -Dclassifier=bootstrap install
+```
+This will create the jars in the "target" directory of the workspace; this will also skip the unit tests.
+
+To build and package the server in zip and gz, execute the following:
+```
+mvn dependency:copy-dependencies
+```
+This will download all the dependencies into the "target" directory under "dependency". The next command will package everything up:
+```
+mvn -Dmaven.test.skip=true -Dmaven.buildNumber.doUpdate=false -Dclassifier=bootstrap package
+```
+Right now, this will skip the demos directory but I'm working on a fix. The xml nodes to copy the demos are in the
+```
+trunk/src/main/server/assembly/server.xml
+```
+and may be uncommented for a package build, if you have the entire svn tree checked out.
+
+**Building in Eclipse**
+
+Install the maven plugin and it will build automatically.
+
+[Screencast](http://screencast.com/t/2sgjMevf9)

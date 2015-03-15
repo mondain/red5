@@ -1,0 +1,145 @@
+# Introduction #
+
+Below are some issues that you may encounter along with their fixes.
+
+## Error connecting - expected single bean ##
+
+```
+[ERROR] [NioProcessor-2] org.red5.server.net.rtmp.RTMPHandler - Error connecting {}
+org.springframework.beans.factory.NoSuchBeanDefinitionException: No unique bean of type [org.red5.server.net.rtmp.RTMPConnManager] is defined: expected single bean but found 2: rtmpMinaConnManager,rtmptConnManager
+```
+
+This occurs after [revision 4563](https://code.google.com/p/red5/source/detail?r=4563) if you are using older configuration files. To fix this, follow these steps:
+
+  1. Open your conf/red5-core.xml file
+  1. Remove this node
+```
+<bean id="rtmptConnManager" class="org.red5.server.net.rtmp.RTMPConnManager" />
+```
+  1. Locate the rtmptServlet bean and change this node from
+```
+<property name="rtmpConnManager" ref="rtmptConnManager" />
+```
+> to
+```
+<property name="rtmpConnManager" ref="rtmpMinaConnManager" />
+```
+Save and close the file, then restart red5
+
+## Exception caught on session ##
+
+Starting at [revision 4643](https://code.google.com/p/red5/source/detail?r=4643) we added an executor to each connection to prevent thread deadlocks when a message is received. (**Deprecated in [revision 4645](https://code.google.com/p/red5/source/detail?r=4645)**) If you have not updated your red5-core.xml to match the jars, you may see this error:
+
+```
+[WARN] [NioProcessor-5] org.red5.server.net.rtmp.RTMPMinaIoHandler - Exception caught on session: 4
+java.lang.NullPointerException: null  
+at org.red5.server.net.rtmp.RTMPConnection.handleMessageReceived(RTMPCon
+nection.java:994) ~[red5-server.jar:na]
+at org.red5.server.net.rtmp.RTMPMinaIoHandler.messageReceived(RTMPMinaIo
+Handler.java:167) ~[red5-server.jar:na]
+```
+
+To fix it just added the following node to your red5-core.xml:
+
+```
+<bean id="messageExecutor" scope="prototype" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">  
+  <property name="corePoolSize" value="1" />  
+  <property name="maxPoolSize" value="3" />  
+  <property name="queueCapacity" value="32" /> 
+  <property name="waitForTasksToCompleteOnShutdown" value="true"/>
+  <property name="daemon" value="true"/>
+  <property name="threadNamePrefix" value="RTMPMessageExecutor-"/>
+</bean>	
+```
+
+Also add this property to your _rtmpMinaConnection_ bean:
+
+```
+<property name="executor" ref="messageExecutor" />
+```
+
+## Scheduler / Executor Modification ##
+
+Quartz has been replaced in the RTMP/T connection classes as well as in the SharedObjectService from [revision 4658](https://code.google.com/p/red5/source/detail?r=4658) on. The modifications to your configurations are as follows:
+
+Add a pool size for the RTMP connection scheduler in red5.properties
+```
+rtmp.scheduler.pool_size=2
+```
+Add a pool size for the Shared Object scheduler in red5.properties
+```
+so.scheduler.pool_size=4
+```
+Add the scheduler bean to the red5-core.xml
+```
+<bean id="rtmpScheduler" scope="prototype" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+  <property name="poolSize" value="${rtmp.scheduler.pool_size}" />  
+  <property name="waitForTasksToCompleteOnShutdown" value="false"/>
+  <property name="daemon" value="true"/>
+  <property name="threadNamePrefix" value="RTMPScheduler-"/>
+</bean>  
+```
+Add the "scheduler" to the RTMPMinaConnection in red5-core.xml
+```
+<bean id="rtmpMinaConnection" scope="prototype"	class="org.red5.server.net.rtmp.RTMPMinaConnection">
+  <property name="scheduler" ref="rtmpScheduler" />
+```
+Add the "scheduler" to the RTMPTConnection in red5-core.xml
+```
+<bean id="rtmptConnection" scope="prototype" class="org.red5.server.net.rtmpt.RTMPTConnection">
+  <property name="scheduler" ref="rtmpScheduler" />
+```
+Add the "scheduler" to the Shared Object service in red5-common.xml
+```
+<bean id="sharedObjectService" class="org.red5.server.so.SharedObjectService">
+  <property name="maximumEventsPerUpdate" value="${so.max.events.per.update}"/>
+  <property name="persistenceClassName">
+    <value>org.red5.server.persistence.FilePersistence</value>
+  </property>
+  <property name="scheduler">
+    <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+      <property name="poolSize" value="${so.scheduler.pool_size}" />
+      <property name="waitForTasksToCompleteOnShutdown" value="false"/>
+      <property name="daemon" value="true"/>
+      <property name="threadNamePrefix" value="SharedObjectScheduler-"/>
+    </bean>
+  </property>		
+</bean>
+```
+
+## Null component ##
+
+If your server shuts down after adding new code, you may see this error:
+```
+[ERROR] [main] org.apache.tomcat.util.modeler.Registry - Null component red5Engine:type=JspMonitor,name=jsp,WebModule=//0.0.0.0/myapp,J2EEApplication=none,J2EEServer=none
+```
+or this one:
+```
+[WARN] [main] org.red5.server.ContextLoader - Context destroy failed for: default.context
+org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'default.context' is defined
+```
+
+This is often a JVM mismatch; meaning that your code was compiled with one version of the JVM, but your server runs different version. The fix is to compile with your target JVM.
+
+Covered in answer 1 at stackoverflow http://stackoverflow.com/questions/4350006/tomcat-6-server-was-running-but-now-it-wont-start-error-in-log-file-sever
+
+## NoSuchMethodError getSessionCookieConfig ##
+
+If you see this error, it means you have to remove the old servlet and jee jars from red5/lib.
+```
+NoSuchMethodError: javax.servlet.ServletContext.getSessionCookieConfig()
+```
+Delete _javaee-api-5.1.2.jar_ and _servlet-api-2.5.jar_ then restart red5.
+
+More information here:
+http://stackoverflow.com/questions/5642753/catalina-bat-start-not-working
+
+## NPE in RTMPTServlet ##
+
+In later versions of 1.0.2, you need to add a manager property to the rtmptServlet bean in your red5-core.xml like so:
+
+```
+	<bean id="rtmptServlet"	class="org.red5.server.net.rtmpt.RTMPTServlet">
+        <property name="manager" ref="rtmpConnManager" />
+		<property name="handler" ref="rtmptHandler" />
+```

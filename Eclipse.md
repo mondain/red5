@@ -1,0 +1,38 @@
+# Eclipse #
+
+This section contains Eclipse related entries or fixes.
+
+## Error - A cycle was detected ##
+
+When working in Eclipse you may see an "Error" such as this:
+
+```
+A cycle was detected in the build path of project 'red5_client'. The cycle consists of projects {red5_client, red5_server}	red5_client		
+```
+
+To remove this blocking item go to **Properties > Java Compiler > Building**. Under **Build path problems** change the "Circular dependencies" option to "Warning"; then click "OK"
+
+## M2e goal is not supported ##
+
+With some older versions of the codebase you may see this error in Eclipse:
+```
+maven-dependency-plugin (goals �copy-dependencies�, �unpack�) is not supported by m2e
+```
+The fix has been on trunk for some time now, but some users still see it. You can find more detail here:
+http://stackoverflow.com/questions/8706017/maven-dependency-plugin-goals-copy-dependencies-unpack-is-not-supported-b
+
+## Unsupported Classpath Entry ##
+
+If you get this error:
+```
+An internal error occurred during: "Enabling Maven Dependency Management". Unsupported IClasspathEntry kind=4
+```
+
+You can find fix details on it here:
+http://stackoverflow.com/questions/10564684/how-to-fix-error-updating-maven-project-unsupported-iclasspathentry-kind-4
+
+## Eclipse plugins ##
+
+This is a screen capture of my installed plugins; I know some of you have had issues with m2e or eclipse + maven, so here are the ones I have loaded that work.
+
+![http://red5.googlecode.com/svn/wiki/images/maven_plugins_indigo.jpg](http://red5.googlecode.com/svn/wiki/images/maven_plugins_indigo.jpg)

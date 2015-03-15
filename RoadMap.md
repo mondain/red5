@@ -1,0 +1,22 @@
+# Introduction #
+
+Think of this as a living document; we will add features as they come up. You can consider this the source for what's next with Red5. Post comments here for features that you'd like to see added; please do not add issues or bugs in the comments, they have a place and its not here on this page.
+
+## Future Features ##
+
+  * HLS / HDS / DASH
+  * WebRTC
+  * Recording to MKV (F4V & MP4 format dropped)
+  * ~~WebSocket~~ https://github.com/Red5/red5-websocket
+
+## Previous Features ##
+
+These features are still in the pipeline but not at a very high priority for the team.
+
+  * Clustering
+  * WAR
+
+## References ##
+
+http://java.dzone.com/articles/jsr-356-java-api-websocket
+http://www.overdigital.com/2011/12/27/hls-vs-hds-what-is-the-difference-and-why-you-should-care/

@@ -1,0 +1,395 @@
+# Introduction #
+
+It can be frustrating when the server wont start, this can be caused due to a lot of factors.
+
+## Wrong Java Version ##
+
+When the code has been compiled with a JDK version newer than the one you are using to execute it, you will see an error similar to this:
+
+```
+Exception in thread "main" java.lang.UnsupportedClassVersionError: Test : Unsupported major.minor version 51.0
+```
+
+Here are the current versions with their major / minor identifiers
+
+```
+Major  Minor      Java version  
+45       3           1.0
+45       3           1.1
+46       0           1.2
+47       0           1.3
+48       0           1.4
+49       0           1.5
+50       0           1.6
+51       0           1.7
+```
+
+## Wrong Java Version and Mina ##
+
+Consider this a "part 2" for the above issue. This may occur and misidentify Mina as the culprit if you have a red5 client jar which was compiled with the "wrong" version. Below are two the error messages you might see that will indicate this:
+
+```
+2013-02-27 10:16:44,697 [main] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Ignoring bean class loading failure for bean 'minaEncoder'
+org.springframework.beans.factory.CannotLoadBeanClassException: Error loading class [org.red5.server.net.rtmp.codec.RTMPMinaProtocolEncoder] for bean with name 'minaEncoder' defined in class path resource [red5-common.xml]: problem with class file or dependent class; nested exception is java.lang.UnsupportedClassVersionError: org/apache/mina/filter/codec/ProtocolEncoderAdapter : Unsupported major.minor version 51.0
+```
+
+and / or
+
+```
+Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.common' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'statusObjectService' defined in class path resource [red5-common.xml]: Initialization of bean failed; nested exception is java.lang.UnsupportedClassVersionError: org/apache/mina/core/buffer/IoBuffer : Unsupported major.minor version 51.0
+```
+
+The simple fix is to remove the red5 client jar from the red5/lib directory; a better fix is to change our pom file.
+
+## Invalid Property ##
+
+This happens when a spring configuration doesn't match the code. In many cases, its a simple fix. Your error will look something like this:
+
+```
+[INFO] [main] org.springframework.beans.factory.support.DefaultListableBeanFactory - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@467ddc66: defining beans [placeholderConfig,red5.common,red5.core,context.loader,pluginLauncher,tomcat.server]; root of factory hierarchy
+Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.common' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creati
+ng bean with name 'red5.server' defined in class path resource [red5-common.xml]
+: Error setting property values; nested exception is org.springframework.beans.NotWritablePropertyException: Invalid property 'notifierThreadPoolSize' of bean class [org.red5.server.Server]: Bean property 'notifierThreadPoolSize' is not writable or has an invalid setter method. Does the parameter type of the setter match the return type of the getter?
+```
+
+The invalid property is _notifierThreadPoolSize_ in the _red5-common.xml_ file; go to that section and simply remove the property.
+
+```
+<bean id="red5.server" class="org.red5.server.Server">
+    <property name="notifierThreadPoolSize" value="${notifier.threads}"/>
+</bean>
+```
+
+becomes this
+
+```
+<bean id="red5.server" class="org.red5.server.Server">
+</bean>
+```
+
+## ClassNotFoundException Launcher ##
+
+When the _Launcher_ cannot be located, it usually means the server jar is missing or misnamed. The Red5 server jar must be named like so until we fix the bootstrap bug: `red5-server-1.0.jar`
+
+Here is what the error may look like:
+```
+Exception in thread "main" java.lang.ClassNotFoundException: org.red5.server.Launcher
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:366)
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:355)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:354)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:423)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:356)
+        at java.lang.Class.forName0(Native Method)
+        at java.lang.Class.forName(Class.java:264)
+        at org.red5.server.Bootstrap.bootStrap(Bootstrap.java:115)
+        at org.red5.server.Bootstrap.main(Bootstrap.java:48)
+```
+
+## Missing getter or setter for serializer / deserializer ##
+
+A change was made in 1.0.2 which added static-access to the Serializer and Deserializer classes. This change will cause this issue to appear if you don't have an updated configuration file.
+```
+[INFO] [main] org.springframework.beans.factory.support.DefaultListableBeanFactory - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@1378732d: defining beans [placeholderConfig,red5.common,red5.core,context.loader,pluginLauncher,tomcat.server]; root of factory hierarchy Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.common' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'rtmptCodecFactory' defined in class path resource [red5-common.xml]: Error setting property values; nested exception is org.springframework.beans.NotWritablePropertyException: Invalid property 'serializer' of bean class [org.red5.server.net.rtmpt.codec.RTMPTCodecFactory]: Bean property 'serializer' is not writable or has an invalid setter method. Does the parameter type of the setter match the return type of the getter?
+```
+
+To fix this, perform the following steps:
+
+1. Open the conf/red5-common.xml file
+
+2. Remove these two nodes
+```
+  <!-- Serializes objects to AMF binary -->
+  <bean id="serializer" class="org.red5.io.object.Serializer"/>
+  <!-- Deserializes objects from AMF binary -->
+  <bean id="deserializer" class="org.red5.io.object.Deserializer"/>
+```
+3. Remove these lines from minaEncoder bean
+```
+  <property name="serializer">
+    <ref bean="serializer"/>
+  </property>
+```
+4. Remove these lines from minaDecoder bean
+```
+  <property name="deserializer">
+    <ref bean="deserializer"/>
+  </property>
+```
+5. Remove these lines from rtmptCodecFactory bean
+```
+  <property name="serializer">
+    <ref bean="serializer"/>
+  </property>
+  <property name="deserializer">
+    <ref bean="deserializer"/>
+  </property>
+```
+6. Save the file and restart the server
+
+## Could not find or load main class org.red5.server.Bootstrap ##
+
+Since we now use Maven, our output jars are named following their conventions and this leads to this error. The simple fix is to rename the two jars, removing the _.2-SNAPSHOT_ part.
+```
+red5-server-1.0.2-SNAPSHOT.jar
+red5-server-1.0.2-SNAPSHOT-bootstrap.jar
+```
+renamed
+```
+red5-server-1.0.jar
+red5-server-1.0-bootstrap.jar
+```
+
+As of [revision 4591](https://code.google.com/p/red5/source/detail?r=4591) the server artifacts have been renamed as follows
+```
+red5-server.jar
+red5-server-bootstrap.jar
+```
+
+## Eclipse red5 plugin will not start ##
+
+Since we now use Maven, our output jars are named following their conventions and this leads to this error when using the red5 plugin for Eclipse. The simple fix is to rename the two jars.
+```
+red5-server-1.0.2-SNAPSHOT.jar
+red5-server-1.0.2-SNAPSHOT-bootstrap.jar
+```
+renamed
+```
+red5.jar
+boot.jar
+```
+
+## ClassNotFoundException FilePersistenceThread ##
+
+Revisions after 4585 may not start due to the file persistence being switched over to using the scheduler. You may see this on your console or in your logs if you don't first remove the bean noted below.
+
+```
+[INFO] [main] org.springframework.beans.factory.support.DefaultListableBeanFacto
+ry - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@8a0cbbe: defining beans [placeholderConfig,red5.common,red5.core,context.loader,pluginLauncher,tomcat.server]; root of factory hierarchy
+Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.common' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.CannotLoadBeanClassException: Cannot find class [org.red5.server.persistence.FilePersistenceThread] for bean with name 'filePersistenceThread' defined in class path resource [red5-common.xml]; nested exception is java.lang.ClassNotFoundException: org.red5.server.persistence.FilePersistenceThread
+```
+
+To resolve this, remove this node from your _conf/red5-common.xml_
+
+```
+<!-- Thread that writes modified objects to disk periodically -->
+<bean id="filePersistenceThread" class="org.red5.server.persistence.FilePersistenceThread"/>
+```
+
+## BindException: Address already in use ##
+
+One of the oldest server issues on the books. Your server has bound to on of the IP address or ports that Red5 is trying to bind to. This is usually a case where Red5 is already running in another process, but often it may be another unrelated service that is bound to the port being requested. Do a netstat and figure out which port is the problem; all the ports that Red5 uses are in the _conf/red5.properties_ file.
+
+```
+[org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'rtmpTransport' defined in class path resource [red5-core.xml]: Invocation of init method failed; nested exception is java.net.BindException: Address already in use
+```
+
+## Socket Options Failure ##
+
+Although not verified, the fix for this should be to disable the setting of socket options in the TCP stack. Open your red5.properties file and make the following modification:
+```
+rtmp.traffic_class=-1
+```
+
+This is what the error looks like:
+
+```
+INFO   | jvm 1    | 2013/06/24 15:47:26 | [ERROR] [http-127.0.0.1-5080-Acceptor-0] org.apache.tomcat.util.net.NioEndpoint - 
+INFO   | jvm 1    | 2013/06/24 15:47:26 | java.net.SocketException: Invalid argument: no further information
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at sun.nio.ch.Net.setIntOption0(Native Method) ~[na:1.7.0_21]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at sun.nio.ch.Net.setSocketOption(Unknown Source) ~[na:1.7.0_21]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at sun.nio.ch.SocketChannelImpl.setOption(Unknown Source) ~[na:1.7.0_21]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at sun.nio.ch.SocketAdaptor.setIntOption(Unknown Source) ~[na:1.7.0_21]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at sun.nio.ch.SocketAdaptor.setTrafficClass(Unknown Source) ~[na:1.7.0_21]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at org.apache.tomcat.util.net.SocketProperties.setProperties(SocketProperties.java:184) ~[tomcat-coyote-6.0.36.jar:6.0.36]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at org.apache.tomcat.util.net.NioEndpoint.setSocketOptions(NioEndpoint.java:1089) ~[tomcat-coyote-6.0.36.jar:6.0.36]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at org.apache.tomcat.util.net.NioEndpoint$Acceptor.run(NioEndpoint.java:1314) [tomcat-coyote-6.0.36.jar:6.0.36]
+INFO   | jvm 1    | 2013/06/24 15:47:26 | at java.lang.Thread.run(Unknown Source) [na:1.7.0_21]
+```
+
+## RTMP Connection Manager ##
+Starting at [revision 4684](https://code.google.com/p/red5/source/detail?r=4684) the static instance of the RTMPConnManager is used in lieu of local references. In your red5-core.xml you will need to remove
+the entry as shown below:
+
+Old
+```
+<bean id="rtmpMinaIoHandler" class="org.red5.server.net.rtmp.RTMPMinaIoHandler">
+    <property name="handler" ref="rtmpHandler" />
+    <property name="codecFactory" ref="rtmpCodecFactory" />
+    <property name="rtmpConnManager" ref="rtmpConnManager" />
+</bean>
+```
+
+New
+```
+<bean id="rtmpMinaIoHandler" class="org.red5.server.net.rtmp.RTMPMinaIoHandler">
+    <property name="handler" ref="rtmpHandler" />
+    <property name="codecFactory" ref="rtmpCodecFactory" />
+</bean>
+```
+
+Related startup error:
+```
+Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.core' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'rtmpMinaIoHandler' defined in class path resource [red5-core.xml]: Error setting property values; nested exception is org.springframework.beans.NotWritablePropertyException: Invalid property 'rtmpConnManager' of bean class[org.red5.server.net.rtmp.RTMPMinaIoHandler]: Bean property 'rtmpConnManager' is not writable or has an invalid setter method. Does the parameter type of the setter match the return type of the getter?
+```
+
+At [revision 4697](https://code.google.com/p/red5/source/detail?r=4697) you may also see this bean in an error message regarding the RTMPTServlet, to fix it remove the "rtmpConnManager" property from the "rtmptServlet" bean in your red5-core.xml file.
+
+```
+Exception org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'red5.core' defined in class path resource [red5.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Could not instantiate bean class [org.springframework.context.support.FileSystemXmlApplicationContext]: Constructor threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'rtmptServlet' defined in class path resource [red5-core.xml]: Error setting property values; nested exception is org.springframework.beans.NotWritablePropertyException: Invalid property 'rtmpConnManager' of bean class [org.red5.server.net.rtmpt.RTMPTServlet]: Bean property 'rtmpConnManager' is not writable or has an invalid setter method. Does the parameter type of the setter match the return type of the getter?
+```
+
+## Red5 1.0.2 RC1 to 1.0.2 RC2 ##
+Between these release candidates, the I/O classes were extracted into their own project and the following modifications must be made to allow the server to start.
+
+  1. The red5-io-1.0.2.jar must be placed in your red5/lib directory
+  1. The red5/conf/red5-common.xml configuration file must be modified as shown below
+
+Object cache node:
+```
+From
+	<bean id="object.cache" class="org.red5.server.cache.NoCacheImpl"/>
+To
+	<bean id="object.cache" class="org.red5.cache.impl.NoCacheImpl"/>	
+```
+
+Streamable file factory node:
+```
+From
+	<bean id="streamableFileFactory" class="org.red5.io.StreamableFileFactory">
+		<property name="services">
+			<list>
+				<bean id="flvFileService" class="org.red5.io.flv.impl.FLVService">
+					<property name="generateMetadata" value="true"/>
+				</bean>
+				<bean id="mp3FileService" class="org.red5.io.mp3.impl.MP3Service"/>
+				<bean id="mp4FileService" class="org.red5.io.mp4.impl.MP4Service"/>
+				<bean id="m4aFileService" class="org.red5.io.m4a.impl.M4AService"/>
+			</list>
+		</property>
+	</bean>
+To
+	<bean id="streamableFileFactory" class="org.red5.server.stream.StreamableFileFactory">
+		<property name="services">
+			<list>
+				<bean id="flvFileService" class="org.red5.server.service.flv.impl.FLVService">
+					<property name="generateMetadata" value="true"/>
+				</bean>
+				<bean id="mp3FileService" class="org.red5.server.service.mp3.impl.MP3Service"/>
+				<bean id="mp4FileService" class="org.red5.server.service.mp4.impl.MP4Service"/>
+				<bean id="m4aFileService" class="org.red5.server.service.m4a.impl.M4AService"/>
+			</list>
+		</property>
+	</bean>
+```
+
+## Red5 1.0.2 RC3 to 1.0.2 RC4 ##
+Between these release candidates, the network address handling was overhauled. The tomcat plugin was also updated to version 1.6 and its configuration was simplified. If you want to use your existing configuration files, the following changes will needed.
+
+1. Modify the red5 common and core spring context beans in conf/red5.xml.
+
+```
+  <bean id="red5.common" class="org.red5.spring.Red5ApplicationContext">
+    <property name="configLocation" value="classpath:/red5-common.xml" />
+  </bean>
+	
+  <bean id="red5.core" class="org.red5.spring.Red5ApplicationContext">
+    <property name="configLocation" value="classpath:/red5-core.xml" />
+    <property name="parent" ref="red5.common" />
+  </bean>
+```
+
+2. Modify the rtmpTransport bean in the red5 core context configuration file at conf/red5-core.xml. The _addresses_ property now uses the simplified host / port entry style implemented for the tomcat plugin.
+
+```
+  <bean id="rtmpTransport" class="org.red5.server.net.rtmp.RTMPMinaTransport" init-method="start" destroy-method="stop">
+    <property name="ioHandler" ref="rtmpMinaIoHandler" />
+    <property name="addresses">
+      <list>
+        <value>${rtmp.host}:${rtmp.port}</value>
+        <!-- You can now add additional ports and ip addresses
+	<value>${rtmp.host}:1936</value>
+        -->
+      </list>
+    </property>
+```
+
+3. Modify the tomcat server bean in conf/jee-container.xml. The _init-method_ attribute is changed to "start" and _lazy-init_ has been added. The _connectors_ and _baseHost_ properties have been simplified; the _valves_ property remains unchanged, but is not shown or required.
+
+```
+  <bean id="tomcat.server" class="org.red5.server.tomcat.TomcatLoader" depends-on="context.loader" init-method="start" lazy-init="true">
+
+    <property name="webappFolder" value="${red5.root}/webapps" />
+
+    <property name="connectors">
+      <list>
+        <bean name="httpConnector" class="org.red5.server.tomcat.TomcatConnector">
+	  <property name="protocol" value="org.apache.coyote.http11.Http11NioProtocol" />
+	  <property name="address" value="${http.host}:${http.port}" />
+          <property name="redirectPort" value="${https.port}" />  
+        </bean>     
+      </list>
+    </property>
+        
+    <property name="baseHost">
+      <bean class="org.apache.catalina.core.StandardHost">
+        <property name="name" value="${http.host}" />
+      </bean>     
+    </property>     
+        
+  </bean>
+```
+
+Lastly, while not a mod for RC4 it may show its ugly head if you've not updated in quite some time. This error will require that you remove the old javaee-api-5.1.x jar from the red5/lib directory.
+
+```
+2014-01-28 07:02:51.783 A child container failed during start
+java.util.concurrent.ExecutionException: org.apache.catalina.LifecycleException: Failed to start component [StandardEngine[red5Engine].StandardHost[0.0.0.0].StandardContext[/oflaDemo]]
+	at java.util.concurrent.FutureTask$Sync.innerGet(FutureTask.java:252) [na:1.7.0_11]
+	at java.util.concurrent.FutureTask.get(FutureTask.java:111) [na:1.7.0_11]
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:1123) ~[tomcat-embed-core-7.0.50.jar:7.0.50]
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:801) [tomcat-embed-core-7.0.50.jar:7.0.50]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:150) [tomcat-embed-core-7.0.50.jar:7.0.50]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1559) [tomcat-embed-core-7.0.50.jar:7.0.50]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1549) [tomcat-embed-core-7.0.50.jar:7.0.50]
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334) [na:1.7.0_11]
+	at java.util.concurrent.FutureTask.run(FutureTask.java:166) [na:1.7.0_11]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110) [na:1.7.0_11]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603) [na:1.7.0_11]
+	at java.lang.Thread.run(Thread.java:722) [na:1.7.0_11]
+Caused by: org.apache.catalina.LifecycleException: Failed to start component [StandardEngine[red5Engine].StandardHost[0.0.0.0].StandardContext[/oflaDemo]]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:154) [tomcat-embed-core-7.0.50.jar:7.0.50]
+	... 7 common frames omitted
+Caused by: java.lang.NoSuchMethodError: javax.servlet.ServletContext.getSessionCookieConfig()Ljavax/servlet/SessionCookieConfig;
+	at org.apache.catalina.deploy.WebXml.configureContext(WebXml.java:1331) ~[tomcat-embed-core-7.0.50.jar:7.0.50]
+```
+
+## Bootstrap exception ##
+
+If your server will not start and you see a message similar to the one below, it means you are missing the dependencies.
+
+```
+Running on  Linux
+Starting Red5
+Red5 root: /home/mondain/dev/tmp/red5-server-1.0.2-RC4
+Configuation root: /home/mondain/dev/tmp/red5-server-1.0.2-RC4/conf
+Red5 server jar was found
+URL list: [file:/home/mondain/dev/tmp/red5-server-1.0.2-RC4/red5-server.jar]
+Bootstrap exception: null
+java.lang.NullPointerException
+	at org.red5.classloading.ClassLoaderBuilder.build(ClassLoaderBuilder.java:172)
+	at org.red5.classloading.ClassLoaderBuilder.build(ClassLoaderBuilder.java:96)
+	at org.red5.server.Bootstrap.bootStrap(Bootstrap.java:117)
+	at org.red5.server.Bootstrap.main(Bootstrap.java:48)
+Bootstrap exit
+```
+
+1. Get the dependencies (see https://code.google.com/p/red5/wiki/Help#Get_Red5_Source)
+
+2. Create a "lib" directory in your red5 home location
+
+3. Copy the dependencies into the lib directory
+
+4. Delete the jboss api jar
+
+5. Start red5

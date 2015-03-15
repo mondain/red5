@@ -1,0 +1,49 @@
+# Datatypes #
+
+| **Flash/Flex** | **Java** |
+|:---------------|:---------|
+| Number | any of the Java numeric types |
+| int/uint | any of the non-floating point Java numeric types |
+| String | String |
+| Boolean | Boolean/boolean |
+| Array | List |
+| Object | org.red5.io.utils.ObjectMap |
+| Date | java.util.Date |
+| XML | org.w3c.dom.Document |
+| ByteArray | org.red5.io.amf3.ByteArray |
+| IExternalizable | org.red5.io.amf3.IExternalizable |
+| ArrayCollection | org.red5.compatibility.flex.messaging.io.ArrayCollection |
+| ObjectProxy | org.red5.compatibility.flex.messaging.io.ObjectProxy |
+| Null | null |
+| Void | void |
+| custom class | custom class |
+
+Please note that Red5 performs automatic parameter conversion, e.g. if you pass a number to a method that takes a String as parameter, it is automatically converted.
+
+| **Java** | **Flash/Flex** |
+|:---------|:---------------|
+| any of the Java numeric types | Number |
+| any of the non-floating point Java numeric types | int/uint |
+| String | String |
+| boolean/Boolean | Boolean |
+| List/Set | Array |
+| Map | Array or Object, depends on the Map contents |
+| any objects | Object |
+| org.red5.io.utils.ObjectMap  | Object |
+| java.util.Date | Date |
+| org.w3c.dom.Document | XML |
+| org.red5.io.amf3.ByteArray | ByteArray |
+| org.red5.io.amf3.IExternalizable | IExternalizable |
+| org.red5.compatibility.flex.messaging.io.ArrayCollection |  ArrayCollection |
+| org.red5.compatibility.flex.messaging.io.ObjectProxy | ObjectProxy |
+| null | Null |
+| void | Void |
+| custom class | custom class |
+
+**Some objects are only available in Flash Player 9 or newer (AMF3)**
+
+You can map the class to serialize to in Red5 by adding
+```
+[RemoteClass(alias="package.to.RemoteClass")]
+```
+above your Flex class definition.

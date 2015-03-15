@@ -1,0 +1,3 @@
+# Issues #
+
+Any issues with Red5 or its sub-projects are to be posted to github under the appropriate project. For the server itself, go here: https://github.com/Red5/red5-server/issues

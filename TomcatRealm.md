@@ -1,0 +1,37 @@
+# Realms #
+
+If you want to add a layer of security to your JEE apps within Red5, this will help guide you. Additional info and background may be found [here](http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html).
+
+**Q** - What is a Realm?
+
+**A** - A Realm is a "database" of usernames and passwords that identify valid users of a web application (or set of web applications), plus an enumeration of the list of roles associated with each valid user. You can think of roles as similar to groups in Unix-like operating systems, because access to specific web application resources is granted to all users possessing a particular role (rather than enumerating the list of associated usernames). A particular user can have any number of roles associated with their username.
+
+Six standard realms are provided with tomcat:
+  * JDBCRealm - Accesses authentication information stored in a relational database, accessed via a JDBC driver.
+  * DataSourceRealm - Accesses authentication information stored in a relational database, accessed via a named JNDI JDBC DataSource.
+  * JNDIRealm - Accesses authentication information stored in an LDAP based directory server, accessed via a JNDI provider.
+  * UserDatabaseRealm - Accesses authentication information stored in an UserDatabase JNDI resource, which is typically backed by an XML document (conf/tomcat-users.xml).
+  * MemoryRealm - Accesses authentication information stored in an in-memory object collection, which is initialized from an XML document (conf/tomcat-users.xml).
+  * JAASRealm - Accesses authentication information through the Java Authentication & Authorization Service (JAAS) framework.
+
+A realm in Red5 and Tomcat can be server-wide or constrained to an individual application. To enable a server-wide realm, add the realm property to your tomcat.server bean. If you want it in a individual application, add a realm bean to your red5-web.xml file.
+
+```
+<bean id="realm" class="org.apache.catalina.realm.MemoryRealm" />
+```
+
+## IRed5Realm ##
+
+Implementing this interface in your custom Realm class will allow you to access both the Spring application context and servlet context via injection by the TomcatLoader on startup of your application. The source may be found [here](https://code.google.com/p/red5/source/browse/java/plugins/trunk/tomcat/src/main/java/org/red5/server/security/IRed5Realm.java)
+
+## [MemoryRealm](http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html#MemoryRealm) ##
+
+This property should work in most versions of Red5 from around version 0.9; it may work in early versions, but your mileage could vary. Place this property within the tomcat.server bean. The format of the tomcat-users.xml follows the tomcat standard.
+
+```
+<property name="realm">
+  <bean class="org.apache.catalina.realm.MemoryRealm" lazy-init="true">
+    <property name="pathname" value="conf/tomcat-users.xml" />
+  </bean>
+</property>
+```

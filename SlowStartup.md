@@ -1,0 +1,46 @@
+# Introduction #
+
+When a red5 seems to take a lot of time starting up, you can utilize these strategies to improve start time.
+
+## Disable Quartz Update Check ##
+
+When quartz starts up, it "phones home" to check for an update; this often causes the start-up process to pause for 60 seconds or some other amount of time. Open your start script (red5.bat or red5.sh) and add the following entry to your JAVA\_OPTS
+
+```
+-Dorg.terracotta.quartz.skipUpdateCheck=true
+```
+
+## Run rmiregistry externally ##
+
+On some systems, starting the RMI registry can be slow; for this fix, we suggest that you run it externally like so:
+
+```
+rmiregistry 9999 &
+```
+
+Leave the ampersand off for windows; also note that there is no output and this will consume a process entry on the task / process list. This option works best with the following _conf/red5.properties_ entries:
+
+```
+jmx.registry.create=false
+jmx.reuse.existing.server=true
+```
+
+## Remove the ConnectionServerFactoryBean ##
+
+This may be specific to 1.0 RC builds. Simply remove the following bean entry from the _conf/red5-common.xml_ file and restart.
+
+```
+<bean class="org.springframework.jmx.support.ConnectorServerFactoryBean" depends-on="rmiRegistry">
+  <property name="objectName" value="org.red5.server:name=rmi" />
+  <property name="serviceUrl"           value="service:jmx:rmi://${jmx.rmi.host}/jndi/rmi://${jmx.rmi.host}:${jmx.rmi.port}/red5" />
+  <property name="environment">
+    <map>
+      <entry key="java.rmi.server.hostname" value="${jmx.rmi.host}" />
+      <entry key="jmx.remote.x.access.file" value="${red5.config_root}/access.properties" />
+      <entry key="jmx.remote.x.password.file" value="${red5.config_root}/password.properties" />
+     </map>
+   </property>
+</bean>
+```
+
+That bean may or may not only be needed if you plan to connect to the server via external JMX tools.

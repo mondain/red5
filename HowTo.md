@@ -1,0 +1,77 @@
+# Introduction #
+
+Herein we cover how to do stuff with Red5.
+
+## Details ##
+
+Video tutorials:
+
+**[Official](http://www.youtube.com/dominickaccattato#p/c/9B94807E1D0AF2DE)**
+
+**[Getting started with 1.0 RC](http://vimeo.com/27059211)**
+
+**[Red5 Guides](http://red5guide.com/)**
+
+**[Red5 and BlazeDS](http://www.youtube.com/watch?v=TlgPhvXBf9M)**
+
+**[Recording](http://www.technogumbo.com/tutorials/Recording-Decent-Quality-Video-And-Audio-With-Flash-and-Red5/index.php)**
+
+## Turning on the LogFilter in Mina ##
+
+The logging filter gives more insight into what I/O operations are occurring within the Mina layer.
+
+1. Add this node to the rtmpTransport bean entry in the conf/red5-core.xml file
+```
+    <property name="enableMinaLogFilter" value="${mina.logfilter.enable}" />
+```
+2. Add this to your conf/red5.properties file
+```
+    mina.logfilter.enable=true
+```
+3. Add this to your conf/logback.xml
+```
+    <logger name="org.red5.server.net.rtmp.RTMPMinaTransport">
+        <level value="INFO"/>
+    </logger>
+```
+You'll see entries from the logger like this:
+```
+2013-04-24 09:40:35,285 [NioProcessor-2] INFO  o.r.s.net.rtmp.RTMPMinaTransport - CREATED
+```
+
+## Access the ApplicationAdapter ##
+
+These are the various ways to access the application adapter.
+
+  1. Via Spring http://www.newviewnetworks.com/nvnhome/blog/client/uploads/Red5_Services.swf
+
+> 2. Through an ApplicationContext
+```
+IContext context = scope.getContext(); 
+ApplicationContext appCtx = context.getApplicationContext(); 
+Application app = (Application) appCtx.getBean("web.handler");
+```
+
+> 3. In a Servlet or JSP
+```
+ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+```
+
+> 4. Using the ApplicationContextAware interface
+```
+this.application = (Application) appCtx.getBean("web.handler"); 
+```
+
+> 5. Via PHP running within Red5
+```
+<?
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
+
+$session = $request->getSession(true);
+$ctx = $session->getServletContext();
+$appCtx = $ctx->getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
+?>
+```
+This option uses [Quercus](http://www.caucho.com/resin-3.0/quercus/). Blog post:
+[PHP in Red5](http://gregoire.org/2009/06/06/php-support-in-red5/)
