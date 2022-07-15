@@ -15,7 +15,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<properties>
-		<undertow.version>1.0.0.Beta29</undertow.version>
+		<undertow.version>2.2.15.Final</undertow.version>
 		<undertow-servlet.version>1.0.0.Beta29</undertow-servlet.version>
 	</properties>
 	<build>
